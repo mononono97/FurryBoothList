@@ -243,12 +243,44 @@
   nav.rows button.memo-tab-btn{
     width:auto;
     padding:0 12px;
-    margin-left:8px;
     font-size:13px;
     font-weight:600;
     border-color:rgba(255,255,255,.35);
   }
   nav.rows button.memo-tab-btn.active{
+    background:#c9973b;
+    border-color:#c9973b;
+  }
+
+  .second-row{
+    max-width:1180px;
+    margin:10px auto 0;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px 20px;
+  }
+  .tab-group{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .tab-group button{
+    appearance:none;
+    border:1px solid rgba(255,255,255,.35);
+    background:transparent;
+    color:var(--paper);
+    padding:0 12px;
+    height:36px;
+    border-radius:4px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    transition:background .15s, transform .1s;
+  }
+  .tab-group button:hover{background:rgba(255,255,255,.12);}
+  .tab-group button.active{
     background:#c9973b;
     border-color:#c9973b;
   }
@@ -968,9 +1000,6 @@
       <div class="mark" id="brandMark">けもケット ブース一覧</div>
       <div class="sub" id="brandSub">サークル配置ビューア</div>
     </div>
-    <div class="search-box">
-      <input id="searchInput" type="text" placeholder="サークル名 / 代表者名 / 配置番号 検索">
-    </div>
     <div class="settings-wrap" id="settingsWrap">
       <button type="button" class="settings-btn" id="settingsBtn" aria-label="Settings">⚙️</button>
       <div class="settings-menu" id="settingsMenu">
@@ -990,6 +1019,12 @@
     </div>
   </div>
   <nav class="rows" id="rowNav"></nav>
+  <div class="second-row">
+    <div class="tab-group" id="tabNav"></div>
+    <div class="search-box">
+      <input id="searchInput" type="text" placeholder="サークル名 / 代表者名 / 配置番号 検索">
+    </div>
+  </div>
 </header>
 
 <main>
@@ -1141,7 +1176,7 @@ const I18N = {
     loginBtn: "🔑 Google로 로그인",
     logoutBtn: "🔓 로그아웃",
     loggedInAs: "{email} 로 로그인됨",
-    loginFail: "로그인에 실패했습니다. 다시 시도해주세요.",
+    loginFail: "로그인에 실패했습니다. 다시 시도해주세요. ({code})",
   },
   en: {
     brandMark: "Kemoket Booth List",
@@ -1214,7 +1249,7 @@ const I18N = {
     loginBtn: "🔑 Sign in with Google",
     logoutBtn: "🔓 Sign out",
     loggedInAs: "Signed in as {email}",
-    loginFail: "Sign-in failed. Please try again.",
+    loginFail: "Sign-in failed. Please try again. ({code})",
   },
   jp: {
     brandMark: "けもケット ブース一覧",
@@ -1287,7 +1322,7 @@ const I18N = {
     loginBtn: "🔑 Googleでログイン",
     logoutBtn: "🔓 ログアウト",
     loggedInAs: "{email} でログイン中",
-    loginFail: "ログインに失敗しました。もう一度お試しください。",
+    loginFail: "ログインに失敗しました。もう一度お試しください。({code})",
   },
 };
 const LANG_KEY = "kemoket-lang";
@@ -1664,8 +1699,11 @@ function syncFromCloudOnLogin(uid){
 
 function signInWithGoogle(){
   if(!firebaseReady) return;
-  firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(() => {
-    alert(t("loginFail"));
+  firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch((err) => {
+    console.error("[Firebase Auth]", err);
+    // 사용자가 스스로 취소한 경우(팝업 닫음)는 실패로 안내할 필요 없음
+    if(err && (err.code === "auth/popup-closed-by-user" || err.code === "auth/cancelled-popup-request")) return;
+    alert(t("loginFail", { code: (err && err.code) || "unknown" }));
   });
 }
 
@@ -1810,34 +1848,33 @@ function renderNav(){
     nav.appendChild(btn);
   });
 
+  const tabNav = document.getElementById("tabNav");
+  tabNav.innerHTML = "";
+
   const noteCount = Object.keys(notes).length;
   const noteBtn = document.createElement("button");
-  noteBtn.className = "memo-tab-btn";
   noteBtn.textContent = noteCount ? t("notesBtnCount", { n: noteCount }) : t("notesBtn");
   if(currentRow === "NOTES") noteBtn.classList.add("active");
   noteBtn.addEventListener("click", () => goToRow("NOTES"));
-  nav.appendChild(noteBtn);
+  tabNav.appendChild(noteBtn);
 
   const mapBtn1 = document.createElement("button");
-  mapBtn1.className = "memo-tab-btn";
   mapBtn1.textContent = t("mapBtn1");
   if(currentRow === "MAP1") mapBtn1.classList.add("active");
   mapBtn1.addEventListener("click", () => goToRow("MAP1"));
-  nav.appendChild(mapBtn1);
+  tabNav.appendChild(mapBtn1);
 
   const mapBtn2 = document.createElement("button");
-  mapBtn2.className = "memo-tab-btn";
   mapBtn2.textContent = t("mapBtn2");
   if(currentRow === "MAP2") mapBtn2.classList.add("active");
   mapBtn2.addEventListener("click", () => goToRow("MAP2"));
-  nav.appendChild(mapBtn2);
+  tabNav.appendChild(mapBtn2);
 
   const infoBtn = document.createElement("button");
-  infoBtn.className = "memo-tab-btn";
   infoBtn.textContent = t("infoBtn");
   if(currentRow === "INFO") infoBtn.classList.add("active");
   infoBtn.addEventListener("click", () => goToRow("INFO"));
-  nav.appendChild(infoBtn);
+  tabNav.appendChild(infoBtn);
 }
 
 function makePopover(booth){
