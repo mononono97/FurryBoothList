@@ -214,6 +214,13 @@
     transition:background .15s;
   }
   .settings-item:hover{background:rgba(255,255,255,.12);}
+  .settings-item:disabled{opacity:.5; cursor:default;}
+  .settings-item:disabled:hover{background:transparent;}
+  .settings-item.danger{
+    border-color:rgba(214,69,69,.55);
+    color:#ff9a9a;
+  }
+  .settings-item.danger:hover{background:rgba(214,69,69,.18);}
   .auth-status{
     font-size:11px;
     color:rgba(242,240,230,.75);
@@ -1029,10 +1036,9 @@
           <button type="button" data-lang="jp">JP</button>
         </div>
         <div class="auth-status" id="authStatus" style="display:none;"></div>
+        <button type="button" class="settings-item" id="syncNowBtn" disabled></button>
         <button type="button" class="settings-item" id="helpBtn"></button>
-        <button type="button" class="settings-item" id="exportNotesBtn"></button>
-        <button type="button" class="settings-item" id="importNotesBtn"></button>
-        <input type="file" id="importNotesInput" accept="application/json" style="display:none;">
+        <button type="button" class="settings-item danger" id="resetBtn"></button>
       </div>
     </div>
   </div>
@@ -1133,10 +1139,10 @@ const I18N = {
     helpBody: [
       "이 사이트는 케모켓 부스 목록을 쉽게 보기 위해 만든 사이트 입니다.\n자동 번역 및 개발에 AI를 사용하여 내용에 오류가 있을 수 있습니다.\n자세한 내용은 {link} 을 참고해주세요",
       "모든 내용은 단말에만 저장되며,\n단말의 브라우저 데이터를 지울 시 작성한 내용이 소실 될 수 있습니다",
-      "설정 메뉴에서 Google 계정으로 로그인하면, 메모/방문상태/예산/우선순위를\n다른 기기(휴대폰, PC 등)에서도 이어서 볼 수 있습니다. 로그인하지 않아도\n지금처럼 이 브라우저에서만 사용하는 것도 그대로 가능합니다.",
+      "설정 메뉴에서 Google 계정으로 로그인하면, 메모/방문상태/예산/우선순위를\n다른 기기(휴대폰, PC 등)에서도 이어서 볼 수 있습니다. 자동으로 계속 동기화되는 것은 아니며,\n로그인 시 1회, 이후에는 설정 메뉴의 \"지금 동기화\" 버튼을 눌렀을 때만 반영됩니다.\n로그인하지 않아도 지금처럼 이 브라우저에서만 사용하는 것도 그대로 가능합니다.",
       "온라인 상태로 한 번 접속해두면, 이후 인터넷이 끊겨도 사이트를 계속 열람할 수 있습니다\n(단, 오프라인 중에는 새로운 프로필 사진이나 최신 정보는 반영되지 않습니다)",
       "검색창에서는 현재 탭에 위치한 작가를 부스 이름,\n작가 이름으로 필터링 가능합니다(전체 탭에서는 전체 검색)",
-      "메모(📝) 탭에서 내가 메모해둔 작가들을 확인 가능하며,\n방문 예정 혹은 방문 완료 기준으로 필터링 할 수 있습니다.\n지금까지 작성한 메모, 방문 예정/완료 상태, 예산, 우선순위를 파일로 내보내거나,\n내보낸 파일로 복원(가져오기)할 수 있습니다.",
+      "메모(📝) 탭에서 내가 메모해둔 작가들을 확인 가능하며,\n방문 예정 혹은 방문 완료 기준으로 필터링 할 수 있습니다.\n설정 메뉴의 \"데이터 초기화\"를 누르면 작성한 메모, 방문 예정/완료 상태, 예산,\n우선순위가 전부 삭제됩니다(되돌릴 수 없으니 주의해주세요).",
       "배치도에서는 방문 예정인 부스는 노란색,\n방문 완료한 부스는 초록색으로 표시됩니다.",
       "부스별로 1~3순위를 정할 수 있으며, 순위에 따라 카드/배치도 테두리 색이\n빨강(1순위)·보라(2순위)·파랑(3순위)으로 구분되어 표시됩니다.",
       "언어는 한국어, 영어, 일본어가 지원됩니다.",
@@ -1185,16 +1191,17 @@ const I18N = {
     delete: "삭제",
     savedStatus: "저장됨",
     deletedStatus: "삭제됨",
-    exportNotesBtn: "⬇️ 데이터 내보내기",
-    importNotesBtn: "⬆️ 데이터 가져오기",
-    importConfirm: "가져오기를 하면 기존 메모/방문 상태/예산과 병합됩니다. 계속할까요?",
-    importSuccess: "메모 {n}개, 방문 상태 {v}개, 예산 {b}개, 우선순위 {p}개를 가져왔습니다.",
-    importFail: "파일을 불러오지 못했습니다. 파일 형식을 확인해주세요.",
-    exportEmpty: "내보낼 데이터가 없습니다.",
+    resetBtn: "🗑️ 데이터 초기화",
+    resetConfirm: "메모, 방문 상태, 예산, 우선순위 등 저장된 모든 데이터가 삭제됩니다. 이 작업은 되돌릴 수 없습니다. 계속할까요?",
+    resetDone: "모든 데이터가 삭제되었습니다.",
     loginBtn: "🔑 Google로 로그인",
     logoutBtn: "🔓 로그아웃",
     loggedInAs: "{email} 로 로그인됨",
     loginFail: "로그인에 실패했습니다. 다시 시도해주세요. ({code})",
+    syncNowBtn: "☁️ 지금 동기화",
+    syncNowCooldown: "☁️ {s}초 후 가능",
+    syncSuccess: "동기화되었습니다.",
+    syncFail: "동기화에 실패했습니다. 인터넷 연결을 확인해주세요.",
   },
   en: {
     brandMark: "Kemoket Booth List",
@@ -1206,10 +1213,10 @@ const I18N = {
     helpBody: [
       "This site was made to make it easy to browse the Kemoket booth list.\nAI was used for automatic translation and development, so there may be errors in the content.\nFor more details, please refer to {link}",
       "All data is stored only on your device,\nand may be lost if you clear your browser's site data.",
-      "Sign in with your Google account from the settings menu to keep your notes/visit status/budget/priority\nin sync across devices (phone, PC, etc). You can still use the site fully in this browser only\nwithout signing in.",
+      "Sign in with your Google account from the settings menu to keep your notes/visit status/budget/priority\nin sync across devices (phone, PC, etc). It doesn't sync continuously — it syncs once when you sign in,\nand afterward only when you tap \"Sync Now\" in the settings menu. You can still use the site fully\nin this browser only without signing in.",
       "Once you've visited the site while online, you can keep browsing it even if you lose connection later\n(new profile photos or updated info just won't load while offline).",
       "The search box filters circles in the current tab by booth name\nor circle name (in the All tab, it searches everything).",
-      "In the Notes (📝) tab, you can see the circles you've noted,\nand filter them by Plan to Visit or Visited status.\nYou can export the notes, visit statuses, budgets, and priorities you've entered so far to a file,\nor restore them by importing that file.",
+      "In the Notes (📝) tab, you can see the circles you've noted,\nand filter them by Plan to Visit or Visited status.\nUsing \"Reset Data\" in the settings menu deletes all your notes, visit statuses,\nbudgets, and priorities (this cannot be undone).",
       "On the floor map, booths marked Plan to Visit are shown in yellow,\nand booths marked Visited are shown in green.",
       "You can set a priority (1–3) for each booth; the card/map border color shows it as\nred (priority 1), purple (priority 2), or blue (priority 3).",
       "Korean, English, and Japanese are supported.",
@@ -1258,16 +1265,17 @@ const I18N = {
     delete: "Delete",
     savedStatus: "Saved",
     deletedStatus: "Deleted",
-    exportNotesBtn: "⬇️ Export Data",
-    importNotesBtn: "⬆️ Import Data",
-    importConfirm: "Importing will merge with your existing notes/visit status/budget. Continue?",
-    importSuccess: "Imported {n} notes, {v} visit statuses, {b} budgets, {p} priorities.",
-    importFail: "Failed to import the file. Please check the file format.",
-    exportEmpty: "There is no data to export.",
+    resetBtn: "🗑️ Reset Data",
+    resetConfirm: "This will delete all your saved data — notes, visit status, budget, and priority. This cannot be undone. Continue?",
+    resetDone: "All data has been deleted.",
     loginBtn: "🔑 Sign in with Google",
     logoutBtn: "🔓 Sign out",
     loggedInAs: "Signed in as {email}",
     loginFail: "Sign-in failed. Please try again. ({code})",
+    syncNowBtn: "☁️ Sync Now",
+    syncNowCooldown: "☁️ Available in {s}s",
+    syncSuccess: "Synced successfully.",
+    syncFail: "Sync failed. Please check your internet connection.",
   },
   jp: {
     brandMark: "けもケット ブース一覧",
@@ -1279,10 +1287,10 @@ const I18N = {
     helpBody: [
       "このサイトは、けもケットのブース一覧を簡単に見られるように作られたサイトです。\n自動翻訳および開発にAIを使用しているため、内容に誤りがある場合があります。\n詳細は {link} をご参照ください。",
       "すべての内容は端末にのみ保存され、\n端末のブラウザデータを削除すると、書き込んだ内容が失われる可能性があります。",
-      "設定メニューからGoogleアカウントでログインすると、メモ・訪問状態・予算・優先度を\n他の端末（スマホ・PCなど）でも引き続き確認できます。ログインしなくても\nこれまで通りこのブラウザだけで利用することもできます。",
+      "設定メニューからGoogleアカウントでログインすると、メモ・訪問状態・予算・優先度を\n他の端末（スマホ・PCなど）でも引き続き確認できます。常に自動で同期されるわけではなく、\nログイン時に1回、それ以降は設定メニューの「今すぐ同期」を押したときだけ反映されます。\nログインしなくてもこれまで通りこのブラウザだけで利用することもできます。",
       "一度オンラインでサイトにアクセスしておけば、その後オフラインになってもサイトの閲覧を続けられます\n（オフライン中は新しいプロフィール写真や最新情報は反映されません）。",
       "検索欄では現在のタブにいるサークルをブース名、\nサークル名で絞り込めます（全体タブでは全体検索）。",
-      "メモ（📝）タブでは自分がメモしたサークルを確認でき、\n訪問予定または訪問済みの状態で絞り込むことができます。\nこれまで書いたメモ・訪問予定/済みの状態・予算・優先度をファイルにエクスポートしたり、\nそのファイルから復元（インポート）したりできます。",
+      "メモ（📝）タブでは自分がメモしたサークルを確認でき、\n訪問予定または訪問済みの状態で絞り込むことができます。\n設定メニューの「データを初期化」を押すと、書いたメモ・訪問予定/済みの状態・\n予算・優先度がすべて削除されます（元に戻せませんのでご注意ください）。",
       "配置図では、訪問予定のブースは黄色、\n訪問済みのブースは緑色で表示されます。",
       "ブースごとに優先度（1〜3）を設定でき、カード・配置図の枠線の色で\n赤（優先度1）・紫（優先度2）・青（優先度3）として表示されます。",
       "言語は韓国語・英語・日本語に対応しています。",
@@ -1331,16 +1339,17 @@ const I18N = {
     delete: "削除",
     savedStatus: "保存済み",
     deletedStatus: "削除済み",
-    exportNotesBtn: "⬇️ データをエクスポート",
-    importNotesBtn: "⬆️ データをインポート",
-    importConfirm: "インポートすると既存のメモ・訪問状態・予算と統合されます。続行しますか？",
-    importSuccess: "メモ{n}件、訪問状態{v}件、予算{b}件、優先度{p}件をインポートしました。",
-    importFail: "ファイルを読み込めませんでした。ファイル形式をご確認ください。",
-    exportEmpty: "エクスポートするデータがありません。",
+    resetBtn: "🗑️ データを初期化",
+    resetConfirm: "メモ・訪問状態・予算・優先度など保存されたすべてのデータが削除されます。この操作は元に戻せません。続行しますか？",
+    resetDone: "すべてのデータが削除されました。",
     loginBtn: "🔑 Googleでログイン",
     logoutBtn: "🔓 ログアウト",
     loggedInAs: "{email} でログイン中",
     loginFail: "ログインに失敗しました。もう一度お試しください。({code})",
+    syncNowBtn: "☁️ 今すぐ同期",
+    syncNowCooldown: "☁️ {s}秒後に可能",
+    syncSuccess: "同期しました。",
+    syncFail: "同期に失敗しました。インターネット接続をご確認ください。",
   },
 };
 const LANG_KEY = "kemoket-lang";
@@ -1362,8 +1371,7 @@ function applyStaticTexts(){
   document.getElementById("brandSub").textContent = t("brandSub");
   document.getElementById("searchInput").placeholder = t("searchPlaceholder");
   document.getElementById("helpBtn").textContent = t("helpBtn");
-  document.getElementById("exportNotesBtn").textContent = t("exportNotesBtn");
-  document.getElementById("importNotesBtn").textContent = t("importNotesBtn");
+  document.getElementById("resetBtn").textContent = t("resetBtn");
   document.querySelector('#visitFilter button[data-filter="all"]').textContent = t("filterAll");
   document.querySelector('#visitFilter button[data-filter="planned"]').textContent = t("filterPlanned");
   document.querySelector('#visitFilter button[data-filter="visited"]').textContent = t("filterVisited");
@@ -1462,7 +1470,6 @@ function saveNotes(){
   } catch {
     // 저장 실패(용량 초과 등)해도 사이트 동작에는 지장 없도록 무시
   }
-  syncToCloud();
 }
 
 let notes = loadNotes();
@@ -1502,7 +1509,6 @@ function saveVisitStatus(){
   } catch {
     // 저장 실패(용량 초과 등)해도 사이트 동작에는 지장 없도록 무시
   }
-  syncToCloud();
 }
 
 let visitStatus = loadVisitStatus();
@@ -1548,7 +1554,6 @@ function savePriority(){
   } catch {
     // 저장 실패(용량 초과 등)해도 사이트 동작에는 지장 없도록 무시
   }
-  syncToCloud();
 }
 
 let priority = loadPriority();
@@ -1594,7 +1599,6 @@ function saveBudgets(){
   } catch {
     // 저장 실패(용량 초과 등)해도 사이트 동작에는 지장 없도록 무시
   }
-  syncToCloud();
 }
 
 let budgets = loadBudgets();
@@ -1645,7 +1649,6 @@ const firebaseConfig = {
 
 let firebaseReady = false;
 let currentUser = null;
-let isMergingFromCloud = false; // 병합 도중에는 syncToCloud를 트리거하지 않기 위한 플래그
 
 try {
   firebase.initializeApp(firebaseConfig);
@@ -1658,9 +1661,15 @@ function updateAuthUI(){
   const loginBtn = document.getElementById("loginBtn");
   const logoutBtn = document.getElementById("logoutBtn");
   const authStatus = document.getElementById("authStatus");
-  if(!loginBtn || !logoutBtn || !authStatus) return;
+  const syncNowBtn = document.getElementById("syncNowBtn");
+  if(!loginBtn || !logoutBtn || !authStatus || !syncNowBtn) return;
   loginBtn.textContent = t("loginBtn");
   logoutBtn.textContent = t("logoutBtn");
+  if(!syncCooldownUntil || Date.now() >= syncCooldownUntil){
+    syncNowBtn.textContent = t("syncNowBtn");
+  }
+  // 동기화 버튼은 로그아웃 상태여도 항상 보이되, 로그인 중이 아니거나 쿨다운 중이면 비활성화
+  syncNowBtn.disabled = !currentUser || Date.now() < syncCooldownUntil;
   if(currentUser){
     loginBtn.style.display = "none";
     logoutBtn.style.display = "";
@@ -1678,24 +1687,16 @@ function mergeField(local, cloud){
   return Object.assign({}, cloud || {}, local || {});
 }
 
-let syncTimer = null;
-function syncToCloud(){
-  if(!firebaseReady || !currentUser || isMergingFromCloud) return;
-  clearTimeout(syncTimer);
-  syncTimer = setTimeout(() => {
-    firebase.firestore().collection("users").doc(currentUser.uid).set({
-      notes, visitStatus, budgets, priority,
-      updatedAt: new Date().toISOString(),
-    }).catch(() => {
-      // 오프라인 등으로 저장 실패해도 무시(다음 저장 시점에 다시 시도됨)
-    });
-  }, 800);
+function pushToCloud(uid){
+  return firebase.firestore().collection("users").doc(uid).set({
+    notes, visitStatus, budgets, priority,
+    updatedAt: new Date().toISOString(),
+  });
 }
 
-function syncFromCloudOnLogin(uid){
-  firebase.firestore().collection("users").doc(uid).get().then((doc) => {
+function pullAndMergeFromCloud(uid){
+  return firebase.firestore().collection("users").doc(uid).get().then((doc) => {
     const cloud = doc.exists ? doc.data() : {};
-    isMergingFromCloud = true;
     notes = mergeField(notes, cloud.notes);
     visitStatus = mergeField(visitStatus, cloud.visitStatus);
     budgets = mergeField(budgets, cloud.budgets);
@@ -1704,15 +1705,56 @@ function syncFromCloudOnLogin(uid){
     saveVisitStatus();
     saveBudgets();
     savePriority();
-    isMergingFromCloud = false;
     renderNav();
     renderGrid();
     updateBudgetTotalDisplay();
-    syncToCloud(); // 병합 결과를 클라우드에도 즉시 반영해서 기기 간 상태를 맞춤
-  }).catch(() => {
-    isMergingFromCloud = false;
+  });
+}
+
+function syncFromCloudOnLogin(uid){
+  // 로그인 시 1회만 자동으로 병합 + 재업로드함(그 외에는 "지금 동기화" 버튼을 눌러야만 동기화됨.
+  // Firestore 무료 플랜의 일일 읽기/쓰기 쿼터를 아끼기 위해 편집할 때마다 자동으로 올리지 않음).
+  pullAndMergeFromCloud(uid).then(() => pushToCloud(uid)).catch(() => {
     // 오프라인 등으로 실패해도 로컬 데이터로 계속 사용 가능
   });
+}
+
+/* ---------- "지금 동기화" 버튼 ----------
+   자동 동기화 대신 사용자가 직접 누를 때만 클라우드와 주고받도록 함.
+   연타로 무료 플랜 일일 쿼터를 낭비하지 않도록 클릭 후 일정 시간 버튼을 잠금.
+------------------------------------------------ */
+const SYNC_COOLDOWN_SECONDS = 10;
+let syncCooldownUntil = 0;
+let syncCooldownTimer = null;
+
+function startSyncCooldown(){
+  const btn = document.getElementById("syncNowBtn");
+  if(!btn) return;
+  syncCooldownUntil = Date.now() + SYNC_COOLDOWN_SECONDS * 1000;
+  btn.disabled = true;
+  clearInterval(syncCooldownTimer);
+  const tick = () => {
+    const remaining = Math.ceil((syncCooldownUntil - Date.now()) / 1000);
+    if(remaining <= 0){
+      clearInterval(syncCooldownTimer);
+      btn.disabled = !currentUser;
+      btn.textContent = t("syncNowBtn");
+      return;
+    }
+    btn.textContent = t("syncNowCooldown", { s: remaining });
+  };
+  tick();
+  syncCooldownTimer = setInterval(tick, 1000);
+}
+
+function syncNow(){
+  if(!firebaseReady || !currentUser) return;
+  if(Date.now() < syncCooldownUntil) return;
+  startSyncCooldown();
+  pullAndMergeFromCloud(currentUser.uid)
+    .then(() => pushToCloud(currentUser.uid))
+    .then(() => alert(t("syncSuccess")))
+    .catch(() => alert(t("syncFail")));
 }
 
 function signInWithGoogle(){
@@ -1740,92 +1782,28 @@ if(firebaseReady){
 
 document.getElementById("loginBtn").addEventListener("click", signInWithGoogle);
 document.getElementById("logoutBtn").addEventListener("click", signOutUser);
+document.getElementById("syncNowBtn").addEventListener("click", syncNow);
 
-/* ---------- 메모 내보내기/가져오기 ----------
-   { "A-01": "메모 내용", ... } 형태의 notes 객체를 JSON 파일로 저장/복원함.
+/* ---------- 전체 데이터 초기화 ----------
+   메모/방문상태/예산/우선순위를 전부 삭제함(로그인 중이면 클라우드에도 반영됨).
 ------------------------------------------------- */
-function exportNotes(){
+function resetAllData(){
   if(!Object.keys(notes).length && !Object.keys(visitStatus).length && !Object.keys(budgets).length && !Object.keys(priority).length){
-    alert(t("exportEmpty"));
     return;
   }
-  const payload = {
-    app: "kemoket-notes",
-    exportedAt: new Date().toISOString(),
-    notes,
-    visitStatus,
-    budgets,
-    priority,
-  };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const dateStr = new Date().toISOString().slice(0, 10);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `kemoket-notes-${dateStr}.json`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
+  if(!confirm(t("resetConfirm"))) return;
 
-function importNotesFromFile(file){
-  const reader = new FileReader();
-  reader.onload = () => {
-    try {
-      const parsed = JSON.parse(reader.result);
-      const isWrapped = !!(parsed && typeof parsed === "object" && !Array.isArray(parsed)
-        && (parsed.notes || parsed.visitStatus || parsed.budgets || parsed.priority));
-      // 예전 형식(메모만 담긴 파일) 호환: 감싸져 있지 않으면 전체를 메모 객체로 취급
-      const incomingNotes = isWrapped ? (parsed.notes || {}) : parsed;
-      const incomingVisit = isWrapped ? (parsed.visitStatus || {}) : {};
-      const incomingBudgets = isWrapped ? (parsed.budgets || {}) : {};
-      const incomingPriority = isWrapped ? (parsed.priority || {}) : {};
-      if(!incomingNotes || typeof incomingNotes !== "object" || Array.isArray(incomingNotes)){
-        throw new Error("invalid format");
-      }
-      if(!confirm(t("importConfirm"))) return;
-
-      let noteCount = 0, visitCount = 0, budgetCount = 0, priorityCount = 0;
-      Object.keys(incomingNotes).forEach(id => {
-        if(typeof incomingNotes[id] === "string" && incomingNotes[id].trim()){
-          notes[id] = incomingNotes[id].trim().slice(0, MAX_NOTE_LENGTH);
-          noteCount++;
-        }
-      });
-      Object.keys(incomingVisit).forEach(id => {
-        if(incomingVisit[id] === "planned" || incomingVisit[id] === "visited"){
-          visitStatus[id] = incomingVisit[id];
-          visitCount++;
-        }
-      });
-      Object.keys(incomingBudgets).forEach(id => {
-        const n = Math.max(0, Math.floor(Number(incomingBudgets[id]) || 0));
-        if(n > 0){
-          budgets[id] = n;
-          budgetCount++;
-        }
-      });
-      Object.keys(incomingPriority).forEach(id => {
-        const lvl = Number(incomingPriority[id]);
-        if(lvl === 1 || lvl === 2 || lvl === 3){
-          priority[id] = lvl;
-          priorityCount++;
-        }
-      });
-
-      saveNotes();
-      saveVisitStatus();
-      saveBudgets();
-      savePriority();
-      renderNav();
-      renderGrid();
-      alert(t("importSuccess", { n: noteCount, v: visitCount, b: budgetCount, p: priorityCount }));
-    } catch {
-      alert(t("importFail"));
-    }
-  };
-  reader.readAsText(file);
+  notes = {};
+  visitStatus = {};
+  budgets = {};
+  priority = {};
+  saveNotes();
+  saveVisitStatus();
+  saveBudgets();
+  savePriority();
+  renderNav();
+  renderGrid();
+  alert(t("resetDone"));
 }
 
 function ensureTwitterWidgets(cb){
@@ -2743,18 +2721,9 @@ document.getElementById("helpBtn").addEventListener("click", () => {
   openHelpModal();
 });
 
-document.getElementById("exportNotesBtn").addEventListener("click", () => {
+document.getElementById("resetBtn").addEventListener("click", () => {
   closeSettingsMenu();
-  exportNotes();
-});
-document.getElementById("importNotesBtn").addEventListener("click", () => {
-  closeSettingsMenu();
-  document.getElementById("importNotesInput").click();
-});
-document.getElementById("importNotesInput").addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  if(file) importNotesFromFile(file);
-  e.target.value = "";
+  resetAllData();
 });
 
 document.getElementById("visitFilter").addEventListener("click", (e) => {
