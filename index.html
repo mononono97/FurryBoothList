@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
-  script-src 'self' 'unsafe-inline' https://platform.twitter.com https://cdn.syndication.twimg.com;
+  script-src 'self' 'unsafe-inline' https://platform.twitter.com https://cdn.syndication.twimg.com https://www.gstatic.com https://apis.google.com;
   worker-src 'self';
   style-src 'self' 'unsafe-inline';
   img-src 'self' data: https://pbs.twimg.com https://abs.twimg.com https://ton.twimg.com;
   font-src 'self' data:;
-  connect-src 'self' https://cdn.syndication.twimg.com https://syndication.twitter.com https://twitter.com https://x.com https://api.open-meteo.com;
-  frame-src https://platform.twitter.com https://syndication.twitter.com https://www.google.com;
+  connect-src 'self' https://cdn.syndication.twimg.com https://syndication.twitter.com https://twitter.com https://x.com https://api.open-meteo.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com;
+  frame-src https://platform.twitter.com https://syndication.twitter.com https://www.google.com https://accounts.google.com https://boothlist-4589c.firebaseapp.com;
   object-src 'none';
   base-uri 'self';
   form-action 'self';
@@ -196,6 +196,12 @@
     transition:background .15s;
   }
   .settings-item:hover{background:rgba(255,255,255,.12);}
+  .auth-status{
+    font-size:11px;
+    color:rgba(242,240,230,.75);
+    padding:0 2px;
+    word-break:break-all;
+  }
 
   .help-body p{
     margin:0 0 12px;
@@ -973,6 +979,9 @@
           <button type="button" data-lang="en">EN</button>
           <button type="button" data-lang="jp">JP</button>
         </div>
+        <div class="auth-status" id="authStatus" style="display:none;"></div>
+        <button type="button" class="settings-item" id="loginBtn"></button>
+        <button type="button" class="settings-item" id="logoutBtn" style="display:none;"></button>
         <button type="button" class="settings-item" id="helpBtn"></button>
         <button type="button" class="settings-item" id="exportNotesBtn"></button>
         <button type="button" class="settings-item" id="importNotesBtn"></button>
@@ -1009,6 +1018,9 @@
 
 <footer id="siteFooter"></footer>
 
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
 /* ---------- 데이터 ----------
    twitter: X 핸들 (없으면 null)
@@ -1073,6 +1085,7 @@ const I18N = {
       "메모(📝) 탭에서 내가 메모해둔 작가들을 확인 가능하며,\n방문 예정 혹은 방문 완료 기준으로 필터링 할 수 있습니다.\n지금까지 작성한 메모, 방문 예정/완료 상태, 예산, 우선순위를 파일로 내보내거나,\n내보낸 파일로 복원(가져오기)할 수 있습니다.",
       "배치도에서는 방문 예정인 부스는 노란색,\n방문 완료한 부스는 초록색으로 표시됩니다.",
       "부스별로 1~3순위를 정할 수 있으며, 순위에 따라 카드/배치도 테두리 색이\n빨강(1순위)·보라(2순위)·파랑(3순위)으로 구분되어 표시됩니다.",
+      "설정 메뉴에서 Google 계정으로 로그인하면, 메모/방문상태/예산/우선순위를\n다른 기기(휴대폰, PC 등)에서도 이어서 볼 수 있습니다. 로그인하지 않아도\n지금처럼 이 브라우저에서만 사용하는 것도 그대로 가능합니다.",
       "언어는 한국어, 영어, 일본어가 지원됩니다.",
       "인터넷 연결이 좋지 않을 시, 작가의 프로필 사진이 보이지 않을 수 있습니다.",
       "제작 : @Chung_Hwani",
@@ -1125,6 +1138,10 @@ const I18N = {
     importSuccess: "메모 {n}개, 방문 상태 {v}개, 예산 {b}개, 우선순위 {p}개를 가져왔습니다.",
     importFail: "파일을 불러오지 못했습니다. 파일 형식을 확인해주세요.",
     exportEmpty: "내보낼 데이터가 없습니다.",
+    loginBtn: "🔑 Google로 로그인",
+    logoutBtn: "🔓 로그아웃",
+    loggedInAs: "{email} 로 로그인됨",
+    loginFail: "로그인에 실패했습니다. 다시 시도해주세요.",
   },
   en: {
     brandMark: "Kemoket Booth List",
@@ -1141,6 +1158,7 @@ const I18N = {
       "In the Notes (📝) tab, you can see the circles you've noted,\nand filter them by Plan to Visit or Visited status.\nYou can export the notes, visit statuses, budgets, and priorities you've entered so far to a file,\nor restore them by importing that file.",
       "On the floor map, booths marked Plan to Visit are shown in yellow,\nand booths marked Visited are shown in green.",
       "You can set a priority (1–3) for each booth; the card/map border color shows it as\nred (priority 1), purple (priority 2), or blue (priority 3).",
+      "Sign in with your Google account from the settings menu to keep your notes/visit status/budget/priority\nin sync across devices (phone, PC, etc). You can still use the site fully in this browser only\nwithout signing in.",
       "Korean, English, and Japanese are supported.",
       "If your internet connection is poor, artist profile photos may not display.",
       "Made by: @Chung_Hwani",
@@ -1193,6 +1211,10 @@ const I18N = {
     importSuccess: "Imported {n} notes, {v} visit statuses, {b} budgets, {p} priorities.",
     importFail: "Failed to import the file. Please check the file format.",
     exportEmpty: "There is no data to export.",
+    loginBtn: "🔑 Sign in with Google",
+    logoutBtn: "🔓 Sign out",
+    loggedInAs: "Signed in as {email}",
+    loginFail: "Sign-in failed. Please try again.",
   },
   jp: {
     brandMark: "けもケット ブース一覧",
@@ -1209,6 +1231,7 @@ const I18N = {
       "メモ（📝）タブでは自分がメモしたサークルを確認でき、\n訪問予定または訪問済みの状態で絞り込むことができます。\nこれまで書いたメモ・訪問予定/済みの状態・予算・優先度をファイルにエクスポートしたり、\nそのファイルから復元（インポート）したりできます。",
       "配置図では、訪問予定のブースは黄色、\n訪問済みのブースは緑色で表示されます。",
       "ブースごとに優先度（1〜3）を設定でき、カード・配置図の枠線の色で\n赤（優先度1）・紫（優先度2）・青（優先度3）として表示されます。",
+      "設定メニューからGoogleアカウントでログインすると、メモ・訪問状態・予算・優先度を\n他の端末（スマホ・PCなど）でも引き続き確認できます。ログインしなくても\nこれまで通りこのブラウザだけで利用することもできます。",
       "言語は韓国語・英語・日本語に対応しています。",
       "インターネット接続が不安定な場合、作家のプロフィール写真が表示されないことがあります。",
       "制作：@Chung_Hwani",
@@ -1261,6 +1284,10 @@ const I18N = {
     importSuccess: "メモ{n}件、訪問状態{v}件、予算{b}件、優先度{p}件をインポートしました。",
     importFail: "ファイルを読み込めませんでした。ファイル形式をご確認ください。",
     exportEmpty: "エクスポートするデータがありません。",
+    loginBtn: "🔑 Googleでログイン",
+    logoutBtn: "🔓 ログアウト",
+    loggedInAs: "{email} でログイン中",
+    loginFail: "ログインに失敗しました。もう一度お試しください。",
   },
 };
 const LANG_KEY = "kemoket-lang";
@@ -1289,6 +1316,7 @@ function applyStaticTexts(){
   document.querySelector('#visitFilter button[data-filter="visited"]').textContent = t("filterVisited");
   document.getElementById("sortPriorityBtn").textContent = t("sortPriorityBtn");
   updateBudgetTotalDisplay();
+  updateAuthUI();
   document.getElementById("siteFooter").innerHTML =
     `${t("footerSource")}: <a href="https://skypalette.jp/kemoket/list.html" style="color:inherit;" target="_blank" rel="noopener">skypalette.jp/kemoket</a>`;
   document.querySelectorAll("#langSwitch button").forEach(btn => {
@@ -1381,6 +1409,7 @@ function saveNotes(){
   } catch {
     // 저장 실패(용량 초과 등)해도 사이트 동작에는 지장 없도록 무시
   }
+  syncToCloud();
 }
 
 let notes = loadNotes();
@@ -1420,6 +1449,7 @@ function saveVisitStatus(){
   } catch {
     // 저장 실패(용량 초과 등)해도 사이트 동작에는 지장 없도록 무시
   }
+  syncToCloud();
 }
 
 let visitStatus = loadVisitStatus();
@@ -1465,6 +1495,7 @@ function savePriority(){
   } catch {
     // 저장 실패(용량 초과 등)해도 사이트 동작에는 지장 없도록 무시
   }
+  syncToCloud();
 }
 
 let priority = loadPriority();
@@ -1510,6 +1541,7 @@ function saveBudgets(){
   } catch {
     // 저장 실패(용량 초과 등)해도 사이트 동작에는 지장 없도록 무시
   }
+  syncToCloud();
 }
 
 let budgets = loadBudgets();
@@ -1540,6 +1572,118 @@ function updateBudgetTotalDisplay(){
   const el = document.getElementById("budgetTotal");
   if(el) el.textContent = t("budgetTotal", { amount: formatYen(getTotalBudget()) });
 }
+
+/* ---------- 구글 로그인 & 기기 간 동기화 ----------
+   로그인하지 않아도 사이트는 지금까지와 완전히 동일하게(로컬 전용) 동작함.
+   로그인한 경우에만 메모/방문상태/예산/우선순위를 Firestore에도 저장해서
+   같은 구글 계정으로 다른 기기에서 접속했을 때도 이어서 볼 수 있게 함.
+   네트워크가 불안정해도(행사장 등) 저장은 항상 localStorage에 먼저 되고,
+   클라우드 동기화는 실패해도 무시되는 best-effort 방식으로만 동작함.
+------------------------------------------------------------------ */
+const firebaseConfig = {
+  apiKey: "AIzaSyAoTXtmEeze9iOAEJOPAKp97H-xn5hyH6w",
+  authDomain: "boothlist-4589c.firebaseapp.com",
+  projectId: "boothlist-4589c",
+  storageBucket: "boothlist-4589c.firebasestorage.app",
+  messagingSenderId: "759247982253",
+  appId: "1:759247982253:web:72d197f292be4b1d340024",
+  measurementId: "G-VHBV4DS1RS",
+};
+
+let firebaseReady = false;
+let currentUser = null;
+let isMergingFromCloud = false; // 병합 도중에는 syncToCloud를 트리거하지 않기 위한 플래그
+
+try {
+  firebase.initializeApp(firebaseConfig);
+  firebaseReady = true;
+} catch {
+  // 초기화 실패해도(오프라인, SDK 로드 실패 등) 나머지 사이트 기능에는 지장 없음
+}
+
+function updateAuthUI(){
+  const loginBtn = document.getElementById("loginBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const authStatus = document.getElementById("authStatus");
+  if(!loginBtn || !logoutBtn || !authStatus) return;
+  loginBtn.textContent = t("loginBtn");
+  logoutBtn.textContent = t("logoutBtn");
+  if(currentUser){
+    loginBtn.style.display = "none";
+    logoutBtn.style.display = "";
+    authStatus.style.display = "";
+    authStatus.textContent = t("loggedInAs", { email: currentUser.email || currentUser.displayName || "" });
+  } else {
+    loginBtn.style.display = firebaseReady ? "" : "none";
+    logoutBtn.style.display = "none";
+    authStatus.style.display = "none";
+  }
+}
+
+function mergeField(local, cloud){
+  // 같은 부스에 로컬/클라우드 값이 둘 다 있으면 로컬을 우선(현재 기기에서 방금 한 작업을 덮어쓰지 않기 위함)
+  return Object.assign({}, cloud || {}, local || {});
+}
+
+let syncTimer = null;
+function syncToCloud(){
+  if(!firebaseReady || !currentUser || isMergingFromCloud) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => {
+    firebase.firestore().collection("users").doc(currentUser.uid).set({
+      notes, visitStatus, budgets, priority,
+      updatedAt: new Date().toISOString(),
+    }).catch(() => {
+      // 오프라인 등으로 저장 실패해도 무시(다음 저장 시점에 다시 시도됨)
+    });
+  }, 800);
+}
+
+function syncFromCloudOnLogin(uid){
+  firebase.firestore().collection("users").doc(uid).get().then((doc) => {
+    const cloud = doc.exists ? doc.data() : {};
+    isMergingFromCloud = true;
+    notes = mergeField(notes, cloud.notes);
+    visitStatus = mergeField(visitStatus, cloud.visitStatus);
+    budgets = mergeField(budgets, cloud.budgets);
+    priority = mergeField(priority, cloud.priority);
+    saveNotes();
+    saveVisitStatus();
+    saveBudgets();
+    savePriority();
+    isMergingFromCloud = false;
+    renderNav();
+    renderGrid();
+    updateBudgetTotalDisplay();
+    syncToCloud(); // 병합 결과를 클라우드에도 즉시 반영해서 기기 간 상태를 맞춤
+  }).catch(() => {
+    isMergingFromCloud = false;
+    // 오프라인 등으로 실패해도 로컬 데이터로 계속 사용 가능
+  });
+}
+
+function signInWithGoogle(){
+  if(!firebaseReady) return;
+  firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(() => {
+    alert(t("loginFail"));
+  });
+}
+
+function signOutUser(){
+  if(!firebaseReady) return;
+  firebase.auth().signOut();
+}
+
+if(firebaseReady){
+  firebase.auth().onAuthStateChanged((user) => {
+    currentUser = user;
+    updateAuthUI();
+    if(user) syncFromCloudOnLogin(user.uid);
+  });
+}
+
+document.getElementById("loginBtn").addEventListener("click", signInWithGoogle);
+document.getElementById("logoutBtn").addEventListener("click", signOutUser);
 
 /* ---------- 메모 내보내기/가져오기 ----------
    { "A-01": "메모 내용", ... } 형태의 notes 객체를 JSON 파일로 저장/복원함.
