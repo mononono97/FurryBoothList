@@ -147,7 +147,25 @@
 
   .settings-wrap{
     position:relative;
+    display:flex;
+    align-items:center;
+    gap:8px;
   }
+  .header-btn{
+    appearance:none;
+    border:1px solid rgba(255,255,255,.35);
+    background:transparent;
+    color:var(--paper);
+    padding:0 12px;
+    height:34px;
+    border-radius:6px;
+    font-size:12.5px;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:background .15s;
+  }
+  .header-btn:hover{background:rgba(255,255,255,.12);}
   .settings-btn{
     appearance:none;
     border:1px solid rgba(255,255,255,.25);
@@ -1001,6 +1019,8 @@
       <div class="sub" id="brandSub">サークル配置ビューア</div>
     </div>
     <div class="settings-wrap" id="settingsWrap">
+      <button type="button" class="header-btn" id="loginBtn"></button>
+      <button type="button" class="header-btn" id="logoutBtn" style="display:none;"></button>
       <button type="button" class="settings-btn" id="settingsBtn" aria-label="Settings">⚙️</button>
       <div class="settings-menu" id="settingsMenu">
         <div class="lang-switch" id="langSwitch">
@@ -1009,8 +1029,6 @@
           <button type="button" data-lang="jp">JP</button>
         </div>
         <div class="auth-status" id="authStatus" style="display:none;"></div>
-        <button type="button" class="settings-item" id="loginBtn"></button>
-        <button type="button" class="settings-item" id="logoutBtn" style="display:none;"></button>
         <button type="button" class="settings-item" id="helpBtn"></button>
         <button type="button" class="settings-item" id="exportNotesBtn"></button>
         <button type="button" class="settings-item" id="importNotesBtn"></button>
@@ -1115,12 +1133,12 @@ const I18N = {
     helpBody: [
       "이 사이트는 케모켓 부스 목록을 쉽게 보기 위해 만든 사이트 입니다.\n자동 번역 및 개발에 AI를 사용하여 내용에 오류가 있을 수 있습니다.\n자세한 내용은 {link} 을 참고해주세요",
       "모든 내용은 단말에만 저장되며,\n단말의 브라우저 데이터를 지울 시 작성한 내용이 소실 될 수 있습니다",
+      "설정 메뉴에서 Google 계정으로 로그인하면, 메모/방문상태/예산/우선순위를\n다른 기기(휴대폰, PC 등)에서도 이어서 볼 수 있습니다. 로그인하지 않아도\n지금처럼 이 브라우저에서만 사용하는 것도 그대로 가능합니다.",
       "온라인 상태로 한 번 접속해두면, 이후 인터넷이 끊겨도 사이트를 계속 열람할 수 있습니다\n(단, 오프라인 중에는 새로운 프로필 사진이나 최신 정보는 반영되지 않습니다)",
       "검색창에서는 현재 탭에 위치한 작가를 부스 이름,\n작가 이름으로 필터링 가능합니다(전체 탭에서는 전체 검색)",
       "메모(📝) 탭에서 내가 메모해둔 작가들을 확인 가능하며,\n방문 예정 혹은 방문 완료 기준으로 필터링 할 수 있습니다.\n지금까지 작성한 메모, 방문 예정/완료 상태, 예산, 우선순위를 파일로 내보내거나,\n내보낸 파일로 복원(가져오기)할 수 있습니다.",
       "배치도에서는 방문 예정인 부스는 노란색,\n방문 완료한 부스는 초록색으로 표시됩니다.",
       "부스별로 1~3순위를 정할 수 있으며, 순위에 따라 카드/배치도 테두리 색이\n빨강(1순위)·보라(2순위)·파랑(3순위)으로 구분되어 표시됩니다.",
-      "설정 메뉴에서 Google 계정으로 로그인하면, 메모/방문상태/예산/우선순위를\n다른 기기(휴대폰, PC 등)에서도 이어서 볼 수 있습니다. 로그인하지 않아도\n지금처럼 이 브라우저에서만 사용하는 것도 그대로 가능합니다.",
       "언어는 한국어, 영어, 일본어가 지원됩니다.",
       "인터넷 연결이 좋지 않을 시, 작가의 프로필 사진이 보이지 않을 수 있습니다.",
       "제작 : @Chung_Hwani",
@@ -1188,12 +1206,12 @@ const I18N = {
     helpBody: [
       "This site was made to make it easy to browse the Kemoket booth list.\nAI was used for automatic translation and development, so there may be errors in the content.\nFor more details, please refer to {link}",
       "All data is stored only on your device,\nand may be lost if you clear your browser's site data.",
+      "Sign in with your Google account from the settings menu to keep your notes/visit status/budget/priority\nin sync across devices (phone, PC, etc). You can still use the site fully in this browser only\nwithout signing in.",
       "Once you've visited the site while online, you can keep browsing it even if you lose connection later\n(new profile photos or updated info just won't load while offline).",
       "The search box filters circles in the current tab by booth name\nor circle name (in the All tab, it searches everything).",
       "In the Notes (📝) tab, you can see the circles you've noted,\nand filter them by Plan to Visit or Visited status.\nYou can export the notes, visit statuses, budgets, and priorities you've entered so far to a file,\nor restore them by importing that file.",
       "On the floor map, booths marked Plan to Visit are shown in yellow,\nand booths marked Visited are shown in green.",
       "You can set a priority (1–3) for each booth; the card/map border color shows it as\nred (priority 1), purple (priority 2), or blue (priority 3).",
-      "Sign in with your Google account from the settings menu to keep your notes/visit status/budget/priority\nin sync across devices (phone, PC, etc). You can still use the site fully in this browser only\nwithout signing in.",
       "Korean, English, and Japanese are supported.",
       "If your internet connection is poor, artist profile photos may not display.",
       "Made by: @Chung_Hwani",
@@ -1261,12 +1279,12 @@ const I18N = {
     helpBody: [
       "このサイトは、けもケットのブース一覧を簡単に見られるように作られたサイトです。\n自動翻訳および開発にAIを使用しているため、内容に誤りがある場合があります。\n詳細は {link} をご参照ください。",
       "すべての内容は端末にのみ保存され、\n端末のブラウザデータを削除すると、書き込んだ内容が失われる可能性があります。",
+      "設定メニューからGoogleアカウントでログインすると、メモ・訪問状態・予算・優先度を\n他の端末（スマホ・PCなど）でも引き続き確認できます。ログインしなくても\nこれまで通りこのブラウザだけで利用することもできます。",
       "一度オンラインでサイトにアクセスしておけば、その後オフラインになってもサイトの閲覧を続けられます\n（オフライン中は新しいプロフィール写真や最新情報は反映されません）。",
       "検索欄では現在のタブにいるサークルをブース名、\nサークル名で絞り込めます（全体タブでは全体検索）。",
       "メモ（📝）タブでは自分がメモしたサークルを確認でき、\n訪問予定または訪問済みの状態で絞り込むことができます。\nこれまで書いたメモ・訪問予定/済みの状態・予算・優先度をファイルにエクスポートしたり、\nそのファイルから復元（インポート）したりできます。",
       "配置図では、訪問予定のブースは黄色、\n訪問済みのブースは緑色で表示されます。",
       "ブースごとに優先度（1〜3）を設定でき、カード・配置図の枠線の色で\n赤（優先度1）・紫（優先度2）・青（優先度3）として表示されます。",
-      "設定メニューからGoogleアカウントでログインすると、メモ・訪問状態・予算・優先度を\n他の端末（スマホ・PCなど）でも引き続き確認できます。ログインしなくても\nこれまで通りこのブラウザだけで利用することもできます。",
       "言語は韓国語・英語・日本語に対応しています。",
       "インターネット接続が不安定な場合、作家のプロフィール写真が表示されないことがあります。",
       "制作：@Chung_Hwani",
