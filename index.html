@@ -1001,6 +1001,38 @@
     cursor:pointer;
     line-height:1;
   }
+  .confirm-dialog{
+    width:320px;
+  }
+  .confirm-dialog p{
+    margin:0 0 18px;
+    line-height:1.6;
+    font-size:13.5px;
+    white-space:pre-line;
+  }
+  .confirm-actions{
+    display:flex;
+    gap:8px;
+    justify-content:flex-end;
+  }
+  .confirm-actions button{
+    appearance:none;
+    border:1px solid rgba(255,255,255,.3);
+    background:transparent;
+    color:var(--paper);
+    padding:8px 14px;
+    border-radius:6px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .confirm-actions button:hover{background:rgba(255,255,255,.12);}
+  .confirm-actions button.danger{
+    background:#d64545;
+    border-color:#d64545;
+    color:#fff;
+  }
+  .confirm-actions button.danger:hover{background:#c23b3b;}
 
   footer{
     max-width:1180px;
@@ -1073,6 +1105,16 @@
 
 <div class="modal-backdrop" id="modalBackdrop">
   <div class="modal" id="modalContent"></div>
+</div>
+
+<div class="modal-backdrop" id="confirmBackdrop">
+  <div class="modal confirm-dialog" id="confirmDialog">
+    <p id="confirmMessage"></p>
+    <div class="confirm-actions">
+      <button type="button" id="confirmCancelBtn"></button>
+      <button type="button" class="danger" id="confirmOkBtn"></button>
+    </div>
+  </div>
 </div>
 
 <footer id="siteFooter"></footer>
@@ -1189,6 +1231,7 @@ const I18N = {
     memoPlaceholder: "예시 : 동인지 한권, 아크릴 키링 하나",
     save: "저장",
     delete: "삭제",
+    cancel: "취소",
     savedStatus: "저장됨",
     deletedStatus: "삭제됨",
     resetBtn: "🗑️ 데이터 초기화",
@@ -1263,6 +1306,7 @@ const I18N = {
     memoPlaceholder: "e.g. one doujinshi, one acrylic keychain",
     save: "Save",
     delete: "Delete",
+    cancel: "Cancel",
     savedStatus: "Saved",
     deletedStatus: "Deleted",
     resetBtn: "🗑️ Reset Data",
@@ -1337,6 +1381,7 @@ const I18N = {
     memoPlaceholder: "例：同人誌1冊、アクリルキーホルダー1個",
     save: "保存",
     delete: "削除",
+    cancel: "キャンセル",
     savedStatus: "保存済み",
     deletedStatus: "削除済み",
     resetBtn: "🗑️ データを初期化",
@@ -1784,14 +1829,46 @@ document.getElementById("loginBtn").addEventListener("click", signInWithGoogle);
 document.getElementById("logoutBtn").addEventListener("click", signOutUser);
 document.getElementById("syncNowBtn").addEventListener("click", syncNow);
 
+/* ---------- 커스텀 확인 대화상자 ----------
+   브라우저 기본 confirm()은 기본 포커스가 "확인" 쪽이라 엔터를 잘못 누르면
+   실수로 확정될 수 있어서, 대신 "취소"에 기본 포커스가 가는 커스텀 대화상자를 사용함.
+------------------------------------------------- */
+let confirmResolve = null;
+
+function showConfirmDialog(message, okLabel){
+  return new Promise((resolve) => {
+    confirmResolve = resolve;
+    document.getElementById("confirmMessage").textContent = message;
+    document.getElementById("confirmOkBtn").textContent = okLabel;
+    document.getElementById("confirmCancelBtn").textContent = t("cancel");
+    document.getElementById("confirmBackdrop").classList.add("open");
+    document.getElementById("confirmCancelBtn").focus();
+  });
+}
+
+function closeConfirmDialog(result){
+  document.getElementById("confirmBackdrop").classList.remove("open");
+  if(confirmResolve){
+    confirmResolve(result);
+    confirmResolve = null;
+  }
+}
+
+document.getElementById("confirmOkBtn").addEventListener("click", () => closeConfirmDialog(true));
+document.getElementById("confirmCancelBtn").addEventListener("click", () => closeConfirmDialog(false));
+document.getElementById("confirmBackdrop").addEventListener("click", (e) => {
+  if(e.target.id === "confirmBackdrop") closeConfirmDialog(false);
+});
+
 /* ---------- 전체 데이터 초기화 ----------
    메모/방문상태/예산/우선순위를 전부 삭제함(로그인 중이면 클라우드에도 반영됨).
 ------------------------------------------------- */
-function resetAllData(){
+async function resetAllData(){
   if(!Object.keys(notes).length && !Object.keys(visitStatus).length && !Object.keys(budgets).length && !Object.keys(priority).length){
     return;
   }
-  if(!confirm(t("resetConfirm"))) return;
+  const confirmed = await showConfirmDialog(t("resetConfirm"), t("delete"));
+  if(!confirmed) return;
 
   notes = {};
   visitStatus = {};
@@ -2743,7 +2820,10 @@ document.getElementById("modalBackdrop").addEventListener("click", (e) => {
   if(e.target.id === "modalBackdrop") closeModal();
 });
 document.addEventListener("keydown", (e) => {
-  if(e.key === "Escape") closeModal();
+  if(e.key === "Escape"){
+    closeModal();
+    closeConfirmDialog(false);
+  }
 });
 
 applyStaticTexts();
