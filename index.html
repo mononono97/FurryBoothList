@@ -688,6 +688,9 @@
     top:calc(100% + 10px);
   }
   .pop-body{
+    /* 안쪽 스크롤 때문에 가장자리가 잘리므로, 프로필 사진 마우스 오버 테두리가 들어갈 여유를 둠 */
+    margin:0 -5px;
+    padding:3px 5px;
     overflow-y:auto;
     overscroll-behavior:contain;
     scrollbar-width:thin;
