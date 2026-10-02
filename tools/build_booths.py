@@ -35,6 +35,8 @@ EMPTY_VALUES = {"", "없음", "-", "x", "X", "추후 추가하겠습니다."}
 OVERRIDES = {
     # 시트에는 "@Ringo@2ALS" 로 적혀 있지만 실제 아이디는 ringo2ALS (2026-10-02 확인)
     "해태/@Ringo@2ALS": ("해태", "ringo2ALS"),
+    # 시트의 young_wonyang 은 X에 없는 계정. 실제 아이디는 youngwonyang (2026-10-02 확인)
+    "영원양 /@young_wonyang": ("영원양", "youngwonyang"),
     # @ 뒤가 한글이라 아이디가 아님. 슬래시 뒤 영문이 실제 아이디로 보임
     "@타패/tappe124": ("타패", "tappe124"),
     # @ 없이 "닉네임/아이디" 형태로 적힌 리더 칸
