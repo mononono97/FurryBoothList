@@ -1259,7 +1259,18 @@ ALL_ROWS.forEach(r => byRow[r] = []);
 BOOTHS.forEach(b => { if(byRow[b.block]) byRow[b.block].push(b); });
 
 // 새로고침해도 보고 있던 탭(부스 열/전체/메모/배치도)이 유지되도록 저장해둠
-const CURRENT_ROW_KEY = "kemoket-current-row";
+// 브라우저(localStorage)에 저장하는 모든 키의 앞부분.
+const STORAGE_PREFIX = "furstclass";
+
+// 지난 행사(케모켓, 2026-09-20 종료) 때 이 브라우저에 저장된 "kemoket-*" 데이터는 더 이상
+// 쓰지 않으므로 접속할 때 지움.
+try {
+  Object.keys(localStorage)
+    .filter(key => key.startsWith("kemoket-"))
+    .forEach(key => localStorage.removeItem(key));
+} catch {}
+
+const CURRENT_ROW_KEY = `${STORAGE_PREFIX}-current-row`;
 const VALID_ROWS = new Set([...ALL_ROWS, "ALL", "NOTES", "MAP", "INFO"]);
 let savedRow = null;
 try { savedRow = localStorage.getItem(CURRENT_ROW_KEY); } catch {}
@@ -1279,7 +1290,7 @@ let widgetsLoaded = false;
 let notesVisitFilter = "all"; // "all" | "planned" | "visited" — 메모 탭에서 방문 상태로 필터링
 
 // 부스 목록을 우선순위(1→2→3→없음) 순으로 정렬할지 여부 (새로고침해도 유지)
-const SORT_PRIORITY_KEY = "kemoket-sort-priority";
+const SORT_PRIORITY_KEY = `${STORAGE_PREFIX}-sort-priority`;
 let sortByPriority = false;
 try { sortByPriority = localStorage.getItem(SORT_PRIORITY_KEY) === "1"; } catch {}
 
@@ -1540,7 +1551,7 @@ const I18N = {
     boothCutNotSubmitted: "ブースカット未提出",
   },
 };
-const LANG_KEY = "kemoket-lang";
+const LANG_KEY = `${STORAGE_PREFIX}-lang`;
 let currentLang = null;
 try { currentLang = localStorage.getItem(LANG_KEY); } catch {}
 if(!I18N[currentLang]){
@@ -1645,11 +1656,8 @@ window.addEventListener("resize", () => {
 
 /* ---------- 부스별 메모 ----------
    브라우저(localStorage)에만 저장되는 개인 메모. 서버로 전송되지 않고,
-   이 브라우저에서만 보임. { "A-01": "메모 내용", ... } 형태로 저장.
+   이 브라우저에서만 보임. { "A01": "메모 내용", ... } 형태로 저장.
 ------------------------------------ */
-// 이전 행사(케모켓) 때 쓰던 "kemoket-*" 데이터와 섞이지 않도록 행사별로 키를 분리함.
-// (예전 데이터는 지우지 않고 브라우저에 그대로 남겨둠)
-const STORAGE_PREFIX = "furstclass";
 const NOTES_KEY = `${STORAGE_PREFIX}-notes`;
 
 function loadNotes(){
@@ -1883,16 +1891,16 @@ function mergeField(local, cloud){
   return Object.assign({}, cloud || {}, local || {});
 }
 
-// 같은 users/{uid} 문서 안에서 행사별 필드(furstclass)에 따로 저장함.
-// mergeFields 로 furstclass 필드만 통째로 덮어쓰므로(삭제한 메모도 그대로 반영됨),
-// 예전 케모켓 때 저장한 notes/visitStatus/... 필드는 지워지지 않고 그대로 남음.
+// users/{uid} 문서 안의 행사별 필드(furstclass)에 저장함.
+// merge 없이 문서 전체를 덮어쓰므로, 지난 행사(케모켓) 때 문서 최상위에 저장했던
+// notes/visitStatus/budgets/priority 필드는 처음 동기화할 때 함께 지워짐.
 function pushToCloud(uid){
   return firebase.firestore().collection("users").doc(uid).set({
     [STORAGE_PREFIX]: {
       notes, visitStatus, budgets, priority,
       updatedAt: new Date().toISOString(),
     },
-  }, { mergeFields: [STORAGE_PREFIX] });
+  });
 }
 
 function pullAndMergeFromCloud(uid){
