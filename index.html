@@ -20,15 +20,18 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <style>
   :root{
-    --paper:#f2f0e6;
-    --panel:#2b3a30;
-    --panel-2:#3a4d3f;
-    --ink:#22261f;
-    --moss:#5c7a52;
-    --moss-light:#8fae7c;
-    --clay:#b5652f;
-    --line:#c9c3ac;
-    --card-bg:#fbfaf4;
+    /* Furst Class(Gambling Cat) 테마: 행사 로고의 크림슨·블랙·화이트를 눈이 편한 파스텔 톤으로 */
+    --paper:#f8f0f2;      /* 배경: 연한 블러시 핑크 */
+    --panel:#2b2229;      /* 상단바·팝오버: 부드러운 블랙(살짝 자주빛) */
+    --panel-2:#3d3039;
+    --ink:#2b2229;
+    --moss:#d9637f;       /* 주 강조색: 파스텔 크림슨 */
+    --moss-light:#f2a9bb; /* 어두운 배경 위 보조 글자색: 연핑크 */
+    --clay:#e07a93;       /* 선택된 탭·메모 표시: 로즈 */
+    --accent:#e8557a;     /* 선택된 탭/저장 버튼: 로고의 크림슨을 조금 밝게 */
+    --line:#ecd3da;
+    --card-bg:#fffafb;
+    --muted:#9a7d88;      /* 회색 글자: 모브 그레이 */
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -77,6 +80,7 @@
     background:var(--panel);
     color:var(--paper);
     padding:22px 20px 18px;
+    border-bottom:3px solid var(--accent);
     box-shadow:0 2px 10px rgba(0,0,0,.15);
   }
   .top-inner{
@@ -119,7 +123,7 @@
     font-size:13px;
     width:180px;
   }
-  .search-box input::placeholder{color:#c7d2c1;}
+  .search-box input::placeholder{color:#e9c6d0;}
 
   .lang-switch{
     display:flex;
@@ -223,7 +227,7 @@
   .settings-item.danger:hover{background:rgba(214,69,69,.18);}
   .auth-status{
     font-size:11px;
-    color:rgba(242,240,230,.75);
+    color:rgba(248,240,242,.75);
     padding:0 2px;
     word-break:break-all;
   }
@@ -273,8 +277,8 @@
     border-color:rgba(255,255,255,.35);
   }
   nav.rows button.memo-tab-btn.active{
-    background:#c9973b;
-    border-color:#c9973b;
+    background:var(--accent);
+    border-color:var(--accent);
   }
 
   .second-row{
@@ -306,8 +310,8 @@
   }
   .tab-group button:hover{background:rgba(255,255,255,.12);}
   .tab-group button.active{
-    background:#c9973b;
-    border-color:#c9973b;
+    background:var(--accent);
+    border-color:var(--accent);
   }
 
   main{
@@ -332,7 +336,7 @@
   }
   .row-heading .count{
     font-size:13px;
-    color:#5a5646;
+    color:#6b5561;
   }
   .sort-priority-btn{
     appearance:none;
@@ -347,7 +351,7 @@
     margin-left:auto;
     transition:background .15s, border-color .15s;
   }
-  .sort-priority-btn:hover{background:#efece0;}
+  .sort-priority-btn:hover{background:#fbe8ed;}
   .sort-priority-btn.active{
     background:var(--panel);
     border-color:var(--panel);
@@ -378,7 +382,7 @@
     cursor:pointer;
     transition:background .15s, border-color .15s;
   }
-  .visit-filter button:hover{background:#efece0;}
+  .visit-filter button:hover{background:#fbe8ed;}
   .visit-filter button.active{
     background:var(--panel);
     border-color:var(--panel);
@@ -418,7 +422,7 @@
   .booth .id{
     font-family:"SFMono-Regular",Consolas,monospace;
     font-size:11px;
-    color:#8a8368;
+    color:var(--muted);
     letter-spacing:.03em;
     margin-bottom:6px;
   }
@@ -463,7 +467,7 @@
   }
   .rep-name{
     font-size:11px;
-    color:#8a8368;
+    color:var(--muted);
     margin-top:2px;
   }
   .no-tw-badge{
@@ -482,7 +486,7 @@
   .booth.has-note{
     border-color:var(--clay);
     box-shadow:0 0 0 1px var(--clay) inset;
-    background:#fce3d2;
+    background:#fde3ea;
   }
   .memo-flag{
     position:absolute;
@@ -551,9 +555,9 @@
     cursor:pointer;
   }
   .memo-box button.save{
-    background:#c9973b;
-    border-color:#c9973b;
-    color:#241b06;
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
     font-weight:600;
   }
   .memo-box .memo-status{
@@ -593,7 +597,7 @@
   }
   .booth-cut .cut-placeholder{
     font-size:11.5px;
-    color:#c7d2c1;
+    color:#e9c6d0;
     border:1px dashed rgba(255,255,255,.25);
     border-radius:8px;
     padding:14px 8px;
@@ -660,7 +664,7 @@
   .member-handle{ font-size:11px; }
   .member-handle a{ color:var(--moss-light); text-decoration:none; }
   .member-handle a:hover{ text-decoration:underline; }
-  .member-handle .no-x{ color:#8a9a88; }
+  .member-handle .no-x{ color:#b99aa5; }
 
   /* hover / focus popover */
   .popover{
@@ -849,7 +853,7 @@
   }
   .tweet-slot .placeholder{
     font-size:11.5px;
-    color:#c7d2c1;
+    color:#e9c6d0;
     border:1px dashed rgba(255,255,255,.25);
     border-radius:6px;
     padding:8px;
@@ -860,7 +864,7 @@
   .empty-state{
     padding:60px 0;
     text-align:center;
-    color:#8a8368;
+    color:var(--muted);
     font-size:14px;
   }
 
@@ -913,7 +917,7 @@
     background:var(--card-bg);
     border:1px solid var(--line);
     border-radius:3px;
-    color:#8a8368;
+    color:var(--muted);
     cursor:pointer;
     user-select:none;
   }
@@ -949,7 +953,7 @@
     align-items:center;
     gap:16px;
     font-size:12px;
-    color:#5a5646;
+    color:#6b5561;
     margin-bottom:14px;
   }
   .map-legend .swatch{
@@ -980,7 +984,7 @@
     font-size:15px;
   }
   .venue-address{
-    color:#5a5646;
+    color:#6b5561;
     font-size:12.5px;
     margin-bottom:12px;
   }
@@ -1005,7 +1009,7 @@
     text-align:center;
   }
   .transit-table td.time{
-    color:#5a5646;
+    color:#6b5561;
     text-align:right;
     white-space:nowrap;
   }
@@ -1035,7 +1039,7 @@
     gap:12px;
     flex-wrap:wrap;
     font-size:13px;
-    color:#5a5646;
+    color:#6b5561;
   }
   .weather-card{
     flex:1;
@@ -1067,7 +1071,7 @@
   }
   .weather-empty{
     font-size:13px;
-    color:#5a5646;
+    color:#6b5561;
   }
 
   /* 모달 */
@@ -1075,7 +1079,7 @@
     display:none;
     position:fixed;
     inset:0;
-    background:rgba(20,20,16,.55);
+    background:rgba(30,18,26,.55);
     z-index:500;
     align-items:center;
     justify-content:center;
@@ -1143,7 +1147,7 @@
     margin:0 auto;
     padding:0 20px 50px;
     font-size:11.5px;
-    color:#8a8368;
+    color:var(--muted);
   }
 
   @media (max-width:640px){
