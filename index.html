@@ -657,18 +657,6 @@
     text-overflow:ellipsis;
     white-space:nowrap;
   }
-  .member-role{
-    display:inline-block;
-    margin-left:4px;
-    padding:0 5px;
-    border-radius:4px;
-    font-size:9.5px;
-    font-weight:700;
-    background:rgba(255,255,255,.12);
-    color:var(--moss-light);
-    vertical-align:1px;
-  }
-  .member-role.leader{ background:var(--clay); color:#fff; }
   .member-handle{ font-size:11px; }
   .member-handle a{ color:var(--moss-light); text-decoration:none; }
   .member-handle a:hover{ text-decoration:underline; }
@@ -1377,8 +1365,6 @@ const I18N = {
     syncNowCooldown: "☁️ {s}초 후 가능",
     syncSuccess: "동기화되었습니다.",
     syncFail: "동기화에 실패했습니다. 인터넷 연결을 확인해주세요.",
-    roleLeader: "리더",
-    roleMember: "부스원",
     noXAccount: "X 계정 없음",
     membersMore: "{name} 외 {n}명",
     adultTag: "🔞",
@@ -1459,8 +1445,6 @@ const I18N = {
     syncNowCooldown: "☁️ Available in {s}s",
     syncSuccess: "Synced successfully.",
     syncFail: "Sync failed. Please check your internet connection.",
-    roleLeader: "Leader",
-    roleMember: "Member",
     noXAccount: "No X account",
     membersMore: "{name} +{n}",
     adultTag: "🔞",
@@ -1541,8 +1525,6 @@ const I18N = {
     syncNowCooldown: "☁️ {s}秒後に可能",
     syncSuccess: "同期しました。",
     syncFail: "同期に失敗しました。インターネット接続をご確認ください。",
-    roleLeader: "リーダー",
-    roleMember: "メンバー",
     noXAccount: "Xアカウントなし",
     membersMore: "{name} 他{n}名",
     adultTag: "🔞",
@@ -2112,7 +2094,7 @@ function buildBoothCut(booth){
 }
 
 /* ---------- 부스원 목록 ----------
-   부스 리더 + 부스원을 한 줄씩 보여줌. X 아이디가 있으면 프로필 사진/@아이디를 눌러
+   부스 리더(맨 위) + 부스원을 한 줄씩 보여줌. 리더/부스원 구분 표시는 따로 하지 않음. X 아이디가 있으면 프로필 사진/@아이디를 눌러
    X 프로필로 바로 이동, 없으면 닉네임과 "X 계정 없음"만 표시함.
 ------------------------------------------------- */
 function openXProfile(handle){
@@ -2149,9 +2131,8 @@ function buildMemberList(booth){
 
     const text = document.createElement("div");
     text.className = "member-text";
-    const roleKey = member.role === "leader" ? "roleLeader" : "roleMember";
     text.innerHTML = `
-      <div class="member-name">${escapeHtml(member.name)}<span class="member-role ${member.role === "leader" ? "leader" : ""}">${escapeHtml(t(roleKey))}</span></div>
+      <div class="member-name">${escapeHtml(member.name)}</div>
       <div class="member-handle">${member.twitter
         ? `<a href="https://x.com/${encodeURIComponent(member.twitter)}" target="_blank" rel="noopener">@${escapeHtml(member.twitter)}</a>`
         : `<span class="no-x">${escapeHtml(t("noXAccount"))}</span>`}</div>
