@@ -83,6 +83,33 @@ def parse_person(raw):
     return {"name": clean_name(text) or text, "twitter": None}
 
 
+# 시트에 X 아이디가 빠져 있던 사람들. 사용자가 따로 알려준 아이디 (2026-10-02)
+# (부스 번호, 시트에 적힌 이름) → X 아이디
+HANDLE_FILL = {
+    ("A02", "DAI-XT."): "Hijiki_DaiXt",
+    ("A03", "Raigo"): "RaigoTohdoh",
+    ("A04", "Wald"): "OumagaWald",
+    ("A05", "Trad Monmon"): "Trad_monmon",
+    ("A06", "Geppei(GP)"): "GeppeiFursuit",
+    ("A06", "mikatagura"): "mikatagura",
+    ("A08", "Nagabe"): "mucknagabe",
+    ("A09", "Gintan"): "FurryGintan",
+    ("A41", "mofuaki"): "mofuaki_",
+    ("B01", "CheetahPaws"): "cheetah_paws",
+    ("B02", "agitype01"): "agitype01",
+    ("B03", "Omyurice"): "omyuriceart",
+    ("B06", "Malcha soda"): "Malcha_Soda",
+    ("B18", "Neumokun"): "Neumokun",
+    ("B19", "IG"): "IG1119",
+    ("B21", "TostosFski"): "Tos_Tos_F_ski",
+    ("B22", "Gomtang"): "GomTang_P",
+    ("B24", "Takemoto"): "arashi_takemoto",
+    ("B24", "LamIan"): "LamIan7044",
+    ("C05", "Ezhno"): "KalonEzhno",
+    ("C11", "Chung"): "chung0u0",
+    ("C14", "호끼퐁"): "HOKIpong",
+}
+
 def same_person(a, b):
     if a["twitter"] and b["twitter"]:
         return a["twitter"].lower() == b["twitter"].lower()
@@ -99,12 +126,18 @@ def build():
             booth_id = row[0].strip()
             if not re.fullmatch(r"[A-Z]\d+", booth_id):
                 continue
-            leader = parse_person(row[3])
+            def person_of(cell):
+                person = parse_person(cell)
+                if person and not person["twitter"]:
+                    person["twitter"] = HANDLE_FILL.get((booth_id, person["name"]))
+                return person
+
+            leader = person_of(row[3])
             members = []
             if leader:
                 members.append(dict(leader, role="leader"))
             for cell in (row[4], row[5]):
-                person = parse_person(cell)
+                person = person_of(cell)
                 # 리더/다른 부스원과 같은 사람이 부스원 칸에 또 적힌 경우(예: "엘븐/@elvendays" + "엘븐")는 한 번만 표시
                 if person and not any(same_person(person, m) for m in members):
                     members.append(dict(person, role="member"))
