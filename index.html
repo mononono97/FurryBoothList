@@ -16,19 +16,22 @@
   base-uri 'self';
   form-action 'self';
 ">
-<title>けもケット ブース一覧</title>
+<title>Furst Class 부스 목록</title>
 <link rel="icon" type="image/png" href="favicon.png">
 <style>
   :root{
-    --paper:#f2f0e6;
-    --panel:#2b3a30;
-    --panel-2:#3a4d3f;
-    --ink:#22261f;
-    --moss:#5c7a52;
-    --moss-light:#8fae7c;
-    --clay:#b5652f;
-    --line:#c9c3ac;
-    --card-bg:#fbfaf4;
+    /* Furst Class(Gambling Cat) 테마: 행사 로고의 크림슨·블랙·화이트를 눈이 편한 파스텔 톤으로 */
+    --paper:#f8f0f2;      /* 배경: 연한 블러시 핑크 */
+    --panel:#2b2229;      /* 상단바·팝오버: 부드러운 블랙(살짝 자주빛) */
+    --panel-2:#3d3039;
+    --ink:#2b2229;
+    --moss:#d9637f;       /* 주 강조색: 파스텔 크림슨 */
+    --moss-light:#f2a9bb; /* 어두운 배경 위 보조 글자색: 연핑크 */
+    --clay:#e07a93;       /* 선택된 탭·메모 표시: 로즈 */
+    --accent:#e8557a;     /* 선택된 탭/저장 버튼: 로고의 크림슨을 조금 밝게 */
+    --line:#ecd3da;
+    --card-bg:#fffafb;
+    --muted:#9a7d88;      /* 회색 글자: 모브 그레이 */
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -77,6 +80,7 @@
     background:var(--panel);
     color:var(--paper);
     padding:22px 20px 18px;
+    border-bottom:3px solid var(--accent);
     box-shadow:0 2px 10px rgba(0,0,0,.15);
   }
   .top-inner{
@@ -119,7 +123,7 @@
     font-size:13px;
     width:180px;
   }
-  .search-box input::placeholder{color:#c7d2c1;}
+  .search-box input::placeholder{color:#e9c6d0;}
 
   .lang-switch{
     display:flex;
@@ -223,7 +227,7 @@
   .settings-item.danger:hover{background:rgba(214,69,69,.18);}
   .auth-status{
     font-size:11px;
-    color:rgba(242,240,230,.75);
+    color:rgba(248,240,242,.75);
     padding:0 2px;
     word-break:break-all;
   }
@@ -273,8 +277,8 @@
     border-color:rgba(255,255,255,.35);
   }
   nav.rows button.memo-tab-btn.active{
-    background:#c9973b;
-    border-color:#c9973b;
+    background:var(--accent);
+    border-color:var(--accent);
   }
 
   .second-row{
@@ -306,8 +310,8 @@
   }
   .tab-group button:hover{background:rgba(255,255,255,.12);}
   .tab-group button.active{
-    background:#c9973b;
-    border-color:#c9973b;
+    background:var(--accent);
+    border-color:var(--accent);
   }
 
   main{
@@ -332,7 +336,7 @@
   }
   .row-heading .count{
     font-size:13px;
-    color:#5a5646;
+    color:#6b5561;
   }
   .sort-priority-btn{
     appearance:none;
@@ -347,7 +351,7 @@
     margin-left:auto;
     transition:background .15s, border-color .15s;
   }
-  .sort-priority-btn:hover{background:#efece0;}
+  .sort-priority-btn:hover{background:#fbe8ed;}
   .sort-priority-btn.active{
     background:var(--panel);
     border-color:var(--panel);
@@ -378,7 +382,7 @@
     cursor:pointer;
     transition:background .15s, border-color .15s;
   }
-  .visit-filter button:hover{background:#efece0;}
+  .visit-filter button:hover{background:#fbe8ed;}
   .visit-filter button.active{
     background:var(--panel);
     border-color:var(--panel);
@@ -418,7 +422,7 @@
   .booth .id{
     font-family:"SFMono-Regular",Consolas,monospace;
     font-size:11px;
-    color:#8a8368;
+    color:var(--muted);
     letter-spacing:.03em;
     margin-bottom:6px;
   }
@@ -463,7 +467,7 @@
   }
   .rep-name{
     font-size:11px;
-    color:#8a8368;
+    color:var(--muted);
     margin-top:2px;
   }
   .no-tw-badge{
@@ -482,7 +486,7 @@
   .booth.has-note{
     border-color:var(--clay);
     box-shadow:0 0 0 1px var(--clay) inset;
-    background:#fce3d2;
+    background:#fde3ea;
   }
   .memo-flag{
     position:absolute;
@@ -551,9 +555,9 @@
     cursor:pointer;
   }
   .memo-box button.save{
-    background:#c9973b;
-    border-color:#c9973b;
-    color:#241b06;
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
     font-weight:600;
   }
   .memo-box .memo-status{
@@ -562,6 +566,105 @@
     margin-left:auto;
     align-self:center;
   }
+
+  /* 성인 부스 표시 */
+  .adult-tag{
+    display:inline-block;
+    margin-left:4px;
+    padding:0 4px;
+    border-radius:4px;
+    background:#d64545;
+    color:#fff;
+    font-size:9.5px;
+    font-weight:700;
+    letter-spacing:0;
+    vertical-align:1px;
+  }
+
+  /* 부스컷 (팝오버/모달 상단) */
+  .booth-cut{
+    margin-bottom:10px;
+    border-radius:8px;
+    overflow:hidden;
+    background:var(--panel-2);
+  }
+  .booth-cut img{
+    display:block;
+    width:100%;
+    max-height:220px;
+    object-fit:contain;
+    cursor:zoom-in;
+  }
+  .booth-cut .cut-placeholder{
+    font-size:11.5px;
+    color:#e9c6d0;
+    border:1px dashed rgba(255,255,255,.25);
+    border-radius:8px;
+    padding:14px 8px;
+    text-align:center;
+  }
+  .modal .booth-cut img{ max-height:none; }
+  .cut-lightbox{
+    position:fixed;
+    inset:0;
+    z-index:2000;
+    background:rgba(0,0,0,.85);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    cursor:zoom-out;
+  }
+  .cut-lightbox img{
+    max-width:100%;
+    max-height:100%;
+    object-fit:contain;
+    border-radius:6px;
+  }
+
+  /* 부스원 목록 (리더 + 부스원) */
+  .member-list{
+    margin:0 0 10px;
+    padding:0;
+    list-style:none;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .member-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:12px;
+  }
+  .member-avatar{
+    flex:none;
+    width:30px;
+    height:30px;
+    border-radius:50%;
+    overflow:hidden;
+    background:var(--panel-2);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--moss-light);
+    font-weight:700;
+    font-size:13px;
+  }
+  .member-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .member-avatar.avatar-link{ cursor:pointer; }
+  .member-avatar.avatar-link:hover{ outline:2px solid var(--moss-light); outline-offset:1px; }
+  .member-text{ min-width:0; flex:1; }
+  .member-name{
+    font-weight:600;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .member-handle{ font-size:11px; }
+  .member-handle a{ color:var(--moss-light); text-decoration:none; }
+  .member-handle a:hover{ text-decoration:underline; }
+  .member-handle .no-x{ color:#b99aa5; }
 
   /* hover / focus popover */
   .popover{
@@ -583,6 +686,11 @@
   .popover.below{
     bottom:auto;
     top:calc(100% + 10px);
+  }
+  .pop-body{
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    scrollbar-width:thin;
   }
   .booth.show-pop{ z-index:200; }
   .booth.show-pop .popover{display:block;}
@@ -745,7 +853,7 @@
   }
   .tweet-slot .placeholder{
     font-size:11.5px;
-    color:#c7d2c1;
+    color:#e9c6d0;
     border:1px dashed rgba(255,255,255,.25);
     border-radius:6px;
     padding:8px;
@@ -756,7 +864,7 @@
   .empty-state{
     padding:60px 0;
     text-align:center;
-    color:#8a8368;
+    color:var(--muted);
     font-size:14px;
   }
 
@@ -809,7 +917,7 @@
     background:var(--card-bg);
     border:1px solid var(--line);
     border-radius:3px;
-    color:#8a8368;
+    color:var(--muted);
     cursor:pointer;
     user-select:none;
   }
@@ -845,7 +953,7 @@
     align-items:center;
     gap:16px;
     font-size:12px;
-    color:#5a5646;
+    color:#6b5561;
     margin-bottom:14px;
   }
   .map-legend .swatch{
@@ -876,7 +984,7 @@
     font-size:15px;
   }
   .venue-address{
-    color:#5a5646;
+    color:#6b5561;
     font-size:12.5px;
     margin-bottom:12px;
   }
@@ -901,7 +1009,7 @@
     text-align:center;
   }
   .transit-table td.time{
-    color:#5a5646;
+    color:#6b5561;
     text-align:right;
     white-space:nowrap;
   }
@@ -931,7 +1039,7 @@
     gap:12px;
     flex-wrap:wrap;
     font-size:13px;
-    color:#5a5646;
+    color:#6b5561;
   }
   .weather-card{
     flex:1;
@@ -963,7 +1071,7 @@
   }
   .weather-empty{
     font-size:13px;
-    color:#5a5646;
+    color:#6b5561;
   }
 
   /* 모달 */
@@ -971,7 +1079,7 @@
     display:none;
     position:fixed;
     inset:0;
-    background:rgba(20,20,16,.55);
+    background:rgba(30,18,26,.55);
     z-index:500;
     align-items:center;
     justify-content:center;
@@ -1039,7 +1147,7 @@
     margin:0 auto;
     padding:0 20px 50px;
     font-size:11.5px;
-    color:#8a8368;
+    color:var(--muted);
   }
 
   @media (max-width:640px){
@@ -1054,8 +1162,8 @@
 <header class="top">
   <div class="top-inner">
     <div class="brand">
-      <div class="mark" id="brandMark">けもケット ブース一覧</div>
-      <div class="sub" id="brandSub">サークル配置ビューア</div>
+      <div class="mark" id="brandMark">Furst Class 부스 목록</div>
+      <div class="sub" id="brandSub">부스 배치 뷰어</div>
     </div>
     <div class="settings-wrap" id="settingsWrap">
       <button type="button" class="header-btn" id="loginBtn"></button>
@@ -1078,7 +1186,7 @@
   <div class="second-row">
     <div class="tab-group" id="tabNav"></div>
     <div class="search-box">
-      <input id="searchInput" type="text" placeholder="サークル名 / 代表者名 / 配置番号 検索">
+      <input id="searchInput" type="text" placeholder="부스명 / 부스원 / 부스 번호 검색">
     </div>
   </div>
 </header>
@@ -1124,21 +1232,38 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
 /* ---------- 데이터 ----------
-   twitter: X 핸들 (없으면 null)
-   팝오버는 이 핸들만으로 X 공식 타임라인 위젯(createTimeline)을 1개만 불러와서
+   아래 BOOTHS 줄은 tools/build_booths.py 가 data/furstclass_booths.csv(부스 시트)를 읽어서
+   자동으로 만들어 넣는 줄이므로 직접 고치지 말고, 시트를 바꾼 뒤 스크립트를 다시 실행할 것.
+   - members: [{ name, twitter(X 아이디 또는 null), role("leader"|"member") }, ...]
+   - rep / twitter: 카드에 대표로 보여줄 부스 리더 이름 / 부스에서 처음 나오는 X 아이디
+   - adult: 성인 부스 여부, cut: 시트 I열(부스컷 제출) 이 O 인지 여부
+   팝오버는 twitter 핸들로 X 공식 타임라인 위젯(createTimeline)을 1개만 불러와서
    보여줍니다. 계정에 고정 트윗이 있으면 그게, 없으면 가장 최근 트윗이 뜹니다.
 ------------------------------- */
-const BOOTHS = [{"id": "A-01", "block": "A", "name": "MOFCOT", "rep": "NIxxxRA", "twitter": "nixxxra", "tweetUrl": ""}, {"id": "A-02", "block": "A", "name": "毎日クローバー日和。", "rep": "早十奈", "twitter": "satona428", "tweetUrl": ""}, {"id": "A-03", "block": "A", "name": "TDMボドゲ同好会", "rep": "りばば", "twitter": "TDMBDG_1622", "tweetUrl": ""}, {"id": "A-04", "block": "A", "name": "ほげぴよからくりばこ", "rep": "SpyroBlacky", "twitter": "SpyroBlacky", "tweetUrl": ""}, {"id": "A-05", "block": "A", "name": "あじほし", "rep": "梅干茶漬け", "twitter": "umeboshi_czk", "tweetUrl": ""}, {"id": "A-06", "block": "A", "name": "OZnation Records", "rep": "Composer:No.IX", "twitter": "OZnationRecords", "tweetUrl": ""}, {"id": "A-07", "block": "A", "name": "愚猫工房", "rep": "Masser", "twitter": "Green_Cat_1023", "tweetUrl": ""}, {"id": "A-08", "block": "A", "name": "ちっきつぃき", "rep": "つぃきん", "twitter": "tsikin668", "tweetUrl": ""}, {"id": "A-09", "block": "A", "name": "ぽこハウス", "rep": "ぽこのすけ", "twitter": "pokosuke111", "tweetUrl": ""}, {"id": "A-10", "block": "A", "name": "ヨイトマス", "rep": "yos", "twitter": "yoBstars", "tweetUrl": ""}, {"id": "A-11", "block": "A", "name": "あほんだら症候群", "rep": "針又のぶか", "twitter": "nobuka_harimata", "tweetUrl": ""}, {"id": "A-12", "block": "A", "name": "ほしふたつ。", "rep": "よーな", "twitter": "yoo_oona", "tweetUrl": ""}, {"id": "A-13", "block": "A", "name": "ぬす工房", "rep": "アトラヌス", "twitter": "stachybotrysCat", "tweetUrl": ""}, {"id": "A-14", "block": "A", "name": "バンガロゥ", "rep": "白狛", "twitter": "shirokoma_bgls", "tweetUrl": ""}, {"id": "A-15", "block": "A", "name": "夢星海", "rep": "ヤマメ", "twitter": "yamame513", "tweetUrl": ""}, {"id": "A-16", "block": "A", "name": "あわびプラス", "rep": "Halsione", "twitter": "Halsione", "tweetUrl": ""}, {"id": "A-17", "block": "A", "name": "あじつけのあじ", "rep": "42", "twitter": "91o42", "tweetUrl": ""}, {"id": "A-18", "block": "A", "name": "さんぐりあ", "rep": "ざくろ", "twitter": "zakro_zkzk25", "tweetUrl": ""}, {"id": "A-19", "block": "A", "name": "うさぎの巣", "rep": "黒うさぎ", "twitter": "c_bunny_kemo", "tweetUrl": ""}, {"id": "A-20", "block": "A", "name": "SGsix", "rep": "サイギ", "twitter": "aky_sg6", "tweetUrl": ""}, {"id": "A-21", "block": "A", "name": "熊工廠", "rep": "クマックマ", "twitter": "kumakuma_32", "tweetUrl": ""}, {"id": "A-22", "block": "A", "name": "ママは忙しい", "rep": "うけにゃ", "twitter": "543395560", "tweetUrl": ""}, {"id": "A-23", "block": "A", "name": "すすきのワークス", "rep": "隅田ユブネ", "twitter": "smd_yubune", "tweetUrl": ""}, {"id": "A-24", "block": "A", "name": "ななつぼし", "rep": "7", "twitter": "7_sen", "tweetUrl": ""}, {"id": "A-25", "block": "A", "name": "ネコミーツ", "rep": "猫泉", "twitter": "neko_izumi_azu", "tweetUrl": ""}, {"id": "A-26", "block": "A", "name": "浜茶屋", "rep": "おき", "twitter": "okiai_umi", "tweetUrl": ""}, {"id": "A-27", "block": "A", "name": "miyubi", "rep": "きいち", "twitter": "miyubi_e", "tweetUrl": ""}, {"id": "A-28", "block": "A", "name": "ひなプリン", "rep": "いくたたかのん", "twitter": "ikttknn", "tweetUrl": ""}, {"id": "A-29", "block": "A", "name": "迷い猫", "rep": "中上たかし", "twitter": "nakagamiT", "tweetUrl": ""}, {"id": "A-30", "block": "A", "name": "十三ミュージック", "rep": "うり", "twitter": "woory_tama", "tweetUrl": ""}, {"id": "A-31", "block": "A", "name": "にゃん飯", "rep": "SIRN", "twitter": "SIRN_0", "tweetUrl": ""}, {"id": "A-32", "block": "A", "name": "極上くっしょん", "rep": "悠狐", "twitter": "yuuko_18yo", "tweetUrl": ""}, {"id": "A-33", "block": "A", "name": "UNKNOWNMEAT", "rep": "孤島ビデヲ", "twitter": "KJM_VIDEO", "tweetUrl": ""}, {"id": "A-34", "block": "A", "name": "牙戸屋", "rep": "牙戸", "twitter": "gut0002", "tweetUrl": ""}, {"id": "A-35", "block": "A", "name": "ホットランゲージ", "rep": "カズヒロ", "twitter": null, "tweetUrl": ""}, {"id": "A-36", "block": "A", "name": "あらこ屋", "rep": "荒子田こあら", "twitter": "arakorada", "tweetUrl": ""}, {"id": "A-37", "block": "A", "name": "月餅庵", "rep": "もちもち", "twitter": "mochimo59852214", "tweetUrl": ""}, {"id": "A-38", "block": "A", "name": "ぴぴぴピース", "rep": "ぴぴぴピース", "twitter": "pipipipeace4", "tweetUrl": ""}, {"id": "A-39", "block": "A", "name": "伽藍鳥割烹", "rep": "ぺりかん", "twitter": "deep_na_perikan", "tweetUrl": ""}, {"id": "A-40", "block": "A", "name": "のら屋", "rep": "瀬戸内くらげ", "twitter": "kurage_setouchi", "tweetUrl": ""}, {"id": "A-41", "block": "A", "name": "庭咲", "rep": "咲原咲一", "twitter": "Ykai_Sakiiti2", "tweetUrl": ""}, {"id": "A-42", "block": "A", "name": "カエリタコス", "rep": "JOY", "twitter": "tomucyann", "tweetUrl": ""}, {"id": "A-43", "block": "A", "name": "Nyabinghi Kaya", "rep": "BIG", "twitter": "big2banton", "tweetUrl": ""}, {"id": "A-44", "block": "A", "name": "Rotten blow", "rep": "闇鍋", "twitter": "YMYMnonaka", "tweetUrl": ""}, {"id": "A-45", "block": "A", "name": "キムチ亭", "rep": "瑠璃燕", "twitter": "whity___paria", "tweetUrl": ""}, {"id": "A-46", "block": "A", "name": "緋色の蓮", "rep": "緋蓮れみぃ", "twitter": "RemmyEcarlate", "tweetUrl": ""}, {"id": "A-47", "block": "A", "name": "電気式", "rep": "リコセ", "twitter": "esokir", "tweetUrl": ""}, {"id": "A-48", "block": "A", "name": "落葉", "rep": "Val", "twitter": "rakuyouxa", "tweetUrl": ""}, {"id": "A-49", "block": "A", "name": "幽構法人もけ製作所", "rep": "サビ橋", "twitter": "SABI_Moke", "tweetUrl": ""}, {"id": "A-50", "block": "A", "name": "たまのこし", "rep": "tamanosuke", "twitter": "Tamanosuke01", "tweetUrl": ""}, {"id": "B-01", "block": "B", "name": "肉丸屋", "rep": "竹本嵐", "twitter": "arashi_takemoto", "tweetUrl": ""}, {"id": "B-02", "block": "B", "name": "RACG", "rep": "Racoonwolf", "twitter": "racoonwolf", "tweetUrl": ""}, {"id": "B-03", "block": "B", "name": "催眠工房", "rep": "カス", "twitter": "Kas20241013", "tweetUrl": ""}, {"id": "B-04", "block": "B", "name": "五更灰燼", "rep": "五更", "twitter": "5goken", "tweetUrl": ""}, {"id": "B-05", "block": "B", "name": "YracFest", "rep": "Yrac ヤク", "twitter": "qi_mu48368", "tweetUrl": ""}, {"id": "B-06", "block": "B", "name": "KuN", "rep": "Ku-N", "twitter": "KuN_blackcat", "tweetUrl": ""}, {"id": "B-07", "block": "B", "name": "盛川食堂", "rep": "コロッケ", "twitter": "korokke_tw", "tweetUrl": ""}, {"id": "B-08", "block": "B", "name": "URABOU", "rep": "URA", "twitter": null, "tweetUrl": ""}, {"id": "B-09", "block": "B", "name": "ウェストライカー", "rep": "西ケモ", "twitter": "nisikemo", "tweetUrl": ""}, {"id": "B-10", "block": "B", "name": "熊焼", "rep": "KUMAK", "twitter": "kumak71395", "tweetUrl": ""}, {"id": "B-11", "block": "B", "name": "黃雅柔", "rep": "雅柔", "twitter": "YellowQuagsire", "tweetUrl": ""}, {"id": "B-12", "block": "B", "name": "ローストビーフ", "rep": "Ross", "twitter": "ross_ciaco", "tweetUrl": ""}, {"id": "B-13", "block": "B", "name": "エリザベスよ", "rep": "西音寺エリザベス", "twitter": "ellie_saionji", "tweetUrl": ""}, {"id": "B-14", "block": "B", "name": "超合金イヌンガーZ", "rep": "ゆーき", "twitter": "yuuuki_dogs", "tweetUrl": ""}, {"id": "B-15", "block": "B", "name": "雄々運輸", "rep": "ゆーくん", "twitter": "truck_bowwow", "tweetUrl": ""}, {"id": "B-16", "block": "B", "name": "御茶割り工業", "rep": "三々御茶", "twitter": "sansan_ocha", "tweetUrl": ""}, {"id": "B-17", "block": "B", "name": "D!TALE", "rep": "Dyeong", "twitter": "DYEONG_2", "tweetUrl": ""}, {"id": "B-18", "block": "B", "name": "こけもも", "rep": "ヒャク", "twitter": "hyaku1063", "tweetUrl": ""}, {"id": "B-19", "block": "B", "name": "千松茶屋", "rep": "かまど", "twitter": "kamado023", "tweetUrl": ""}, {"id": "B-20", "block": "B", "name": "コルクBOX", "rep": "大沢大太", "twitter": "osawadaita", "tweetUrl": ""}, {"id": "B-21", "block": "B", "name": "アクパラ", "rep": "アチャクラ", "twitter": "ACHAKOORA", "tweetUrl": ""}, {"id": "B-22", "block": "B", "name": "ねじあな", "rep": "ねじ", "twitter": "n3zirojika", "tweetUrl": ""}, {"id": "B-23", "block": "B", "name": "白尾", "rep": "いのしか", "twitter": "boar_stag144", "tweetUrl": ""}, {"id": "B-24", "block": "B", "name": "Draw Two", "rep": "土狼弐", "twitter": "d_raw_two", "tweetUrl": ""}, {"id": "B-25", "block": "B", "name": "居酒屋さるまる", "rep": "さるまる", "twitter": "OSARUYAN", "tweetUrl": ""}, {"id": "B-26", "block": "B", "name": "山岡製麺所", "rep": "高田うどん", "twitter": "yamaoka_nf", "tweetUrl": ""}, {"id": "B-27", "block": "B", "name": "雲天堂", "rep": "舵丸", "twitter": "kajimaru_0507", "tweetUrl": ""}, {"id": "B-28", "block": "B", "name": "Null", "rep": "虔一", "twitter": "kenjn", "tweetUrl": ""}, {"id": "B-29", "block": "B", "name": "べすちあ丼", "rep": "りおたろ", "twitter": "Riotaro15", "tweetUrl": ""}, {"id": "B-30", "block": "B", "name": "大食漢のいろうぜ", "rep": "とすとすFスキー", "twitter": "Tos_Tos_F_ski", "tweetUrl": ""}, {"id": "B-31", "block": "B", "name": "わっふるさんど", "rep": "KIYO", "twitter": "wafflesand_info", "tweetUrl": ""}, {"id": "B-32", "block": "B", "name": "おまわりさん、コの人です。", "rep": "コの字", "twitter": "totemoii_029", "tweetUrl": ""}, {"id": "B-33", "block": "B", "name": "暮生的備忘録", "rep": "めたぽ", "twitter": "metaporin_", "tweetUrl": ""}, {"id": "B-34", "block": "B", "name": "ふてぶてサボテン", "rep": "さざか", "twitter": "xzk_", "tweetUrl": ""}, {"id": "B-35", "block": "B", "name": "モノトラスト", "rep": "北国ぱるま", "twitter": "dosanco15", "tweetUrl": ""}, {"id": "B-36", "block": "B", "name": "わんこキッチン", "rep": "犬野だいどころ", "twitter": "inunodaidokoro", "tweetUrl": ""}, {"id": "B-37", "block": "B", "name": "stealthunion", "rep": "龍", "twitter": "ryuryutwins", "tweetUrl": ""}, {"id": "B-38", "block": "B", "name": "ベイクドオバケ", "rep": "ごぉすと", "twitter": "bake_gosut", "tweetUrl": ""}, {"id": "B-39", "block": "B", "name": "いつき湾", "rep": "よんごうふたば", "twitter": "4th_orcaoid", "tweetUrl": ""}, {"id": "B-40", "block": "B", "name": "口内炎がなおらない。", "rep": "昆布+", "twitter": "konbu_3333", "tweetUrl": ""}, {"id": "B-41", "block": "B", "name": "ぶたぶた丼", "rep": "SSu", "twitter": "SSu_open", "tweetUrl": ""}, {"id": "B-42", "block": "B", "name": "けもマヨ丼", "rep": "マヨ虫", "twitter": "mayobug_", "tweetUrl": ""}, {"id": "B-43", "block": "B", "name": "ぱっちわーく!!", "rep": "名もなき蛇", "twitter": "Sunshine_snake", "tweetUrl": ""}, {"id": "B-44", "block": "B", "name": "純情系メスゴリラ", "rep": "田中ガンニョム", "twitter": "tanaka_gunnyom", "tweetUrl": ""}, {"id": "B-45", "block": "B", "name": "三番目", "rep": "えーいち", "twitter": "a1xz00", "tweetUrl": ""}, {"id": "B-46", "block": "B", "name": "熊歩万里", "rep": "あぎら", "twitter": "agiran", "tweetUrl": ""}, {"id": "B-47", "block": "B", "name": "パイワー", "rep": "さもどら", "twitter": "samodora1030", "tweetUrl": ""}, {"id": "B-48", "block": "B", "name": "日だまりのカケラ", "rep": "kota´", "twitter": "re_pandash", "tweetUrl": ""}, {"id": "B-49", "block": "B", "name": "YOTSUBA工房", "rep": "ヨツバ", "twitter": "batsuyo2", "tweetUrl": ""}, {"id": "B-50", "block": "B", "name": "重量級めたぼるふぉーぜ", "rep": "omo", "twitter": "omo_kemo", "tweetUrl": ""}, {"id": "B-51", "block": "B", "name": "虎ノ水煮", "rep": "のすけ", "twitter": null, "tweetUrl": ""}, {"id": "B-52", "block": "B", "name": "あにまりずむ", "rep": "高木喬", "twitter": "takagi_kyou", "tweetUrl": ""}, {"id": "C-01", "block": "C", "name": "マッドワックス", "rep": "窓枠", "twitter": "madwakx", "tweetUrl": ""}, {"id": "C-02", "block": "C", "name": "祈りの獣", "rep": "むらうえ", "twitter": "muraue_x86", "tweetUrl": ""}, {"id": "C-03", "block": "C", "name": "ダイナ&れじすたぁ", "rep": "Dyna inugata", "twitter": "dyn19dg", "tweetUrl": ""}, {"id": "C-04", "block": "C", "name": "夏色ライカ", "rep": "銀ノ助", "twitter": "silverio01", "tweetUrl": ""}, {"id": "C-05", "block": "C", "name": "えりすリトール", "rep": "えりす", "twitter": "7575el", "tweetUrl": ""}, {"id": "C-06", "block": "C", "name": "URAGERI", "rep": "浦RENGA", "twitter": "BUNGU_MAN", "tweetUrl": ""}, {"id": "C-07", "block": "C", "name": "花吹雪ゴリラ", "rep": "號ゆうごう", "twitter": "u5rilla_ktzk", "tweetUrl": ""}, {"id": "C-08", "block": "C", "name": "STUDIO雄虎凛", "rep": "凛", "twitter": "GTDignified", "tweetUrl": ""}, {"id": "C-09", "block": "C", "name": "ふてー", "rep": "ふてー", "twitter": "MTI777", "tweetUrl": ""}, {"id": "C-10", "block": "C", "name": "ダブルブル", "rep": "らんち", "twitter": "launcher_r", "tweetUrl": ""}, {"id": "C-11", "block": "C", "name": "円卓返し", "rep": "ガウェイン", "twitter": "en_gawein", "tweetUrl": ""}, {"id": "C-12", "block": "C", "name": "めん処", "rep": "めんスケ", "twitter": "mennsuke123", "tweetUrl": ""}, {"id": "C-13", "block": "C", "name": "まるてん丼", "rep": "英", "twitter": "mknskhnbs", "tweetUrl": ""}, {"id": "C-14", "block": "C", "name": "ASAIRO", "rep": "山岡てと", "twitter": "yamaoka_teto", "tweetUrl": ""}, {"id": "C-15", "block": "C", "name": "ずんだ庵", "rep": "k太郎", "twitter": "t_kawakyun1", "tweetUrl": ""}, {"id": "C-16", "block": "C", "name": "スターゲイザー", "rep": "こぐれ", "twitter": "kogure014", "tweetUrl": ""}, {"id": "C-17", "block": "C", "name": "無線支店", "rep": "RokhSuke", "twitter": "HOTDOG_AD", "tweetUrl": ""}, {"id": "C-18", "block": "C", "name": "たぬ～ん", "rep": "ニンヤン", "twitter": "ninyan183", "tweetUrl": ""}, {"id": "C-19", "block": "C", "name": "気分茶屋", "rep": "サクロケ", "twitter": "popkage", "tweetUrl": ""}, {"id": "C-20", "block": "C", "name": "おおかみコロッケ", "rep": "はるかぜ", "twitter": "harukaze110", "tweetUrl": ""}, {"id": "C-21", "block": "C", "name": "GINTAN", "rep": "GINTAN", "twitter": "FurryGintan", "tweetUrl": ""}, {"id": "C-22", "block": "C", "name": "オスルレ", "rep": "IG", "twitter": "IG1119", "tweetUrl": ""}, {"id": "C-23", "block": "C", "name": "ころもにゅ", "rep": "えろ豆", "twitter": "mamedon_26", "tweetUrl": ""}, {"id": "C-24", "block": "C", "name": "Dogear", "rep": "犬耳もえ太", "twitter": "dogear218", "tweetUrl": ""}, {"id": "C-25", "block": "C", "name": "Cadence", "rep": "mixtuti桜餅", "twitter": "OECU51904255", "tweetUrl": ""}, {"id": "C-26", "block": "C", "name": "こしあん定食", "rep": "きど", "twitter": "nemui_kido", "tweetUrl": ""}, {"id": "C-27", "block": "C", "name": "ぽてとBOOKS", "rep": "じゃがいも", "twitter": "jagajagaaZoo", "tweetUrl": ""}, {"id": "C-28", "block": "C", "name": "娯狸夢中", "rep": "まめ", "twitter": "mametanu_tanuki", "tweetUrl": ""}, {"id": "C-29", "block": "C", "name": "兎にも角煮も", "rep": "れき", "twitter": "hamatnk", "tweetUrl": ""}, {"id": "C-30", "block": "C", "name": "Spring Field", "rep": "春野息吹", "twitter": "ibuki_haruno", "tweetUrl": ""}, {"id": "C-31", "block": "C", "name": "風月堂", "rep": "なお", "twitter": "NAO_km2", "tweetUrl": ""}, {"id": "C-32", "block": "C", "name": "豚 出没注意", "rep": "エクゼ", "twitter": "exe_exem", "tweetUrl": ""}, {"id": "C-33", "block": "C", "name": "にじたま", "rep": "大地巧太", "twitter": "tamacolle_staff", "tweetUrl": ""}, {"id": "C-34", "block": "C", "name": "Puff Trap!!", "rep": "根口六九", "twitter": null, "tweetUrl": ""}, {"id": "C-35", "block": "C", "name": "叙情醸造所", "rep": "モロッコ", "twitter": "morocco21", "tweetUrl": ""}, {"id": "C-36", "block": "C", "name": "LEMOSCRIPTION", "rep": "八掛百三", "twitter": "yakake103", "tweetUrl": ""}, {"id": "C-37", "block": "C", "name": "ChaosCradle", "rep": "たろお", "twitter": "SleeperBeetle", "tweetUrl": ""}, {"id": "C-38", "block": "C", "name": "ライク・ライブフロアーズ", "rep": "牙無Rezze", "twitter": "kibanashirezze2", "tweetUrl": ""}, {"id": "C-39", "block": "C", "name": "てんしんらんまん", "rep": "らんたん荘", "twitter": "rantan_chan", "tweetUrl": ""}, {"id": "C-40", "block": "C", "name": "おばケット", "rep": "はいだま", "twitter": "haidamadesu", "tweetUrl": ""}, {"id": "D-01", "block": "D", "name": "獣人愛好者達。", "rep": "rukaruko", "twitter": "rukaruko_", "tweetUrl": ""}, {"id": "D-02", "block": "D", "name": "稲山神社", "rep": "kame", "twitter": "kame_3t", "tweetUrl": ""}, {"id": "D-03", "block": "D", "name": "Jobber's Place", "rep": "あおさんさん", "twitter": "seiroukyou", "tweetUrl": ""}, {"id": "D-04", "block": "D", "name": "SmokeTail", "rep": "satori", "twitter": "smoke_tail", "tweetUrl": ""}, {"id": "D-05", "block": "D", "name": "おるてんしあ", "rep": "しのべ", "twitter": "shinobe6", "tweetUrl": ""}, {"id": "D-06", "block": "D", "name": "たなぎ研究所", "rep": "棚木防衛", "twitter": "tanagi_boboboei", "tweetUrl": ""}, {"id": "D-07", "block": "D", "name": "units", "rep": "那由他琢己", "twitter": "teramegagiga", "tweetUrl": ""}, {"id": "D-08", "block": "D", "name": "ておる屋さん", "rep": "ておる", "twitter": "hanadaiteol", "tweetUrl": ""}, {"id": "D-09", "block": "D", "name": "ふぁ〜りぃ☆ふぁんだむ", "rep": "ミチヨシ", "twitter": "rinri1310", "tweetUrl": ""}, {"id": "D-10", "block": "D", "name": "カレイドスコープ研究所", "rep": "鉄水", "twitter": "tessui160", "tweetUrl": ""}, {"id": "D-11", "block": "D", "name": "メロシャーク", "rep": "Aki", "twitter": "Akikemo18607", "tweetUrl": ""}, {"id": "D-12", "block": "D", "name": "ぷにぐ～す", "rep": "ぷにちゅ～", "twitter": "punichu", "tweetUrl": ""}, {"id": "D-13", "block": "D", "name": "クッカバラ", "rep": "とう", "twitter": "666soul_s", "tweetUrl": ""}, {"id": "D-14", "block": "D", "name": "だらん", "rep": "izm", "twitter": "izm_rm7", "tweetUrl": ""}, {"id": "D-15", "block": "D", "name": "獣人科", "rep": "RY_O", "twitter": "zyuzinka", "tweetUrl": ""}, {"id": "D-16", "block": "D", "name": "矛と盾", "rep": "陣八", "twitter": "zinpatink_S", "tweetUrl": ""}, {"id": "D-17", "block": "D", "name": "肉重定食", "rep": "しげ", "twitter": "sige315_", "tweetUrl": ""}, {"id": "D-18", "block": "D", "name": "OSUCAFE", "rep": "OSU", "twitter": "osumankokuou", "tweetUrl": ""}, {"id": "D-19", "block": "D", "name": "ひいらぎ屋。", "rep": "蘇芳", "twitter": "aden0ph0ra", "tweetUrl": ""}, {"id": "D-20", "block": "D", "name": "誘導結合プラズム", "rep": "乱数", "twitter": "ruentn", "tweetUrl": ""}, {"id": "D-21", "block": "D", "name": "Sindoll", "rep": "Sindoll", "twitter": "sindoll", "tweetUrl": ""}, {"id": "D-22", "block": "D", "name": "CoCoLoCo☆Note", "rep": "ココローグ", "twitter": "coco_log", "tweetUrl": ""}, {"id": "D-23", "block": "D", "name": "待福明日屯団", "rep": "ニューロン", "twitter": "Neuron225167640", "tweetUrl": ""}, {"id": "D-24", "block": "D", "name": "Cloud Nica", "rep": "長。", "twitter": "zokucyoo", "tweetUrl": ""}, {"id": "D-25", "block": "D", "name": "あーばんにゃるど", "rep": "八剱るい", "twitter": "silvestris_rui", "tweetUrl": ""}, {"id": "D-26", "block": "D", "name": "タヌキのすくつ", "rep": "コノハココノカ", "twitter": "conohacoconoka", "tweetUrl": ""}, {"id": "D-27", "block": "D", "name": "ふぇにはつ", "rep": "いんぐれ", "twitter": "KemBlg_Komei", "tweetUrl": ""}, {"id": "D-28", "block": "D", "name": "ティオくんもえ", "rep": "ゆきつね", "twitter": "yukitsune09", "tweetUrl": ""}, {"id": "D-29", "block": "D", "name": "ねんねこたぬき", "rep": "たぬたん", "twitter": "mfmftanutan", "tweetUrl": ""}, {"id": "D-30", "block": "D", "name": "九十九製薬", "rep": "うっさー", "twitter": "Usssar12", "tweetUrl": ""}, {"id": "D-31", "block": "D", "name": "Nightsprings", "rep": "あるうらら", "twitter": "aruurara", "tweetUrl": ""}, {"id": "D-32", "block": "D", "name": "おにくのむら", "rep": "おにくまん", "twitter": "ED97531", "tweetUrl": ""}, {"id": "E-01", "block": "E", "name": "RIDDL", "rep": "Mongolfier", "twitter": "CircleRiddl1", "tweetUrl": ""}, {"id": "E-02", "block": "E", "name": "もふもふ屋", "rep": "もふあき", "twitter": "mofuaki_", "tweetUrl": ""}, {"id": "E-03", "block": "E", "name": "廃蜜灯", "rep": "ゆきもち", "twitter": "ankrmochi", "tweetUrl": ""}, {"id": "E-04", "block": "E", "name": "Noaria", "rep": "ぷにわんこ", "twitter": "puni0213pk", "tweetUrl": ""}, {"id": "E-05", "block": "E", "name": "ケモノハンター", "rep": "クロノ", "twitter": null, "tweetUrl": ""}, {"id": "E-06", "block": "E", "name": "マカロンおうち", "rep": "むそたゆう", "twitter": "creamsodage", "tweetUrl": ""}, {"id": "E-07", "block": "E", "name": "イカゲリラ", "rep": "影山", "twitter": null, "tweetUrl": ""}, {"id": "E-08", "block": "E", "name": "浮きあがる真実", "rep": "やさみすお", "twitter": "karadakitaeyou", "tweetUrl": ""}, {"id": "E-09", "block": "E", "name": "回転ParaDOGs", "rep": "水賀つくね", "twitter": "Diga_foxdog", "tweetUrl": ""}, {"id": "E-10", "block": "E", "name": "あなぐらぐるーみんぐ", "rep": "蹄水", "twitter": "hdu_me", "tweetUrl": ""}, {"id": "E-11", "block": "E", "name": "BANNOOO!!", "rep": "わぶ", "twitter": "tbsktbwa", "tweetUrl": ""}, {"id": "E-12", "block": "E", "name": "キソフェールブ直売所", "rep": "Xofeulb←", "twitter": "Xofeulb_sendsta", "tweetUrl": ""}, {"id": "E-13", "block": "E", "name": "花サフラン島", "rep": "袋麺", "twitter": "gamelove0001", "tweetUrl": ""}, {"id": "E-14", "block": "E", "name": "S&Dテイル", "rep": "圭斗", "twitter": "jyabaryu", "tweetUrl": ""}, {"id": "E-15", "block": "E", "name": "九十九屋本舗", "rep": "あまうた", "twitter": "amauta00", "tweetUrl": ""}, {"id": "E-16", "block": "E", "name": "てあそびや", "rep": "おはじき", "twitter": "humukeaka1", "tweetUrl": ""}, {"id": "E-17", "block": "E", "name": "トラトラ屋", "rep": "トラトラ", "twitter": "toratorayatora", "tweetUrl": ""}, {"id": "E-18", "block": "E", "name": "しばの巣窟", "rep": "柴吉", "twitter": "shi_ba_ki_chi", "tweetUrl": ""}, {"id": "E-19", "block": "E", "name": "ソーダみだれうち", "rep": "薄緑", "twitter": "yom_mido_plus", "tweetUrl": ""}, {"id": "E-20", "block": "E", "name": "ダンディのおみせ", "rep": "ダンディ", "twitter": "Dandelion860", "tweetUrl": ""}, {"id": "E-21", "block": "E", "name": "えすきゅーおー", "rep": "496", "twitter": "PojoPojosan496", "tweetUrl": ""}, {"id": "E-22", "block": "E", "name": "КРУЖОЧЕК", "rep": "ГФ", "twitter": "seledkapodshboi", "tweetUrl": ""}, {"id": "E-23", "block": "E", "name": "液だまり", "rep": "ヨーヨー", "twitter": "yoyodol09", "tweetUrl": ""}, {"id": "E-24", "block": "E", "name": "おともだち!", "rep": "にゃちーた", "twitter": "nyachiita", "tweetUrl": ""}, {"id": "E-25", "block": "E", "name": "夢色地下庭園", "rep": "蒼氷ちかげ", "twitter": null, "tweetUrl": ""}, {"id": "E-26", "block": "E", "name": "ちくわぶ", "rep": "苔おじ", "twitter": "pilz_moos", "tweetUrl": ""}, {"id": "E-27", "block": "E", "name": "秋春食堂", "rep": "あきたか", "twitter": "akitaka_", "tweetUrl": ""}, {"id": "E-28", "block": "E", "name": "ぴぽりん堂", "rep": "ピポリントン", "twitter": "piporinton", "tweetUrl": ""}, {"id": "E-29", "block": "E", "name": "メスケモスタジオ", "rep": "ガラサキ", "twitter": "_Garasaki", "tweetUrl": ""}, {"id": "E-30", "block": "E", "name": "こんこん吸うぃ～と", "rep": "キノコにんげん", "twitter": "kinokoningen", "tweetUrl": ""}, {"id": "E-31", "block": "E", "name": "ペペコリポッコリ", "rep": "pakochan", "twitter": "Po1822", "tweetUrl": ""}, {"id": "E-32", "block": "E", "name": "MisSing", "rep": "ミスルノ", "twitter": "Mesruno", "tweetUrl": ""}, {"id": "F-01", "block": "F", "name": "volpecorvo", "rep": "天草", "twitter": "volpecorvo", "tweetUrl": ""}, {"id": "F-02", "block": "F", "name": "くるっぽー", "rep": "ぱと", "twitter": "pato_cocco", "tweetUrl": ""}, {"id": "F-03", "block": "F", "name": "サメまる実力向上委員会", "rep": "サメまる", "twitter": "PokemonGabuuuu", "tweetUrl": ""}, {"id": "F-04", "block": "F", "name": "Amthena.", "rep": "橘", "twitter": null, "tweetUrl": ""}, {"id": "F-05", "block": "F", "name": "punoporpoise", "rep": "ぷのぽ", "twitter": "torikawa_fupu", "tweetUrl": ""}, {"id": "F-06", "block": "F", "name": "蒼い雲と月光", "rep": "オグっち", "twitter": "MMTogu777", "tweetUrl": ""}, {"id": "F-07", "block": "F", "name": "どのもり", "rep": "どくも", "twitter": "dok2_mo", "tweetUrl": ""}, {"id": "F-08", "block": "F", "name": "FUYUGOMORI", "rep": "winte", "twitter": "winter939", "tweetUrl": ""}, {"id": "F-09", "block": "F", "name": "みるくうさぎ", "rep": "おはな", "twitter": "UoxoU_470", "tweetUrl": ""}, {"id": "F-10", "block": "F", "name": "たんぱく室", "rep": "いつ木", "twitter": null, "tweetUrl": ""}, {"id": "F-11", "block": "F", "name": "コオリ納涼会", "rep": "氷激流", "twitter": "YarenGekiryu", "tweetUrl": ""}, {"id": "F-12", "block": "F", "name": "はんてんねこ", "rep": "nwbk", "twitter": "hanten_nekko", "tweetUrl": ""}, {"id": "F-13", "block": "F", "name": "プリンパフェ", "rep": "Syukapong", "twitter": "syukapong", "tweetUrl": ""}, {"id": "F-14", "block": "F", "name": "きび～ふ", "rep": "さとうきび", "twitter": "satoukibi070602", "tweetUrl": ""}, {"id": "F-15", "block": "F", "name": "綿毛屋", "rep": "しろ根", "twitter": "77sirogane77", "tweetUrl": ""}, {"id": "F-16", "block": "F", "name": "ムゲン・セカイ", "rep": "風煉", "twitter": "Fulenleosymbol", "tweetUrl": ""}, {"id": "F-17", "block": "F", "name": "朔風亭", "rep": "朔", "twitter": "sakuhuu", "tweetUrl": ""}, {"id": "F-18", "block": "F", "name": "くまさんかっふぇ", "rep": "しゃも", "twitter": "shamonoeaka", "tweetUrl": ""}, {"id": "F-19", "block": "F", "name": "たちまる亭", "rep": "アオイ", "twitter": "aoi_tachi0", "tweetUrl": ""}, {"id": "F-20", "block": "F", "name": "けものぶるく", "rep": "秋野へちま", "twitter": "akinohetima", "tweetUrl": ""}, {"id": "F-21", "block": "F", "name": "群青ラグーン", "rep": "のあーる", "twitter": "noir_0010", "tweetUrl": ""}, {"id": "F-22", "block": "F", "name": "烏ノ蜥蜴", "rep": "烏賊輪", "twitter": "ikaring823", "tweetUrl": ""}, {"id": "F-23", "block": "F", "name": "うみぴんくアクアリオ", "rep": "nullma", "twitter": "chocomint_null", "tweetUrl": ""}, {"id": "F-24", "block": "F", "name": "マイクロワッサン", "rep": "七篠", "twitter": "Drstop_yarare", "tweetUrl": ""}, {"id": "F-25", "block": "F", "name": "R's_Library", "rep": "れのるいが", "twitter": "Renoruiga6280", "tweetUrl": ""}, {"id": "F-26", "block": "F", "name": "ひとりよがり工房", "rep": "Adzuki.", "twitter": "a_d_z_u_k_i_", "tweetUrl": ""}, {"id": "F-27", "block": "F", "name": "YPS", "rep": "さやか", "twitter": null, "tweetUrl": ""}, {"id": "F-28", "block": "F", "name": "kemo kemo holic", "rep": "谷底", "twitter": null, "tweetUrl": ""}, {"id": "F-29", "block": "F", "name": "るろうにきっさ", "rep": "旅人", "twitter": "tabitabi0117", "tweetUrl": ""}, {"id": "F-30", "block": "F", "name": "き・みどり", "rep": "きーそ", "twitter": "ki_os1031", "tweetUrl": ""}, {"id": "F-31", "block": "F", "name": "DENDRON MAZE", "rep": "迷樹", "twitter": "dendendron", "tweetUrl": ""}, {"id": "F-32", "block": "F", "name": "けだらけふわこ", "rep": "うにおひさま", "twitter": "kedarakefuwako", "tweetUrl": ""}, {"id": "G-01", "block": "G", "name": "CAPE", "rep": "capella", "twitter": "capella_pera", "tweetUrl": ""}, {"id": "G-02", "block": "G", "name": "ペアぽしぇっと", "rep": "ベリジャム", "twitter": null, "tweetUrl": ""}, {"id": "G-03", "block": "G", "name": "C-Lab", "rep": "シトリン", "twitter": "citrine323", "tweetUrl": ""}, {"id": "G-04", "block": "G", "name": "ネツ湖", "rep": "ねっつー", "twitter": "nyankamedon", "tweetUrl": ""}, {"id": "G-05", "block": "G", "name": "ほっとレモネード", "rep": "ぶ～け", "twitter": "Buke1128", "tweetUrl": ""}, {"id": "G-06", "block": "G", "name": "でるめきゃ!!", "rep": "δあくむ", "twitter": "_delmu", "tweetUrl": ""}, {"id": "G-07", "block": "G", "name": "田澤湖ピクニックランド", "rep": "田澤こうま", "twitter": "coumav", "tweetUrl": ""}, {"id": "G-08", "block": "G", "name": "ダキあーる", "rep": "ぬすーる", "twitter": "NS_nusuru", "tweetUrl": ""}, {"id": "G-09", "block": "G", "name": "星と魂のいこい場", "rep": "やまおり", "twitter": "Hakkentai_pkdn", "tweetUrl": ""}, {"id": "G-10", "block": "G", "name": "かがやき電波塔", "rep": "オーガ", "twitter": "pichu_no_hito", "tweetUrl": ""}, {"id": "G-11", "block": "G", "name": "きのこのお部屋", "rep": "マッシュ!", "twitter": "mush_tewi", "tweetUrl": ""}, {"id": "G-12", "block": "G", "name": "WONDER PLANET", "rep": "星野らお", "twitter": "rao129", "tweetUrl": ""}, {"id": "G-13", "block": "G", "name": "ふぇにぺれ", "rep": "ペレグリン", "twitter": "P_Peregrine", "tweetUrl": ""}, {"id": "G-14", "block": "G", "name": "ふぐふぐ岬", "rep": "しし", "twitter": "sisikem", "tweetUrl": ""}, {"id": "G-15", "block": "G", "name": "スタジオるぅ", "rep": "クロワッサン", "twitter": "CroissantDaBear", "tweetUrl": ""}, {"id": "G-16", "block": "G", "name": "Lomelette", "rep": "らっしー", "twitter": "iga_lassie", "tweetUrl": ""}, {"id": "G-17", "block": "G", "name": "純愛中毒", "rep": "依存", "twitter": "iz0n448", "tweetUrl": ""}, {"id": "G-18", "block": "G", "name": "雨鳥屋", "rep": "Tubasa", "twitter": "Tubasa71616859", "tweetUrl": ""}, {"id": "G-19", "block": "G", "name": "BLACK FANG", "rep": "両谷 哉", "twitter": "Ryou_Tani", "tweetUrl": ""}, {"id": "G-20", "block": "G", "name": "Silver Panda Pub", "rep": "ゼン・ミガワ", "twitter": null, "tweetUrl": ""}, {"id": "G-21", "block": "G", "name": "POKESTUCK", "rep": "023", "twitter": "NSFW_023", "tweetUrl": ""}, {"id": "G-22", "block": "G", "name": "涸屋漁船", "rep": "涸", "twitter": "k_y_auauau", "tweetUrl": ""}, {"id": "G-23", "block": "G", "name": "いまむらさんぎょう", "rep": "いまさん", "twitter": "0907_KAPI", "tweetUrl": ""}, {"id": "G-24", "block": "G", "name": "とりのこや", "rep": "とり", "twitter": "toribado03", "tweetUrl": ""}, {"id": "G-25", "block": "G", "name": "ススのおみせ", "rep": "ススキツネ", "twitter": "susukitsuneV", "tweetUrl": ""}, {"id": "G-26", "block": "G", "name": "ちょこしゅとらっせ", "rep": "黒楓", "twitter": "kokufuu", "tweetUrl": ""}, {"id": "G-27", "block": "G", "name": "満月の都 玉兎乃杜", "rep": "月兎みなと", "twitter": "W_minatoFair", "tweetUrl": ""}, {"id": "G-28", "block": "G", "name": "きゅるりうむ", "rep": "のんた", "twitter": "noclo326", "tweetUrl": ""}, {"id": "G-29", "block": "G", "name": "tatsunoko", "rep": "hoko", "twitter": "hokkoinu", "tweetUrl": ""}, {"id": "G-30", "block": "G", "name": "いぬのあしあと", "rep": "48犬", "twitter": "48dog_wanwan", "tweetUrl": ""}, {"id": "G-31", "block": "G", "name": "ちくハウス", "rep": "ちくわ。", "twitter": "Chikuferre", "tweetUrl": ""}, {"id": "G-32", "block": "G", "name": "くろねこさんの休憩所", "rep": "しろくろ", "twitter": "KuroNeko_mori", "tweetUrl": ""}, {"id": "H-01", "block": "H", "name": "うるちゅる神社", "rep": "2bosi", "twitter": "2bosi2", "tweetUrl": ""}, {"id": "H-02", "block": "H", "name": "Amenote Studio", "rep": "あめてん", "twitter": "utenbell", "tweetUrl": ""}, {"id": "H-03", "block": "H", "name": "もふもふ重工", "rep": "けむり", "twitter": "KayasiroKemuri", "tweetUrl": ""}, {"id": "H-04", "block": "H", "name": "ぺこぽこらぼ", "rep": "にゃむ", "twitter": "zoo_man_nm22", "tweetUrl": ""}, {"id": "H-05", "block": "H", "name": "道具屋TMF", "rep": "てぇい", "twitter": null, "tweetUrl": ""}, {"id": "H-06", "block": "H", "name": "KEMONEST", "rep": "モネ", "twitter": "_KEMONEST_", "tweetUrl": ""}, {"id": "H-07", "block": "H", "name": "Nico_works", "rep": "遊羽", "twitter": "nikoro_niko", "tweetUrl": ""}, {"id": "H-08", "block": "H", "name": "ぬいちの道", "rep": "青いトリッツォ", "twitter": "Aoitori_i", "tweetUrl": ""}, {"id": "H-09", "block": "H", "name": "おどしろキャンバス", "rep": "黒羽からす", "twitter": "k_karasu", "tweetUrl": ""}, {"id": "H-10", "block": "H", "name": "うどんハウス", "rep": "毒汗", "twitter": "ibaruikasama", "tweetUrl": ""}, {"id": "H-11", "block": "H", "name": "毛塚屋", "rep": "千葉いちば", "twitter": "ichiba_c", "tweetUrl": ""}, {"id": "H-12", "block": "H", "name": "もぎたてなかゆび", "rep": "うまの", "twitter": "mgtt_nkyb", "tweetUrl": ""}, {"id": "H-13", "block": "H", "name": "大和製作所", "rep": "大和黒子", "twitter": "yamatokuroko965", "tweetUrl": ""}, {"id": "H-14", "block": "H", "name": "またたびえくすたしぃ", "rep": "もちこ", "twitter": "tarako658", "tweetUrl": ""}, {"id": "H-15", "block": "H", "name": "スクラップ街", "rep": "ほた", "twitter": "yakareta_hotate", "tweetUrl": ""}, {"id": "H-16", "block": "H", "name": "KAWAZOKO", "rep": "菊にぃ", "twitter": "KickTyan", "tweetUrl": ""}, {"id": "H-17", "block": "H", "name": "かび印", "rep": "あおかびけ〜き", "twitter": "lmgunner428", "tweetUrl": ""}, {"id": "H-18", "block": "H", "name": "漁組", "rep": "漁港", "twitter": "gyo_ko_", "tweetUrl": ""}, {"id": "H-19", "block": "H", "name": "白熊夢想", "rep": "小野寺ニノ", "twitter": "nino_onodera", "tweetUrl": ""}, {"id": "H-20", "block": "H", "name": "ベリリウムはまも島", "rep": "ペーちゃ", "twitter": "pepepeGDOOON", "tweetUrl": ""}, {"id": "H-21", "block": "H", "name": "シトネの上にも千年", "rep": "竹田ざぶ", "twitter": "Zabu_t", "tweetUrl": ""}, {"id": "H-22", "block": "H", "name": "影籠", "rep": "あなご", "twitter": "Anago_pie", "tweetUrl": ""}, {"id": "H-23", "block": "H", "name": "けもにわ", "rep": "南山さぶちゃん", "twitter": null, "tweetUrl": ""}, {"id": "H-24", "block": "H", "name": "かてら工房", "rep": "かてら", "twitter": "katera_kemo", "tweetUrl": ""}, {"id": "H-25", "block": "H", "name": "0529", "rep": "碧", "twitter": "aoi_0529", "tweetUrl": ""}, {"id": "H-26", "block": "H", "name": "WhiteExterior", "rep": "パンニャ", "twitter": "whitexterior", "tweetUrl": ""}, {"id": "H-27", "block": "H", "name": "DragonHouse", "rep": "黒鉛の獅子", "twitter": "mofumofu_house", "tweetUrl": ""}, {"id": "H-28", "block": "H", "name": "M-with-D", "rep": "アルカジェカ", "twitter": "dkqd", "tweetUrl": ""}, {"id": "H-29", "block": "H", "name": "食用六法", "rep": "らこ", "twitter": "agesanosenbei", "tweetUrl": ""}, {"id": "H-30", "block": "H", "name": "ロスネ&切利", "rep": "ナボリスク", "twitter": "naborisk1", "tweetUrl": ""}, {"id": "H-31", "block": "H", "name": "ドラケモ団出張所", "rep": "ももゃし", "twitter": "monster_9No9No", "tweetUrl": ""}, {"id": "H-32", "block": "H", "name": "ドーナツ教会", "rep": "RAO(らお)", "twitter": "RIORAO", "tweetUrl": ""}, {"id": "I-01", "block": "I", "name": "竜の革全部剝ぐ", "rep": "泉田一角", "twitter": null, "tweetUrl": ""}, {"id": "I-02", "block": "I", "name": "ドラゴンバンケット", "rep": "GW", "twitter": "GWGW", "tweetUrl": ""}, {"id": "I-03", "block": "I", "name": "SAKAMINA INFO.", "rep": "Katkichi", "twitter": "ktkc_sf0203", "tweetUrl": ""}, {"id": "I-04", "block": "I", "name": "Wisteria Way", "rep": "Xion", "twitter": "outlord_s", "tweetUrl": ""}, {"id": "I-05", "block": "I", "name": "にじいろドラゴン", "rep": "Yoshi3110", "twitter": "FizDv", "tweetUrl": ""}, {"id": "I-06", "block": "I", "name": "ほるまチゴハヤブサ堂", "rep": "ほるまりん", "twitter": "horuma_rin", "tweetUrl": ""}, {"id": "I-07", "block": "I", "name": "みたらしにゃんこ", "rep": "月白しのん", "twitter": "sinon77", "tweetUrl": ""}, {"id": "I-08", "block": "I", "name": "魔界ノ風鷹", "rep": "風鷹", "twitter": "kazetaka_makai", "tweetUrl": ""}, {"id": "I-09", "block": "I", "name": "すみっこ", "rep": "黒井スミ", "twitter": "kuroisumi", "tweetUrl": ""}, {"id": "I-10", "block": "I", "name": "けずりぶし", "rep": "ミカンオレ", "twitter": "Mikanore2_Sed3", "tweetUrl": ""}, {"id": "I-11", "block": "I", "name": "とらのこわたし!", "rep": "赤丸とらすけ", "twitter": "AkamaruTorasuke", "tweetUrl": ""}, {"id": "I-12", "block": "I", "name": "気付けば狼", "rep": "島ウルフ", "twitter": "shimaWOLF2110", "tweetUrl": ""}, {"id": "I-13", "block": "I", "name": "夜廻電波", "rep": "ぽいろっと", "twitter": "douyattemo", "tweetUrl": ""}, {"id": "I-14", "block": "I", "name": "はちの巣", "rep": "ブーウン", "twitter": "voooong_", "tweetUrl": ""}, {"id": "I-15", "block": "I", "name": "ランドの羊皮紙", "rep": "Lander", "twitter": "laon8130", "tweetUrl": ""}, {"id": "I-16", "block": "I", "name": "リプルのジムランブル", "rep": "リプル", "twitter": "h155296", "tweetUrl": ""}, {"id": "I-17", "block": "I", "name": "HARD_DROP", "rep": "したっぱ太郎", "twitter": "manaartR18", "tweetUrl": ""}, {"id": "I-18", "block": "I", "name": "雨ノ屋", "rep": "雨宮・ラルク(Rai)", "twitter": "endoudouhuRau", "tweetUrl": ""}, {"id": "I-19", "block": "I", "name": "いかづち堂", "rep": "らいじん", "twitter": "raizinnDX", "tweetUrl": ""}, {"id": "I-20", "block": "I", "name": "まったりした日々", "rep": "けもり", "twitter": null, "tweetUrl": ""}, {"id": "I-21", "block": "I", "name": "すぐる笑店", "rep": "キレエト", "twitter": "poketichelate", "tweetUrl": ""}, {"id": "I-22", "block": "I", "name": "ウサギごや", "rep": "皐月ウサギ", "twitter": "Satuki_rabbit", "tweetUrl": ""}, {"id": "I-23", "block": "I", "name": "ウサギ画廊", "rep": "ウサギロ", "twitter": "Usa11Giro", "tweetUrl": ""}, {"id": "I-24", "block": "I", "name": "Doten", "rep": "Doten", "twitter": "l0ta1most1", "tweetUrl": ""}, {"id": "I-25", "block": "I", "name": "OCHALOBSTER", "rep": "おちゃづけ", "twitter": "OCHALOBSTER", "tweetUrl": ""}, {"id": "I-26", "block": "I", "name": "ZERO1.97", "rep": "黝鷹司", "twitter": "zer0_1_97", "tweetUrl": ""}, {"id": "I-27", "block": "I", "name": "獣化プロジェクト", "rep": "エニオン", "twitter": "anyon_trans", "tweetUrl": ""}, {"id": "I-28", "block": "I", "name": "Mofull編集部", "rep": "たけふじ狐", "twitter": "takefuji_fox", "tweetUrl": ""}, {"id": "I-29", "block": "I", "name": "東瀬条機関", "rep": "根津三十一", "twitter": "sejoukikan", "tweetUrl": ""}, {"id": "I-30", "block": "I", "name": "BAKUNeKO", "rep": "GONZOU", "twitter": "gonzou26", "tweetUrl": ""}, {"id": "I-31", "block": "I", "name": "やまきつね、のお店", "rep": "山木京、", "twitter": "yamakikei_", "tweetUrl": ""}, {"id": "I-32", "block": "I", "name": "GamsCoffeeHouse", "rep": "Gam.", "twitter": "Gam_s_", "tweetUrl": ""}, {"id": "J-01", "block": "J", "name": "理想郷の底", "rep": "狗尾", "twitter": "enokoro00", "tweetUrl": ""}, {"id": "J-02", "block": "J", "name": "Wolves&Me", "rep": "MIKA", "twitter": "akim_wolf", "tweetUrl": ""}, {"id": "J-03", "block": "J", "name": "フリフラガーデン", "rep": "みどりのおやさい", "twitter": "oyasai_midori", "tweetUrl": ""}, {"id": "J-04", "block": "J", "name": "きゅうとじゅう", "rep": "910", "twitter": "9uand10u", "tweetUrl": ""}, {"id": "J-05", "block": "J", "name": "やぎのいえ", "rep": "くろやぎ", "twitter": "kuroyagi_11", "tweetUrl": ""}, {"id": "J-06", "block": "J", "name": "teHANA", "rep": "夏菜", "twitter": "teHANA_dog", "tweetUrl": ""}, {"id": "J-07", "block": "J", "name": "IZZAO's WORKS", "rep": "IZZAO", "twitter": "IZZAO", "tweetUrl": ""}, {"id": "J-08", "block": "J", "name": "里芋堂本店", "rep": "さとimo", "twitter": "satoimo_D", "tweetUrl": ""}, {"id": "J-09", "block": "J", "name": "WAWOOM", "rep": "水谷霖", "twitter": "rinrinwolf", "tweetUrl": ""}, {"id": "J-10", "block": "J", "name": "a Blue", "rep": "青い", "twitter": "24Bllue", "tweetUrl": ""}, {"id": "J-11", "block": "J", "name": "ぽむライス", "rep": "ラーヴァル", "twitter": "Rarvalu", "tweetUrl": ""}, {"id": "J-12", "block": "J", "name": "NyaightMeowket", "rep": "Al0cA", "twitter": "ALOCALA22", "tweetUrl": ""}, {"id": "J-13", "block": "J", "name": "でこぼこ村", "rep": "ぽちこた", "twitter": "pochi_mame04", "tweetUrl": ""}, {"id": "J-14", "block": "J", "name": "かるぼん郷", "rep": "クロロ酢酸", "twitter": "CLR_393", "tweetUrl": ""}, {"id": "J-15", "block": "J", "name": "さそりざキャット", "rep": "みぜる", "twitter": "MIXEEEEL", "tweetUrl": ""}, {"id": "J-16", "block": "J", "name": "たまふぐり", "rep": "ジンノスケ", "twitter": "jinbuuck", "tweetUrl": ""}, {"id": "J-17", "block": "J", "name": "あんぽんたんず", "rep": "あんかけそーめん", "twitter": null, "tweetUrl": ""}, {"id": "J-18", "block": "J", "name": "moffle", "rep": "マボ", "twitter": "shimabo", "tweetUrl": ""}, {"id": "J-19", "block": "J", "name": "けものこみち", "rep": "がぼ", "twitter": "gabobon05", "tweetUrl": ""}, {"id": "J-20", "block": "J", "name": "あいすとっぷ", "rep": "ゆうとだい", "twitter": "siki60p", "tweetUrl": ""}, {"id": "J-21", "block": "J", "name": "きつねのしっぽ", "rep": "稲荷尾めむちゃ", "twitter": "TokabiM", "tweetUrl": ""}, {"id": "J-22", "block": "J", "name": "わくわくめんたい", "rep": "ケモ藻", "twitter": "kurimo_jinguy", "tweetUrl": ""}, {"id": "J-23", "block": "J", "name": "星空の王冠", "rep": "はくしゃま", "twitter": "haku_omoti", "tweetUrl": ""}, {"id": "J-24", "block": "J", "name": "くびワンコ", "rep": "ぎろ", "twitter": "girokemo", "tweetUrl": ""}, {"id": "J-25", "block": "J", "name": "無彩", "rep": "μ", "twitter": "xxxkuroraxxx", "tweetUrl": ""}, {"id": "J-26", "block": "J", "name": "へったへた", "rep": "下手っ狐", "twitter": "hetakitsune", "tweetUrl": ""}, {"id": "J-27", "block": "J", "name": "SilfeedArks", "rep": "白井リス", "twitter": "silfeed", "tweetUrl": ""}, {"id": "J-28", "block": "J", "name": "猫吉庵", "rep": "ねこきち", "twitter": "Nekokichi_cat", "tweetUrl": ""}, {"id": "J-29", "block": "J", "name": "むこうのしま", "rep": "FUMOCHI", "twitter": "FUMOCHI_n", "tweetUrl": ""}, {"id": "J-30", "block": "J", "name": "平紐製袋3号機", "rep": "シオルド", "twitter": "sio_rudo_y1", "tweetUrl": ""}, {"id": "J-31", "block": "J", "name": "のきんち", "rep": "かしのき", "twitter": null, "tweetUrl": ""}, {"id": "J-32", "block": "J", "name": "牡丹放送局", "rep": "猪鹿月牡丹", "twitter": "Ikaduki_botan_V", "tweetUrl": ""}, {"id": "J-33", "block": "J", "name": "しばだまり", "rep": "なゆた", "twitter": "doglover_23", "tweetUrl": ""}, {"id": "J-34", "block": "J", "name": "シグフィールド", "rep": "セト", "twitter": "seto_pksn", "tweetUrl": ""}, {"id": "J-35", "block": "J", "name": "さふがる工房", "rep": "虎来楽がるふ", "twitter": "torakura_gulf", "tweetUrl": ""}, {"id": "J-36", "block": "J", "name": "このたわわを見よ", "rep": "酢だこのたこ焼き", "twitter": "SudakoTakoyaki", "tweetUrl": ""}, {"id": "K-01", "block": "K", "name": "かきくけこけら座", "rep": "座鳥こけら", "twitter": "zacho_kokera", "tweetUrl": ""}, {"id": "K-02", "block": "K", "name": "ぽたみみとーち", "rep": "すらっしゅ灯", "twitter": "Slash7826", "tweetUrl": ""}, {"id": "K-03", "block": "K", "name": "Octo eats", "rep": "ラブ・ラビット", "twitter": "VRC_LOVE_RABBIT", "tweetUrl": ""}, {"id": "K-04", "block": "K", "name": "スキロスタジオ", "rep": "マグマジロ", "twitter": "magumazie0927", "tweetUrl": ""}, {"id": "K-05", "block": "K", "name": "てるみ堂", "rep": "テルミ猫二郎", "twitter": "terumi_jiro", "tweetUrl": ""}, {"id": "K-06", "block": "K", "name": "橙色のたてがみ", "rep": "ダイダイ", "twitter": "daidai_fd7e00", "tweetUrl": ""}, {"id": "K-07", "block": "K", "name": "ねこのおふとんや", "rep": "ねこふとん", "twitter": "nekofutonn222", "tweetUrl": ""}, {"id": "K-08", "block": "K", "name": "えびざんまい", "rep": "井々エビ出汁", "twitter": "ii_ebidashi", "tweetUrl": ""}, {"id": "K-09", "block": "K", "name": "Takunyan Project", "rep": "タクニャン", "twitter": "takunyantail", "tweetUrl": ""}, {"id": "K-10", "block": "K", "name": "鉄筋奈良公園", "rep": "Tetto", "twitter": "Iron_atama", "tweetUrl": ""}, {"id": "K-11", "block": "K", "name": "だいだい屋", "rep": "ゆうゆう", "twitter": "_yuuyuu_", "tweetUrl": ""}, {"id": "K-12", "block": "K", "name": "むちゃしやがってッ", "rep": "むちゃ〜", "twitter": "mfmfcha", "tweetUrl": ""}, {"id": "K-13", "block": "K", "name": "放課後ネムネム", "rep": "ネム太郎", "twitter": "nemnemnemne11", "tweetUrl": ""}, {"id": "K-14", "block": "K", "name": "Cr24", "rep": "クロム", "twitter": "GINBIS2000", "tweetUrl": ""}, {"id": "K-15", "block": "K", "name": "モトエナ卓", "rep": "素壱", "twitter": "mo_to_i_chi", "tweetUrl": ""}, {"id": "K-16", "block": "K", "name": "ぽんこつ重機", "rep": "NAD", "twitter": "Dr_Nad_", "tweetUrl": ""}, {"id": "K-17", "block": "K", "name": "gdbdby", "rep": "aphonyovo", "twitter": "aphonyovo", "tweetUrl": ""}, {"id": "K-18", "block": "K", "name": "とおりみち", "rep": "とおり", "twitter": "TORISAN_KMN", "tweetUrl": ""}, {"id": "K-19", "block": "K", "name": "PELL-MELL WORKS", "rep": "鴻上", "twitter": "kooooogami", "tweetUrl": ""}, {"id": "K-20", "block": "K", "name": "電究ソケット", "rep": "こけむし", "twitter": "kokemushi_R", "tweetUrl": ""}, {"id": "K-21", "block": "K", "name": "フラクタル導火線", "rep": "平面太郎", "twitter": "nijigenheimen", "tweetUrl": ""}, {"id": "K-22", "block": "K", "name": "月栗読", "rep": "つきお", "twitter": "_Tsukio21", "tweetUrl": ""}, {"id": "K-23", "block": "K", "name": "smart'α", "rep": "すばた", "twitter": "supa310", "tweetUrl": ""}, {"id": "K-24", "block": "K", "name": "はるのおうち", "rep": "朝陽はる", "twitter": "asahi_haru_v", "tweetUrl": ""}, {"id": "K-25", "block": "K", "name": "サードマン症候群", "rep": "てふてふ", "twitter": null, "tweetUrl": ""}, {"id": "K-26", "block": "K", "name": "しおしおじお", "rep": "ぶなも", "twitter": "sushiba5568", "tweetUrl": ""}, {"id": "K-27", "block": "K", "name": "BARE FEET", "rep": "猫田博人", "twitter": "NekotaBact", "tweetUrl": ""}, {"id": "K-28", "block": "K", "name": "小さな森", "rep": "篝火", "twitter": "kagalli13", "tweetUrl": ""}, {"id": "K-29", "block": "K", "name": "あかいろわんちゃんず", "rep": "せきろー", "twitter": "Sekiro_alpinus", "tweetUrl": ""}, {"id": "K-30", "block": "K", "name": "北極クマ物語", "rep": "胡桃犬", "twitter": "kurumiken", "tweetUrl": ""}, {"id": "K-31", "block": "K", "name": "作業場NOMNOM", "rep": "飲み吹き", "twitter": "nomifuki", "tweetUrl": ""}, {"id": "K-32", "block": "K", "name": "お日さんふたつ", "rep": "まさぺこ", "twitter": "masapeko33", "tweetUrl": ""}, {"id": "K-33", "block": "K", "name": "湿度F", "rep": "部屋干し", "twitter": "ptb_3", "tweetUrl": ""}, {"id": "K-34", "block": "K", "name": "STRAY WOLF", "rep": "YURIKO", "twitter": "yuriko_illust", "tweetUrl": ""}, {"id": "K-35", "block": "K", "name": "ちくたく農園", "rep": "梨味", "twitter": "nashiazi_san", "tweetUrl": ""}, {"id": "K-36", "block": "K", "name": "おくのたんぼ", "rep": "奥田琢己", "twitter": "okudami", "tweetUrl": ""}, {"id": "L-01", "block": "L", "name": "狼夫夫工房", "rep": "宮鐘セフィリオ", "twitter": "sefirio", "tweetUrl": ""}, {"id": "L-02", "block": "L", "name": "ヤキにクマ工房", "rep": "ヤキイモン", "twitter": "Yaki_Arts", "tweetUrl": ""}, {"id": "L-03", "block": "L", "name": "すずき庵!", "rep": "すずき!", "twitter": "ss_20m2003", "tweetUrl": ""}, {"id": "L-04", "block": "L", "name": "くりおね展示水槽", "rep": "ふたろ", "twitter": "futafutaro", "tweetUrl": ""}, {"id": "L-05", "block": "L", "name": "やつどき", "rep": "ごごに", "twitter": "pmxpm_", "tweetUrl": ""}, {"id": "L-06", "block": "L", "name": "ハチミツと秘密基地", "rep": "べえごま", "twitter": "Bee91053336", "tweetUrl": ""}, {"id": "L-07", "block": "L", "name": "てりやきバーガー+ポテトL", "rep": "かけ", "twitter": "kakeroid", "tweetUrl": ""}, {"id": "L-08", "block": "L", "name": "蒼い時のちびっ子たち", "rep": "赤羽坂・C・やちく", "twitter": "AOMIZAKA", "tweetUrl": ""}, {"id": "L-09", "block": "L", "name": "蓬莱優曇亭", "rep": "狐優曇 海月", "twitter": "KTNUDN_EAKA", "tweetUrl": ""}, {"id": "L-10", "block": "L", "name": "まちゃ処", "rep": "まちゃむちょ", "twitter": "Matya_Mutyo", "tweetUrl": ""}, {"id": "L-11", "block": "L", "name": "MIKEYA3D", "rep": "みけじん", "twitter": "mikeningen", "tweetUrl": ""}, {"id": "L-12", "block": "L", "name": "まーぼう乱舞", "rep": "れいすい", "twitter": "God_Tyahan", "tweetUrl": ""}, {"id": "L-13", "block": "L", "name": "犬天国", "rep": "右下", "twitter": "inuuuuuuuun", "tweetUrl": ""}, {"id": "L-14", "block": "L", "name": "くまぐま屋", "rep": "あけぐま", "twitter": "akeguma373", "tweetUrl": ""}, {"id": "L-15", "block": "L", "name": "喫茶たまねこ", "rep": "たまねこ", "twitter": "tamaneko299", "tweetUrl": ""}, {"id": "L-16", "block": "L", "name": "小麦粉のまま", "rep": "たんぱお", "twitter": "tanpaoex", "tweetUrl": ""}, {"id": "L-17", "block": "L", "name": "UMENION", "rep": "はいどん", "twitter": "dodontya", "tweetUrl": ""}, {"id": "L-18", "block": "L", "name": "地底布団", "rep": "ととと", "twitter": "tobyou_222", "tweetUrl": ""}, {"id": "L-19", "block": "L", "name": "花より獣", "rep": "KENSAN", "twitter": "KENSAN25", "tweetUrl": ""}, {"id": "L-20", "block": "L", "name": "不知火事務所", "rep": "不知火轟希", "twitter": "gohki_shiranui", "tweetUrl": ""}, {"id": "L-21", "block": "L", "name": "えびぽてと", "rep": "ぴこぴこ", "twitter": "P1C0_P1C0_2", "tweetUrl": ""}, {"id": "L-22", "block": "L", "name": "ぬれ処", "rep": "ヌレギヌ", "twitter": "nureginun", "tweetUrl": ""}, {"id": "L-23", "block": "L", "name": "といろのいろ", "rep": "獣人といろ", "twitter": "JYUNINTOIRO6666", "tweetUrl": ""}, {"id": "L-24", "block": "L", "name": "だえん記号", "rep": "記号ネコ", "twitter": "kigoh_neko", "tweetUrl": ""}, {"id": "L-25", "block": "L", "name": "お茶畑", "rep": "あいうえおおお", "twitter": "aiue000_2", "tweetUrl": ""}, {"id": "L-26", "block": "L", "name": "ふぉどふぉ堂", "rep": "ふぉど", "twitter": "fodo_nbro", "tweetUrl": ""}, {"id": "L-27", "block": "L", "name": "LUDENS", "rep": "NUE", "twitter": "999Gravity", "tweetUrl": ""}, {"id": "L-28", "block": "L", "name": "中秋玩月", "rep": "月天助", "twitter": "gettensuke9", "tweetUrl": ""}, {"id": "L-29", "block": "L", "name": "ニョロリッチ", "rep": "Guin", "twitter": "Shark_doragon", "tweetUrl": ""}, {"id": "L-30", "block": "L", "name": "まっしろ空間", "rep": "円白ましろ", "twitter": null, "tweetUrl": ""}, {"id": "L-31", "block": "L", "name": "とあるわあるど!", "rep": "東雲ある", "twitter": "Aru7g", "tweetUrl": ""}, {"id": "L-32", "block": "L", "name": "ループポイント", "rep": "いずみ陽", "twitter": "izu_yoh", "tweetUrl": ""}, {"id": "L-33", "block": "L", "name": "おやつWorks", "rep": "おやつはみかん", "twitter": "oyatsuhamikan", "tweetUrl": ""}, {"id": "L-34", "block": "L", "name": "こめぷくぜろ", "rep": "ゼロ", "twitter": "Rei0macaron", "tweetUrl": ""}, {"id": "L-35", "block": "L", "name": "タカシマヤ", "rep": "タカシマアキラ", "twitter": "akiratakashima", "tweetUrl": ""}, {"id": "L-36", "block": "L", "name": "ごろうじろう", "rep": "樹下次郎", "twitter": "kinoshita_jiroh", "tweetUrl": ""}, {"id": "M-01", "block": "M", "name": "山口さぷり", "rep": "山口さぷり", "twitter": "sapuriba", "tweetUrl": ""}, {"id": "M-02", "block": "M", "name": "茶碗精米所", "rep": "茶碗はし", "twitter": "chawann02", "tweetUrl": ""}, {"id": "M-03", "block": "M", "name": "お茶がうまい", "rep": "うきわ", "twitter": "ukiwa2", "tweetUrl": ""}, {"id": "M-04", "block": "M", "name": "猫のうたた寝", "rep": "キカチュウ", "twitter": "kikachu42195", "tweetUrl": ""}, {"id": "M-05", "block": "M", "name": "空ん灯", "rep": "すあ/sua", "twitter": "sisualicon", "tweetUrl": ""}, {"id": "M-06", "block": "M", "name": "いぬ枕", "rep": "SHU", "twitter": "KEMO_SHU", "tweetUrl": ""}, {"id": "M-07", "block": "M", "name": "まぜまぜ定食", "rep": "五穀米", "twitter": "my_gokoku", "tweetUrl": ""}, {"id": "M-08", "block": "M", "name": "ぴーすふるでいず", "rep": "もりりん", "twitter": "forest5340z", "tweetUrl": ""}, {"id": "M-09", "block": "M", "name": "真夜中の動物園", "rep": "リルスケ", "twitter": "rirusuke", "tweetUrl": ""}, {"id": "M-10", "block": "M", "name": "くりごぱん", "rep": "らふぇ", "twitter": "_raferafe", "tweetUrl": ""}, {"id": "M-11", "block": "M", "name": "満福商店", "rep": "もぐぽん", "twitter": "MogponDragon", "tweetUrl": ""}, {"id": "M-12", "block": "M", "name": "ほしぞら喫茶", "rep": "のびる", "twitter": "no_biruV", "tweetUrl": ""}, {"id": "M-13", "block": "M", "name": "ダメトラポンコツシロクマ", "rep": "大悟", "twitter": "manmarudaigo", "tweetUrl": ""}, {"id": "M-14", "block": "M", "name": "ふらっとん", "rep": "ふらっと", "twitter": "fltsnaa", "tweetUrl": ""}, {"id": "M-15", "block": "M", "name": "悶々亭", "rep": "トラド悶々", "twitter": "Trad_monmon", "tweetUrl": ""}, {"id": "M-16", "block": "M", "name": "春色ぎんちゃん", "rep": "ぎんはる", "twitter": "ginharu4423", "tweetUrl": ""}, {"id": "M-17", "block": "M", "name": "グラタニ帝国", "rep": "イスケ・グラタニティー", "twitter": "isk_gratanity", "tweetUrl": ""}, {"id": "M-18", "block": "M", "name": "電子大熊猫", "rep": "笹山明", "twitter": "sasayama_akira", "tweetUrl": ""}, {"id": "M-19", "block": "M", "name": "へちょっぽっち", "rep": "ミズ", "twitter": "__mizu__", "tweetUrl": ""}, {"id": "M-20", "block": "M", "name": "まんまぁにごぉ", "rep": "やしち", "twitter": "0hou2ryu", "tweetUrl": ""}, {"id": "M-21", "block": "M", "name": "超大型自由形", "rep": "はいずる", "twitter": "HaiZuRu_HaiRu", "tweetUrl": ""}, {"id": "M-22", "block": "M", "name": "ここのすたじお", "rep": "狐月ココノスケ", "twitter": "yakumomidori1", "tweetUrl": ""}, {"id": "M-23", "block": "M", "name": "Wolfonia", "rep": "一ツ田はうる", "twitter": "howling_wolves", "tweetUrl": ""}, {"id": "M-24", "block": "M", "name": "TFの仔", "rep": "だんだん", "twitter": "dancom67", "tweetUrl": ""}, {"id": "M-25", "block": "M", "name": "しんかいきょうふしょー", "rep": "ひののに", "twitter": "hino_2Tn", "tweetUrl": ""}, {"id": "M-26", "block": "M", "name": "巨獣俱楽部", "rep": "ABIKI", "twitter": "ab_1k1", "tweetUrl": ""}, {"id": "M-27", "block": "M", "name": "てとらすてらす", "rep": "てとらす", "twitter": "Furries_Tetras", "tweetUrl": ""}, {"id": "M-28", "block": "M", "name": "三ツ目山水族館", "rep": "ミツメサチ", "twitter": "o_874", "tweetUrl": ""}, {"id": "M-29", "block": "M", "name": "平々凡々", "rep": "むらた", "twitter": "reiru921", "tweetUrl": ""}, {"id": "M-30", "block": "M", "name": "つるはし屋", "rep": "どうくつねずみ", "twitter": "doukutunezumi", "tweetUrl": ""}, {"id": "M-31", "block": "M", "name": "なんじーも系", "rep": "日野", "twitter": "hinohasou", "tweetUrl": ""}, {"id": "M-32", "block": "M", "name": "しじひらCONTE", "rep": "ひらいっき", "twitter": "hira_ikki", "tweetUrl": ""}, {"id": "M-33", "block": "M", "name": "サカサランプ", "rep": "紅茶犬", "twitter": "nekomonaka", "tweetUrl": ""}, {"id": "M-34", "block": "M", "name": "ゆめみるサブマリン", "rep": "真凛", "twitter": "mz_marine", "tweetUrl": ""}, {"id": "M-35", "block": "M", "name": "サバクノキチ", "rep": "すな吉", "twitter": "satoss", "tweetUrl": ""}, {"id": "M-36", "block": "M", "name": "ポモドリ・ウラドーリ", "rep": "御多=席", "twitter": "onda_seki", "tweetUrl": ""}, {"id": "N-01", "block": "N", "name": "さかさまパンダ", "rep": "ぬら次郎", "twitter": "nurasaburou", "tweetUrl": ""}, {"id": "N-02", "block": "N", "name": "んなしあ", "rep": "梨酢", "twitter": null, "tweetUrl": ""}, {"id": "N-03", "block": "N", "name": "メープルシュライバー", "rep": "もみじ", "twitter": "Fende1108", "tweetUrl": ""}, {"id": "N-04", "block": "N", "name": "neuromantic_", "rep": "neu。", "twitter": "neuliliilli", "tweetUrl": ""}, {"id": "N-05", "block": "N", "name": "OGAKOKOA", "rep": "おがころろみ", "twitter": "roronekorone", "tweetUrl": ""}, {"id": "N-06", "block": "N", "name": "こんちゅう屋サん。", "rep": "サめ太郎", "twitter": "same2525_taro", "tweetUrl": ""}, {"id": "N-07", "block": "N", "name": "ミルクパワー書店", "rep": "カズノコ", "twitter": "kazukikazunoco", "tweetUrl": ""}, {"id": "N-08", "block": "N", "name": "うたかたプラネタリウム", "rep": "星街満兎", "twitter": "hoshimiii_mi", "tweetUrl": ""}, {"id": "N-09", "block": "N", "name": "N棟S研", "rep": "Sさん", "twitter": "S_san_whitefox", "tweetUrl": ""}, {"id": "N-10", "block": "N", "name": "もけはうす。", "rep": "もけ。", "twitter": "mokeee57", "tweetUrl": ""}, {"id": "N-11", "block": "N", "name": "GiGiGi妙", "rep": "食宮", "twitter": "hamiyaR18", "tweetUrl": ""}, {"id": "N-12", "block": "N", "name": "へもじせ屋", "rep": "HEMO", "twitter": "hemogie_bl", "tweetUrl": ""}, {"id": "N-13", "block": "N", "name": "キノコンチ", "rep": "終野すみか", "twitter": "noko_kinokonoko", "tweetUrl": ""}, {"id": "N-14", "block": "N", "name": "H.A.O工房", "rep": "Tomto", "twitter": "haoworks_tomto", "tweetUrl": ""}, {"id": "N-15", "block": "N", "name": "なな屋", "rep": "なな", "twitter": "nanasuzu_nana", "tweetUrl": ""}, {"id": "N-16", "block": "N", "name": "星のしっぽ", "rep": "大上翔", "twitter": "oogamikakeru", "tweetUrl": ""}, {"id": "N-17", "block": "N", "name": "犬丸食堂", "rep": "あきた犬丸", "twitter": "akitainumaru2", "tweetUrl": ""}, {"id": "N-18", "block": "N", "name": "NoT Non FictioN", "rep": "鍵っ子", "twitter": "_keykids_", "tweetUrl": ""}, {"id": "N-19", "block": "N", "name": "没有銭ged", "rep": "ish_alkan", "twitter": "ish_alkan", "tweetUrl": ""}, {"id": "N-20", "block": "N", "name": "096", "rep": "蘭晶=零", "twitter": "rankiti", "tweetUrl": ""}, {"id": "N-21", "block": "N", "name": "毒入り餃子の膝和え", "rep": "生物部", "twitter": "sei_butsu_bu", "tweetUrl": ""}, {"id": "N-22", "block": "N", "name": "サバカンロッタリー", "rep": "弐一", "twitter": "ni__c", "tweetUrl": ""}, {"id": "N-23", "block": "N", "name": "みかん箱舟", "rep": "albedo", "twitter": "marealbum", "tweetUrl": ""}, {"id": "N-24", "block": "N", "name": "犬鬼灯", "rep": "犬鬼灯ホンネ", "twitter": "Honnnedayo_19", "tweetUrl": ""}, {"id": "N-25", "block": "N", "name": "黒豆ぺろまる", "rep": "はやた", "twitter": "Hayata_461", "tweetUrl": ""}, {"id": "N-26", "block": "N", "name": "シロメッキ好奇心", "rep": "日向へんわ", "twitter": "H1de_out", "tweetUrl": ""}, {"id": "N-27", "block": "N", "name": "きつねびきっさ", "rep": "もちゃ", "twitter": "moduckten", "tweetUrl": ""}, {"id": "N-28", "block": "N", "name": "ふわふわライオン", "rep": "山葵るお", "twitter": "RuOtwe", "tweetUrl": ""}, {"id": "N-29", "block": "N", "name": "イナバヤ。", "rep": "ヨシヤ", "twitter": "ina_ba_ya", "tweetUrl": ""}, {"id": "N-30", "block": "N", "name": "ミルコメダ", "rep": "陽乃こはく", "twitter": "hinokohaku", "tweetUrl": ""}, {"id": "N-31", "block": "N", "name": "ローズマリーの宝物庫", "rep": "ジュン", "twitter": "miyajuuuun", "tweetUrl": ""}, {"id": "N-32", "block": "N", "name": "ぽこぽこにっころがし", "rep": "にっぽこたろう", "twitter": "nippokotarou", "tweetUrl": ""}, {"id": "O-01", "block": "O", "name": "ここに一斗缶", "rep": "ぷちけれん", "twitter": "puchikeren54", "tweetUrl": ""}, {"id": "O-02", "block": "O", "name": "Lara Land", "rep": "Lara", "twitter": "IsabelleShizue", "tweetUrl": ""}, {"id": "O-03", "block": "O", "name": "とこなつラボ", "rep": "なつめ雪むし", "twitter": "yukimushi6", "tweetUrl": ""}, {"id": "O-04", "block": "O", "name": "時流", "rep": "柚木乃幸汰", "twitter": "yukino_kouta", "tweetUrl": ""}, {"id": "O-05", "block": "O", "name": "果敢雄ビートダウン", "rep": "moto", "twitter": "motothed", "tweetUrl": ""}, {"id": "O-06", "block": "O", "name": "田舎のバスローブ", "rep": "桜花駿", "twitter": "syosenyaoimoe", "tweetUrl": ""}, {"id": "O-07", "block": "O", "name": "まんだら亭", "rep": "まだら模様", "twitter": "0508madaramoyou", "tweetUrl": ""}, {"id": "O-08", "block": "O", "name": "絵描きの", "rep": "ズー", "twitter": "Zoo_SP_", "tweetUrl": ""}, {"id": "O-09", "block": "O", "name": "enon", "rep": "nali", "twitter": null, "tweetUrl": ""}, {"id": "O-10", "block": "O", "name": "ぱんぷきん", "rep": "ぱん", "twitter": "panwankoo", "tweetUrl": ""}, {"id": "O-11", "block": "O", "name": "ドンガン島", "rep": "権太狸", "twitter": "gontadanuki", "tweetUrl": ""}, {"id": "O-12", "block": "O", "name": "獣厚浪漫", "rep": "おおゆきと", "twitter": "ooyukito", "tweetUrl": ""}, {"id": "O-13", "block": "O", "name": "キヨミズデラ", "rep": "キヨミズ", "twitter": "pontehihi", "tweetUrl": ""}, {"id": "O-14", "block": "O", "name": "ERONASSO", "rep": "馬飼チアキ", "twitter": "ch_ia_ki", "tweetUrl": ""}, {"id": "O-15", "block": "O", "name": "ビーンジャム", "rep": "餡野まんたろ", "twitter": "bumomomoboa", "tweetUrl": ""}, {"id": "O-16", "block": "O", "name": "ぱぱをの台所", "rep": "ぱぱを", "twitter": "p_p_panda299", "tweetUrl": ""}, {"id": "O-17", "block": "O", "name": "ミニマムウェポン", "rep": "SESSA", "twitter": "sessa2014", "tweetUrl": ""}, {"id": "O-18", "block": "O", "name": "満月らせん堂", "rep": "岩頭岩", "twitter": "gantogan1216", "tweetUrl": ""}, {"id": "O-19", "block": "O", "name": "謎の空間A室", "rep": "ルカリンノズミ", "twitter": "rukarinnnozumu", "tweetUrl": ""}, {"id": "O-20", "block": "O", "name": "さめこまち", "rep": "こま", "twitter": "koma_036", "tweetUrl": ""}, {"id": "O-21", "block": "O", "name": "BARuGAIN", "rep": "るん", "twitter": "run_aki", "tweetUrl": ""}, {"id": "O-22", "block": "O", "name": "0061", "rep": "葉月蓮", "twitter": "ren_0061", "tweetUrl": ""}, {"id": "O-23", "block": "O", "name": "トカゲ書房", "rep": "丸呑みトカゲ", "twitter": "tokagetokage063", "tweetUrl": ""}, {"id": "O-24", "block": "O", "name": "あおいろ一號", "rep": "さひくろん", "twitter": "SahiQron", "tweetUrl": ""}, {"id": "O-25", "block": "O", "name": "りすえもーしょん", "rep": "りすりす", "twitter": "risurisukemona", "tweetUrl": ""}, {"id": "O-26", "block": "O", "name": "ないとらいるらばー", "rep": "にとりる", "twitter": "nitrile_chan", "tweetUrl": ""}, {"id": "O-27", "block": "O", "name": "空想余白抄", "rep": "どらい", "twitter": null, "tweetUrl": ""}, {"id": "O-28", "block": "O", "name": "傾キ窓 寝静", "rep": "ネコカイヌシ", "twitter": "super_9kyoku", "tweetUrl": ""}, {"id": "O-29", "block": "O", "name": "うみ屋さん", "rep": "うみや", "twitter": "_umiya_0", "tweetUrl": ""}, {"id": "O-30", "block": "O", "name": "びぃいーアート", "rep": "芦谷透久", "twitter": "BE_art_CIRCLE", "tweetUrl": ""}, {"id": "O-31", "block": "O", "name": "ラビットナイト", "rep": "ろち", "twitter": "rochi_tsutatan", "tweetUrl": ""}, {"id": "O-32", "block": "O", "name": "絶体絶命犬護", "rep": "犬護駄犬", "twitter": "Daken_Inumori", "tweetUrl": ""}, {"id": "P-01", "block": "P", "name": "橙の物置。", "rep": "和馬", "twitter": "kazuma_hk_2525", "tweetUrl": ""}, {"id": "P-02", "block": "P", "name": "かりかりまんま", "rep": "猫乃マル", "twitter": "maru3nekoneko", "tweetUrl": ""}, {"id": "P-03", "block": "P", "name": "ティルニウム", "rep": "Till", "twitter": "Whitill_fluffy", "tweetUrl": ""}, {"id": "P-04", "block": "P", "name": "mofuto", "rep": "96", "twitter": "96zkin", "tweetUrl": ""}, {"id": "P-05", "block": "P", "name": "がらくた屋", "rep": "がらくT", "twitter": "garakutea", "tweetUrl": ""}, {"id": "P-06", "block": "P", "name": "空色のドア", "rep": "次縹", "twitter": null, "tweetUrl": ""}, {"id": "P-07", "block": "P", "name": "いぬざらし", "rep": "あまご", "twitter": "anago_vaccine", "tweetUrl": ""}, {"id": "P-08", "block": "P", "name": "ノシノシ", "rep": "ゆーのしん", "twitter": "noshin36", "tweetUrl": ""}, {"id": "P-09", "block": "P", "name": "鷲宮学園", "rep": "葉芝カヲル", "twitter": "k_hashiba", "tweetUrl": ""}, {"id": "P-10", "block": "P", "name": "イヌッコロ", "rep": "月雪トマト", "twitter": "harunosiriana", "tweetUrl": ""}, {"id": "P-11", "block": "P", "name": "尻軽てゃ", "rep": "みきてゃ", "twitter": "mine_miki0840", "tweetUrl": ""}, {"id": "P-12", "block": "P", "name": "海洋鮫", "rep": "ひまわりの光", "twitter": "himawarinohika1", "tweetUrl": ""}, {"id": "P-13", "block": "P", "name": "はべマート", "rep": "はべまる", "twitter": "habemaru", "tweetUrl": ""}, {"id": "P-14", "block": "P", "name": "アードワークス", "rep": "ツチブタ", "twitter": "Aardworks2026", "tweetUrl": ""}, {"id": "P-15", "block": "P", "name": "HONEYCOMB", "rep": "wasp", "twitter": "anthyutena", "tweetUrl": ""}, {"id": "P-16", "block": "P", "name": "三九三九", "rep": "TTN", "twitter": "239_239", "tweetUrl": ""}, {"id": "P-17", "block": "P", "name": "九字狐", "rep": "ただっち", "twitter": "asleepchef", "tweetUrl": ""}, {"id": "P-18", "block": "P", "name": "獣録", "rep": "4C", "twitter": null, "tweetUrl": ""}, {"id": "P-19", "block": "P", "name": "シュークリームSHAKE", "rep": "しゅう", "twitter": "plutolover3110", "tweetUrl": ""}, {"id": "P-20", "block": "P", "name": "スイハン観測所", "rep": "おこめのす", "twitter": "curry_de_happy", "tweetUrl": ""}, {"id": "P-21", "block": "P", "name": "とらのかぎしっぽ", "rep": "なぐ", "twitter": "nagu_0568gugu", "tweetUrl": ""}, {"id": "P-22", "block": "P", "name": "ばんそうこうとスナップバック", "rep": "もめん豆腐", "twitter": "kure_river_1", "tweetUrl": ""}, {"id": "P-23", "block": "P", "name": "あの時とノア", "rep": "ふが", "twitter": "leousnute_", "tweetUrl": ""}, {"id": "P-24", "block": "P", "name": "白陽工房", "rep": "haku643", "twitter": "haku_643", "tweetUrl": ""}, {"id": "P-25", "block": "P", "name": "だいおらいと", "rep": "烙雷", "twitter": "Laquray88", "tweetUrl": ""}, {"id": "P-26", "block": "P", "name": "営繭堂", "rep": "あましたバグ", "twitter": "SilkWorm_HNW", "tweetUrl": ""}, {"id": "P-27", "block": "P", "name": "つるろま", "rep": "つる", "twitter": "tsuruclaycrane", "tweetUrl": ""}, {"id": "P-28", "block": "P", "name": "あったかとんじる", "rep": "白3噌", "twitter": "siro3so", "tweetUrl": ""}, {"id": "P-29", "block": "P", "name": "ふわふわの里", "rep": "あくりる", "twitter": "Acrylic_Dragons", "tweetUrl": ""}, {"id": "P-30", "block": "P", "name": "夢見の達人", "rep": "ロマ", "twitter": "akaniji_2765", "tweetUrl": ""}, {"id": "P-31", "block": "P", "name": "フルフル愛護団体", "rep": "たねいも", "twitter": "taneimo_drop", "tweetUrl": ""}, {"id": "P-32", "block": "P", "name": "まがりかど", "rep": "真方", "twitter": "magata283", "tweetUrl": ""}, {"id": "Q-01", "block": "Q", "name": "だーおんず養竜所", "rep": "だーおん", "twitter": "daaon1989", "tweetUrl": ""}, {"id": "Q-02", "block": "Q", "name": "おみおつけ依存症", "rep": "きゅーん", "twitter": "ryuune_agoago", "tweetUrl": ""}, {"id": "Q-03", "block": "Q", "name": "ニナロッカー", "rep": "ニナロカ", "twitter": "kinuhurano", "tweetUrl": ""}, {"id": "Q-04", "block": "Q", "name": "Rグレイ", "rep": "藤崎", "twitter": "3c_neco_tx", "tweetUrl": ""}, {"id": "Q-05", "block": "Q", "name": "ベルフェゴールの39", "rep": "くまや", "twitter": "kmy908", "tweetUrl": ""}, {"id": "Q-06", "block": "Q", "name": "Toy Box", "rep": "御苑", "twitter": "gyogyogyoen", "tweetUrl": ""}, {"id": "Q-07", "block": "Q", "name": "JewelとJewel", "rep": "Magi", "twitter": null, "tweetUrl": ""}, {"id": "Q-08", "block": "Q", "name": "ユリ花売り", "rep": "ゆりみ", "twitter": "yurisyyy_", "tweetUrl": ""}, {"id": "Q-09", "block": "Q", "name": "猫わぁるど", "rep": "ららえる", "twitter": "raraeru_PEACE", "tweetUrl": ""}, {"id": "Q-10", "block": "Q", "name": "ビャクヤラボ", "rep": "カグレ", "twitter": "karaguren", "tweetUrl": ""}, {"id": "Q-11", "block": "Q", "name": "スチールワークス", "rep": "steelwire/鉄線", "twitter": "_steelwire", "tweetUrl": ""}, {"id": "Q-12", "block": "Q", "name": "蒼井編集室", "rep": "蒼井シュウ", "twitter": "AoiShu_v", "tweetUrl": ""}, {"id": "Q-13", "block": "Q", "name": "平凡スタジオ", "rep": "平凡零式", "twitter": "zeroshiki_cyber", "tweetUrl": ""}, {"id": "Q-14", "block": "Q", "name": "珈琲鮫喫茶店", "rep": "ラテ", "twitter": "Xedra__", "tweetUrl": ""}, {"id": "Q-15", "block": "Q", "name": "ガブらぼ", "rep": "ガブ", "twitter": "gabu2929", "tweetUrl": ""}, {"id": "Q-16", "block": "Q", "name": "魔界商店", "rep": "ガーベリオン", "twitter": "MotchyGarly", "tweetUrl": ""}, {"id": "Q-17", "block": "Q", "name": "Gentle Beast", "rep": "Nebanaka", "twitter": "nebana12", "tweetUrl": ""}, {"id": "Q-18", "block": "Q", "name": "一汁三菜", "rep": "やなぎぢる", "twitter": "diru11", "tweetUrl": ""}, {"id": "Q-19", "block": "Q", "name": "書肆ぬらぬら", "rep": "群々", "twitter": "GuenGuan", "tweetUrl": ""}, {"id": "Q-20", "block": "Q", "name": "Gate:A", "rep": "あす太郎", "twitter": "aaassstaro", "tweetUrl": ""}, {"id": "Q-21", "block": "Q", "name": "天ノ狼星", "rep": "フォルフ", "twitter": "FenrirSchwart", "tweetUrl": ""}, {"id": "Q-22", "block": "Q", "name": "うまくいかねーっ!", "rep": "龍太", "twitter": "ryuuuta_200315", "tweetUrl": ""}, {"id": "Q-23", "block": "Q", "name": "BEEP-BEEP!", "rep": "たけし", "twitter": "Takeshi_kemo", "tweetUrl": ""}, {"id": "Q-24", "block": "Q", "name": "ミップリンズハウス", "rep": "ミップル", "twitter": "kyuppuru18", "tweetUrl": ""}, {"id": "Q-25", "block": "Q", "name": "かじぐるみ", "rep": "かじうら", "twitter": "k_kajiura", "tweetUrl": ""}, {"id": "Q-26", "block": "Q", "name": "三毛寝小屋", "rep": "三毛矢日和", "twitter": "HoioPdiky", "tweetUrl": ""}, {"id": "Q-27", "block": "Q", "name": "ざらめの一撃", "rep": "こなざらめ", "twitter": "konazarame1", "tweetUrl": ""}, {"id": "Q-28", "block": "Q", "name": "ヨノア商店", "rep": "ばんかいむ", "twitter": "CanMakeHakkyo", "tweetUrl": ""}, {"id": "Q-29", "block": "Q", "name": "有題ドキュメント", "rep": "いお", "twitter": "I_0raI", "tweetUrl": ""}, {"id": "Q-30", "block": "Q", "name": "おきつねさまのおやしろ", "rep": "ピカチュナ", "twitter": "musicfromlightP", "tweetUrl": ""}, {"id": "Q-31", "block": "Q", "name": "奇麗な雑音", "rep": "ピレトリン", "twitter": "pyrethrin_12", "tweetUrl": ""}, {"id": "Q-32", "block": "Q", "name": "Hakuro堂", "rep": "Hakuro", "twitter": "Hakuro21013776", "tweetUrl": ""}, {"id": "R-01", "block": "R", "name": "いぬがみ製作所", "rep": "いぬがみ犬汰", "twitter": "inugami_kenta", "tweetUrl": ""}, {"id": "R-02", "block": "R", "name": "ものくろしっぽ", "rep": "ぐみぱんだ", "twitter": "gm_pnd", "tweetUrl": ""}, {"id": "R-03", "block": "R", "name": "ハピハピ幻覚合想団", "rep": "どどどどどど", "twitter": "6_Renpu_no_C", "tweetUrl": ""}, {"id": "R-04", "block": "R", "name": "こじん販売店", "rep": "ひらがなの個人", "twitter": "Yago_Dayo", "tweetUrl": ""}, {"id": "R-05", "block": "R", "name": "けもさぼたーじゅ", "rep": "けもさぼくん", "twitter": "Kemosabo_Kun", "tweetUrl": ""}, {"id": "R-06", "block": "R", "name": "あめと煙", "rep": "飴木", "twitter": "amakusaamegi", "tweetUrl": ""}, {"id": "R-07", "block": "R", "name": "TFWS", "rep": "源ドリル", "twitter": null, "tweetUrl": ""}, {"id": "R-08", "block": "R", "name": "ねぶりがっこ", "rep": "Riley", "twitter": "Eorzea_Riley", "tweetUrl": ""}, {"id": "R-09", "block": "R", "name": "オズマ計画", "rep": "猪去バンセ", "twitter": "bamseeeee", "tweetUrl": ""}, {"id": "R-10", "block": "R", "name": "牛肉屋", "rep": "nimotaka", "twitter": "nimonotaka", "tweetUrl": ""}, {"id": "R-11", "block": "R", "name": "一億総サンタクロース計画", "rep": "そーちゃん", "twitter": "Sawch_Cls", "tweetUrl": ""}, {"id": "R-12", "block": "R", "name": "GROWL", "rep": "くっちー", "twitter": null, "tweetUrl": ""}, {"id": "R-13", "block": "R", "name": "ダイナマイトハムカツシステム", "rep": "くもたろ", "twitter": "9motaro", "tweetUrl": ""}, {"id": "R-14", "block": "R", "name": "Hide&Seek", "rep": "いぬごく", "twitter": "INUGOKUDO", "tweetUrl": ""}, {"id": "R-15", "block": "R", "name": "最強健康ランド", "rep": "そばちゃ", "twitter": "royalsobatya", "tweetUrl": ""}, {"id": "R-16", "block": "R", "name": "ニコサンド", "rep": "にこ", "twitter": "Nico26b", "tweetUrl": ""}, {"id": "R-17", "block": "R", "name": "三輪ビルヂング", "rep": "大河準", "twitter": "mitsuwabldg", "tweetUrl": ""}, {"id": "R-18", "block": "R", "name": "夏色びいどろ", "rep": "ドンカン", "twitter": "GoujuYu", "tweetUrl": ""}, {"id": "R-19", "block": "R", "name": "シグマート", "rep": "sigma", "twitter": "sigma0109", "tweetUrl": ""}, {"id": "R-20", "block": "R", "name": "ガラパゴス観覧車", "rep": "打開策", "twitter": "Dakaisuke", "tweetUrl": ""}, {"id": "R-21", "block": "R", "name": "白足袋聞香堂", "rep": "貴樹", "twitter": "takaki058", "tweetUrl": ""}, {"id": "R-22", "block": "R", "name": "オレンジパントリー", "rep": "リゲ", "twitter": "rige21", "tweetUrl": ""}, {"id": "R-23", "block": "R", "name": "とらんじーな", "rep": "bonti*age", "twitter": "bont1age", "tweetUrl": ""}, {"id": "R-24", "block": "R", "name": "シグレイド", "rep": "紋甲メリー", "twitter": "MongouMery", "tweetUrl": ""}, {"id": "R-25", "block": "R", "name": "オオカミノツメ", "rep": "しま一(いち)", "twitter": "shima_ichi_2nd", "tweetUrl": ""}, {"id": "R-26", "block": "R", "name": "ゴン茶屋", "rep": "ゴンちゃ", "twitter": "goncha0717", "tweetUrl": ""}, {"id": "R-27", "block": "R", "name": "だる問屋", "rep": "だーるとん", "twitter": "da_rlton", "tweetUrl": ""}, {"id": "R-28", "block": "R", "name": "なんか或", "rep": "CGu", "twitter": "CGu0906", "tweetUrl": ""}, {"id": "R-29", "block": "R", "name": "とあるビーチ", "rep": "黒アメ", "twitter": "kuroamekemo", "tweetUrl": ""}, {"id": "R-30", "block": "R", "name": "胡坐カカズ", "rep": "フォアグラ", "twitter": "2YakiTori2", "tweetUrl": ""}, {"id": "R-31", "block": "R", "name": "とびきりけもーしょん!", "rep": "Hrk", "twitter": "eichi_doraking", "tweetUrl": ""}, {"id": "R-32", "block": "R", "name": "increase増田", "rep": "ふぇるた", "twitter": "feltamitendo", "tweetUrl": ""}, {"id": "S-01", "block": "S", "name": "たゆたう", "rep": "mota", "twitter": "pot_pourri_mttn", "tweetUrl": ""}, {"id": "S-02", "block": "S", "name": "穴熊本舗", "rep": "たびすけ", "twitter": "kurobosi_48", "tweetUrl": ""}, {"id": "S-03", "block": "S", "name": "デジタル食堂", "rep": "高町まいす", "twitter": "maisu_", "tweetUrl": ""}, {"id": "S-04", "block": "S", "name": "けだものエクスプローラー", "rep": "天満はるすけ", "twitter": "hachikenyahama", "tweetUrl": ""}, {"id": "S-05", "block": "S", "name": "智也", "rep": "智也", "twitter": "tomoyamaru_alt", "tweetUrl": ""}, {"id": "S-06", "block": "S", "name": "みずいろ犬舎", "rep": "ヒポコ", "twitter": "ponpo_ko5", "tweetUrl": ""}, {"id": "S-07", "block": "S", "name": "カゼコエ", "rep": "熊弥", "twitter": "yuuya333", "tweetUrl": ""}, {"id": "S-08", "block": "S", "name": "なま〇〇ご", "rep": "なまびと", "twitter": "Namabito", "tweetUrl": ""}, {"id": "S-09", "block": "S", "name": "けだま(汚れ)", "rep": "蒼梧", "twitter": "a3_lion", "tweetUrl": ""}, {"id": "S-10", "block": "S", "name": "空のごみばこ", "rep": "SKY", "twitter": "sky_gomi", "tweetUrl": ""}, {"id": "S-11", "block": "S", "name": "DogHouse", "rep": "犬上りゅう", "twitter": "inuryu", "tweetUrl": ""}, {"id": "S-12", "block": "S", "name": "酸化亜鉛ネオン", "rep": "ゼノン", "twitter": "ZnONe55", "tweetUrl": ""}, {"id": "S-13", "block": "S", "name": "カワラアメ", "rep": "瓦がわら", "twitter": "kawara_gawara", "tweetUrl": ""}, {"id": "S-14", "block": "S", "name": "FURFETCH", "rep": "たくーん", "twitter": "takuuuun69", "tweetUrl": ""}, {"id": "S-15", "block": "S", "name": "ワン・ツー・スリー!", "rep": "倉田五右衛門", "twitter": "goyemon_k", "tweetUrl": ""}, {"id": "S-16", "block": "S", "name": "チーズマシマシで。", "rep": "小詰", "twitter": "KozumeTako", "tweetUrl": ""}, {"id": "S-17", "block": "S", "name": "穴蔵×half open", "rep": "花カツヲ", "twitter": "hanakatsuo10", "tweetUrl": ""}, {"id": "S-18", "block": "S", "name": "獣屋", "rep": "牛神満月", "twitter": "kemo_ushiman", "tweetUrl": ""}, {"id": "S-19", "block": "S", "name": "今日の毛色", "rep": "ぷっくん", "twitter": "pukkunn", "tweetUrl": ""}, {"id": "S-20", "block": "S", "name": "RM文庫", "rep": "三木瓶太", "twitter": "botopu", "tweetUrl": ""}, {"id": "S-21", "block": "S", "name": "大遅刻", "rep": "まりチョロ", "twitter": "marimo_cyorobon", "tweetUrl": ""}, {"id": "S-22", "block": "S", "name": "どっちがタチ?", "rep": "消化", "twitter": null, "tweetUrl": ""}, {"id": "S-23", "block": "S", "name": "VISH", "rep": "yow", "twitter": "vish4ow", "tweetUrl": ""}, {"id": "S-24", "block": "S", "name": "一番星に尋問中", "rep": "かがり", "twitter": "Ka_ga_rI", "tweetUrl": ""}, {"id": "S-25", "block": "S", "name": "獣屯地", "rep": "軍曹", "twitter": "gunso_p", "tweetUrl": ""}, {"id": "S-26", "block": "S", "name": "amdnet.", "rep": "アム", "twitter": "amd_net", "tweetUrl": ""}, {"id": "S-27", "block": "S", "name": "カステラバウト", "rep": "きゃつね", "twitter": "kyatune", "tweetUrl": ""}, {"id": "S-28", "block": "S", "name": "こめびつ", "rep": "杓文字", "twitter": "Samoji", "tweetUrl": ""}, {"id": "S-29", "block": "S", "name": "スクゥーマの出所", "rep": "肉鍋", "twitter": "nikunabe1989", "tweetUrl": ""}, {"id": "S-30", "block": "S", "name": "ゆるりくらり", "rep": "マ&グ", "twitter": "koozienn", "tweetUrl": ""}, {"id": "S-31", "block": "S", "name": "生より黒焦げ", "rep": "伊雪しおね", "twitter": "ibuki_shione", "tweetUrl": ""}, {"id": "S-32", "block": "S", "name": "ちさのこ", "rep": "のこ", "twitter": "noko_illust", "tweetUrl": ""}];
+const BOOTHS = [{"id": "A01", "block": "A", "num": "01", "adult": false, "name": "BAURWOLF", "rep": "Luf", "twitter": null, "members": [{"name": "Luf", "twitter": null, "role": "leader"}], "cut": true}, {"id": "A02", "block": "A", "num": "02", "adult": false, "name": "SEAWEED VILLAGE", "rep": "DAI-XT.", "twitter": null, "members": [{"name": "DAI-XT.", "twitter": null, "role": "leader"}], "cut": true}, {"id": "A03", "block": "A", "num": "03", "adult": false, "name": "GYM LIGER", "rep": "Raigo", "twitter": null, "members": [{"name": "Raigo", "twitter": null, "role": "leader"}, {"name": "藤堂雷悟", "twitter": null, "role": "member"}], "cut": true}, {"id": "A04", "block": "A", "num": "04", "adult": false, "name": "OUMAGA WALD", "rep": "Wald", "twitter": null, "members": [{"name": "Wald", "twitter": null, "role": "leader"}, {"name": "逢魔牙ワルト", "twitter": null, "role": "member"}], "cut": true}, {"id": "A05", "block": "A", "num": "05", "adult": false, "name": "TRAD MONMON 虎渡悶々", "rep": "Trad Monmon", "twitter": null, "members": [{"name": "Trad Monmon", "twitter": null, "role": "leader"}, {"name": "虎渡悶々(Trad Monmon)", "twitter": null, "role": "member"}], "cut": true}, {"id": "A06", "block": "A", "num": "06", "adult": false, "name": "Kigurumi Kagetsu", "rep": "Keishi(KC)", "twitter": null, "members": [{"name": "Keishi(KC)", "twitter": null, "role": "leader"}, {"name": "Geppei(GP)", "twitter": null, "role": "member"}, {"name": "mikatagura", "twitter": null, "role": "member"}], "cut": true}, {"id": "A07", "block": "A", "num": "07", "adult": false, "name": "wolf's works", "rep": "ware", "twitter": "wolfroof", "members": [{"name": "ware", "twitter": "wolfroof", "role": "leader"}, {"name": "Sekki-Kyowe", "twitter": "sekkinkyowe", "role": "member"}], "cut": true}, {"id": "A08", "block": "A", "num": "08", "adult": false, "name": "TRIVELER", "rep": "Nagabe", "twitter": null, "members": [{"name": "Nagabe", "twitter": null, "role": "leader"}], "cut": true}, {"id": "A09", "block": "A", "num": "09", "adult": false, "name": "GINTAN STUDIO", "rep": "Gintan", "twitter": null, "members": [{"name": "Gintan", "twitter": null, "role": "leader"}], "cut": true}, {"id": "A10", "block": "A", "num": "10", "adult": false, "name": "푸딩파르페", "rep": "syukapong", "twitter": "syukapong", "members": [{"name": "syukapong", "twitter": "syukapong", "role": "leader"}, {"name": "막스", "twitter": "M_A_K_X_", "role": "member"}, {"name": "하호", "twitter": "KKULLOOK", "role": "member"}], "cut": true}, {"id": "A11", "block": "A", "num": "11", "adult": false, "name": "콩자반 김자반", "rep": "Kimroco", "twitter": "_Kimroco", "members": [{"name": "Kimroco", "twitter": "_Kimroco", "role": "leader"}, {"name": "퍼지", "twitter": null, "role": "member"}], "cut": true}, {"id": "A12", "block": "A", "num": "12", "adult": false, "name": "콩자반 김자반", "rep": "콩조림", "twitter": "kongzorim", "members": [{"name": "콩조림", "twitter": "kongzorim", "role": "leader"}, {"name": "찰리", "twitter": null, "role": "member"}], "cut": true}, {"id": "A13", "block": "A", "num": "13", "adult": false, "name": "코치문고", "rep": "코치", "twitter": "_K0CH1", "members": [{"name": "코치", "twitter": "_K0CH1", "role": "leader"}, {"name": "테이릿", "twitter": null, "role": "member"}, {"name": "림", "twitter": null, "role": "member"}], "cut": true}, {"id": "A14", "block": "A", "num": "14", "adult": false, "name": "초건전회지연구회", "rep": "하치", "twitter": "Hachi_duchi", "members": [{"name": "하치", "twitter": "Hachi_duchi", "role": "leader"}, {"name": "쏘당", "twitter": "ss0dan6", "role": "member"}], "cut": false}, {"id": "A15", "block": "A", "num": "15", "adult": false, "name": "PPP2", "rep": "ITTO", "twitter": "nanimonaitto", "members": [{"name": "ITTO", "twitter": "nanimonaitto", "role": "leader"}, {"name": "공간", "twitter": "kkugaoo", "role": "member"}], "cut": false}, {"id": "A16", "block": "A", "num": "16", "adult": false, "name": "브 BEUU / FURPPET", "rep": "브 BEUU", "twitter": "Beuu0920", "members": [{"name": "브 BEUU", "twitter": "Beuu0920", "role": "leader"}, {"name": "헤피 Hephi", "twitter": null, "role": "member"}], "cut": true}, {"id": "A17", "block": "A", "num": "17", "adult": false, "name": "시디과 늑대교수님", "rep": "SBST", "twitter": "SIRBST", "members": [{"name": "SBST", "twitter": "SIRBST", "role": "leader"}, {"name": "서베스천", "twitter": null, "role": "member"}], "cut": true}, {"id": "A18", "block": "A", "num": "18", "adult": false, "name": "BAD PAW Co.", "rep": "badpawco", "twitter": "badpawco", "members": [{"name": "badpawco", "twitter": "badpawco", "role": "leader"}, {"name": "해견", "twitter": null, "role": "member"}, {"name": "Largo", "twitter": null, "role": "member"}], "cut": true}, {"id": "A19", "block": "A", "num": "19", "adult": false, "name": "메이커 연합부스 - 아르모아", "rep": "뻐꾹", "twitter": "pu_couck_", "members": [{"name": "뻐꾹", "twitter": "pu_couck_", "role": "leader"}, {"name": "김루미", "twitter": null, "role": "member"}, {"name": "블루레이", "twitter": null, "role": "member"}], "cut": true}, {"id": "A20", "block": "A", "num": "20", "adult": false, "name": "내가 쓰려고 만든 굿즈", "rep": "PHINY", "twitter": "Yell0whale", "members": [{"name": "PHINY", "twitter": "Yell0whale", "role": "leader"}, {"name": "BLAEDIC", "twitter": null, "role": "member"}], "cut": true}, {"id": "A21", "block": "A", "num": "21", "adult": false, "name": "Kemostar", "rep": "Frosty", "twitter": "Seres_frosty", "members": [{"name": "Frosty", "twitter": "Seres_frosty", "role": "leader"}, {"name": "Habol", "twitter": "Habol_", "role": "member"}], "cut": true}, {"id": "A22", "block": "A", "num": "22", "adult": false, "name": "모노마사 나이스 트라이", "rep": "백야", "twitter": "White_Night06", "members": [{"name": "백야", "twitter": "White_Night06", "role": "leader"}, {"name": "Solidus", "twitter": "liq_soli", "role": "member"}], "cut": true}, {"id": "A23", "block": "A", "num": "23", "adult": false, "name": "엘븐스토어 1", "rep": "엘븐", "twitter": "elvendays", "members": [{"name": "엘븐", "twitter": "elvendays", "role": "leader"}, {"name": "카카오", "twitter": null, "role": "member"}], "cut": true}, {"id": "A24", "block": "A", "num": "24", "adult": false, "name": "어몽어스샌즈파피루스", "rep": "파닉", "twitter": "Panic_exc", "members": [{"name": "파닉", "twitter": "Panic_exc", "role": "leader"}, {"name": "잔디", "twitter": null, "role": "member"}, {"name": "별귤", "twitter": null, "role": "member"}], "cut": true}, {"id": "A25", "block": "A", "num": "25", "adult": false, "name": "숲속의 범", "rep": "쑥갓", "twitter": "nrimbotree", "members": [{"name": "쑥갓", "twitter": "nrimbotree", "role": "leader"}, {"name": "soL", "twitter": null, "role": "member"}], "cut": true}, {"id": "A26", "block": "A", "num": "26", "adult": false, "name": "히잉 형아 꼬리 상점", "rep": "런크", "twitter": "Runk102030", "members": [{"name": "런크", "twitter": "Runk102030", "role": "leader"}, {"name": "파라엘", "twitter": "perel_fur", "role": "member"}, {"name": "콜리", "twitter": "Colibri_1825", "role": "member"}], "cut": true}, {"id": "A27", "block": "A", "num": "27", "adult": false, "name": "전속 메이드 세바스찬의 비밀 주문!", "rep": "영원양", "twitter": "youngwonyang", "members": [{"name": "영원양", "twitter": "youngwonyang", "role": "leader"}, {"name": "루덴", "twitter": null, "role": "member"}], "cut": true}, {"id": "A28", "block": "A", "num": "28", "adult": false, "name": "OCHALOBSTER", "rep": "おちゃづけ(OCHAZUKE)", "twitter": "OCHALOBSTER", "members": [{"name": "おちゃづけ(OCHAZUKE)", "twitter": "OCHALOBSTER", "role": "leader"}, {"name": "えびまよ(EBIMAYO)", "twitter": null, "role": "member"}], "cut": true}, {"id": "A29", "block": "A", "num": "29", "adult": false, "name": "해적판 아니고 정발입니다", "rep": "Minong", "twitter": "minongminong", "members": [{"name": "Minong", "twitter": "minongminong", "role": "leader"}, {"name": "썽으리", "twitter": "TLJPSi", "role": "member"}], "cut": true}, {"id": "A30", "block": "A", "num": "30", "adult": false, "name": "FURST SNOW", "rep": "JIN", "twitter": "noway_JIN", "members": [{"name": "JIN", "twitter": "noway_JIN", "role": "leader"}, {"name": "Flash", "twitter": "DXFFlash", "role": "member"}, {"name": "Eerie", "twitter": "Neoul_the_sea", "role": "member"}], "cut": true}, {"id": "A31", "block": "A", "num": "31", "adult": false, "name": "치폰의 레모네이드 가게", "rep": "치폰", "twitter": "chiffonpaw", "members": [{"name": "치폰", "twitter": "chiffonpaw", "role": "leader"}], "cut": true}, {"id": "A32", "block": "A", "num": "32", "adult": false, "name": "고소한 빵냄새가 솔솔", "rep": "빵용", "twitter": "breadragon", "members": [{"name": "빵용", "twitter": "breadragon", "role": "leader"}], "cut": true}, {"id": "A33", "block": "A", "num": "33", "adult": false, "name": "도마뱀의 보물함", "rep": "드란", "twitter": "didran9802", "members": [{"name": "드란", "twitter": "didran9802", "role": "leader"}, {"name": "애오우", "twitter": null, "role": "member"}], "cut": true}, {"id": "A34", "block": "A", "num": "34", "adult": false, "name": "포도당", "rep": "한라봉", "twitter": "hanlabong03", "members": [{"name": "한라봉", "twitter": "hanlabong03", "role": "leader"}, {"name": "두부", "twitter": null, "role": "member"}, {"name": "제제", "twitter": null, "role": "member"}], "cut": true}, {"id": "A35", "block": "A", "num": "35", "adult": false, "name": "빙다리 햍바지", "rep": "해태", "twitter": "ringo2ALS", "members": [{"name": "해태", "twitter": "ringo2ALS", "role": "leader"}], "cut": true}, {"id": "A36", "block": "A", "num": "36", "adult": false, "name": "또롱별", "rep": "이데아", "twitter": "ideatami", "members": [{"name": "이데아", "twitter": "ideatami", "role": "leader"}, {"name": "스란", "twitter": null, "role": "member"}], "cut": true}, {"id": "A37", "block": "A", "num": "37", "adult": false, "name": "Whitefangwolves", "rep": "Whitefangwolves", "twitter": "Whitefangwolves", "members": [{"name": "Whitefangwolves", "twitter": "Whitefangwolves", "role": "leader"}], "cut": true}, {"id": "A38", "block": "A", "num": "38", "adult": false, "name": "Whitefangwolves", "rep": "Whitefangwolves", "twitter": "Whitefangwolves", "members": [{"name": "Whitefangwolves", "twitter": "Whitefangwolves", "role": "leader"}], "cut": true}, {"id": "A39", "block": "A", "num": "39", "adult": false, "name": "Furriverse", "rep": "드펜", "twitter": "Furriverse", "members": [{"name": "드펜", "twitter": "Furriverse", "role": "leader"}, {"name": "폴라", "twitter": null, "role": "member"}, {"name": "쿠코상", "twitter": null, "role": "member"}], "cut": true}, {"id": "A40", "block": "A", "num": "40", "adult": false, "name": "FUR PLUS", "rep": "Dodari", "twitter": "FurPlus_Studio", "members": [{"name": "Dodari", "twitter": "FurPlus_Studio", "role": "leader"}, {"name": "타쟈도르(떡장갑)", "twitter": null, "role": "member"}], "cut": true}, {"id": "A41", "block": "A", "num": "41", "adult": false, "name": "MOFUMOFUYA", "rep": "mofuaki", "twitter": null, "members": [{"name": "mofuaki", "twitter": null, "role": "leader"}, {"name": "おおくも", "twitter": null, "role": "member"}, {"name": "薄田", "twitter": null, "role": "member"}], "cut": true}, {"id": "B01", "block": "B", "num": "01", "adult": true, "name": "CheetahPaws", "rep": "CheetahPaws", "twitter": null, "members": [{"name": "CheetahPaws", "twitter": null, "role": "leader"}], "cut": true}, {"id": "B02", "block": "B", "num": "02", "adult": true, "name": "Agi's Garage", "rep": "agitype01", "twitter": "Kuttoyaki", "members": [{"name": "agitype01", "twitter": null, "role": "leader"}, {"name": "Kutto", "twitter": "Kuttoyaki", "role": "member"}], "cut": true}, {"id": "B03", "block": "B", "num": "03", "adult": true, "name": "Omyurice", "rep": "Omyurice", "twitter": null, "members": [{"name": "Omyurice", "twitter": null, "role": "leader"}], "cut": true}, {"id": "B04", "block": "B", "num": "04", "adult": true, "name": "뀨", "rep": "Qp", "twitter": "qyesp", "members": [{"name": "Qp", "twitter": "qyesp", "role": "leader"}, {"name": "QOOZ", "twitter": "Qooz90", "role": "member"}], "cut": true}, {"id": "B05", "block": "B", "num": "05", "adult": true, "name": "탑 부쉬 접근금지령", "rep": "mindal3118", "twitter": "mindal3118", "members": [{"name": "mindal3118", "twitter": "mindal3118", "role": "leader"}, {"name": "김민달", "twitter": null, "role": "member"}], "cut": true}, {"id": "B06", "block": "B", "num": "06", "adult": true, "name": "Black's Den", "rep": "Malcha soda", "twitter": null, "members": [{"name": "Malcha soda", "twitter": null, "role": "leader"}], "cut": true}, {"id": "B07", "block": "B", "num": "07", "adult": true, "name": "호다다다닷!", "rep": "Horung", "twitter": "horung0226", "members": [{"name": "Horung", "twitter": "horung0226", "role": "leader"}, {"name": "DAT", "twitter": "Dat_Del_luna", "role": "member"}, {"name": "JUN", "twitter": "jj9904", "role": "member"}], "cut": true}, {"id": "B08", "block": "B", "num": "08", "adult": true, "name": "호랑말콤멍멍퍼디", "rep": "말콤", "twitter": "Malcom508", "members": [{"name": "말콤", "twitter": "Malcom508", "role": "leader"}, {"name": "퍼디", "twitter": "Fuddyblog", "role": "member"}, {"name": "제트", "twitter": "dj28sj", "role": "member"}], "cut": true}, {"id": "B09", "block": "B", "num": "09", "adult": true, "name": "청록용", "rep": "현록", "twitter": "Tighnari_55", "members": [{"name": "현록", "twitter": "Tighnari_55", "role": "leader"}, {"name": "용박이", "twitter": null, "role": "member"}, {"name": "청교", "twitter": null, "role": "member"}], "cut": true}, {"id": "B10", "block": "B", "num": "10", "adult": true, "name": "ニコサンド", "rep": "NICO", "twitter": "Nico26b", "members": [{"name": "NICO", "twitter": "Nico26b", "role": "leader"}, {"name": "sobatya", "twitter": null, "role": "member"}, {"name": "늠늠", "twitter": null, "role": "member"}], "cut": true}, {"id": "B11", "block": "B", "num": "11", "adult": true, "name": "CandleLight", "rep": "Suigi", "twitter": "26_suigi", "members": [{"name": "Suigi", "twitter": "26_suigi", "role": "leader"}], "cut": true}, {"id": "B12", "block": "B", "num": "12", "adult": true, "name": "Horns&Tails", "rep": "TITANIA", "twitter": "Warningblackdog", "members": [{"name": "TITANIA", "twitter": "Warningblackdog", "role": "leader"}, {"name": "BUTA", "twitter": null, "role": "member"}, {"name": "커피새", "twitter": null, "role": "member"}], "cut": true}, {"id": "B13", "block": "B", "num": "13", "adult": true, "name": "RIKOSE", "rep": "リコセ", "twitter": "rikose", "members": [{"name": "リコセ", "twitter": "rikose", "role": "leader"}, {"name": "kishibe", "twitter": null, "role": "member"}, {"name": "kame", "twitter": null, "role": "member"}], "cut": true}, {"id": "B14", "block": "B", "num": "14", "adult": true, "name": "버츄얼 렌탈 남편", "rep": "무드리", "twitter": "Neilos0526", "members": [{"name": "무드리", "twitter": "Neilos0526", "role": "leader"}, {"name": "쿠루테", "twitter": null, "role": "member"}], "cut": true}, {"id": "B15", "block": "B", "num": "15", "adult": true, "name": "아쿠파라", "rep": "아차쿠라", "twitter": "ACHAKOORA", "members": [{"name": "아차쿠라", "twitter": "ACHAKOORA", "role": "leader"}, {"name": "うろ", "twitter": "uro0000", "role": "member"}], "cut": true}, {"id": "B16", "block": "B", "num": "16", "adult": true, "name": "NANKAARU", "rep": "CGu", "twitter": "CGu0906", "members": [{"name": "CGu", "twitter": "CGu0906", "role": "leader"}], "cut": true}, {"id": "B17", "block": "B", "num": "17", "adult": true, "name": "STUDIO雄虎凛", "rep": "凛＠STUDIO雄虎凛", "twitter": "GTDignified", "members": [{"name": "凛＠STUDIO雄虎凛", "twitter": "GTDignified", "role": "leader"}, {"name": "號ゆうごう", "twitter": null, "role": "member"}], "cut": true}, {"id": "B18", "block": "B", "num": "18", "adult": true, "name": "天神大砂丘", "rep": "Neumokun", "twitter": null, "members": [{"name": "Neumokun", "twitter": null, "role": "leader"}, {"name": "くっく", "twitter": null, "role": "member"}], "cut": true}, {"id": "B19", "block": "B", "num": "19", "adult": true, "name": "OSURULE", "rep": "IG", "twitter": null, "members": [{"name": "IG", "twitter": null, "role": "leader"}, {"name": "Beep", "twitter": null, "role": "member"}], "cut": true}, {"id": "B20", "block": "B", "num": "20", "adult": true, "name": "HARD DROP", "rep": "まだーと", "twitter": "madar_to", "members": [{"name": "まだーと", "twitter": "madar_to", "role": "leader"}], "cut": true}, {"id": "B21", "block": "B", "num": "21", "adult": true, "name": "Taishokukan Noirowze", "rep": "TostosFski", "twitter": null, "members": [{"name": "TostosFski", "twitter": null, "role": "leader"}], "cut": true}, {"id": "B22", "block": "B", "num": "22", "adult": true, "name": "BoxBear", "rep": "Gomtang", "twitter": null, "members": [{"name": "Gomtang", "twitter": null, "role": "leader"}], "cut": true}, {"id": "B23", "block": "B", "num": "23", "adult": true, "name": "Ash-Land", "rep": "AshenDawger", "twitter": "AshenDawger", "members": [{"name": "AshenDawger", "twitter": "AshenDawger", "role": "leader"}, {"name": "shoutlesstranse", "twitter": "shoutlesstranse", "role": "member"}], "cut": true}, {"id": "B24", "block": "B", "num": "24", "adult": true, "name": "WILD STYLE", "rep": "Takemoto", "twitter": null, "members": [{"name": "Takemoto", "twitter": null, "role": "leader"}, {"name": "LamIan", "twitter": null, "role": "member"}], "cut": true}, {"id": "B25", "block": "B", "num": "25", "adult": true, "name": "도슭 한상전", "rep": "찰떡", "twitter": "RiceCakeKain", "members": [{"name": "찰떡", "twitter": "RiceCakeKain", "role": "leader"}, {"name": "프라", "twitter": null, "role": "member"}], "cut": true}, {"id": "B26", "block": "B", "num": "26", "adult": true, "name": "Fur-펙트 게임", "rep": "개잉여", "twitter": "J_ip721", "members": [{"name": "개잉여", "twitter": "J_ip721", "role": "leader"}, {"name": "검댕", "twitter": null, "role": "member"}], "cut": true}, {"id": "B27", "block": "B", "num": "27", "adult": true, "name": "풀하우스", "rep": "MIKKYxx01", "twitter": "MIKKYxx01", "members": [{"name": "MIKKYxx01", "twitter": "MIKKYxx01", "role": "leader"}, {"name": "LEO", "twitter": null, "role": "member"}], "cut": true}, {"id": "B28", "block": "B", "num": "28", "adult": true, "name": "멍달멍달", "rep": "BUTO", "twitter": "BUTOBU", "members": [{"name": "BUTO", "twitter": "BUTOBU", "role": "leader"}, {"name": "유진", "twitter": "wnsgh2466", "role": "member"}, {"name": "쵸이", "twitter": null, "role": "member"}], "cut": true}, {"id": "B29", "block": "B", "num": "29", "adult": true, "name": "두더지빵집", "rep": "Warr!", "twitter": "youdil1004", "members": [{"name": "Warr!", "twitter": "youdil1004", "role": "leader"}, {"name": "Warr", "twitter": null, "role": "member"}, {"name": "모닝빵", "twitter": null, "role": "member"}], "cut": true}, {"id": "B30", "block": "B", "num": "30", "adult": true, "name": "마운자로 결사반대 위원회", "rep": "타패", "twitter": "tappe124", "members": [{"name": "타패", "twitter": "tappe124", "role": "leader"}, {"name": "Pazzy / 파찌", "twitter": null, "role": "member"}], "cut": true}, {"id": "B31", "block": "B", "num": "31", "adult": true, "name": "퍼리다이소 ~카지노점~", "rep": "PM", "twitter": "pmaker_owo", "members": [{"name": "PM", "twitter": "pmaker_owo", "role": "leader"}, {"name": "로로디", "twitter": null, "role": "member"}, {"name": "테드", "twitter": null, "role": "member"}], "cut": true}, {"id": "B32", "block": "B", "num": "32", "adult": true, "name": "퍼리다이소 ~카지노점~", "rep": "쏘셰", "twitter": "pangpayaaaak", "members": [{"name": "쏘셰", "twitter": "pangpayaaaak", "role": "leader"}, {"name": "부들", "twitter": null, "role": "member"}, {"name": "고리", "twitter": null, "role": "member"}], "cut": true}, {"id": "B33", "block": "B", "num": "33", "adult": true, "name": "염소야, 그만 야해!", "rep": "날랜돌이", "twitter": "COOKEDMOCHI", "members": [{"name": "날랜돌이", "twitter": "COOKEDMOCHI", "role": "leader"}, {"name": "도로롱", "twitter": "__Dororong__", "role": "member"}], "cut": true}, {"id": "B34", "block": "B", "num": "34", "adult": true, "name": "엘븐스토어2", "rep": "Bernado", "twitter": "Bernado_Alte_A", "members": [{"name": "Bernado", "twitter": "Bernado_Alte_A", "role": "leader"}, {"name": "베르나도", "twitter": null, "role": "member"}, {"name": "엘븐", "twitter": null, "role": "member"}], "cut": true}, {"id": "C01", "block": "C", "num": "01", "adult": true, "name": "노란딱지", "rep": "sum", "twitter": "ssums12", "members": [{"name": "sum", "twitter": "ssums12", "role": "leader"}, {"name": "HANUVO", "twitter": null, "role": "member"}], "cut": true}, {"id": "C02", "block": "C", "num": "02", "adult": true, "name": "어서오세요, 두바이 쫀득 김메이에!", "rep": "듀크", "twitter": "Wolf__Duke", "members": [{"name": "듀크", "twitter": "Wolf__Duke", "role": "leader"}], "cut": true}, {"id": "C03", "block": "C", "num": "03", "adult": true, "name": "Furscord : 카지노 털쟁이", "rep": "페러_소치", "twitter": "vpfj423423", "members": [{"name": "페러_소치", "twitter": "vpfj423423", "role": "leader"}, {"name": "냉이", "twitter": null, "role": "member"}], "cut": true}, {"id": "C04", "block": "C", "num": "04", "adult": true, "name": "슈퍼래빗프로덕션", "rep": "spirit_kimm", "twitter": "spirit_kimm", "members": [{"name": "spirit_kimm", "twitter": "spirit_kimm", "role": "leader"}, {"name": "HolySpirit", "twitter": null, "role": "member"}, {"name": "베오", "twitter": null, "role": "member"}], "cut": true}, {"id": "C05", "block": "C", "num": "05", "adult": true, "name": "Ezhno / エズノ", "rep": "Ezhno", "twitter": null, "members": [{"name": "Ezhno", "twitter": null, "role": "leader"}], "cut": true}, {"id": "C06", "block": "C", "num": "06", "adult": true, "name": "스튜디오 엘레지", "rep": "bighornsheeppic", "twitter": "bighornsheeppic", "members": [{"name": "bighornsheeppic", "twitter": "bighornsheeppic", "role": "leader"}, {"name": "큰뿔양", "twitter": null, "role": "member"}, {"name": "도우미", "twitter": null, "role": "member"}], "cut": true}, {"id": "C07", "block": "C", "num": "07", "adult": true, "name": "GGG: GO GET 'EM, GOAT!", "rep": "냥글", "twitter": "nekogaki0324", "members": [{"name": "냥글", "twitter": "nekogaki0324", "role": "leader"}, {"name": "자구", "twitter": null, "role": "member"}], "cut": true}, {"id": "C08", "block": "C", "num": "08", "adult": true, "name": "High-Fur", "rep": "메타볼", "twitter": "Meta_NONE", "members": [{"name": "메타볼", "twitter": "Meta_NONE", "role": "leader"}, {"name": "마뉴", "twitter": null, "role": "member"}, {"name": "스탠", "twitter": null, "role": "member"}], "cut": true}, {"id": "C09", "block": "C", "num": "09", "adult": true, "name": "퍼리중독신고는7811", "rep": "올뺨", "twitter": "orpiamman", "members": [{"name": "올뺨", "twitter": "orpiamman", "role": "leader"}, {"name": "HUKA", "twitter": "HUKA8989", "role": "member"}, {"name": "노출불안 고씨", "twitter": "goshee248", "role": "member"}], "cut": true}, {"id": "C10", "block": "C", "num": "10", "adult": true, "name": "지금이 절호의 찬스잖아", "rep": "마갱즈(Magangz)", "twitter": "makidogang", "members": [{"name": "마갱즈(Magangz)", "twitter": "makidogang", "role": "leader"}, {"name": "카뮤엘(Kamyuel)", "twitter": null, "role": "member"}, {"name": "컴버스트(combust)", "twitter": null, "role": "member"}], "cut": true}, {"id": "C11", "block": "C", "num": "11", "adult": true, "name": "퍼리의연인", "rep": "Chung", "twitter": null, "members": [{"name": "Chung", "twitter": null, "role": "leader"}, {"name": "Rang", "twitter": null, "role": "member"}], "cut": true}, {"id": "C12", "block": "C", "num": "12", "adult": true, "name": "누도브즈", "rep": "누도기", "twitter": "noodogi", "members": [{"name": "누도기", "twitter": "noodogi", "role": "leader"}, {"name": "d0ve", "twitter": "d0ve_XD", "role": "member"}, {"name": "여우반찬", "twitter": "fox_banchan", "role": "member"}], "cut": true}, {"id": "C13", "block": "C", "num": "13", "adult": true, "name": "간장계란밥", "rep": "art_uza", "twitter": "art_uza", "members": [{"name": "art_uza", "twitter": "art_uza", "role": "leader"}, {"name": "UZA", "twitter": null, "role": "member"}], "cut": true}, {"id": "C14", "block": "C", "num": "14", "adult": true, "name": "파놉티콘", "rep": "호끼퐁", "twitter": null, "members": [{"name": "호끼퐁", "twitter": null, "role": "leader"}, {"name": "노루", "twitter": null, "role": "member"}], "cut": true}, {"id": "C15", "block": "C", "num": "15", "adult": true, "name": "HONEYCOMB", "rep": "wasp", "twitter": "anthyutena", "members": [{"name": "wasp", "twitter": "anthyutena", "role": "leader"}, {"name": "TTN", "twitter": "239_239", "role": "member"}], "cut": true}, {"id": "C16", "block": "C", "num": "16", "adult": true, "name": "D!TALE", "rep": "뎡 (Dyeong)", "twitter": "DYEONG_2", "members": [{"name": "뎡 (Dyeong)", "twitter": "DYEONG_2", "role": "leader"}], "cut": true}, {"id": "C17", "block": "C", "num": "17", "adult": true, "name": "데니가 필요해!!", "rep": "Jerry", "twitter": "Jerry_5779", "members": [{"name": "Jerry", "twitter": "Jerry_5779", "role": "leader"}], "cut": true}, {"id": "C18", "block": "C", "num": "18", "adult": true, "name": "자폭버튼", "rep": "만두", "twitter": "mdfurr", "members": [{"name": "만두", "twitter": "mdfurr", "role": "leader"}, {"name": "COBALT", "twitter": null, "role": "member"}], "cut": true}, {"id": "C19", "block": "C", "num": "19", "adult": true, "name": "작전명: 에이전트 버니", "rep": "Doro-nyong", "twitter": "doro_nyong_art", "members": [{"name": "Doro-nyong", "twitter": "doro_nyong_art", "role": "leader"}, {"name": "이노무", "twitter": "inomu_shiki", "role": "member"}, {"name": "오백비", "twitter": "FurNemB", "role": "member"}], "cut": true}, {"id": "C20", "block": "C", "num": "20", "adult": true, "name": "작전명: 에이전트 버니", "rep": "흑당버블곰", "twitter": "Kokutou_bear", "members": [{"name": "흑당버블곰", "twitter": "Kokutou_bear", "role": "leader"}, {"name": "초코곰탱이", "twitter": null, "role": "member"}, {"name": "파곰", "twitter": null, "role": "member"}], "cut": true}, {"id": "C21", "block": "C", "num": "21", "adult": true, "name": "데빌카드 쇼다운!", "rep": "멜쿠(MelKu)", "twitter": "MELONCOOKIE_24", "members": [{"name": "멜쿠(MelKu)", "twitter": "MELONCOOKIE_24", "role": "leader"}, {"name": "푸우", "twitter": "fu_o4884", "role": "member"}, {"name": "첫도", "twitter": "cheotdo", "role": "member"}], "cut": true}, {"id": "C22", "block": "C", "num": "22", "adult": true, "name": "늑랑 狼", "rep": "미랑", "twitter": "milang_313", "members": [{"name": "미랑", "twitter": "milang_313", "role": "leader"}, {"name": "머바", "twitter": null, "role": "member"}], "cut": true}, {"id": "C23", "block": "C", "num": "23", "adult": true, "name": "tag : tiger boy", "rep": "아도케타", "twitter": "ADKT0448", "members": [{"name": "아도케타", "twitter": "ADKT0448", "role": "leader"}, {"name": "하벨", "twitter": "havelXP", "role": "member"}], "cut": true}, {"id": "C24", "block": "C", "num": "24", "adult": true, "name": "보즈야 연구소", "rep": "너울바다", "twitter": "ED_in_FF14", "members": [{"name": "너울바다", "twitter": "ED_in_FF14", "role": "leader"}, {"name": "온별", "twitter": null, "role": "member"}], "cut": true}, {"id": "C25", "block": "C", "num": "25", "adult": true, "name": "거기,게임 좋아하세요?", "rep": "PagYaing4167", "twitter": "PagYaing4167", "members": [{"name": "PagYaing4167", "twitter": "PagYaing4167", "role": "leader"}, {"name": "Doyayam", "twitter": null, "role": "member"}], "cut": true}, {"id": "C26", "block": "C", "num": "26", "adult": true, "name": "뭐든 해봤습니다 털공장", "rep": "언제쯤", "twitter": "bigwhite_cat", "members": [{"name": "언제쯤", "twitter": "bigwhite_cat", "role": "leader"}, {"name": "장장대대훈훈", "twitter": "jangdaehun31310", "role": "member"}], "cut": true}, {"id": "C27", "block": "C", "num": "27", "adult": true, "name": "Mr. furshowtime", "rep": "100심볼", "twitter": "100symbol", "members": [{"name": "100심볼", "twitter": "100symbol", "role": "leader"}, {"name": "아기염소", "twitter": null, "role": "member"}], "cut": true}, {"id": "C28", "block": "C", "num": "28", "adult": true, "name": "S.O.C", "rep": "벅벅", "twitter": "furrybuckbuck", "members": [{"name": "벅벅", "twitter": "furrybuckbuck", "role": "leader"}, {"name": "NB", "twitter": null, "role": "member"}, {"name": "오뎅국", "twitter": null, "role": "member"}], "cut": true}];
 
-const ALL_ROWS = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S"];
+// 부스 번호 앞 글자(A, B, C ...)로 열을 나눔. 데이터에 있는 열만 탭으로 보여줌
+const ALL_ROWS = [...new Set(BOOTHS.map(b => b.block))].sort();
 
+const BOOTH_IDS = new Set(BOOTHS.map(b => b.id));
 const byRow = {};
 ALL_ROWS.forEach(r => byRow[r] = []);
 BOOTHS.forEach(b => { if(byRow[b.block]) byRow[b.block].push(b); });
 
 // 새로고침해도 보고 있던 탭(부스 열/전체/메모/배치도)이 유지되도록 저장해둠
-const CURRENT_ROW_KEY = "kemoket-current-row";
-const VALID_ROWS = new Set([...ALL_ROWS, "ALL", "NOTES", "MAP1", "MAP2", "INFO"]);
+// 브라우저(localStorage)에 저장하는 모든 키의 앞부분.
+const STORAGE_PREFIX = "furstclass";
+
+// 지난 행사(케모켓, 2026-09-20 종료) 때 이 브라우저에 저장된 "kemoket-*" 데이터는 더 이상
+// 쓰지 않으므로 접속할 때 지움.
+try {
+  Object.keys(localStorage)
+    .filter(key => key.startsWith("kemoket-"))
+    .forEach(key => localStorage.removeItem(key));
+} catch {}
+
+const CURRENT_ROW_KEY = `${STORAGE_PREFIX}-current-row`;
+const VALID_ROWS = new Set([...ALL_ROWS, "ALL", "NOTES", "MAP", "INFO"]);
 let savedRow = null;
 try { savedRow = localStorage.getItem(CURRENT_ROW_KEY); } catch {}
 let currentRow = (savedRow && VALID_ROWS.has(savedRow))
@@ -1157,7 +1282,7 @@ let widgetsLoaded = false;
 let notesVisitFilter = "all"; // "all" | "planned" | "visited" — 메모 탭에서 방문 상태로 필터링
 
 // 부스 목록을 우선순위(1→2→3→없음) 순으로 정렬할지 여부 (새로고침해도 유지)
-const SORT_PRIORITY_KEY = "kemoket-sort-priority";
+const SORT_PRIORITY_KEY = `${STORAGE_PREFIX}-sort-priority`;
 let sortByPriority = false;
 try { sortByPriority = localStorage.getItem(SORT_PRIORITY_KEY) === "1"; } catch {}
 
@@ -1172,17 +1297,18 @@ function toggleSortByPriority(){
 ------------------------------------ */
 const I18N = {
   ko: {
-    brandMark: "케모켓 부스 목록",
-    brandSub: "서클 배치 뷰어",
-    searchPlaceholder: "서클명 / 대표자명 / 배치번호 검색",
+    brandMark: "Furst Class 부스 목록",
+    brandSub: "부스 배치 뷰어",
+    searchPlaceholder: "부스명 / 부스원 / 부스 번호 검색",
     footerSource: "데이터 출처",
     helpBtn: "❓ 도움말",
     helpTitle: "도움말",
     helpBody: [
-      "이 사이트는 케모켓 부스 목록을 쉽게 보기 위해 만든 사이트 입니다.\n자동 번역 및 개발에 AI를 사용하여 내용에 오류가 있을 수 있습니다.\n자세한 내용은 {link} 을 참고해주세요",
+      "이 사이트는 Furst Class 부스 목록을 쉽게 보기 위해 만든 사이트 입니다.\n자동 번역 및 개발에 AI를 사용하여 내용에 오류가 있을 수 있습니다.\n자세한 내용은 {link} 을 참고해주세요",
       "설정 메뉴에서 Google 계정으로 로그인하면, 메모/방문상태/예산/우선순위를\n다른 기기(휴대폰, PC 등)에서도 이어서 볼 수 있습니다. 자동으로 계속 동기화되는 것은 아니며,\n로그인 시 1회, 이후에는 설정 메뉴의 \"지금 동기화\" 버튼을 눌렀을 때만 반영됩니다.\n로그인하지 않아도 지금처럼 이 브라우저에서만 사용하는 것도 그대로 가능합니다.\n비로그인으로 사용 시, 브라우저의 데이터를 삭제할 경우 사이트에 기록한 내용들이 삭제될 수 있습니다.",
       "온라인 상태로 한 번 접속해두면, 이후 인터넷이 끊겨도 사이트를 계속 열람할 수 있습니다",
-      "검색창에서는 현재 탭에 위치한 작가를 부스 이름,\n작가 이름으로 필터링 가능합니다(전체 탭에서는 전체 검색)",
+      "검색창에서는 현재 탭에 위치한 부스를 부스 이름,\n부스 리더·부스원 이름, X 아이디로 필터링 가능합니다(전체 탭에서는 전체 검색)",
+      "부스를 누르면 부스컷과 부스 리더·부스원 목록이 나오고,\n각 사람의 프로필 사진이나 @아이디를 누르면 X 프로필로 이동합니다.\n🔞 표시는 성인 부스입니다.",
       "메모(📝) 탭에서 내가 메모해둔 작가들을 확인 가능하며,\n방문 예정 혹은 방문 완료 기준으로 필터링 할 수 있습니다.\n설정 메뉴의 \"데이터 초기화\"를 누르면 작성한 메모, 방문 예정/완료 상태, 예산,\n우선순위가 전부 삭제됩니다(되돌릴 수 없으니 주의해주세요).",
       "배치도에서는 방문 예정인 부스는 노란색,\n방문 완료한 부스는 초록색으로 표시됩니다.",
       "부스별로 1~3순위를 정할 수 있으며, 순위에 따라 카드/배치도 테두리 색이\n빨강(1순위)·보라(2순위)·파랑(3순위)으로 구분되어 표시됩니다.",
@@ -1192,11 +1318,10 @@ const I18N = {
     allBtn: "📋 전체",
     notesBtn: "📝 메모",
     notesBtnCount: "📝 메모({n})",
-    mapBtn1: "🗺️ 배치도1",
-    mapBtn2: "🗺️ 배치도2",
-    mapHint: "부스를 눌러서 메모/작가 정보를 확인하세요",
-    circleCount: "{n}개 서클",
-    notesCount: "메모·방문·예산 등록 서클 {n}개",
+    mapBtn: "🗺️ 배치도",
+    mapHint: "부스를 눌러서 메모/부스 정보를 확인하세요 (실제 배치와 다를 수 있음)",
+    circleCount: "{n}개 부스",
+    notesCount: "메모·방문·예산 등록 부스 {n}개",
     emptyDefault: "검색 결과가 없어요.",
     emptyNotes: "아직 등록된 부스가 없어요. 부스를 열어서 메모, 방문 상태, 예산 중 하나를 추가해보세요.",
     noBoothData: "표시할 부스 데이터가 없어요.",
@@ -1211,17 +1336,18 @@ const I18N = {
     priority2: "2순위",
     priority3: "3순위",
     sortPriorityBtn: "🔺 우선순위순 정렬",
-    budgetLabel: "예산 (엔)",
+    budgetLabel: "예산 (원)",
     filterAll: "전체",
     filterPlanned: "🟡 방문 예정",
     filterVisited: "🟢 방문 완료",
     budgetTotal: "총 예산: {amount}",
     infoBtn: "🎪 행사 안내",
-    infoHint: "행사장 약도 · 교통편 · 날씨 정보",
-    infoTransitTitle: "🚃 오시는 길",
+    infoHint: "행사 일정 · 행사장 약도 · 날씨 정보",
+    infoTransitTitle: "📍 행사 일정 · 장소",
+    infoOfficialSite: "공식 사이트에서 자세히 보기",
     infoMapTitle: "🗺️ 행사장 약도",
     infoOpenMap: "지도 크게 보기",
-    infoWeatherTitle: "☀️ 행사 당일 날씨",
+    infoWeatherTitle: "☀️ 행사 기간 날씨 (청주)",
     infoWeatherLoading: "날씨 정보를 불러오는 중...",
     infoWeatherUnavailable: "{date} 날씨 예보는 아직 제공되지 않습니다 (행사 약 2주 전부터 표시됩니다).",
     infoWeatherError: "날씨 정보를 불러오지 못했습니다.",
@@ -1243,19 +1369,26 @@ const I18N = {
     syncNowCooldown: "☁️ {s}초 후 가능",
     syncSuccess: "동기화되었습니다.",
     syncFail: "동기화에 실패했습니다. 인터넷 연결을 확인해주세요.",
+    noXAccount: "X 계정 없음",
+    membersMore: "{name} 외 {n}명",
+    adultTag: "🔞",
+    boothCutAlt: "{id} 부스컷",
+    boothCutPending: "부스컷 준비 중",
+    boothCutNotSubmitted: "부스컷 미제출",
   },
   en: {
-    brandMark: "Kemoket Booth List",
-    brandSub: "Circle Layout Viewer",
-    searchPlaceholder: "Search by circle name / rep name / booth ID",
+    brandMark: "Furst Class Booth List",
+    brandSub: "Booth Layout Viewer",
+    searchPlaceholder: "Search by booth name / member / booth ID",
     footerSource: "Data source",
     helpBtn: "❓ Help",
     helpTitle: "Help",
     helpBody: [
-      "This site was made to make it easy to browse the Kemoket booth list.\nAI was used for automatic translation and development, so there may be errors in the content.\nFor more details, please refer to {link}",
+      "This site was made to make it easy to browse the Furst Class booth list.\nAI was used for automatic translation and development, so there may be errors in the content.\nFor more details, please refer to {link}",
       "Sign in with your Google account from the settings menu to keep your notes/visit status/budget/priority\nin sync across devices (phone, PC, etc). It doesn't sync continuously — it syncs once when you sign in,\nand afterward only when you tap \"Sync Now\" in the settings menu. You can still use the site fully\nin this browser only without signing in.\nIf you use it without signing in, your recorded data may be lost if you clear your browser's site data.",
       "Once you've visited the site while online, you can keep browsing it even if you lose connection later.",
-      "The search box filters circles in the current tab by booth name\nor circle name (in the All tab, it searches everything).",
+      "The search box filters booths in the current tab by booth name,\nleader/member name, or X handle (in the All tab, it searches everything).",
+      "Tap a booth to see its booth cut and the list of the leader and members.\nTap a profile picture or @handle to open that person's X profile.\n🔞 marks an adult booth.",
       "In the Notes (📝) tab, you can see the circles you've noted,\nand filter them by Plan to Visit or Visited status.\nUsing \"Reset Data\" in the settings menu deletes all your notes, visit statuses,\nbudgets, and priorities (this cannot be undone).",
       "On the floor map, booths marked Plan to Visit are shown in yellow,\nand booths marked Visited are shown in green.",
       "You can set a priority (1–3) for each booth; the card/map border color shows it as\nred (priority 1), purple (priority 2), or blue (priority 3).",
@@ -1265,11 +1398,10 @@ const I18N = {
     allBtn: "📋 All",
     notesBtn: "📝 Notes",
     notesBtnCount: "📝 Notes({n})",
-    mapBtn1: "🗺️ Map 1",
-    mapBtn2: "🗺️ Map 2",
-    mapHint: "Click a booth to see notes/artist info",
-    circleCount: "{n} circles",
-    notesCount: "{n} circles with notes/visit/budget",
+    mapBtn: "🗺️ Map",
+    mapHint: "Click a booth to see notes/booth info (may differ from the actual layout)",
+    circleCount: "{n} booths",
+    notesCount: "{n} booths with notes/visit/budget",
     emptyDefault: "No search results.",
     emptyNotes: "No booths tracked yet. Open a booth to add a note, visit status, or budget.",
     noBoothData: "No booth data to display.",
@@ -1284,17 +1416,18 @@ const I18N = {
     priority2: "Priority 2",
     priority3: "Priority 3",
     sortPriorityBtn: "🔺 Sort by Priority",
-    budgetLabel: "Budget (JPY)",
+    budgetLabel: "Budget (KRW)",
     filterAll: "All",
     filterPlanned: "🟡 Plan to Visit",
     filterVisited: "🟢 Visited",
     budgetTotal: "Total budget: {amount}",
     infoBtn: "🎪 Event Info",
-    infoHint: "Venue map · Transit · Weather",
-    infoTransitTitle: "🚃 Getting There",
+    infoHint: "Schedule · Venue map · Weather",
+    infoTransitTitle: "📍 Dates & Venue",
+    infoOfficialSite: "More details on the official site",
     infoMapTitle: "🗺️ Venue Map",
     infoOpenMap: "Open larger map",
-    infoWeatherTitle: "☀️ Weather on Event Day",
+    infoWeatherTitle: "☀️ Weather during the event (Cheongju)",
     infoWeatherLoading: "Loading weather...",
     infoWeatherUnavailable: "The forecast for {date} isn't available yet (it appears roughly 2 weeks before the event).",
     infoWeatherError: "Failed to load weather data.",
@@ -1316,19 +1449,26 @@ const I18N = {
     syncNowCooldown: "☁️ Available in {s}s",
     syncSuccess: "Synced successfully.",
     syncFail: "Sync failed. Please check your internet connection.",
+    noXAccount: "No X account",
+    membersMore: "{name} +{n}",
+    adultTag: "🔞",
+    boothCutAlt: "{id} booth cut",
+    boothCutPending: "Booth cut coming soon",
+    boothCutNotSubmitted: "Booth cut not submitted",
   },
   jp: {
-    brandMark: "けもケット ブース一覧",
-    brandSub: "サークル配置ビューア",
-    searchPlaceholder: "サークル名 / 代表者名 / 配置番号 検索",
+    brandMark: "Furst Class ブース一覧",
+    brandSub: "ブース配置ビューア",
+    searchPlaceholder: "ブース名 / メンバー / ブース番号 検索",
     footerSource: "データ出典",
     helpBtn: "❓ ヘルプ",
     helpTitle: "ヘルプ",
     helpBody: [
-      "このサイトは、けもケットのブース一覧を簡単に見られるように作られたサイトです。\n自動翻訳および開発にAIを使用しているため、内容に誤りがある場合があります。\n詳細は {link} をご参照ください。",
+      "このサイトは、Furst Classのブース一覧を簡単に見られるように作られたサイトです。\n自動翻訳および開発にAIを使用しているため、内容に誤りがある場合があります。\n詳細は {link} をご参照ください。",
       "設定メニューからGoogleアカウントでログインすると、メモ・訪問状態・予算・優先度を\n他の端末（スマホ・PCなど）でも引き続き確認できます。常に自動で同期されるわけではなく、\nログイン時に1回、それ以降は設定メニューの「今すぐ同期」を押したときだけ反映されます。\nログインしなくてもこれまで通りこのブラウザだけで利用することもできます。\n未ログインで利用する場合、ブラウザのデータを削除すると記録した内容が失われることがあります。",
       "一度オンラインでサイトにアクセスしておけば、その後オフラインになってもサイトの閲覧を続けられます。",
-      "検索欄では現在のタブにいるサークルをブース名、\nサークル名で絞り込めます（全体タブでは全体検索）。",
+      "検索欄では現在のタブにいるブースをブース名、\nリーダー・メンバー名、Xアカウントで絞り込めます（全体タブでは全体検索）。",
+      "ブースを押すとブースカットとリーダー・メンバーの一覧が表示され、\nプロフィール画像や@IDを押すとそのXプロフィールに移動します。\n🔞は成人向けブースです。",
       "メモ（📝）タブでは自分がメモしたサークルを確認でき、\n訪問予定または訪問済みの状態で絞り込むことができます。\n設定メニューの「データを初期化」を押すと、書いたメモ・訪問予定/済みの状態・\n予算・優先度がすべて削除されます（元に戻せませんのでご注意ください）。",
       "配置図では、訪問予定のブースは黄色、\n訪問済みのブースは緑色で表示されます。",
       "ブースごとに優先度（1〜3）を設定でき、カード・配置図の枠線の色で\n赤（優先度1）・紫（優先度2）・青（優先度3）として表示されます。",
@@ -1338,11 +1478,10 @@ const I18N = {
     allBtn: "📋 全体",
     notesBtn: "📝 メモ",
     notesBtnCount: "📝 メモ({n})",
-    mapBtn1: "🗺️ 配置図1",
-    mapBtn2: "🗺️ 配置図2",
-    mapHint: "ブースを押してメモ・サークル情報を確認してください",
-    circleCount: "{n}サークル",
-    notesCount: "メモ・訪問・予算登録サークル {n}件",
+    mapBtn: "🗺️ 配置図",
+    mapHint: "ブースを押してメモ・ブース情報を確認してください（実際の配置と異なる場合があります）",
+    circleCount: "{n}ブース",
+    notesCount: "メモ・訪問・予算登録ブース {n}件",
     emptyDefault: "検索結果がありません。",
     emptyNotes: "まだ登録されたブースがありません。ブースを開いてメモ・訪問状態・予算のいずれかを追加してみましょう。",
     noBoothData: "表示するブースデータがありません。",
@@ -1357,17 +1496,18 @@ const I18N = {
     priority2: "優先度2",
     priority3: "優先度3",
     sortPriorityBtn: "🔺 優先度順に並び替え",
-    budgetLabel: "予算（円）",
+    budgetLabel: "予算（ウォン）",
     filterAll: "すべて",
     filterPlanned: "🟡 訪問予定",
     filterVisited: "🟢 訪問済み",
     budgetTotal: "総予算：{amount}",
     infoBtn: "🎪 イベント案内",
-    infoHint: "会場地図・交通アクセス・天気",
-    infoTransitTitle: "🚃 アクセス",
+    infoHint: "日程・会場地図・天気",
+    infoTransitTitle: "📍 日程・会場",
+    infoOfficialSite: "公式サイトで詳しく見る",
     infoMapTitle: "🗺️ 会場地図",
     infoOpenMap: "地図を大きく見る",
-    infoWeatherTitle: "☀️ 当日の天気",
+    infoWeatherTitle: "☀️ 開催期間の天気（清州）",
     infoWeatherLoading: "天気情報を読み込み中...",
     infoWeatherUnavailable: "{date}の天気予報はまだ提供されていません（開催の約2週間前から表示されます）。",
     infoWeatherError: "天気情報を読み込めませんでした。",
@@ -1389,11 +1529,22 @@ const I18N = {
     syncNowCooldown: "☁️ {s}秒後に可能",
     syncSuccess: "同期しました。",
     syncFail: "同期に失敗しました。インターネット接続をご確認ください。",
+    noXAccount: "Xアカウントなし",
+    membersMore: "{name} 他{n}名",
+    adultTag: "🔞",
+    boothCutAlt: "{id} ブースカット",
+    boothCutPending: "ブースカット準備中",
+    boothCutNotSubmitted: "ブースカット未提出",
   },
 };
-const LANG_KEY = "kemoket-lang";
-let currentLang = localStorage.getItem(LANG_KEY);
-if(!I18N[currentLang]) currentLang = "en";
+const LANG_KEY = `${STORAGE_PREFIX}-lang`;
+let currentLang = null;
+try { currentLang = localStorage.getItem(LANG_KEY); } catch {}
+if(!I18N[currentLang]){
+  // 처음 방문했을 때는 브라우저 언어를 따라감(한국어 행사라 한국어 → 일본어 → 그 외는 영어)
+  const navLang = (navigator.language || "").toLowerCase();
+  currentLang = navLang.startsWith("ko") ? "ko" : navLang.startsWith("ja") ? "jp" : "en";
+}
 
 function t(key, vars){
   let str = (I18N[currentLang] && I18N[currentLang][key]) || I18N.ko[key] || key;
@@ -1418,7 +1569,7 @@ function applyStaticTexts(){
   updateBudgetTotalDisplay();
   updateAuthUI();
   document.getElementById("siteFooter").innerHTML =
-    `${t("footerSource")}: <a href="https://skypalette.jp/kemoket/list.html" style="color:inherit;" target="_blank" rel="noopener">skypalette.jp/kemoket</a>`;
+    `${t("footerSource")}: <a href="https://furst-class.com/" style="color:inherit;" target="_blank" rel="noopener">furst-class.com</a>`;
   document.querySelectorAll("#langSwitch button").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.lang === currentLang);
   });
@@ -1491,9 +1642,9 @@ window.addEventListener("resize", () => {
 
 /* ---------- 부스별 메모 ----------
    브라우저(localStorage)에만 저장되는 개인 메모. 서버로 전송되지 않고,
-   이 브라우저에서만 보임. { "A-01": "메모 내용", ... } 형태로 저장.
+   이 브라우저에서만 보임. { "A01": "메모 내용", ... } 형태로 저장.
 ------------------------------------ */
-const NOTES_KEY = "kemoket-notes";
+const NOTES_KEY = `${STORAGE_PREFIX}-notes`;
 
 function loadNotes(){
   try {
@@ -1532,7 +1683,7 @@ function setNote(boothId, text){
 /* ---------- 방문 예정/완료 표시 ----------
    { "A-01": "planned" | "visited", ... } 형태로 브라우저(localStorage)에만 저장됨.
 ------------------------------------------------ */
-const VISIT_KEY = "kemoket-visit-status";
+const VISIT_KEY = `${STORAGE_PREFIX}-visit-status`;
 
 function loadVisitStatus(){
   try {
@@ -1577,7 +1728,7 @@ function updateVisitVisuals(boothId){
    { "A-01": 1|2|3, ... } 형태로 브라우저(localStorage)에만 저장됨. 1이 가장 높은 우선순위.
    방문 예정/완료·메모 표시(배경색)와 겹치지 않도록 카드 테두리(outline)로 별도 표시함.
 ------------------------------------------------ */
-const PRIORITY_KEY = "kemoket-priority";
+const PRIORITY_KEY = `${STORAGE_PREFIX}-priority`;
 
 function loadPriority(){
   try {
@@ -1620,9 +1771,9 @@ function updatePriorityVisuals(boothId){
 }
 
 /* ---------- 부스별 예산 ----------
-   { "A-01": 3000, ... } 형태로 브라우저(localStorage)에만 저장됨. 단위는 엔.
+   { "A01": 30000, ... } 형태로 브라우저(localStorage)에만 저장됨. 단위는 원.
 ------------------------------------------------ */
-const BUDGET_KEY = "kemoket-budget";
+const BUDGET_KEY = `${STORAGE_PREFIX}-budget`;
 
 function loadBudgets(){
   try {
@@ -1660,13 +1811,13 @@ function getTotalBudget(){
   return Object.values(budgets).reduce((sum, v) => sum + v, 0);
 }
 
-function formatYen(amount){
-  return `¥${amount.toLocaleString()}`;
+function formatWon(amount){
+  return `₩${amount.toLocaleString()}`;
 }
 
 function updateBudgetTotalDisplay(){
   const el = document.getElementById("budgetTotal");
-  if(el) el.textContent = t("budgetTotal", { amount: formatYen(getTotalBudget()) });
+  if(el) el.textContent = t("budgetTotal", { amount: formatWon(getTotalBudget()) });
 }
 
 /* ---------- 구글 로그인 & 기기 간 동기화 ----------
@@ -1726,16 +1877,21 @@ function mergeField(local, cloud){
   return Object.assign({}, cloud || {}, local || {});
 }
 
+// users/{uid} 문서 안의 행사별 필드(furstclass)에 저장함.
+// merge 없이 문서 전체를 덮어쓰므로, 지난 행사(케모켓) 때 문서 최상위에 저장했던
+// notes/visitStatus/budgets/priority 필드는 처음 동기화할 때 함께 지워짐.
 function pushToCloud(uid){
   return firebase.firestore().collection("users").doc(uid).set({
-    notes, visitStatus, budgets, priority,
-    updatedAt: new Date().toISOString(),
+    [STORAGE_PREFIX]: {
+      notes, visitStatus, budgets, priority,
+      updatedAt: new Date().toISOString(),
+    },
   });
 }
 
 function pullAndMergeFromCloud(uid){
   return firebase.firestore().collection("users").doc(uid).get().then((doc) => {
-    const cloud = doc.exists ? doc.data() : {};
+    const cloud = (doc.exists && doc.data()[STORAGE_PREFIX]) || {};
     notes = mergeField(notes, cloud.notes);
     visitStatus = mergeField(visitStatus, cloud.visitStatus);
     budgets = mergeField(budgets, cloud.budgets);
@@ -1895,6 +2051,114 @@ function localAvatarUrl(handle){
   return `avatars/${handle}.jpg`;
 }
 
+/* ---------- 부스컷 ----------
+   booth-cuts/ 폴더에 "부스번호.jpg"(예: booth-cuts/A01.jpg) 로 넣어두면 팝오버/모달 위쪽에 표시됨.
+   파일이 아직 없으면 "부스컷 준비 중"(시트 I열이 O) 또는 "부스컷 미제출" 문구로 대신 표시함.
+   이미지를 누르면 화면 전체 크기로 크게 볼 수 있음.
+------------------------------------------------- */
+function boothCutUrl(booth){
+  return `booth-cuts/${booth.id}.jpg`;
+}
+
+function closeCutLightbox(){
+  document.querySelectorAll(".cut-lightbox").forEach(el => el.remove());
+}
+
+function openCutLightbox(src, alt){
+  closeCutLightbox();
+  const box = document.createElement("div");
+  box.className = "cut-lightbox";
+  const img = document.createElement("img");
+  img.src = src;
+  img.alt = alt;
+  box.appendChild(img);
+  box.addEventListener("click", (e) => {
+    e.stopPropagation();
+    closeCutLightbox();
+  });
+  document.body.appendChild(box);
+}
+
+function buildBoothCut(booth){
+  const wrap = document.createElement("div");
+  wrap.className = "booth-cut";
+  const img = document.createElement("img");
+  img.loading = "lazy";
+  img.alt = t("boothCutAlt", { id: booth.id });
+  img.src = boothCutUrl(booth);
+  img.onerror = () => {
+    wrap.innerHTML = `<div class="cut-placeholder">${escapeHtml(t(booth.cut ? "boothCutPending" : "boothCutNotSubmitted"))}</div>`;
+  };
+  img.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openCutLightbox(img.src, img.alt);
+  });
+  wrap.appendChild(img);
+  return wrap;
+}
+
+/* ---------- 부스원 목록 ----------
+   부스 리더(맨 위) + 부스원을 한 줄씩 보여줌. 리더/부스원 구분 표시는 따로 하지 않음. X 아이디가 있으면 프로필 사진/@아이디를 눌러
+   X 프로필로 바로 이동, 없으면 닉네임과 "X 계정 없음"만 표시함.
+------------------------------------------------- */
+function openXProfile(handle){
+  window.open(`https://x.com/${handle}`, "_blank", "noopener");
+}
+
+function buildMemberList(booth){
+  const list = document.createElement("ul");
+  list.className = "member-list";
+  (booth.members || []).forEach(member => {
+    const row = document.createElement("li");
+    row.className = "member-row";
+
+    const avatar = document.createElement("div");
+    avatar.className = "member-avatar";
+    const setFallback = () => {
+      avatar.innerHTML = "";
+      avatar.textContent = (member.name[0] || "?");
+    };
+    if(member.twitter){
+      avatar.classList.add("avatar-link");
+      avatar.title = t("openProfile");
+      avatar.addEventListener("click", () => openXProfile(member.twitter));
+      const img = document.createElement("img");
+      img.loading = "lazy";
+      img.alt = member.name;
+      img.src = localAvatarUrl(member.twitter);
+      img.onerror = setFallback;
+      avatar.appendChild(img);
+    } else {
+      setFallback();
+    }
+    row.appendChild(avatar);
+
+    const text = document.createElement("div");
+    text.className = "member-text";
+    text.innerHTML = `
+      <div class="member-name">${escapeHtml(member.name)}</div>
+      <div class="member-handle">${member.twitter
+        ? `<a href="https://x.com/${encodeURIComponent(member.twitter)}" target="_blank" rel="noopener">@${escapeHtml(member.twitter)}</a>`
+        : `<span class="no-x">${escapeHtml(t("noXAccount"))}</span>`}</div>
+    `;
+    row.appendChild(text);
+    list.appendChild(row);
+  });
+  // 목록 안을 눌러도 부스 카드 클릭(팝오버 닫힘)으로 처리되지 않도록 막음
+  list.addEventListener("click", (e) => e.stopPropagation());
+  return list;
+}
+
+function boothSubLine(booth){
+  // 팝오버/모달 머리글의 두 번째 줄: "A01" 또는 "B01 🔞"
+  return escapeHtml(booth.id) + (booth.adult ? ` ${escapeHtml(t("adultTag"))}` : "");
+}
+
+function boothRepText(booth){
+  const others = (booth.members || []).length - 1;
+  return others > 0 ? t("membersMore", { name: booth.rep, n: others }) : booth.rep;
+}
+
 function renderNav(){
   const nav = document.getElementById("rowNav");
   nav.innerHTML = "";
@@ -1918,24 +2182,18 @@ function renderNav(){
   const tabNav = document.getElementById("tabNav");
   tabNav.innerHTML = "";
 
-  const noteCount = Object.keys(notes).length;
+  const noteCount = Object.keys(notes).filter(id => BOOTH_IDS.has(id)).length;
   const noteBtn = document.createElement("button");
   noteBtn.textContent = noteCount ? t("notesBtnCount", { n: noteCount }) : t("notesBtn");
   if(currentRow === "NOTES") noteBtn.classList.add("active");
   noteBtn.addEventListener("click", () => goToRow("NOTES"));
   tabNav.appendChild(noteBtn);
 
-  const mapBtn1 = document.createElement("button");
-  mapBtn1.textContent = t("mapBtn1");
-  if(currentRow === "MAP1") mapBtn1.classList.add("active");
-  mapBtn1.addEventListener("click", () => goToRow("MAP1"));
-  tabNav.appendChild(mapBtn1);
-
-  const mapBtn2 = document.createElement("button");
-  mapBtn2.textContent = t("mapBtn2");
-  if(currentRow === "MAP2") mapBtn2.classList.add("active");
-  mapBtn2.addEventListener("click", () => goToRow("MAP2"));
-  tabNav.appendChild(mapBtn2);
+  const mapBtn = document.createElement("button");
+  mapBtn.textContent = t("mapBtn");
+  if(currentRow === "MAP") mapBtn.classList.add("active");
+  mapBtn.addEventListener("click", () => goToRow("MAP"));
+  tabNav.appendChild(mapBtn);
 
   const infoBtn = document.createElement("button");
   infoBtn.textContent = t("infoBtn");
@@ -1945,30 +2203,23 @@ function renderNav(){
 }
 
 function makePopover(booth){
+  const outer = document.createElement("div");
+  outer.className = "popover";
+  // 부스컷·부스원 목록이 들어가면서 팝오버가 길어져서, 내용은 안쪽(pop-body)에서 스크롤되게 함.
+  // (바깥 popover에 overflow를 걸면 말풍선 꼬리(::before)가 잘려서 안쪽 요소를 따로 둠)
   const pop = document.createElement("div");
-  pop.className = "popover";
+  pop.className = "pop-body";
+  outer.appendChild(pop);
 
   const head = document.createElement("div");
   head.className = "pop-head";
-  const img = document.createElement("img");
-  if(booth.twitter){
-    img.src = localAvatarUrl(booth.twitter);
-    img.onerror = () => { img.style.visibility = "hidden"; };
-    img.classList.add("avatar-link");
-    img.title = t("openProfile");
-    img.addEventListener("click", (e) => {
-      e.stopPropagation();
-      window.open(`https://x.com/${booth.twitter}`, "_blank", "noopener");
-    });
-  } else {
-    img.style.visibility = "hidden";
-  }
   const names = document.createElement("div");
   names.className = "names";
-  names.innerHTML = `<div class="c-name">${escapeHtml(booth.name)}</div><div class="r-name">${escapeHtml(booth.rep)} ・ ${booth.id}</div>`;
-  head.appendChild(img);
+  names.innerHTML = `<div class="c-name">${escapeHtml(booth.name)}</div><div class="r-name">${boothSubLine(booth)}</div>`;
   head.appendChild(names);
   pop.appendChild(head);
+  pop.appendChild(buildBoothCut(booth));
+  pop.appendChild(buildMemberList(booth));
 
   const slot = document.createElement("div");
   slot.className = "tweet-slot";
@@ -2049,8 +2300,8 @@ function makePopover(booth){
   budgetBox.innerHTML = `
     <label>${escapeHtml(t("budgetLabel"))}</label>
     <div class="budget-input-row">
-      <span class="yen">¥</span>
-      <input type="number" min="0" step="100" inputmode="numeric" value="${getBudget(booth.id) || ""}" placeholder="0">
+      <span class="yen">₩</span>
+      <input type="number" min="0" step="1000" inputmode="numeric" value="${getBudget(booth.id) || ""}" placeholder="0">
     </div>
   `;
   const budgetInput = budgetBox.querySelector("input");
@@ -2100,7 +2351,7 @@ function makePopover(booth){
 
   pop.appendChild(memoBox);
 
-  return { pop, slot };
+  return { pop: outer, slot };
 }
 
 function updateNoteVisuals(boothId){
@@ -2120,6 +2371,8 @@ function positionPopover(card, pop){
   pop.style.transform = "";
   pop.style.removeProperty("--arrow-left");
   pop.classList.remove("below");
+  const body = pop.querySelector(".pop-body");
+  if(body) body.style.maxHeight = "";
 
   // innerWidth/innerHeight can include scrollbar gutters that aren't actually
   // visible content area, so use clientWidth/clientHeight for the real bounds.
@@ -2133,6 +2386,16 @@ function positionPopover(card, pop){
 
   if(cardRect.top < popHeight + margin * 2 && (viewportHeight - cardRect.bottom) > cardRect.top){
     pop.classList.add("below");
+  }
+
+  // 팝오버가 펼쳐지는 쪽(위/아래)의 화면 공간 안에 들어오도록 내용 높이를 제한함.
+  // 트윗이 나중에 로드되어 길어져도 화면 밖으로 넘치지 않고 안쪽에서 스크롤됨.
+  if(body){
+    const space = pop.classList.contains("below")
+      ? viewportHeight - cardRect.bottom
+      : cardRect.top;
+    const padding = 28; // .popover 위아래 padding(14px * 2)
+    body.style.maxHeight = `${Math.max(160, space - margin * 2 - 10 - padding)}px`;
   }
 
   const desired = cardCenter - popWidth / 2;
@@ -2179,7 +2442,7 @@ function renderGrid(){
   const infoView = document.getElementById("infoView");
   const emptyState = document.getElementById("emptyState");
 
-  const isMapView = currentRow === "MAP1" || currentRow === "MAP2";
+  const isMapView = currentRow === "MAP";
   const isInfoView = currentRow === "INFO";
   grid.style.display = (isMapView || isInfoView) ? "none" : "";
   mapGrid.style.display = isMapView ? "flex" : "none";
@@ -2197,12 +2460,10 @@ function renderGrid(){
 
   if(isMapView){
     document.getElementById("currentLetter").textContent = "🗺️";
-    document.getElementById("currentCount").textContent = currentRow === "MAP1"
-      ? `展示室A・B — ${t("mapHint")}`
-      : `展示室C・D — ${t("mapHint")}`;
+    document.getElementById("currentCount").textContent = t("mapHint");
     document.getElementById("notesExtra").style.display = "none";
     document.getElementById("sortPriorityBtn").style.display = "none";
-    renderMapView(currentRow);
+    renderMapView();
     return;
   }
 
@@ -2241,9 +2502,11 @@ function renderGrid(){
     const q = currentQuery.toLowerCase();
     list = list.filter(b =>
       b.name.toLowerCase().includes(q) ||
-      b.rep.toLowerCase().includes(q) ||
       b.id.toLowerCase().includes(q) ||
-      (b.twitter||"").toLowerCase().includes(q)
+      (b.members || []).some(m =>
+        m.name.toLowerCase().includes(q) ||
+        (m.twitter || "").toLowerCase().includes(q)
+      )
     );
   }
 
@@ -2280,6 +2543,12 @@ function renderGrid(){
     const idEl = document.createElement("div");
     idEl.className = "id";
     idEl.textContent = booth.id;
+    if(booth.adult){
+      const adultTag = document.createElement("span");
+      adultTag.className = "adult-tag";
+      adultTag.textContent = "18+";
+      idEl.appendChild(adultTag);
+    }
     card.appendChild(idEl);
 
     const avatarWrap = document.createElement("div");
@@ -2320,7 +2589,7 @@ function renderGrid(){
 
     const repEl = document.createElement("div");
     repEl.className = "rep-name";
-    repEl.textContent = booth.rep;
+    repEl.textContent = boothRepText(booth);
     card.appendChild(repEl);
 
     const { pop, slot } = makePopover(booth);
@@ -2394,15 +2663,12 @@ document.getElementById("searchInput").addEventListener("input", (e) => {
 });
 
 /* ---------- 배치도(스키매틱 맵) ----------
-   실제 회장 전체도(첨부 이미지) 두 장을 기준으로 페이지를 나눔:
-   - 배치도1 = 展示室A・B (C,B,S,R,Q,P,O,N,M열)
-   - 배치도2 = 展示室C・D (L,K,J,I,H,G,F,E,D,A열)
-   각 열은 사진처럼 "왼쪽은 큰 번호부터 내려오고 오른쪽은 1번부터 올라오는"
-   두 줄 마주보기 구조 + 4개마다 통로 틈으로 표현함(정확한 픽셀 좌표는 아니고
-   사진 속 형태를 본뜬 스키매틱임).
+   Furst Class 실제 부스 배치도는 아직 받지 못해서, 부스 번호 열(A, B, C ...)마다
+   "왼쪽은 큰 번호부터 내려오고 오른쪽은 1번부터 올라오는" 두 줄 마주보기 구조 +
+   4개마다 통로 틈으로 단순하게 표현함(실제 배치와 다를 수 있음).
+   실제 배치도를 받으면 MAP_ORDER 와 buildPairedColumn 을 그에 맞게 바꾸면 됨.
 ------------------------------------------------------------- */
-const MAP_PAGE_1 = ["C","B","S","R","Q","P","O","N","M"];     // 展示室A・B
-const MAP_PAGE_2 = ["L","K","J","I","H","G","F","E","D","A"]; // 展示室C・D
+const MAP_ORDER = ALL_ROWS;
 
 function buildPairedColumn(list){
   const n = list.length;
@@ -2420,7 +2686,7 @@ function buildPairedColumn(list){
       blank.className = "map-cell blank";
       return blank;
     }
-    const num = booth.id.split("-")[1];
+    const num = booth.num;
     const cell = document.createElement("div");
     const visitCls = getVisitStatus(booth.id) === "planned" ? " visit-planned"
       : getVisitStatus(booth.id) === "visited" ? " visit-visited" : "";
@@ -2449,13 +2715,11 @@ function buildPairedColumn(list){
   return wrap;
 }
 
-function renderMapView(page){
+function renderMapView(){
   const mapGrid = document.getElementById("mapGrid");
   mapGrid.innerHTML = "";
 
-  const order = page === "MAP2" ? MAP_PAGE_2 : MAP_PAGE_1;
-
-  order.forEach(r => {
+  MAP_ORDER.forEach(r => {
     const list = byRow[r];
     if(!list || !list.length) return;
 
@@ -2476,23 +2740,21 @@ function renderMapView(page){
   }
 }
 
-/* ---------- 행사 안내 (약도 · 교통편 · 날씨) ----------
-   날씨는 Open-Meteo(API 키 불필요)에서 행사 당일 예보를 그때그때 받아와 표시함.
+/* ---------- 행사 안내 (일정 · 약도 · 날씨) ----------
+   일정/장소는 공식 사이트(furst-class.com/event) 기준.
+   날씨는 Open-Meteo(API 키 불필요)에서 행사 기간 예보를 그때그때 받아와 표시함.
    예보는 대략 행사 2주 전부터 제공되므로, 그 전에는 안내 문구만 보여줌.
 ------------------------------------------------- */
-const EVENT_DATE = "2026-09-20";
-const VENUE_LAT = 35.5808129;
-const VENUE_LON = 139.7481420;
-const VENUE_NAME = "東京流通センター(TRC)";
-const VENUE_ADDRESS = "東京都大田区平和島6-1-1";
-
-const TRANSIT_ROUTES = [
-  { mode: "🚝", from: { ko: "도쿄 모노레일 「流通センター」역", en: "Tokyo Monorail \"Ryutsu Center\" Sta.", jp: "東京モノレール「流通センター」駅" }, time: { ko: "도보 1분 (역 바로 앞)", en: "1 min walk (right by the station)", jp: "徒歩1分（駅前）" } },
-  { mode: "🚝", from: { ko: "하마마쓰초역에서 모노레일", en: "Monorail from Hamamatsucho Sta.", jp: "浜松町駅からモノレール" }, time: { ko: "약 10분", en: "approx. 10 min", jp: "約10分" } },
-  { mode: "🚝", from: { ko: "하네다공항에서 모노레일", en: "Monorail from Haneda Airport", jp: "羽田空港からモノレール" }, time: { ko: "약 5~11분", en: "approx. 5–11 min", jp: "約5〜11分" } },
-  { mode: "🚌", from: { ko: "오모리역(JR)에서 버스", en: "Bus from Omori Sta. (JR)", jp: "大森駅（JR）からバス" }, time: { ko: "약 12분", en: "approx. 12 min", jp: "約12分" } },
-  { mode: "🚌", from: { ko: "헤이와지마역(케이큐)에서 버스", en: "Bus from Heiwajima Sta. (Keikyu)", jp: "平和島駅（京急）からバス" }, time: { ko: "약 4분", en: "approx. 4 min", jp: "約4分" } },
-];
+const EVENT_DATES = ["2026-11-28", "2026-11-29"];
+// 날씨 예보용 좌표(청주시 기준 대략적인 위치)
+const VENUE_LAT = 36.642;
+const VENUE_LON = 127.489;
+const VENUE_NAME = { ko: "엔포드 호텔 청주", en: "Enford Hotel Cheongju", jp: "エンフォードホテル清州" };
+const VENUE_ADDRESS = "충청북도 청주시 청원구 충청대로 114";
+const VENUE_MAP_QUERY = "엔포드호텔 청주";
+const OFFICIAL_SITE_URL = "https://furst-class.com/event";
+const EVENT_PERIOD_TEXT = { ko: "2026년 11월 28일(토) ~ 29일(일)", en: "Sat, Nov 28 – Sun, Nov 29, 2026", jp: "2026年11月28日（土）〜29日（日）" };
+const WEATHER_HOURS = [11, 14, 17];
 
 function weatherIcon(code){
   if(code === 0) return "☀️";
@@ -2512,75 +2774,85 @@ function fetchEventWeather(){
   if(weatherCache) return weatherCache;
   weatherCache = fetch(
     `https://api.open-meteo.com/v1/forecast?latitude=${VENUE_LAT}&longitude=${VENUE_LON}` +
-    `&hourly=temperature_2m,relative_humidity_2m,weathercode&timezone=Asia%2FTokyo` +
-    `&start_date=${EVENT_DATE}&end_date=${EVENT_DATE}`
+    `&hourly=temperature_2m,relative_humidity_2m,weathercode&timezone=Asia%2FSeoul` +
+    `&start_date=${EVENT_DATES[0]}&end_date=${EVENT_DATES[EVENT_DATES.length - 1]}`
   ).then((res) => {
     if(!res.ok) throw new Error("weather fetch failed");
     return res.json();
+  }).catch((err) => {
+    // 실패한 결과를 계속 캐시해두지 않도록 해서, 탭을 다시 열면 재시도되게 함
+    weatherCache = null;
+    throw err;
   });
   return weatherCache;
 }
 
 function renderInfoView(){
   const el = document.getElementById("infoView");
+  const venueName = VENUE_NAME[currentLang] || VENUE_NAME.ko;
   el.innerHTML = `
     <section class="info-section">
       <h2>${escapeHtml(t("infoTransitTitle"))}</h2>
-      <div class="venue-name">${escapeHtml(VENUE_NAME)}</div>
+      <div class="venue-name">${escapeHtml(EVENT_PERIOD_TEXT[currentLang] || EVENT_PERIOD_TEXT.ko)}</div>
+      <div class="venue-name">${escapeHtml(venueName)}</div>
       <div class="venue-address">${escapeHtml(VENUE_ADDRESS)}</div>
-      <table class="transit-table">
-        ${TRANSIT_ROUTES.map(r => `
-          <tr>
-            <td class="mode">${r.mode}</td>
-            <td>${escapeHtml(r.from[currentLang] || r.from.ko)}</td>
-            <td class="time">${escapeHtml(r.time[currentLang] || r.time.ko)}</td>
-          </tr>
-        `).join("")}
-      </table>
+      <a class="info-map-link" href="${OFFICIAL_SITE_URL}" target="_blank" rel="noopener">${escapeHtml(t("infoOfficialSite"))}</a>
     </section>
 
     <section class="info-section">
       <h2>${escapeHtml(t("infoMapTitle"))}</h2>
       <div class="info-map-wrap">
-        <iframe src="https://www.google.com/maps?q=${encodeURIComponent(VENUE_NAME)}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <iframe src="https://www.google.com/maps?q=${encodeURIComponent(VENUE_MAP_QUERY)}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
       </div>
-      <a class="info-map-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(VENUE_NAME)}" target="_blank" rel="noopener">${escapeHtml(t("infoOpenMap"))}</a>
+      <a class="info-map-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(VENUE_MAP_QUERY)}" target="_blank" rel="noopener">${escapeHtml(t("infoOpenMap"))}</a>
     </section>
 
     <section class="info-section">
       <h2>${escapeHtml(t("infoWeatherTitle"))}</h2>
-      <div class="weather-cards" id="weatherCards">${escapeHtml(t("infoWeatherLoading"))}</div>
+      <div id="weatherDays">${escapeHtml(t("infoWeatherLoading"))}</div>
     </section>
   `;
 
-  const weatherCards = document.getElementById("weatherCards");
+  const weatherDays = document.getElementById("weatherDays");
+  const renderUnavailable = () => {
+    weatherDays.innerHTML = EVENT_DATES.map((date) =>
+      `<div class="weather-empty">${escapeHtml(t("infoWeatherUnavailable", { date }))}</div>`
+    ).join("");
+  };
+  // Open-Meteo 예보는 오늘부터 약 16일 뒤까지만 제공됨. 그보다 먼 날짜를 요청하면 에러가 나므로
+  // 미리 "아직 제공되지 않음" 안내만 보여줌.
+  const daysUntilEvent = (new Date(`${EVENT_DATES[0]}T00:00:00+09:00`) - Date.now()) / 86400000;
+  if(daysUntilEvent > 15){
+    renderUnavailable();
+    return;
+  }
   fetchEventWeather().then((data) => {
     const times = (data && data.hourly && data.hourly.time) || [];
     const temps = (data && data.hourly && data.hourly.temperature_2m) || [];
     const hums = (data && data.hourly && data.hourly.relative_humidity_2m) || [];
     const codes = (data && data.hourly && data.hourly.weathercode) || [];
 
-    const cards = [9, 12, 15].map((hour) => {
-      const idx = times.indexOf(`${EVENT_DATE}T${String(hour).padStart(2, "0")}:00`);
-      if(idx === -1) return null;
-      return { hour, temp: temps[idx], hum: hums[idx], code: codes[idx] };
-    }).filter(Boolean);
+    weatherDays.innerHTML = EVENT_DATES.map((date) => {
+      const cards = WEATHER_HOURS.map((hour) => {
+        const idx = times.indexOf(`${date}T${String(hour).padStart(2, "0")}:00`);
+        if(idx === -1 || temps[idx] == null) return null;
+        return { hour, temp: temps[idx], hum: hums[idx], code: codes[idx] };
+      }).filter(Boolean);
 
-    if(!cards.length){
-      weatherCards.innerHTML = `<div class="weather-empty">${escapeHtml(t("infoWeatherUnavailable", { date: EVENT_DATE }))}</div>`;
-      return;
-    }
-
-    weatherCards.innerHTML = cards.map((c) => `
-      <div class="weather-card">
-        <div class="weather-time">${String(c.hour).padStart(2, "0")}:00</div>
-        <div class="weather-icon">${weatherIcon(c.code)}</div>
-        <div class="weather-temp">${Math.round(c.temp)}°C</div>
-        <div class="weather-hum">💧 ${Math.round(c.hum)}%</div>
-      </div>
-    `).join("");
+      const body = cards.length
+        ? `<div class="weather-cards">${cards.map((c) => `
+            <div class="weather-card">
+              <div class="weather-time">${String(c.hour).padStart(2, "0")}:00</div>
+              <div class="weather-icon">${weatherIcon(c.code)}</div>
+              <div class="weather-temp">${Math.round(c.temp)}°C</div>
+              <div class="weather-hum">💧 ${Math.round(c.hum)}%</div>
+            </div>
+          `).join("")}</div>`
+        : `<div class="weather-empty">${escapeHtml(t("infoWeatherUnavailable", { date }))}</div>`;
+      return `<div class="venue-address" style="margin-top:10px;">${escapeHtml(date)}</div>${body}`;
+    }).join("");
   }).catch(() => {
-    weatherCards.innerHTML = `<div class="weather-empty">${escapeHtml(t("infoWeatherError"))}</div>`;
+    weatherDays.innerHTML = `<div class="weather-empty">${escapeHtml(t("infoWeatherError"))}</div>`;
   });
 }
 
@@ -2603,25 +2875,13 @@ function openBoothModal(boothId){
   const head = document.createElement("div");
   head.className = "pop-head";
   head.style.marginTop = "6px";
-  const img = document.createElement("img");
-  if(booth.twitter){
-    img.src = localAvatarUrl(booth.twitter);
-    img.onerror = () => { img.style.visibility = "hidden"; };
-    img.classList.add("avatar-link");
-    img.title = t("openProfile");
-    img.addEventListener("click", (e) => {
-      e.stopPropagation();
-      window.open(`https://x.com/${booth.twitter}`, "_blank", "noopener");
-    });
-  } else {
-    img.style.visibility = "hidden";
-  }
   const names = document.createElement("div");
   names.className = "names";
-  names.innerHTML = `<div class="c-name">${escapeHtml(booth.name)}</div><div class="r-name">${escapeHtml(booth.rep)} ・ ${booth.id}</div>`;
-  head.appendChild(img);
+  names.innerHTML = `<div class="c-name">${escapeHtml(booth.name)}</div><div class="r-name">${boothSubLine(booth)}</div>`;
   head.appendChild(names);
   content.appendChild(head);
+  content.appendChild(buildBoothCut(booth));
+  content.appendChild(buildMemberList(booth));
 
   const slot = document.createElement("div");
   slot.className = "tweet-slot";
@@ -2657,7 +2917,7 @@ function openBoothModal(boothId){
   syncVisitButtons();
   const refreshVisitViews = () => {
     updateVisitVisuals(booth.id);
-    if(currentRow === "MAP1" || currentRow === "MAP2") renderMapView(currentRow);
+    if(currentRow === "MAP") renderMapView();
   };
   plannedBtn.addEventListener("click", () => {
     setVisitStatus(booth.id, getVisitStatus(booth.id) === "planned" ? null : "planned");
@@ -2690,7 +2950,7 @@ function openBoothModal(boothId){
   syncPriorityButtons();
   const refreshPriorityViews = () => {
     updatePriorityVisuals(booth.id);
-    if(currentRow === "MAP1" || currentRow === "MAP2") renderMapView(currentRow);
+    if(currentRow === "MAP") renderMapView();
   };
   [[p1Btn, 1], [p2Btn, 2], [p3Btn, 3]].forEach(([btn, level]) => {
     btn.addEventListener("click", () => {
@@ -2706,8 +2966,8 @@ function openBoothModal(boothId){
   budgetBox.innerHTML = `
     <label>${escapeHtml(t("budgetLabel"))}</label>
     <div class="budget-input-row">
-      <span class="yen">¥</span>
-      <input type="number" min="0" step="100" inputmode="numeric" value="${getBudget(booth.id) || ""}" placeholder="0">
+      <span class="yen">₩</span>
+      <input type="number" min="0" step="1000" inputmode="numeric" value="${getBudget(booth.id) || ""}" placeholder="0">
     </div>
   `;
   const budgetInput = budgetBox.querySelector("input");
@@ -2737,7 +2997,7 @@ function openBoothModal(boothId){
     setNote(booth.id, textarea.value);
     updateNoteVisuals(booth.id);
     renderNav();
-    if(currentRow === "MAP1" || currentRow === "MAP2") renderMapView(currentRow);
+    if(currentRow === "MAP") renderMapView();
     if(currentRow === "NOTES") renderGrid();
     status.textContent = t("savedStatus");
     setTimeout(() => { status.textContent = ""; }, 1500);
@@ -2747,7 +3007,7 @@ function openBoothModal(boothId){
     setNote(booth.id, "");
     updateNoteVisuals(booth.id);
     renderNav();
-    if(currentRow === "MAP1" || currentRow === "MAP2") renderMapView(currentRow);
+    if(currentRow === "MAP") renderMapView();
     if(currentRow === "NOTES") renderGrid();
     status.textContent = t("deletedStatus");
     setTimeout(() => { status.textContent = ""; }, 1500);
@@ -2777,7 +3037,7 @@ function openHelpModal(){
 
   const body = document.createElement("div");
   body.className = "help-body";
-  const link = `<a href="https://skypalette.jp/kemoket/" target="_blank" rel="noopener">https://skypalette.jp/kemoket/</a>`;
+  const link = `<a href="https://furst-class.com/" target="_blank" rel="noopener">https://furst-class.com/</a>`;
   const paragraphs = (I18N[currentLang] && I18N[currentLang].helpBody) || I18N.ko.helpBody;
   body.innerHTML = paragraphs
     .map(line => `<p>${escapeHtml(line).replace("{link}", link).replace(/\n/g, "<br>")}</p>`)
@@ -2815,6 +3075,7 @@ document.getElementById("modalBackdrop").addEventListener("click", (e) => {
 });
 document.addEventListener("keydown", (e) => {
   if(e.key === "Escape"){
+    closeCutLightbox();
     closeModal();
     closeConfirmDialog(false);
   }
