@@ -10,7 +10,7 @@
   style-src 'self' 'unsafe-inline';
   img-src 'self' data: https://pbs.twimg.com https://abs.twimg.com https://ton.twimg.com;
   font-src 'self' data:;
-  connect-src 'self' https://cdn.syndication.twimg.com https://syndication.twitter.com https://twitter.com https://x.com https://api.open-meteo.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com;
+  connect-src 'self' https://api.fxtwitter.com https://cdn.syndication.twimg.com https://syndication.twitter.com https://twitter.com https://x.com https://api.open-meteo.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com;
   frame-src https://platform.twitter.com https://syndication.twitter.com https://www.google.com https://accounts.google.com https://boothlist-4589c.firebaseapp.com;
   object-src 'none';
   base-uri 'self';
@@ -863,6 +863,28 @@
     line-height:1.5;
   }
   .tweet-slot iframe{border-radius:6px;}
+  .official-feed{
+    height:520px;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:var(--card-bg);
+    margin-bottom:8px;
+  }
+  .official-feed{ padding:0 10px; }
+  .official-post{ max-width:550px; margin:0 auto; }
+  .official-feed .placeholder{
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    text-align:center;
+    color:var(--muted);
+    font-size:13px;
+  }
+  @media (max-width:600px){ .official-feed{ height:420px; } }
 
   .empty-state{
     padding:60px 0;
@@ -1356,6 +1378,10 @@ const I18N = {
     infoMapTitle: "🗺️ 행사장 약도",
     infoOpenMap: "지도 크게 보기",
     infoWeatherTitle: "☀️ 행사 기간 날씨 (청주)",
+    infoNewsTitle: "📢 공식 계정 소식",
+    infoNewsLoading: "공식 X 계정의 글을 불러오는 중…",
+    infoNewsFail: "글을 불러오지 못했어요. 아래 링크에서 X로 바로 확인해 주세요.",
+    infoNewsOpenX: "X에서 @{handle} 열기",
     infoWeatherLoading: "날씨 정보를 불러오는 중...",
     infoWeatherUnavailable: "{date} 날씨 예보는 아직 제공되지 않습니다 (행사 약 2주 전부터 표시됩니다).",
     infoWeatherError: "날씨 정보를 불러오지 못했습니다.",
@@ -1436,6 +1462,10 @@ const I18N = {
     infoMapTitle: "🗺️ Venue Map",
     infoOpenMap: "Open larger map",
     infoWeatherTitle: "☀️ Weather during the event (Cheongju)",
+    infoNewsTitle: "📢 Official announcements",
+    infoNewsLoading: "Loading posts from the official X account…",
+    infoNewsFail: "Couldn't load the posts. Please check them on X with the link below.",
+    infoNewsOpenX: "Open @{handle} on X",
     infoWeatherLoading: "Loading weather...",
     infoWeatherUnavailable: "The forecast for {date} isn't available yet (it appears roughly 2 weeks before the event).",
     infoWeatherError: "Failed to load weather data.",
@@ -1516,6 +1546,10 @@ const I18N = {
     infoMapTitle: "🗺️ 会場地図",
     infoOpenMap: "地図を大きく見る",
     infoWeatherTitle: "☀️ 開催期間の天気（清州）",
+    infoNewsTitle: "📢 公式アカウントのお知らせ",
+    infoNewsLoading: "公式Xアカウントの投稿を読み込み中…",
+    infoNewsFail: "投稿を読み込めませんでした。下のリンクからXで確認してください。",
+    infoNewsOpenX: "Xで @{handle} を開く",
     infoWeatherLoading: "天気情報を読み込み中...",
     infoWeatherUnavailable: "{date}の天気予報はまだ提供されていません（開催の約2週間前から表示されます）。",
     infoWeatherError: "天気情報を読み込めませんでした。",
@@ -2463,6 +2497,63 @@ function loadTimelineInto(slot, handle){
   });
 }
 
+// 행사 안내 탭: 공식 X 계정(@FURSTCLASS_KR)의 최근 글을 정해진 높이 안에서 스크롤로 보여줌.
+// X 타임라인 위젯은 로그인하지 않은 방문자에게 막혀(429) 빈 상자만 보이므로 쓰지 않음.
+// 1) FxTwitter 공개 JSON(무료·키 없음)에서 최근 글 ID를 받아 리트윗·답글(번역 글)을 거르고
+// 2) 글마다 X 개별 글 임베드(createTweet, 로그인 불필요)로 그림.
+// FxTwitter 가 실패하면 OFFICIAL_POST_FALLBACK_IDS(2026-10-02 기준 최근 글)를 대신 씀.
+const OFFICIAL_POST_LIMIT = 6;
+const OFFICIAL_POST_FALLBACK_IDS = [
+  "2104521337406726510", "2103382992215560409", "2102277349509050694",
+  "2097718475032809727", "2091465987191136588", "2090723233784099271",
+];
+
+function fetchOfficialPostIds(){
+  return fetch(`https://api.fxtwitter.com/2/profile/${OFFICIAL_X_HANDLE}/statuses`)
+    .then(res => res.ok ? res.json() : Promise.reject(res.status))
+    .then(data => (data.results || [])
+      .filter(p => !p.reposted_by && !p.replying_to &&
+        String((p.author && p.author.screen_name) || "").toLowerCase() === OFFICIAL_X_HANDLE.toLowerCase())
+      .map(p => String(p.id))
+      .slice(0, OFFICIAL_POST_LIMIT))
+    .then(ids => ids.length ? ids : OFFICIAL_POST_FALLBACK_IDS)
+    .catch(() => OFFICIAL_POST_FALLBACK_IDS);
+}
+
+function loadOfficialFeed(box){
+  if(!box) return;
+  const showFail = () => {
+    box.innerHTML = `<div class="placeholder">${escapeHtml(t("infoNewsFail"))}</div>`;
+  };
+  // widgets.js 자체가 막혀 있으면(광고 차단 등) 아무 응답이 없으므로 일정 시간 뒤 안내 문구로 바꿈
+  setTimeout(() => {
+    if(box.isConnected && !box.querySelector("iframe")) showFail();
+  }, 15000);
+  fetchOfficialPostIds().then(ids => {
+    ensureTwitterWidgets(function start(){
+      if(!box.isConnected) return;
+      // widgets.js 를 부스 팝오버에서 먼저 불러오는 중이면 준비될 때까지 잠깐 기다림
+      if(!window.twttr || !window.twttr.widgets){ setTimeout(start, 300); return; }
+      box.innerHTML = "";
+      let shown = 0;
+      // 화면에 나오는 순서를 지키려고 한 글씩 차례로 그림
+      ids.reduce((prev, id) => prev.then(() => {
+        if(!box.isConnected) return;
+        const item = document.createElement("div");
+        item.className = "official-post";
+        box.appendChild(item);
+        return window.twttr.widgets.createTweet(id, item, { theme: "light", dnt: true, lang: currentLang, conversation: "none" })
+          .then(el => {
+            if(el) shown++;
+            else item.remove();
+          }, () => item.remove());
+      }), Promise.resolve()).then(() => {
+        if(box.isConnected && !shown) showFail();
+      });
+    });
+  });
+}
+
 function escapeHtml(s){
   return (s || "").replace(/[&<>"']/g, c => ({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
@@ -2815,6 +2906,7 @@ const VENUE_NAME = { ko: "엔포드 호텔 청주", en: "Enford Hotel Cheongju",
 const VENUE_ADDRESS = "충청북도 청주시 청원구 충청대로 114";
 const VENUE_MAP_QUERY = "엔포드호텔 청주";
 const OFFICIAL_SITE_URL = "https://furst-class.com/event";
+const OFFICIAL_X_HANDLE = "FURSTCLASS_KR";
 const EVENT_PERIOD_TEXT = { ko: "2026년 11월 28일(토) ~ 29일(일)", en: "Sat, Nov 28 – Sun, Nov 29, 2026", jp: "2026年11月28日（土）〜29日（日）" };
 const WEATHER_HOURS = [11, 14, 17];
 
@@ -2870,10 +2962,20 @@ function renderInfoView(){
     </section>
 
     <section class="info-section">
+      <h2>${escapeHtml(t("infoNewsTitle"))}</h2>
+      <div class="official-feed" id="officialFeed">
+        <div class="placeholder">${escapeHtml(t("infoNewsLoading"))}</div>
+      </div>
+      <a class="info-map-link" href="https://x.com/${OFFICIAL_X_HANDLE}" target="_blank" rel="noopener">${escapeHtml(t("infoNewsOpenX", { handle: OFFICIAL_X_HANDLE }))}</a>
+    </section>
+
+    <section class="info-section">
       <h2>${escapeHtml(t("infoWeatherTitle"))}</h2>
       <div id="weatherDays">${escapeHtml(t("infoWeatherLoading"))}</div>
     </section>
   `;
+
+  loadOfficialFeed(document.getElementById("officialFeed"));
 
   const weatherDays = document.getElementById("weatherDays");
   const renderUnavailable = () => {
