@@ -874,6 +874,7 @@
   }
   .official-feed{ padding:0 10px; }
   .official-post{ max-width:550px; margin:0 auto; }
+  .official-feed-more{ height:1px; }
   .official-feed .placeholder{
     height:100%;
     display:flex;
@@ -2497,12 +2498,16 @@ function loadTimelineInto(slot, handle){
   });
 }
 
-// 행사 안내 탭: 공식 X 계정(@FURSTCLASS_KR)의 최근 글을 정해진 높이 안에서 스크롤로 보여줌.
+// 행사 안내 탭: 공식 X 계정(@FURSTCLASS_KR)의 글을 정해진 높이 안에서 스크롤로 보여줌.
 // X 타임라인 위젯은 로그인하지 않은 방문자에게 막혀(429) 빈 상자만 보이므로 쓰지 않음.
-// 1) FxTwitter 공개 JSON(무료·키 없음)에서 최근 글 ID를 받아 리트윗·답글(번역 글)을 거르고
-// 2) 글마다 X 개별 글 임베드(createTweet, 로그인 불필요)로 그림.
+// 1) FxTwitter 공개 JSON(무료·키 없음)에서 OFFICIAL_POST_SINCE 이후 글을 페이지를 넘겨 가며 받고
+//    리트윗·답글(번역 글)·숨김 글을 거름
+// 2) 글마다 X 개별 글 임베드(createTweet, 로그인 불필요)로 그림. 한 번에 다 그리면 무거우므로
+//    처음 몇 개만 그리고, 상자 안에서 아래로 스크롤하면 이어서 그림.
 // FxTwitter 가 실패하면 OFFICIAL_POST_FALLBACK_IDS(2026-10-02 기준 최근 글)를 대신 씀.
-const OFFICIAL_POST_LIMIT = 6;
+const OFFICIAL_POST_SINCE = Date.parse("2026-06-16T00:00:00+09:00");
+const OFFICIAL_POST_MAX_PAGES = 8;   // 페이지당 약 20개
+const OFFICIAL_POST_BATCH = 4;       // 한 번에 그리는 글 수
 // 사이트에 보여주지 않을 글 (2026-10-02 사용자 요청: 8/21 게스트 관련 글)
 const OFFICIAL_POST_HIDDEN_IDS = new Set(["2090723233784099271"]);
 const OFFICIAL_POST_FALLBACK_IDS = [
@@ -2511,16 +2516,29 @@ const OFFICIAL_POST_FALLBACK_IDS = [
 ];
 
 function fetchOfficialPostIds(){
-  return fetch(`https://api.fxtwitter.com/2/profile/${OFFICIAL_X_HANDLE}/statuses`)
+  const base = `https://api.fxtwitter.com/2/profile/${OFFICIAL_X_HANDLE}/statuses`;
+  const ids = [];
+  const seen = new Set();
+  const page = (cursor, n) => fetch(cursor ? `${base}?cursor=${encodeURIComponent(cursor)}` : base)
     .then(res => res.ok ? res.json() : Promise.reject(res.status))
-    .then(data => (data.results || [])
-      .filter(p => !p.reposted_by && !p.replying_to &&
-        String((p.author && p.author.screen_name) || "").toLowerCase() === OFFICIAL_X_HANDLE.toLowerCase())
-      .map(p => String(p.id))
-      .filter(id => !OFFICIAL_POST_HIDDEN_IDS.has(id))
-      .slice(0, OFFICIAL_POST_LIMIT))
-    .then(ids => ids.length ? ids : OFFICIAL_POST_FALLBACK_IDS)
-    .catch(() => OFFICIAL_POST_FALLBACK_IDS);
+    .then(data => {
+      const results = data.results || [];
+      let reachedOld = false;
+      results.forEach(p => {
+        const ts = p.created_timestamp ? p.created_timestamp * 1000 : Date.parse(p.created_at);
+        if(ts && ts < OFFICIAL_POST_SINCE){ reachedOld = true; return; }
+        const id = String(p.id);
+        if(seen.has(id) || p.reposted_by || p.replying_to || OFFICIAL_POST_HIDDEN_IDS.has(id)) return;
+        if(String((p.author && p.author.screen_name) || "").toLowerCase() !== OFFICIAL_X_HANDLE.toLowerCase()) return;
+        seen.add(id);
+        ids.push(id);
+      });
+      const next = data.cursor && data.cursor.bottom;
+      if(!reachedOld && next && results.length && n < OFFICIAL_POST_MAX_PAGES) return page(next, n + 1);
+    });
+  return page(null, 1)
+    .catch(() => {})   // 중간 페이지가 실패해도 그때까지 받은 글은 보여줌
+    .then(() => ids.length ? ids : OFFICIAL_POST_FALLBACK_IDS);
 }
 
 function loadOfficialFeed(box){
@@ -2538,21 +2556,37 @@ function loadOfficialFeed(box){
       // widgets.js 를 부스 팝오버에서 먼저 불러오는 중이면 준비될 때까지 잠깐 기다림
       if(!window.twttr || !window.twttr.widgets){ setTimeout(start, 300); return; }
       box.innerHTML = "";
-      let shown = 0;
+      const sentinel = document.createElement("div");
+      sentinel.className = "official-feed-more";
+      box.appendChild(sentinel);
+      let next = 0, shown = 0, busy = false;
       // 화면에 나오는 순서를 지키려고 한 글씩 차례로 그림
-      ids.reduce((prev, id) => prev.then(() => {
-        if(!box.isConnected) return;
-        const item = document.createElement("div");
-        item.className = "official-post";
-        box.appendChild(item);
-        return window.twttr.widgets.createTweet(id, item, { theme: "light", dnt: true, lang: currentLang, conversation: "none" })
-          .then(el => {
-            if(el) shown++;
-            else item.remove();
-          }, () => item.remove());
-      }), Promise.resolve()).then(() => {
-        if(box.isConnected && !shown) showFail();
-      });
+      const renderBatch = () => {
+        if(busy || next >= ids.length || !box.isConnected) return;
+        busy = true;
+        const batch = ids.slice(next, next + OFFICIAL_POST_BATCH);
+        next += batch.length;
+        batch.reduce((prev, id) => prev.then(() => {
+          const item = document.createElement("div");
+          item.className = "official-post";
+          box.insertBefore(item, sentinel);
+          return window.twttr.widgets.createTweet(id, item, { theme: "light", dnt: true, lang: currentLang, conversation: "none" })
+            .then(el => { if(el) shown++; else item.remove(); }, () => item.remove());
+        }), Promise.resolve()).then(() => {
+          busy = false;
+          if(next >= ids.length){
+            sentinel.remove();
+            if(box.isConnected && !shown) showFail();
+            return;
+          }
+          // 그린 글이 상자 높이를 다 채우지 못했으면 바로 이어서 그림
+          if(box.scrollTop + box.clientHeight > box.scrollHeight - 400) renderBatch();
+        });
+      };
+      box.addEventListener("scroll", () => {
+        if(box.scrollTop + box.clientHeight > box.scrollHeight - 400) renderBatch();
+      }, { passive: true });
+      renderBatch();
     });
   });
 }
