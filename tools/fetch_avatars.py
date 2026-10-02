@@ -3,7 +3,9 @@
 유료 API나 API 키 없이, 일반 브라우저가 보는 공개 페이지에서 프로필 사진 주소를 찾아 받아옴.
   1) X 임베드 위젯이 쓰는 공개 페이지(syndication.twitter.com/srv/timeline-profile/...)의
      HTML 안에 들어 있는 profile_image_url_https 를 찾음 (파이썬 기본 라이브러리만 사용)
-  2) 1)에서 못 찾으면, Playwright 가 설치되어 있을 때만 x.com/아이디 페이지를
+  2) 1)에서 못 찾으면(이 위젯 페이지는 IP 단위로 429 가 자주 남), 링크 미리보기용 오픈소스
+     서비스 FxTwitter 의 공개 JSON(api.fxtwitter.com/아이디, 무료·키 없음)에서 avatar_url 을 찾음
+  3) 그래도 못 찾으면, Playwright 가 설치되어 있을 때만 x.com/아이디 페이지를
      헤드리스 브라우저로 열어 프로필 사진 이미지를 찾음
 서버에 부담을 주지 않도록 요청 사이에 쉬는 시간을 두고, 이미 받은 사진은 건너뜀.
 
@@ -21,6 +23,7 @@ data/x-handles-missing-avatars.txt 의 "사진 없는 아이디" 목록이 갱�
 """
 import json
 import re
+import ssl
 import sys
 import time
 import urllib.error
@@ -37,6 +40,15 @@ USER_AGENT = (
     "(KHTML, like Gecko) Chrome/129.0 Safari/537.36"
 )
 
+# Windows 인증서 저장소에 만료된 중간/교차 인증서가 남아 있으면 일부 사이트(api.fxtwitter.com 등)에서
+# "certificate has expired" 오류가 남. certifi 가 설치되어 있으면 그 인증서 묶음을 씀(선택: pip install certifi)
+try:
+    import certifi
+
+    SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
+except ImportError:
+    SSL_CONTEXT = ssl.create_default_context()
+
 
 def http_get(url, retries=3):
     """GET 요청. 429(요청 과다)나 일시 오류면 점점 길게 쉬었다가 다시 시도함."""
@@ -44,7 +56,7 @@ def http_get(url, retries=3):
     for attempt in range(retries):
         req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept-Language": "ko,en;q=0.8"})
         try:
-            with urllib.request.urlopen(req, timeout=20) as res:
+            with urllib.request.urlopen(req, timeout=20, context=SSL_CONTEXT) as res:
                 return res.read()
         except urllib.error.HTTPError as e:
             if e.code in (429, 500, 502, 503) and attempt < retries - 1:
@@ -66,8 +78,39 @@ def bigger(url):
     return re.sub(r"_(normal|bigger|mini)(\.\w+)$", r"_400x400\2", url)
 
 
+_syndication_blocked = False
+
+
 def find_via_syndication(handle):
-    html = http_get(f"https://syndication.twitter.com/srv/timeline-profile/screen-name/{handle}").decode("utf-8", "replace")
+    global _syndication_blocked
+    if _syndication_blocked:
+        return None
+    try:
+        raw = http_get(f"https://syndication.twitter.com/srv/timeline-profile/screen-name/{handle}", retries=1)
+    except urllib.error.HTTPError as e:
+        if e.code == 429:
+            # IP 단위 제한이라 계속 두드려도 소용없음 → 이번 실행에서는 더 쓰지 않음
+            print("    공개 위젯 페이지가 429(요청 과다) → 이번 실행에서는 건너뜀")
+            _syndication_blocked = True
+            return None
+        raise
+    html = raw.decode("utf-8", "replace")
+    return _parse_syndication(html, handle)
+
+
+def find_via_fxtwitter(handle):
+    try:
+        data = json.loads(http_get(f"https://api.fxtwitter.com/{handle}"))
+    except (urllib.error.HTTPError, ValueError):
+        # 없는 계정이면 JSON 이 아닌 페이지로 넘어감
+        return None
+    user = data.get("user") or {}
+    if str(user.get("screen_name", "")).lower() != handle.lower() or not user.get("avatar_url"):
+        return None
+    return bigger(user["avatar_url"])
+
+
+def _parse_syndication(html, handle):
     m = re.search(r'<script id="__NEXT_DATA__" type="application/json">(.*?)</script>', html, re.S)
     if not m:
         return None
@@ -137,6 +180,11 @@ def main():
             url = find_via_syndication(handle)
         except Exception as e:
             print(f"    공개 위젯 페이지 실패: {e}")
+        if not url:
+            try:
+                url = find_via_fxtwitter(handle)
+            except Exception as e:
+                print(f"    FxTwitter 실패: {e}")
         if not url:
             url = find_via_playwright(handle)
         if not url:
