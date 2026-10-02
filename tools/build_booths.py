@@ -110,15 +110,6 @@ HANDLE_FILL = {
     ("C14", "호끼퐁"): "HOKIpong",
 }
 
-# 리더의 일본어 이름이 부스원 칸에 따로 적힌 경우 → 같은 사람으로 보고 리더 이름 옆에 붙임
-# (藤堂雷悟 = Tohdoh Raigo, 逢魔牙ワルト = Oumaga Wald 로 X 아이디와 일치)
-SAME_AS_LEADER = {
-    ("A03", "藤堂雷悟"),
-    ("A04", "逢魔牙ワルト"),
-    ("A05", "虎渡悶々(Trad Monmon)"),
-}
-
-
 def same_person(a, b):
     if a["twitter"] and b["twitter"]:
         return a["twitter"].lower() == b["twitter"].lower()
@@ -147,10 +138,6 @@ def build():
                 members.append(dict(leader, role="leader"))
             for cell in (row[4], row[5]):
                 person = person_of(cell)
-                if person and members and (booth_id, person["name"]) in SAME_AS_LEADER:
-                    alt = person["name"].replace(f'({members[0]["name"]})', "").strip()
-                    members[0]["name"] = f'{members[0]["name"]} / {alt}'
-                    continue
                 # 리더/다른 부스원과 같은 사람이 부스원 칸에 또 적힌 경우(예: "엘븐/@elvendays" + "엘븐")는 한 번만 표시
                 if person and not any(same_person(person, m) for m in members):
                     members.append(dict(person, role="member"))
