@@ -120,7 +120,32 @@ def build():
                 "members": members,
                 "cut": row[8].strip().upper() == "O",
             })
-    return booths
+    return merge_double_booths(booths)
+
+
+def merge_double_booths(booths):
+    """같은 열에서 번호가 이어지고 부스 이름이 같은 부스(예: A37, A38)를 한 부스 "A37-38" 로 합침.
+    부스원은 두 칸을 합쳐 중복 없이, 성인/부스컷은 둘 중 하나라도 해당하면 표시."""
+    merged = []
+    for b in booths:
+        prev = merged[-1] if merged else None
+        if (
+            prev
+            and prev["block"] == b["block"]
+            and int(prev["nums"][-1]) + 1 == int(b["num"])
+            and prev["name"].strip().lower() == b["name"].strip().lower()
+        ):
+            prev["nums"].append(b["num"])
+            prev["id"] = f'{prev["block"]}{prev["nums"][0]}-{prev["nums"][-1]}'
+            prev["num"] = f'{prev["nums"][0]}-{prev["nums"][-1]}'
+            prev["adult"] = prev["adult"] or b["adult"]
+            prev["cut"] = prev["cut"] or b["cut"]
+            for m in b["members"]:
+                if not any(same_person(m, x) for x in prev["members"]):
+                    prev["members"].append(dict(m, role="member"))
+            continue
+        merged.append(dict(b, nums=[b["num"]]))
+    return merged
 
 
 def main():
