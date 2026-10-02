@@ -10,7 +10,7 @@
   style-src 'self' 'unsafe-inline';
   img-src 'self' data: https://pbs.twimg.com https://abs.twimg.com https://ton.twimg.com;
   font-src 'self' data:;
-  connect-src 'self' https://cdn.syndication.twimg.com https://syndication.twitter.com https://twitter.com https://x.com https://api.open-meteo.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com;
+  connect-src 'self' https://api.fxtwitter.com https://cdn.syndication.twimg.com https://syndication.twitter.com https://twitter.com https://x.com https://api.open-meteo.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com;
   frame-src https://platform.twitter.com https://syndication.twitter.com https://www.google.com https://accounts.google.com https://boothlist-4589c.firebaseapp.com;
   object-src 'none';
   base-uri 'self';
@@ -872,6 +872,8 @@
     background:var(--card-bg);
     margin-bottom:8px;
   }
+  .official-feed{ padding:0 10px; }
+  .official-post{ max-width:550px; margin:0 auto; }
   .official-feed .placeholder{
     height:100%;
     display:flex;
@@ -2495,35 +2497,61 @@ function loadTimelineInto(slot, handle){
   });
 }
 
-// 행사 안내 탭: 공식 X 계정(@FURSTCLASS_KR)의 글을 X 공식 타임라인 임베드로 보여줌(로그인·API 키 불필요).
-// 정해진 높이 안에서 스크롤되고, 위젯이 막혀 있거나(광고 차단 등) 불러오지 못하면 안내 문구만 남김.
+// 행사 안내 탭: 공식 X 계정(@FURSTCLASS_KR)의 최근 글을 정해진 높이 안에서 스크롤로 보여줌.
+// X 타임라인 위젯은 로그인하지 않은 방문자에게 막혀(429) 빈 상자만 보이므로 쓰지 않음.
+// 1) FxTwitter 공개 JSON(무료·키 없음)에서 최근 글 ID를 받아 리트윗·답글(번역 글)을 거르고
+// 2) 글마다 X 개별 글 임베드(createTweet, 로그인 불필요)로 그림.
+// FxTwitter 가 실패하면 OFFICIAL_POST_FALLBACK_IDS(2026-10-02 기준 최근 글)를 대신 씀.
+const OFFICIAL_POST_LIMIT = 6;
+const OFFICIAL_POST_FALLBACK_IDS = [
+  "2104521337406726510", "2103382992215560409", "2102277349509050694",
+  "2097718475032809727", "2091465987191136588", "2090723233784099271",
+];
+
+function fetchOfficialPostIds(){
+  return fetch(`https://api.fxtwitter.com/2/profile/${OFFICIAL_X_HANDLE}/statuses`)
+    .then(res => res.ok ? res.json() : Promise.reject(res.status))
+    .then(data => (data.results || [])
+      .filter(p => !p.reposted_by && !p.replying_to &&
+        String((p.author && p.author.screen_name) || "").toLowerCase() === OFFICIAL_X_HANDLE.toLowerCase())
+      .map(p => String(p.id))
+      .slice(0, OFFICIAL_POST_LIMIT))
+    .then(ids => ids.length ? ids : OFFICIAL_POST_FALLBACK_IDS)
+    .catch(() => OFFICIAL_POST_FALLBACK_IDS);
+}
+
 function loadOfficialFeed(box){
   if(!box) return;
   const showFail = () => {
     box.innerHTML = `<div class="placeholder">${escapeHtml(t("infoNewsFail"))}</div>`;
   };
-  const failTimer = setTimeout(() => {
-    if(!box.querySelector("iframe")) showFail();
-  }, 10000);
-  const start = () => {
-    // widgets.js 를 다른 곳(부스 팝오버)에서 먼저 불러오는 중이면 준비될 때까지 잠깐 기다림
-    if(!window.twttr || !window.twttr.widgets){
-      if(box.isConnected) setTimeout(start, 300);
-      return;
-    }
-    const container = document.createElement("div");
-    window.twttr.widgets.createTimeline(
-      { sourceType: "profile", screenName: OFFICIAL_X_HANDLE },
-      container,
-      { height: 520, theme: "light", dnt: true, lang: currentLang, chrome: "noheader nofooter noborders transparent" }
-    ).then((el) => {
-      clearTimeout(failTimer);
-      if(!el){ showFail(); return; }
-    }).catch(() => { clearTimeout(failTimer); showFail(); });
-    box.innerHTML = "";
-    box.appendChild(container);
-  };
-  ensureTwitterWidgets(start);
+  // widgets.js 자체가 막혀 있으면(광고 차단 등) 아무 응답이 없으므로 일정 시간 뒤 안내 문구로 바꿈
+  setTimeout(() => {
+    if(box.isConnected && !box.querySelector("iframe")) showFail();
+  }, 15000);
+  fetchOfficialPostIds().then(ids => {
+    ensureTwitterWidgets(function start(){
+      if(!box.isConnected) return;
+      // widgets.js 를 부스 팝오버에서 먼저 불러오는 중이면 준비될 때까지 잠깐 기다림
+      if(!window.twttr || !window.twttr.widgets){ setTimeout(start, 300); return; }
+      box.innerHTML = "";
+      let shown = 0;
+      // 화면에 나오는 순서를 지키려고 한 글씩 차례로 그림
+      ids.reduce((prev, id) => prev.then(() => {
+        if(!box.isConnected) return;
+        const item = document.createElement("div");
+        item.className = "official-post";
+        box.appendChild(item);
+        return window.twttr.widgets.createTweet(id, item, { theme: "light", dnt: true, lang: currentLang, conversation: "none" })
+          .then(el => {
+            if(el) shown++;
+            else item.remove();
+          }, () => item.remove());
+      }), Promise.resolve()).then(() => {
+        if(box.isConnected && !shown) showFail();
+      });
+    });
+  });
 }
 
 function escapeHtml(s){
