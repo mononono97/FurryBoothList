@@ -117,6 +117,19 @@ HANDLE_FILL = {
     ("C05", "Ezhno"): "KalonEzhno",
     ("C11", "Chung"): "chung0u0",
     ("C14", "호끼퐁"): "HOKIpong",
+    # 2026-10-03 사용자가 추가로 알려준 아이디
+    ("A06", "Keishi(KC)"): "beatmenesisu",
+    ("A13", "테이릿"): "Teirit_",
+    ("A13", "림"): "Melonfur_Rim",
+    ("A18", "해견"): "seadogwal",
+    ("A18", "Largo"): "largo_furry",
+    ("A19", "김루미"): "ToriS6526",
+    ("A20", "BLAEDIC"): "blaedic",
+    ("A23", "카카오"): "Caca_o999",
+    ("A24", "별귤"): "ByeolGyule",
+    ("A33", "애오우"): "dodh5172",
+    ("B09", "용박이"): "yongback00",
+    ("B09", "청교"): "connecting_Y",
 }
 
 # 리더의 일본어 이름이 부스원 칸에 따로 적힌 경우 → 같은 사람으로 보고 리더 이름 옆에 붙임
