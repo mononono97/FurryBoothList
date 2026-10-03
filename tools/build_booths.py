@@ -23,6 +23,15 @@ CSV_PATH = ROOT / "data" / "furstclass_booths.csv"
 HTML_PATH = ROOT / "index.html"
 AVATAR_DIR = ROOT / "avatars"
 MISSING_AVATARS_PATH = ROOT / "data" / "x-handles-missing-avatars.txt"
+# X 잠금(비공개) 계정 목록. 한 줄에 아이디 하나. 이 계정은 사이트에서 X 링크와 아이디를 숨김
+PROTECTED_PATH = ROOT / "data" / "x-protected-handles.txt"
+
+
+def load_protected():
+    if not PROTECTED_PATH.exists():
+        return set()
+    lines = PROTECTED_PATH.read_text(encoding="utf-8").splitlines()
+    return {l.strip().lstrip("@").lower() for l in lines if l.strip() and not l.startswith("#")}
 
 # X(트위터) 아이디: 영문/숫자/밑줄 1~15자
 HANDLE_RE = r"[A-Za-z0-9_]{1,15}"
@@ -108,6 +117,38 @@ HANDLE_FILL = {
     ("C05", "Ezhno"): "KalonEzhno",
     ("C11", "Chung"): "chung0u0",
     ("C14", "호끼퐁"): "HOKIpong",
+    # 2026-10-03 사용자가 추가로 알려준 아이디
+    ("A06", "Keishi(KC)"): "beatmenesisu",
+    ("A13", "테이릿"): "Teirit_",
+    ("A13", "림"): "Melonfur_Rim",
+    ("A18", "해견"): "seadogwal",
+    ("A18", "Largo"): "largo_furry",
+    ("A19", "김루미"): "ToriS6526",
+    ("A20", "BLAEDIC"): "blaedic",
+    ("A23", "카카오"): "Caca_o999",
+    ("A24", "별귤"): "ByeolGyule",
+    ("A33", "애오우"): "dodh5172",
+    ("B09", "용박이"): "yongback00",
+    ("B09", "청교"): "connecting_Y",
+    ("B19", "Beep"): "AlphsBeep",
+    ("B25", "프라"): "Pteragon",
+    ("B29", "Warr"): "youdil1004",   # 리더 "Warr!" 와 같은 사람 → 중복 제거됨
+    ("B29", "모닝빵"): "morningbread16",
+    ("C03", "냉이"): "Nang2_the_Fox",
+    ("C06", "큰뿔양"): "bighornsheeppic",   # 리더와 같은 사람 → 중복 제거됨
+    ("C07", "자구"): "cap1541",
+    ("C08", "마뉴"): "manyu_art",
+    ("C08", "스탠"): "kemoistani",
+    ("C10", "카뮤엘(Kamyuel)"): "Kamyuelo",
+    ("C10", "컴버스트(combust)"): "ivXair3p",
+    ("C13", "UZA"): "art_uza",   # 리더와 같은 사람 → 중복 제거됨
+    ("C20", "초코곰탱이"): "Choko_Gom",
+    ("C20", "파곰"): "PaGom1121_",
+    ("C22", "머바"): "skymeatball",
+    ("C24", "온별"): "ONST4R",
+    ("C25", "Doyayam"): "DoyayamArt",
+    ("C28", "NB"): "thee1621",
+    ("C28", "오뎅국"): "ramee_C",
 }
 
 # 리더의 일본어 이름이 부스원 칸에 따로 적힌 경우 → 같은 사람으로 보고 리더 이름 옆에 붙임
@@ -127,6 +168,7 @@ def same_person(a, b):
 
 def build():
     booths = []
+    protected = load_protected()
     with CSV_PATH.open(encoding="utf-8-sig", newline="") as f:
         reader = csv.reader(f)
         next(reader)  # 헤더
@@ -152,8 +194,19 @@ def build():
                     members[0]["name"] = f'{members[0]["name"]} / {alt}'
                     continue
                 # 리더/다른 부스원과 같은 사람이 부스원 칸에 또 적힌 경우(예: "엘븐/@elvendays" + "엘븐")는 한 번만 표시
-                if person and not any(same_person(person, m) for m in members):
+                dup = next((m for m in members if person and same_person(person, m)), None)
+                if dup:
+                    # 리더 칸에 "@아이디" 만 있고 부스원 칸에 닉네임이 있으면 닉네임을 씀 (예: C13 @art_uza + UZA)
+                    if dup["twitter"] and dup["name"].lower() == dup["twitter"].lower() and person["name"].lower() != dup["name"].lower():
+                        dup["name"] = person["name"]
+                elif person:
                     members.append(dict(person, role="member"))
+            # 잠금 계정: 프로필 사진(avatar)은 그대로 쓰되, X 링크와 아이디(twitter)는 숨김
+            for m in members:
+                m["avatar"] = m["twitter"]
+                if m["twitter"] and m["twitter"].lower() in protected:
+                    m["twitter"] = None
+                    m["locked"] = True
             handle = next((m["twitter"] for m in members if m["twitter"]), None)
             booths.append({
                 "id": booth_id,
@@ -163,10 +216,22 @@ def build():
                 "name": row[2].strip(),
                 "rep": members[0]["name"] if members else "",
                 "twitter": handle,
+                "avatar": members[0]["avatar"] if members else None,
                 "members": members,
                 "cut": row[8].strip().upper() == "O",
             })
-    return merge_double_booths(booths)
+    return sort_members_by_photo(merge_double_booths(booths))
+
+
+def sort_members_by_photo(booths):
+    """부스마다 프로필 사진(avatars/아이디.jpg)이 있는 부스원을 위로, 없는 부스원을 아래로 (같은 그룹 안에서는 원래 순서 유지).
+    카드에 보이는 사진·X 링크도 정렬된 첫 부스원 기준으로 다시 고름. 대표 이름(rep)은 리더 그대로."""
+    existing = {p.stem for p in AVATAR_DIR.glob("*.jpg")}
+    for b in booths:
+        b["members"].sort(key=lambda m: m["avatar"] not in existing)
+        b["avatar"] = b["members"][0]["avatar"] if b["members"] else None
+        b["twitter"] = next((m["twitter"] for m in b["members"] if m["twitter"]), None)
+    return booths
 
 
 def merge_double_booths(booths):
@@ -213,7 +278,7 @@ def main():
 
     # avatars/ 에 프로필 사진(아이디.jpg)이 아직 없는 X 아이디 목록 (프로필 사진 수집용)
     existing = {p.stem for p in AVATAR_DIR.glob("*.jpg")}
-    handles = sorted({m["twitter"] for b in booths for m in b["members"] if m["twitter"]}, key=str.lower)
+    handles = sorted({m["avatar"] for b in booths for m in b["members"] if m["avatar"]}, key=str.lower)
     missing = [h for h in handles if h not in existing]
     MISSING_AVATARS_PATH.write_text("\n".join(missing) + "\n", encoding="utf-8")
     print(f"프로필 사진 없는 X 아이디 {len(missing)}개 → {MISSING_AVATARS_PATH.relative_to(ROOT)}")

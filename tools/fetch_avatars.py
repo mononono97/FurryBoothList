@@ -164,7 +164,7 @@ def main():
         args = [a for a in args if a != sys.argv[sys.argv.index("--delay") + 1]]
 
     handles = args or sorted(
-        {m["twitter"] for b in build_booths.build() for m in b["members"] if m["twitter"]}, key=str.lower
+        {m["avatar"] for b in build_booths.build() for m in b["members"] if m["avatar"]}, key=str.lower
     )
     AVATAR_DIR.mkdir(exist_ok=True)
     ok, skipped, failed = 0, 0, []
