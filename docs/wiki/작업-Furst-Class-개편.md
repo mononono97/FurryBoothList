@@ -1,6 +1,6 @@
 # Furst Class 개편
 
-> 상태: **1차 완료** (2026-10-02, [PR #3](https://github.com/mononono97/kemoket_list/pull/3)~[#7](https://github.com/mononono97/kemoket_list/pull/7) main 반영). 부스컷 이미지와 실제 배치도를 받으면 이어서 반영합니다.
+> 상태: **1차 완료** (2026-10-02, [PR #3](https://github.com/mononono97/kemoket_list/pull/3)~[#7](https://github.com/mononono97/kemoket_list/pull/7) main 반영). 부스컷은 2026-10-03에 반영했고, 실제 배치도를 받으면 이어서 반영합니다.
 
 ## 목표
 기존 케모켓(2026-09-20, 도쿄) 부스 목록 사이트를 2026년 11월 말 한국에서 열리는
@@ -59,8 +59,9 @@
 - 2026-10-02 PR #3 머지: Furst Class 사이트로 전환
 - 2026-10-02 PR #4~#7 머지: 두 칸 부스 합치기, 빠진 X 아이디 22명 추가, A03~A05 이름 중복 정리, 팝오버 테두리 잘림 수정
 - 2026-10-02 Cloudflare 서비스 이름 `furryboothlist`로 변경, main 외 브랜치 빌드 끔
+- 2026-10-02 행사 안내 탭에 공식 X 계정 소식 추가 (#8, #9, #11)
+- 2026-10-03 X 아이디 28명 추가, 잠금 계정 처리, 부스컷 99개 추가 및 카드 대표 이미지를 부스컷으로 (#12~#19), 스크롤바·줄바꿈 다듬기 (#20, #21)
 
 ## 남은 일
-- 부스컷 이미지 받기 → `booth-cuts/<부스 번호>.jpg`로 넣기 ([방법](기능-부스원과-부스컷.md#부스컷-이미지를-받았을-때))
 - 실제 배치도 받기 → 임시 배치도 교체
 - 프로필 사진이 없는 X 아이디는 `data/x-handles-missing-avatars.txt` 참고, `tools/fetch_avatars.py`로 받기
