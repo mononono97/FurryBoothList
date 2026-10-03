@@ -44,7 +44,7 @@
 
   /* 스크롤바를 사이트 테마 색상에 맞춤 */
   html{
-    scrollbar-color:var(--moss) var(--paper);
+    scrollbar-color:var(--panel-2) var(--paper);
     scrollbar-width:thin;
   }
   ::-webkit-scrollbar{
@@ -55,24 +55,24 @@
     background:var(--paper);
   }
   ::-webkit-scrollbar-thumb{
-    background:var(--moss);
+    background:var(--panel-2);
     border-radius:8px;
     border:3px solid var(--paper);
   }
   ::-webkit-scrollbar-thumb:hover{
-    background:var(--clay);
+    background:var(--panel);
   }
-  .modal{
+  .modal, .pop-body{
     scrollbar-color:rgba(255,255,255,.35) transparent;
   }
-  .modal::-webkit-scrollbar-track{
+  .modal::-webkit-scrollbar-track, .pop-body::-webkit-scrollbar-track{
     background:transparent;
   }
-  .modal::-webkit-scrollbar-thumb{
+  .modal::-webkit-scrollbar-thumb, .pop-body::-webkit-scrollbar-thumb{
     background:rgba(255,255,255,.3);
     border:3px solid var(--panel);
   }
-  .modal::-webkit-scrollbar-thumb:hover{
+  .modal::-webkit-scrollbar-thumb:hover, .pop-body::-webkit-scrollbar-thumb:hover{
     background:rgba(255,255,255,.5);
   }
 
