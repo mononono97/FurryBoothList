@@ -1345,31 +1345,32 @@
     .popover::before{left:var(--arrow-left, 24px); transform:translateX(-50%) rotate(45deg);}
   }
 
-  /* 모바일(좁은 화면·터치 기기)에서는 부스 상세를 말풍선 대신 화면을 거의 채우는 모달로 띄움.
-     바깥 여백을 조금 남겨 두어 창 밖을 터치해 닫을 수 있게 함. */
-  @media (max-width:640px), (hover:none) and (pointer:coarse){
-    .modal-backdrop{ padding:12px; }
-    .modal.booth-modal{
-      width:100%;
-      max-width:560px;
-      height:calc(100vh - 24px);
-      height:calc(100dvh - 24px);
-      max-height:none;
-      padding:16px;
-    }
-    /* 스크롤해도 닫기 버튼이 항상 보이도록 위쪽에 고정하고, 손가락으로 누르기 쉽게 키움 */
-    .modal.booth-modal .modal-close{
-      position:sticky;
-      top:0;
-      z-index:1;
-      width:40px;
-      height:40px;
-      margin:-6px -6px 0 8px;
-      border-radius:50%;
-      background:var(--panel);
-      border:1px solid var(--panel-border);
-      font-size:20px;
-    }
+  /* 모바일(좁은 화면이거나 손가락·펜으로 누른 경우)에서는 부스 상세를 말풍선 대신 화면을 거의 채우는
+     모달로 띄움(JS의 useBoothModal()이 booth-modal-full 클래스를 붙임). 폴드처럼 펼치면 폭이 넓은
+     기기도 손가락으로 누르면 이쪽으로 옴. 바깥 여백을 조금 남겨 두어 창 밖을 터치해 닫을 수 있게 함. */
+  .modal-backdrop.booth-full{ padding:12px; }
+  .modal.booth-modal.booth-modal-full{
+    width:100%;
+    max-width:720px;
+    height:calc(100vh - 24px);
+    height:calc(100dvh - 24px);
+    max-height:none;
+    padding:16px;
+  }
+  /* 부스컷은 스크롤하지 않아도 한 화면에 통째로 보이도록 화면 높이에 맞춰 크게 */
+  .modal.booth-modal-full .booth-cut img{ max-height:62vh; max-height:62dvh; }
+  /* 스크롤해도 닫기 버튼이 항상 보이도록 위쪽에 고정하고, 손가락으로 누르기 쉽게 키움 */
+  .modal.booth-modal-full .modal-close{
+    position:sticky;
+    top:0;
+    z-index:1;
+    width:40px;
+    height:40px;
+    margin:-6px -6px 0 8px;
+    border-radius:50%;
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    font-size:20px;
   }
   /* 모달이 열려 있는 동안 뒤 페이지가 같이 스크롤되지 않게 함 */
   html.modal-open, html.modal-open body{ overflow:hidden; }
@@ -3036,7 +3037,7 @@ function renderGrid(){
     // 클릭(탭)으로 토글. 모바일에서는 말풍선이 너무 작아서 큰 모달로 띄움(X 버튼·창 밖 터치로 닫힘).
     card.addEventListener("click", (e) => {
       e.stopPropagation();
-      if(useBoothModal()){
+      if(useBoothModal(e)){
         closeAllPopovers();
         openBoothModal(booth.id);
         return;
@@ -3048,10 +3049,16 @@ function renderGrid(){
   });
 }
 
-// 모바일(좁은 화면 또는 마우스 없는 터치 기기)인지. CSS의 booth-modal 미디어쿼리와 같은 조건.
-const BOOTH_MODAL_QUERY = "(max-width:640px), (hover:none) and (pointer:coarse)";
-function useBoothModal(){
-  return !!(window.matchMedia && window.matchMedia(BOOTH_MODAL_QUERY).matches);
+// 부스 상세를 큰 모달로 띄울지. 화면이 좁거나, 이번 클릭을 손가락·펜으로 했으면 큰 모달.
+// (갤럭시 폴드 펼친 화면처럼 폭이 넓고 S펜 지원 때문에 hover 미디어쿼리가 PC처럼 잡히는 기기도
+//  실제로 누른 입력 종류로 판단하면 모바일로 처리됨. 마우스로 누르면 PC처럼 말풍선.)
+const NARROW_QUERY = "(max-width:640px)";
+let lastPointerType = "";
+document.addEventListener("pointerdown", (e) => { lastPointerType = e.pointerType || ""; }, true);
+function useBoothModal(e){
+  const type = (e && e.pointerType) || lastPointerType;
+  if(type === "touch" || type === "pen") return true;
+  return !!(window.matchMedia && window.matchMedia(NARROW_QUERY).matches);
 }
 
 // 열려 있는 모든 부스 팝오버를 닫음. exceptCard를 지정하면 해당 카드는 건너뜀
@@ -3335,6 +3342,9 @@ function openBoothModal(boothId){
   content.innerHTML = "";
   content.classList.remove("modal-wide");
   content.classList.add("booth-modal");
+  const full = useBoothModal();
+  content.classList.toggle("booth-modal-full", full);
+  backdrop.classList.toggle("booth-full", full);
 
   const closeBtn = document.createElement("button");
   closeBtn.className = "modal-close";
@@ -3494,7 +3504,8 @@ function openHelpModal(){
   const backdrop = document.getElementById("modalBackdrop");
   const content = document.getElementById("modalContent");
   content.innerHTML = "";
-  content.classList.remove("booth-modal");
+  content.classList.remove("booth-modal", "booth-modal-full");
+  backdrop.classList.remove("booth-full");
   content.classList.add("modal-wide");
 
   const closeBtn = document.createElement("button");
