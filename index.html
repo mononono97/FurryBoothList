@@ -2711,8 +2711,11 @@ function updateNoteVisuals(boothId){
    팝오버가 화면 밖으로 잘려나가지 않도록 뷰포트 안쪽으로 위치를 조정함.
    세로 공간이 부족하면 카드 위 대신 아래로 펼침.
 ------------------------------------------------- */
-function positionPopover(card, pop){
+function positionPopover(card, pop, onScroll){
   const margin = 10;
+  const wasBelow = pop.classList.contains("below");
+  const prevBody = pop.querySelector(".pop-body");
+  const prevScrollTop = prevBody ? prevBody.scrollTop : 0;
   pop.style.left = "";
   pop.style.transform = "";
   pop.style.removeProperty("--arrow-left");
@@ -2730,8 +2733,20 @@ function positionPopover(card, pop){
   const popHeight = pop.offsetHeight;
   const cardCenter = cardRect.left + cardRect.width / 2;
 
-  if(cardRect.top < popHeight + margin * 2 && (viewportHeight - cardRect.bottom) > cardRect.top){
-    pop.classList.add("below");
+  const spaceAbove = cardRect.top;
+  const spaceBelow = viewportHeight - cardRect.bottom;
+  if(!onScroll){
+    if(spaceAbove < popHeight + margin * 2 && spaceBelow > spaceAbove){
+      pop.classList.add("below");
+    }
+  }else{
+    // 스크롤 중에는 펼친 쪽을 유지하되, 지금 쪽이 내용보다 좁고 반대쪽이 확실히(80px 이상) 넓어지면
+    // 반대쪽으로 옮겨서 창이 작게 찌그러지지 않게 함(경계에서 위아래로 깜빡이지 않도록 여유를 둠).
+    const current = wasBelow ? spaceBelow : spaceAbove;
+    const other = wasBelow ? spaceAbove : spaceBelow;
+    const fits = current >= popHeight + margin * 2;
+    const flip = !fits && other > current + 80;
+    if(wasBelow !== flip) pop.classList.add("below");
   }
 
   // 팝오버가 펼쳐지는 쪽(위/아래)의 화면 공간 안에 들어오도록 내용 높이를 제한함.
@@ -2742,6 +2757,7 @@ function positionPopover(card, pop){
       : cardRect.top;
     const padding = 28; // .popover 위아래 padding(14px * 2)
     body.style.maxHeight = `${Math.max(160, space - margin * 2 - 10 - padding)}px`;
+    body.scrollTop = prevScrollTop;
   }
 
   const desired = cardCenter - popWidth / 2;
@@ -3077,6 +3093,7 @@ document.addEventListener("click", () => {
 });
 
 // 스크롤로 부스 카드가 화면 밖으로 벗어나면 팝오버를 자동으로 닫음(메모 초안은 유지).
+// 화면 안에 남아 있으면 크기·방향을 다시 맞춤.
 let scrollCloseQueued = false;
 window.addEventListener("scroll", () => {
   if(scrollCloseQueued) return;
@@ -3088,7 +3105,12 @@ window.addEventListener("scroll", () => {
       const rect = card.getBoundingClientRect();
       if(rect.bottom < 0 || rect.top > viewportHeight){
         card.classList.remove("show-pop");
+        return;
       }
+      // 화면 안에 있으면 스크롤로 바뀐 위아래 공간에 맞춰 팝오버 높이·방향을 다시 맞춤
+      // (화면 중간 카드에서 작게 열렸어도 스크롤하면 넓은 쪽으로 커짐).
+      const pop = card.querySelector(".popover");
+      if(pop) positionPopover(card, pop, true);
     });
   });
 }, { passive: true });
