@@ -23,6 +23,15 @@ CSV_PATH = ROOT / "data" / "furstclass_booths.csv"
 HTML_PATH = ROOT / "index.html"
 AVATAR_DIR = ROOT / "avatars"
 MISSING_AVATARS_PATH = ROOT / "data" / "x-handles-missing-avatars.txt"
+# X 잠금(비공개) 계정 목록. 한 줄에 아이디 하나. 이 계정은 사이트에서 X 링크와 아이디를 숨김
+PROTECTED_PATH = ROOT / "data" / "x-protected-handles.txt"
+
+
+def load_protected():
+    if not PROTECTED_PATH.exists():
+        return set()
+    lines = PROTECTED_PATH.read_text(encoding="utf-8").splitlines()
+    return {l.strip().lstrip("@").lower() for l in lines if l.strip() and not l.startswith("#")}
 
 # X(트위터) 아이디: 영문/숫자/밑줄 1~15자
 HANDLE_RE = r"[A-Za-z0-9_]{1,15}"
@@ -127,6 +136,7 @@ def same_person(a, b):
 
 def build():
     booths = []
+    protected = load_protected()
     with CSV_PATH.open(encoding="utf-8-sig", newline="") as f:
         reader = csv.reader(f)
         next(reader)  # 헤더
@@ -154,6 +164,12 @@ def build():
                 # 리더/다른 부스원과 같은 사람이 부스원 칸에 또 적힌 경우(예: "엘븐/@elvendays" + "엘븐")는 한 번만 표시
                 if person and not any(same_person(person, m) for m in members):
                     members.append(dict(person, role="member"))
+            # 잠금 계정: 프로필 사진(avatar)은 그대로 쓰되, X 링크와 아이디(twitter)는 숨김
+            for m in members:
+                m["avatar"] = m["twitter"]
+                if m["twitter"] and m["twitter"].lower() in protected:
+                    m["twitter"] = None
+                    m["locked"] = True
             handle = next((m["twitter"] for m in members if m["twitter"]), None)
             booths.append({
                 "id": booth_id,
@@ -163,6 +179,7 @@ def build():
                 "name": row[2].strip(),
                 "rep": members[0]["name"] if members else "",
                 "twitter": handle,
+                "avatar": members[0]["avatar"] if members else None,
                 "members": members,
                 "cut": row[8].strip().upper() == "O",
             })
@@ -213,7 +230,7 @@ def main():
 
     # avatars/ 에 프로필 사진(아이디.jpg)이 아직 없는 X 아이디 목록 (프로필 사진 수집용)
     existing = {p.stem for p in AVATAR_DIR.glob("*.jpg")}
-    handles = sorted({m["twitter"] for b in booths for m in b["members"] if m["twitter"]}, key=str.lower)
+    handles = sorted({m["avatar"] for b in booths for m in b["members"] if m["avatar"]}, key=str.lower)
     missing = [h for h in handles if h not in existing]
     MISSING_AVATARS_PATH.write_text("\n".join(missing) + "\n", encoding="utf-8")
     print(f"프로필 사진 없는 X 아이디 {len(missing)}개 → {MISSING_AVATARS_PATH.relative_to(ROOT)}")
