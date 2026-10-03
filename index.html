@@ -18,25 +18,130 @@
 ">
 <title>Furst Class 부스 목록</title>
 <link rel="icon" type="image/png" href="favicon.png">
+<script>
+  // 테마(라이트/다크): 설정 메뉴에서 고른 값이 있으면 그걸, 없으면 브라우저(OS) 다크 모드 설정을 따름.
+  // 화면이 그려지기 전에 정해야 다크 모드에서 밝은 화면이 잠깐 번쩍이지 않음.
+  (function(){
+    var saved = null;
+    try { saved = localStorage.getItem("furstclass-theme"); } catch (e) {}
+    var dark = saved === "dark" || (saved !== "light" && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+  })();
+</script>
 <style>
+  /* 테마: 라이트(모던 미니멀)가 기본, 다크(카지노 나이트)는 html[data-theme="dark"]일 때.
+     data-theme은 <head>의 작은 스크립트가 저장된 설정 또는 브라우저 다크 모드 여부로 정함.
+     상단바·부스 카드처럼 테마마다 모양이 다른 곳은 모두 아래 변수로만 바뀜. */
   :root{
-    /* Furst Class(Gambling Cat) 테마: 행사 로고의 크림슨·블랙·화이트를 눈이 편한 파스텔 톤으로 */
-    --paper:#f8f0f2;      /* 배경: 연한 블러시 핑크 */
-    --panel:#2b2229;      /* 상단바·팝오버: 부드러운 블랙(살짝 자주빛) */
-    --panel-2:#3d3039;
-    --ink:#2b2229;
-    --moss:#d9637f;       /* 주 강조색: 파스텔 크림슨 */
-    --moss-light:#f2a9bb; /* 어두운 배경 위 보조 글자색: 연핑크 */
-    --clay:#e07a93;       /* 선택된 탭·메모 표시: 로즈 */
-    --accent:#e8557a;     /* 선택된 탭/저장 버튼: 로고의 크림슨을 조금 밝게 */
-    --line:#ecd3da;
-    --card-bg:#fffafb;
-    --muted:#9a7d88;      /* 회색 글자: 모브 그레이 */
+    color-scheme:light;
+    --paper:#f6f4f3;      /* 페이지 배경: 따뜻한 오프화이트 */
+    --page-glow:none;     /* 페이지 상단 은은한 빛(다크에서만) */
+    --ink:#1d1a1c;        /* 본문 글자 */
+    --text-2:#6b6265;     /* 보조 글자 */
+    --muted:#8a8285;      /* 흐린 글자 */
+    --line:#e7e2e1;
+    --card-bg:#ffffff;
+    --hover-tint:#f3efee; /* 밝은 버튼 마우스 오버 */
+    --moss:#c8102e;       /* 주 강조색: Furst Class 로고 크림슨 */
+    --clay:#c8102e;       /* 메모 표시 */
+    --accent:#c8102e;     /* 저장 버튼 등 */
+    --display-font:inherit; /* 사이트 제목·열 글자 글꼴 */
+
+    /* 상단바 */
+    --header-bg:rgba(255,255,255,.88);
+    --header-fg:#1d1a1c;
+    --header-sub:#8a8285;
+    --header-border:1px solid #e7e2e1;
+    --chip-bg:#f0ecea;            /* 열·탭 버튼 */
+    --chip-border:transparent;
+    --chip-hover:#e6e0de;
+    --chip-active-bg:#1d1a1c;
+    --chip-active-fg:#ffffff;
+    --chip-active-glow:none;
+    --chip-radius:10px;
+    --search-bg:#f0ecea;
+    --search-border:transparent;
+    --search-ph:#9c9396;
+
+    /* 부스 카드 */
+    --card-border:transparent;
+    --card-border-hover:transparent;
+    --card-radius:16px;
+    --card-shadow:0 1px 2px rgba(29,26,28,.06), 0 4px 14px rgba(29,26,28,.05);
+    --card-shadow-hover:0 2px 4px rgba(29,26,28,.06), 0 14px 28px rgba(29,26,28,.12);
+    --id-color:#1d1a1c;
+    --id-bg:#f3efee;
+    --big-letter:#1d1a1c;
+    --heading-rule:transparent;
+    --pill-active-bg:#1d1a1c;     /* 우선순위 정렬·방문 필터 켜짐 */
+    --pill-active-fg:#ffffff;
+    --note-bg:#fff0f2;
+    --planned-bg:#fff6d1;
+    --visited-bg:#e3f3df;
+
+    /* 팝오버·모달·설정 메뉴(두 테마 모두 어두운 패널) */
+    --panel:#1d1a1c;
+    --panel-2:#2c2729;
+    --panel-border:transparent;
+    --on-panel:#f4eef0;   /* 패널 위 글자 */
+    --moss-light:#f2a0ad; /* 패널 위 보조 글자: 연핑크 */
+  }
+  :root[data-theme="dark"]{
+    color-scheme:dark;
+    --paper:#121013;
+    --page-glow:radial-gradient(1200px 500px at 50% -100px, #2a1219 0%, transparent 70%);
+    --ink:#f2e8ea;
+    --text-2:#b3a3aa;
+    --muted:#9a8890;
+    --line:#2e252c;
+    --card-bg:#1b161a;
+    --hover-tint:#2a2027;
+    --moss:#e0344f;
+    --clay:#e0344f;
+    --accent:#e0344f;
+    --display-font:Georgia,"Times New Roman","Noto Serif KR",serif;
+
+    --header-bg:linear-gradient(180deg,#0a080a,#140d11);
+    --header-fg:#f2e8ea;
+    --header-sub:#d6b46a;
+    --header-border:1px solid rgba(214,180,106,.45);
+    --chip-bg:transparent;
+    --chip-border:rgba(214,180,106,.3);
+    --chip-hover:rgba(255,255,255,.08);
+    --chip-active-bg:#e0344f;
+    --chip-active-fg:#ffffff;
+    --chip-active-glow:0 0 18px rgba(224,52,79,.45);
+    --chip-radius:999px;
+    --search-bg:rgba(255,255,255,.05);
+    --search-border:rgba(214,180,106,.3);
+    --search-ph:#b3a3aa;
+
+    --card-border:#2e252c;
+    --card-border-hover:#d6b46a;
+    --card-radius:12px;
+    --card-shadow:none;
+    --card-shadow-hover:0 10px 30px rgba(0,0,0,.5), 0 0 0 1px rgba(214,180,106,.4);
+    --id-color:#d6b46a;
+    --id-bg:transparent;
+    --big-letter:#d6b46a;
+    --heading-rule:rgba(214,180,106,.35);
+    --pill-active-bg:#e0344f;
+    --pill-active-fg:#ffffff;
+    --note-bg:#2a1820;
+    --planned-bg:#2a2414;
+    --visited-bg:#172417;
+
+    --panel:#0d0a0c;
+    --panel-2:#221b21;
+    --panel-border:rgba(214,180,106,.3);
+    --on-panel:#f2e8ea;
+    --moss-light:#e8c98a; /* 패널 위 보조 글자: 골드 */
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    background:var(--paper);
+    background:var(--page-glow), var(--paper);
+    background-color:var(--paper);
     color:var(--ink);
     font-family:"Hiragino Sans","Noto Sans KR","Apple SD Gothic Neo",-apple-system,BlinkMacSystemFont,sans-serif;
     line-height:1.5;
@@ -77,11 +182,19 @@
   }
 
   header.top{
-    background:var(--panel);
-    color:var(--paper);
-    padding:22px 20px 18px;
-    border-bottom:3px solid var(--accent);
-    box-shadow:0 2px 10px rgba(0,0,0,.15);
+    background:var(--header-bg);
+    color:var(--header-fg);
+    padding:18px 20px 14px;
+    border-bottom:var(--header-border);
+    /* PC에서는 스크롤해도 상단바가 위에 붙어 있음(모바일은 화면을 많이 가려서 제외) */
+    position:sticky;
+    top:0;
+    z-index:100;
+    -webkit-backdrop-filter:blur(14px);
+    backdrop-filter:blur(14px);
+  }
+  @media (max-width:700px){
+    header.top{ position:static; }
   }
   .top-inner{
     max-width:1180px;
@@ -98,32 +211,43 @@
     gap:12px;
   }
   .brand .mark{
-    font-size:26px;
-    font-weight:700;
-    letter-spacing:.02em;
+    font-family:var(--display-font);
+    font-size:24px;
+    font-weight:800;
+    letter-spacing:-.01em;
+  }
+  .brand .mark::before{
+    content:"";
+    display:inline-block;
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:var(--accent);
+    margin-right:10px;
+    vertical-align:middle;
   }
   .brand .sub{
     font-size:12px;
-    color:var(--moss-light);
+    color:var(--header-sub);
     letter-spacing:.04em;
   }
   .search-box{
     display:flex;
     align-items:center;
-    background:rgba(255,255,255,.08);
-    border:1px solid rgba(255,255,255,.18);
-    border-radius:6px;
-    padding:6px 10px;
+    background:var(--search-bg);
+    border:1px solid var(--search-border);
+    border-radius:var(--chip-radius);
+    padding:6px 12px;
   }
   .search-box input{
     background:transparent;
     border:none;
     outline:none;
-    color:var(--paper);
+    color:var(--header-fg);
     font-size:13px;
     width:180px;
   }
-  .search-box input::placeholder{color:#e9c6d0;}
+  .search-box input::placeholder{color:var(--search-ph);}
 
   .lang-switch{
     display:flex;
@@ -133,7 +257,7 @@
     appearance:none;
     border:1px solid rgba(255,255,255,.25);
     background:transparent;
-    color:var(--paper);
+    color:var(--on-panel);
     padding:5px 10px;
     border-radius:4px;
     font-size:12px;
@@ -157,33 +281,33 @@
   }
   .header-btn{
     appearance:none;
-    border:1px solid rgba(255,255,255,.35);
-    background:transparent;
-    color:var(--paper);
+    border:1px solid var(--line);
+    background:var(--card-bg);
+    color:var(--header-fg);
     padding:0 12px;
     height:34px;
-    border-radius:6px;
+    border-radius:10px;
     font-size:12.5px;
     font-weight:600;
     cursor:pointer;
     white-space:nowrap;
     transition:background .15s;
   }
-  .header-btn:hover{background:rgba(255,255,255,.12);}
+  .header-btn:hover{background:var(--hover-tint);}
   .settings-btn{
     appearance:none;
-    border:1px solid rgba(255,255,255,.25);
-    background:transparent;
-    color:var(--paper);
+    border:1px solid var(--line);
+    background:var(--card-bg);
+    color:var(--header-fg);
     width:34px;
     height:34px;
-    border-radius:6px;
+    border-radius:10px;
     font-size:16px;
     line-height:1;
     cursor:pointer;
     transition:background .15s;
   }
-  .settings-btn:hover{background:rgba(255,255,255,.12);}
+  .settings-btn:hover{background:var(--hover-tint);}
   .settings-menu{
     display:none;
     position:fixed;
@@ -191,7 +315,8 @@
     width:190px;
     max-width:calc(100vw - 20px);
     background:var(--panel);
-    border-radius:10px;
+    border:1px solid var(--panel-border);
+    border-radius:14px;
     padding:12px;
     box-shadow:0 12px 30px rgba(0,0,0,.35);
   }
@@ -207,7 +332,7 @@
     appearance:none;
     border:1px solid rgba(255,255,255,.25);
     background:transparent;
-    color:var(--paper);
+    color:var(--on-panel);
     padding:7px 12px;
     border-radius:6px;
     font-size:12.5px;
@@ -242,29 +367,30 @@
   nav.rows{
     max-width:1180px;
     margin:0 auto;
-    margin-top:16px;
+    margin-top:14px;
     display:flex;
     flex-wrap:wrap;
     gap:6px;
   }
   nav.rows button{
     appearance:none;
-    border:1px solid rgba(255,255,255,.25);
-    background:transparent;
-    color:var(--paper);
+    border:1px solid var(--chip-border);
+    background:var(--chip-bg);
+    color:var(--header-fg);
     width:36px;
     height:36px;
-    border-radius:4px;
+    border-radius:var(--chip-radius);
     font-size:15px;
-    font-weight:600;
+    font-weight:700;
     cursor:pointer;
     transition:background .15s, transform .1s;
   }
-  nav.rows button:hover{background:rgba(255,255,255,.12);}
+  nav.rows button:hover{background:var(--chip-hover);}
   nav.rows button.active{
-    background:var(--clay);
-    border-color:var(--clay);
-    color:#fff;
+    background:var(--chip-active-bg);
+    border-color:var(--chip-active-bg);
+    color:var(--chip-active-fg);
+    box-shadow:var(--chip-active-glow);
   }
   nav.rows button.empty{
     opacity:.35;
@@ -273,12 +399,7 @@
     width:auto;
     padding:0 12px;
     font-size:13px;
-    font-weight:600;
-    border-color:rgba(255,255,255,.35);
-  }
-  nav.rows button.memo-tab-btn.active{
-    background:var(--accent);
-    border-color:var(--accent);
+    font-weight:700;
   }
 
   .second-row{
@@ -297,21 +418,23 @@
   }
   .tab-group button{
     appearance:none;
-    border:1px solid rgba(255,255,255,.35);
-    background:transparent;
-    color:var(--paper);
+    border:1px solid var(--chip-border);
+    background:var(--chip-bg);
+    color:var(--header-fg);
     padding:0 12px;
     height:36px;
-    border-radius:4px;
+    border-radius:var(--chip-radius);
     font-size:13px;
-    font-weight:600;
+    font-weight:700;
     cursor:pointer;
     transition:background .15s, transform .1s;
   }
-  .tab-group button:hover{background:rgba(255,255,255,.12);}
+  .tab-group button:hover{background:var(--chip-hover);}
   .tab-group button.active{
-    background:var(--accent);
-    border-color:var(--accent);
+    background:var(--chip-active-bg);
+    border-color:var(--chip-active-bg);
+    color:var(--chip-active-fg);
+    box-shadow:var(--chip-active-glow);
   }
 
   main{
@@ -324,38 +447,40 @@
     display:flex;
     align-items:baseline;
     gap:14px;
-    margin-bottom:18px;
-    border-bottom:2px solid var(--ink);
+    margin-bottom:20px;
+    border-bottom:1px solid var(--heading-rule);
     padding-bottom:10px;
   }
   .row-heading .big-letter{
-    font-size:42px;
+    font-family:var(--display-font);
+    font-size:44px;
     font-weight:800;
     line-height:1;
-    color:var(--clay);
+    letter-spacing:-.03em;
+    color:var(--big-letter);
   }
   .row-heading .count{
     font-size:13px;
-    color:#6b5561;
+    color:var(--text-2);
   }
   .sort-priority-btn{
     appearance:none;
     border:1px solid var(--line);
     background:var(--card-bg);
     color:var(--ink);
-    padding:5px 10px;
-    border-radius:4px;
+    padding:5px 12px;
+    border-radius:999px;
     font-size:11.5px;
     font-weight:600;
     cursor:pointer;
     margin-left:auto;
     transition:background .15s, border-color .15s;
   }
-  .sort-priority-btn:hover{background:#fbe8ed;}
+  .sort-priority-btn:hover{background:var(--hover-tint);}
   .sort-priority-btn.active{
-    background:var(--panel);
-    border-color:var(--panel);
-    color:var(--paper);
+    background:var(--pill-active-bg);
+    border-color:var(--pill-active-bg);
+    color:var(--pill-active-fg);
   }
   .notes-extra{
     display:flex;
@@ -375,18 +500,18 @@
     border:1px solid var(--line);
     background:var(--card-bg);
     color:var(--ink);
-    padding:5px 10px;
-    border-radius:4px;
+    padding:5px 12px;
+    border-radius:999px;
     font-size:11.5px;
     font-weight:600;
     cursor:pointer;
     transition:background .15s, border-color .15s;
   }
-  .visit-filter button:hover{background:#fbe8ed;}
+  .visit-filter button:hover{background:var(--hover-tint);}
   .visit-filter button.active{
-    background:var(--panel);
-    border-color:var(--panel);
-    color:var(--paper);
+    background:var(--pill-active-bg);
+    border-color:var(--pill-active-bg);
+    color:var(--pill-active-fg);
   }
   .budget-total{
     font-size:13px;
@@ -394,43 +519,50 @@
     color:var(--ink);
     background:var(--card-bg);
     border:1px solid var(--line);
-    border-radius:6px;
-    padding:6px 12px;
+    border-radius:999px;
+    padding:6px 14px;
   }
 
   .grid{
     display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(128px,1fr));
-    gap:14px;
+    grid-template-columns:repeat(auto-fill,minmax(136px,1fr));
+    gap:16px;
   }
 
   .booth{
     position:relative;
     z-index:1;
     background:var(--card-bg);
-    border:1px solid var(--line);
-    border-radius:8px;
-    padding:10px 8px 12px;
+    border:1px solid var(--card-border);
+    border-radius:var(--card-radius);
+    padding:10px 10px 14px;
     text-align:center;
     cursor:pointer;
-    transition:border-color .15s, transform .12s;
+    box-shadow:var(--card-shadow);
+    transition:border-color .15s, box-shadow .15s, transform .12s;
   }
   .booth:hover{
-    border-color:var(--moss);
-    transform:translateY(-2px);
+    border-color:var(--card-border-hover);
+    box-shadow:var(--card-shadow-hover);
+    transform:translateY(-3px);
   }
   .booth .id{
+    display:inline-block;
     font-family:"SFMono-Regular",Consolas,monospace;
     font-size:11px;
-    color:var(--muted);
-    letter-spacing:.03em;
+    font-weight:600;
+    color:var(--id-color);
+    background:var(--id-bg);
+    border-radius:999px;
+    padding:1px 8px;
+    letter-spacing:.06em;
     margin-bottom:6px;
   }
   .cut-thumb{
     width:100%;
     aspect-ratio:3/4;
     margin:0 auto 8px;
-    border-radius:6px;
+    border-radius:10px;
     overflow:hidden;
     background:var(--panel-2);
   }
@@ -475,8 +607,8 @@
     overflow-wrap:anywhere;
   }
   .circle-name{
-    font-size:12.5px;
-    font-weight:600;
+    font-size:13px;
+    font-weight:700;
     color:var(--ink);
     overflow:hidden;
     text-overflow:ellipsis;
@@ -505,7 +637,7 @@
   .booth.has-note{
     border-color:var(--clay);
     box-shadow:0 0 0 1px var(--clay) inset;
-    background:#fde3ea;
+    background:var(--note-bg);
   }
   .memo-flag{
     position:absolute;
@@ -521,12 +653,12 @@
   .booth.visit-planned{
     border-color:#c99a1f;
     box-shadow:0 0 0 1px #c99a1f inset;
-    background:#fff6d1;
+    background:var(--planned-bg);
   }
   .booth.visit-visited{
     border-color:#3f7a33;
     box-shadow:0 0 0 1px #3f7a33 inset;
-    background:#e3f3df;
+    background:var(--visited-bg);
   }
 
   /* 우선순위 표시 (배경색과 겹치지 않도록 카드 테두리 outline으로 표시) */
@@ -553,7 +685,7 @@
     background:rgba(255,255,255,.08);
     border:1px solid rgba(255,255,255,.25);
     border-radius:6px;
-    color:var(--paper);
+    color:var(--on-panel);
     font-size:12px;
     font-family:inherit;
     padding:6px 8px;
@@ -570,7 +702,7 @@
     border-radius:5px;
     border:1px solid rgba(255,255,255,.25);
     background:rgba(255,255,255,.08);
-    color:var(--paper);
+    color:var(--on-panel);
     cursor:pointer;
   }
   .memo-box button.save{
@@ -696,8 +828,9 @@
     width:300px;
     max-width:calc(100vw - 20px);
     background:var(--panel);
-    color:var(--paper);
-    border-radius:10px;
+    color:var(--on-panel);
+    border:1px solid var(--panel-border);
+    border-radius:14px;
     padding:14px;
     box-shadow:0 12px 30px rgba(0,0,0,.35);
     text-align:left;
@@ -783,7 +916,7 @@
     border-radius:6px;
     border:1px solid rgba(255,255,255,.25);
     background:rgba(255,255,255,.08);
-    color:var(--paper);
+    color:var(--on-panel);
     cursor:pointer;
     transition:background .15s, border-color .15s, color .15s;
   }
@@ -812,7 +945,7 @@
     border-radius:6px;
     border:1px solid rgba(255,255,255,.25);
     background:rgba(255,255,255,.08);
-    color:var(--paper);
+    color:var(--on-panel);
     cursor:pointer;
     transition:background .15s, border-color .15s, color .15s;
   }
@@ -863,7 +996,7 @@
     background:transparent;
     border:none;
     outline:none;
-    color:var(--paper);
+    color:var(--on-panel);
     font-size:12px;
     font-family:inherit;
     padding:6px 0;
@@ -1003,7 +1136,7 @@
     align-items:center;
     gap:16px;
     font-size:12px;
-    color:#6b5561;
+    color:var(--text-2);
     margin-bottom:14px;
   }
   .map-legend .swatch{
@@ -1034,7 +1167,7 @@
     font-size:15px;
   }
   .venue-address{
-    color:#6b5561;
+    color:var(--text-2);
     font-size:12.5px;
     margin-bottom:12px;
   }
@@ -1059,7 +1192,7 @@
     text-align:center;
   }
   .transit-table td.time{
-    color:#6b5561;
+    color:var(--text-2);
     text-align:right;
     white-space:nowrap;
   }
@@ -1089,7 +1222,7 @@
     gap:12px;
     flex-wrap:wrap;
     font-size:13px;
-    color:#6b5561;
+    color:var(--text-2);
   }
   .weather-card{
     flex:1;
@@ -1121,7 +1254,7 @@
   }
   .weather-empty{
     font-size:13px;
-    color:#6b5561;
+    color:var(--text-2);
   }
 
   /* 모달 */
@@ -1138,8 +1271,9 @@
   .modal-backdrop.open{ display:flex; }
   .modal{
     background:var(--panel);
-    color:var(--paper);
-    border-radius:12px;
+    color:var(--on-panel);
+    border:1px solid var(--panel-border);
+    border-radius:16px;
     padding:18px;
     width:340px;
     max-width:100%;
@@ -1154,7 +1288,7 @@
     float:right;
     background:none;
     border:none;
-    color:var(--paper);
+    color:var(--on-panel);
     font-size:18px;
     cursor:pointer;
     line-height:1;
@@ -1177,7 +1311,7 @@
     appearance:none;
     border:1px solid rgba(255,255,255,.3);
     background:transparent;
-    color:var(--paper);
+    color:var(--on-panel);
     padding:8px 14px;
     border-radius:6px;
     font-size:13px;
@@ -1224,6 +1358,10 @@
           <button type="button" data-lang="ko">KO</button>
           <button type="button" data-lang="en">EN</button>
           <button type="button" data-lang="jp">JP</button>
+        </div>
+        <div class="lang-switch" id="themeSwitch">
+          <button type="button" data-theme-choice="light"></button>
+          <button type="button" data-theme-choice="dark"></button>
         </div>
         <div class="auth-status" id="authStatus" style="display:none;"></div>
         <button type="button" class="settings-item" id="syncNowBtn" disabled></button>
@@ -1352,6 +1490,8 @@ const I18N = {
     searchPlaceholder: "부스명 / 부스원 / 부스 번호 검색",
     footerSource: "데이터 출처",
     helpBtn: "❓ 도움말",
+    themeLight: "☀️ 라이트",
+    themeDark: "🌙 다크",
     helpTitle: "도움말",
     helpBody: [
       "이 사이트는 Furst Class 부스 목록을 쉽게 보기 위해 만든 사이트 입니다.\n자동 번역 및 개발에 AI를 사용하여 내용에 오류가 있을 수 있습니다.\n자세한 내용은 {link} 을 참고해주세요",
@@ -1363,6 +1503,7 @@ const I18N = {
       "배치도에서는 방문 예정인 부스는 노란색,\n방문 완료한 부스는 초록색으로 표시됩니다.",
       "부스별로 1~3순위를 정할 수 있으며, 순위에 따라 카드/배치도 테두리 색이\n빨강(1순위)·보라(2순위)·파랑(3순위)으로 구분되어 표시됩니다.",
       "언어는 한국어, 영어, 일본어가 지원됩니다.",
+      "설정 메뉴에서 라이트/다크 화면을 고를 수 있습니다.\n고르지 않으면 브라우저(기기)의 다크 모드 설정을 따릅니다.",
       "제작 : X @Chung_Hwani",
     ],
     allBtn: "📋 전체",
@@ -1435,6 +1576,8 @@ const I18N = {
     searchPlaceholder: "Search by booth name / member / booth ID",
     footerSource: "Data source",
     helpBtn: "❓ Help",
+    themeLight: "☀️ Light",
+    themeDark: "🌙 Dark",
     helpTitle: "Help",
     helpBody: [
       "This site was made to make it easy to browse the Furst Class booth list.\nAI was used for automatic translation and development, so there may be errors in the content.\nFor more details, please refer to {link}",
@@ -1446,6 +1589,7 @@ const I18N = {
       "On the floor map, booths marked Plan to Visit are shown in yellow,\nand booths marked Visited are shown in green.",
       "You can set a priority (1–3) for each booth; the card/map border color shows it as\nred (priority 1), purple (priority 2), or blue (priority 3).",
       "Korean, English, and Japanese are supported.",
+      "You can choose a Light or Dark look in the settings menu.\nIf you don't choose, it follows your browser (device) dark mode setting.",
       "Made by: X @Chung_Hwani",
     ],
     allBtn: "📋 All",
@@ -1518,6 +1662,8 @@ const I18N = {
     searchPlaceholder: "ブース名 / メンバー / ブース番号 検索",
     footerSource: "データ出典",
     helpBtn: "❓ ヘルプ",
+    themeLight: "☀️ ライト",
+    themeDark: "🌙 ダーク",
     helpTitle: "ヘルプ",
     helpBody: [
       "このサイトは、Furst Classのブース一覧を簡単に見られるように作られたサイトです。\n自動翻訳および開発にAIを使用しているため、内容に誤りがある場合があります。\n詳細は {link} をご参照ください。",
@@ -1529,6 +1675,7 @@ const I18N = {
       "配置図では、訪問予定のブースは黄色、\n訪問済みのブースは緑色で表示されます。",
       "ブースごとに優先度（1〜3）を設定でき、カード・配置図の枠線の色で\n赤（優先度1）・紫（優先度2）・青（優先度3）として表示されます。",
       "言語は韓国語・英語・日本語に対応しています。",
+      "設定メニューでライト/ダーク表示を選べます。\n選ばない場合はブラウザ（端末）のダークモード設定に従います。",
       "制作：X @Chung_Hwani",
     ],
     allBtn: "📋 全体",
@@ -1632,6 +1779,9 @@ function applyStaticTexts(){
   document.querySelectorAll("#langSwitch button").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.lang === currentLang);
   });
+  document.querySelector('#themeSwitch button[data-theme-choice="light"]').textContent = t("themeLight");
+  document.querySelector('#themeSwitch button[data-theme-choice="dark"]').textContent = t("themeDark");
+  updateThemeSwitch();
 }
 
 function setLang(lang){
@@ -1649,6 +1799,42 @@ document.getElementById("langSwitch").addEventListener("click", (e) => {
   setLang(btn.dataset.lang);
   closeSettingsMenu();
 });
+
+// 테마(라이트/다크). 처음 값은 <head>의 스크립트가 이미 <html data-theme>에 넣어둠.
+// 직접 고른 값만 저장하고, 고르지 않은 사람은 브라우저 다크 모드 설정이 바뀌면 같이 바뀜.
+const THEME_KEY = `${STORAGE_PREFIX}-theme`;
+function currentTheme(){
+  return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+}
+function updateThemeSwitch(){
+  document.querySelectorAll("#themeSwitch button").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.themeChoice === currentTheme());
+  });
+}
+function applyTheme(theme){
+  if(theme === currentTheme()) return;
+  document.documentElement.setAttribute("data-theme", theme);
+  updateThemeSwitch();
+  // 행사 안내의 공식 X 소식은 테마에 맞는 색으로 다시 불러옴
+  if(document.getElementById("infoView").style.display !== "none") renderGrid();
+}
+document.getElementById("themeSwitch").addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-theme-choice]");
+  if(!btn) return;
+  try { localStorage.setItem(THEME_KEY, btn.dataset.themeChoice); } catch {}
+  applyTheme(btn.dataset.themeChoice);
+  closeSettingsMenu();
+});
+if(window.matchMedia){
+  const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const onSystemThemeChange = () => {
+    let saved = null;
+    try { saved = localStorage.getItem(THEME_KEY); } catch {}
+    if(saved !== "light" && saved !== "dark") applyTheme(darkQuery.matches ? "dark" : "light");
+  };
+  if(darkQuery.addEventListener) darkQuery.addEventListener("change", onSystemThemeChange);
+  else if(darkQuery.addListener) darkQuery.addListener(onSystemThemeChange);
+}
 
 /* ---------- 설정 메뉴(톱니바퀴) ----------
    position:fixed로 띄우고 버튼 위치를 기준으로 화면 안쪽에 들어오도록 좌표를 계산함
@@ -2627,7 +2813,7 @@ function loadOfficialFeed(box){
           const item = document.createElement("div");
           item.className = "official-post";
           box.insertBefore(item, sentinel);
-          return window.twttr.widgets.createTweet(id, item, { theme: "light", dnt: true, lang: currentLang, conversation: "none" })
+          return window.twttr.widgets.createTweet(id, item, { theme: currentTheme(), dnt: true, lang: currentLang, conversation: "none" })
             .then(el => { if(el) shown++; else item.remove(); }, () => item.remove());
         }), Promise.resolve()).then(() => {
           busy = false;
