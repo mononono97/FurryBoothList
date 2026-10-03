@@ -1404,8 +1404,6 @@ const I18N = {
     syncNowCooldown: "☁️ {s}초 후 가능",
     syncSuccess: "동기화되었습니다.",
     syncFail: "동기화에 실패했습니다. 인터넷 연결을 확인해주세요.",
-    noXAccount: "X 계정 없음",
-    lockedXAccount: "X 비공개 계정",
     membersMore: "{name} 외 {n}명",
     adultTag: "🔞",
     boothCutAlt: "{id} 부스컷",
@@ -1489,8 +1487,6 @@ const I18N = {
     syncNowCooldown: "☁️ Available in {s}s",
     syncSuccess: "Synced successfully.",
     syncFail: "Sync failed. Please check your internet connection.",
-    noXAccount: "No X account",
-    lockedXAccount: "Private X account",
     membersMore: "{name} +{n}",
     adultTag: "🔞",
     boothCutAlt: "{id} booth cut",
@@ -1574,8 +1570,6 @@ const I18N = {
     syncNowCooldown: "☁️ {s}秒後に可能",
     syncSuccess: "同期しました。",
     syncFail: "同期に失敗しました。インターネット接続をご確認ください。",
-    noXAccount: "Xアカウントなし",
-    lockedXAccount: "X非公開アカウント",
     membersMore: "{name} 他{n}名",
     adultTag: "🔞",
     boothCutAlt: "{id} ブースカット",
@@ -2212,9 +2206,9 @@ function buildMemberList(booth){
     text.className = "member-text";
     text.innerHTML = `
       <div class="member-name">${escapeHtml(member.name)}</div>
-      <div class="member-handle">${member.twitter
-        ? `<a href="https://x.com/${encodeURIComponent(member.twitter)}" target="_blank" rel="noopener">@${escapeHtml(member.twitter)}</a>`
-        : `<span class="no-x">${escapeHtml(t(member.locked ? "lockedXAccount" : "noXAccount"))}</span>`}</div>
+      ${member.twitter
+        ? `<div class="member-handle"><a href="https://x.com/${encodeURIComponent(member.twitter)}" target="_blank" rel="noopener">@${escapeHtml(member.twitter)}</a></div>`
+        : ""}
     `;
     row.appendChild(text);
     list.appendChild(row);
