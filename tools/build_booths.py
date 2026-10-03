@@ -130,6 +130,25 @@ HANDLE_FILL = {
     ("A33", "애오우"): "dodh5172",
     ("B09", "용박이"): "yongback00",
     ("B09", "청교"): "connecting_Y",
+    ("B19", "Beep"): "AlphsBeep",
+    ("B25", "프라"): "Pteragon",
+    ("B29", "Warr"): "youdil1004",   # 리더 "Warr!" 와 같은 사람 → 중복 제거됨
+    ("B29", "모닝빵"): "morningbread16",
+    ("C03", "냉이"): "Nang2_the_Fox",
+    ("C06", "큰뿔양"): "bighornsheeppic",   # 리더와 같은 사람 → 중복 제거됨
+    ("C07", "자구"): "cap1541",
+    ("C08", "마뉴"): "manyu_art",
+    ("C08", "스탠"): "kemoistani",
+    ("C10", "카뮤엘(Kamyuel)"): "Kamyuelo",
+    ("C10", "컴버스트(combust)"): "ivXair3p",
+    ("C13", "UZA"): "art_uza",   # 리더와 같은 사람 → 중복 제거됨
+    ("C20", "초코곰탱이"): "Choko_Gom",
+    ("C20", "파곰"): "PaGom1121_",
+    ("C22", "머바"): "skymeatball",
+    ("C24", "온별"): "ONST4R",
+    ("C25", "Doyayam"): "DoyayamArt",
+    ("C28", "NB"): "thee1621",
+    ("C28", "오뎅국"): "ramee_C",
 }
 
 # 리더의 일본어 이름이 부스원 칸에 따로 적힌 경우 → 같은 사람으로 보고 리더 이름 옆에 붙임
@@ -175,7 +194,12 @@ def build():
                     members[0]["name"] = f'{members[0]["name"]} / {alt}'
                     continue
                 # 리더/다른 부스원과 같은 사람이 부스원 칸에 또 적힌 경우(예: "엘븐/@elvendays" + "엘븐")는 한 번만 표시
-                if person and not any(same_person(person, m) for m in members):
+                dup = next((m for m in members if person and same_person(person, m)), None)
+                if dup:
+                    # 리더 칸에 "@아이디" 만 있고 부스원 칸에 닉네임이 있으면 닉네임을 씀 (예: C13 @art_uza + UZA)
+                    if dup["twitter"] and dup["name"].lower() == dup["twitter"].lower() and person["name"].lower() != dup["name"].lower():
+                        dup["name"] = person["name"]
+                elif person:
                     members.append(dict(person, role="member"))
             # 잠금 계정: 프로필 사진(avatar)은 그대로 쓰되, X 링크와 아이디(twitter)는 숨김
             for m in members:
