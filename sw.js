@@ -2,7 +2,7 @@
 // 페이지(HTML)는 네트워크 우선(온라인이면 항상 최신 반영, 오프라인이면 캐시 사용),
 // 아바타·부스컷 이미지는 캐시 우선(한 번 본 이미지는 이후 오프라인에서도 계속 보임)으로 동작함.
 // 이미지를 같은 파일명으로 교체했을 때 바로 반영되게 하려면 CACHE_VERSION 을 올리면 됨.
-const CACHE_VERSION = "v2";
+const CACHE_VERSION = "v3";
 const CACHE_NAME = `furstclass-cache-${CACHE_VERSION}`;
 const SHELL_URLS = ["./", "./index.html", "./favicon.png"];
 
