@@ -426,6 +426,20 @@
     letter-spacing:.03em;
     margin-bottom:6px;
   }
+  .cut-thumb{
+    width:100%;
+    aspect-ratio:3/4;
+    margin:0 auto 8px;
+    border-radius:6px;
+    overflow:hidden;
+    background:var(--panel-2);
+  }
+  .cut-thumb img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    display:block;
+  }
   .avatar-wrap{
     width:64px;
     height:64px;
@@ -2121,6 +2135,43 @@ function localAvatarUrl(handle){
    파일이 아직 없으면 "부스컷 준비 중"(시트 I열이 O) 또는 "부스컷 미제출" 문구로 대신 표시함.
    이미지를 누르면 화면 전체 크기로 크게 볼 수 있음.
 ------------------------------------------------- */
+function buildCardAvatar(booth){
+  const avatarWrap = document.createElement("div");
+  avatarWrap.className = "avatar-wrap";
+  const cardAvatar = booth.avatar || booth.twitter;
+  if(cardAvatar){
+    // 사진 주인(리더)이 잠금 계정이면 다른 부스원 프로필로 넘어가지 않도록 링크를 걸지 않음
+    if(booth.twitter && booth.twitter === cardAvatar){
+      // 프로필 사진을 클릭하면 팝오버를 열지 않고 바로 X 프로필로 이동 (모든 탭 공통)
+      avatarWrap.classList.add("avatar-link");
+      avatarWrap.title = t("openProfile");
+      avatarWrap.addEventListener("click", (e) => {
+        e.stopPropagation();
+        window.open(`https://x.com/${booth.twitter}`, "_blank", "noopener");
+      });
+    }
+    const img = document.createElement("img");
+    img.loading = "lazy";
+    img.src = localAvatarUrl(cardAvatar);
+    img.alt = booth.name;
+    img.onerror = () => {
+      // 로컬에 저장된 이미지 파일이 없으면 서클명 첫 글자로 대체
+      avatarWrap.innerHTML = "";
+      const fb = document.createElement("div");
+      fb.className = "fallback";
+      fb.textContent = (booth.name[0] || "?");
+      avatarWrap.appendChild(fb);
+    };
+    avatarWrap.appendChild(img);
+  } else {
+    const fb = document.createElement("div");
+    fb.className = "fallback";
+    fb.textContent = (booth.name[0] || "?");
+    avatarWrap.appendChild(fb);
+  }
+  return avatarWrap;
+}
+
 function boothCutUrl(booth){
   return `booth-cuts/${booth.id}.jpg`;
 }
@@ -2713,40 +2764,16 @@ function renderGrid(){
     }
     card.appendChild(idEl);
 
-    const avatarWrap = document.createElement("div");
-    avatarWrap.className = "avatar-wrap";
-    const cardAvatar = booth.avatar || booth.twitter;
-    if(cardAvatar){
-      // 사진 주인(리더)이 잠금 계정이면 다른 부스원 프로필로 넘어가지 않도록 링크를 걸지 않음
-      if(booth.twitter && booth.twitter === cardAvatar){
-        // 프로필 사진을 클릭하면 팝오버를 열지 않고 바로 X 프로필로 이동 (모든 탭 공통)
-        avatarWrap.classList.add("avatar-link");
-        avatarWrap.title = t("openProfile");
-        avatarWrap.addEventListener("click", (e) => {
-          e.stopPropagation();
-          window.open(`https://x.com/${booth.twitter}`, "_blank", "noopener");
-        });
-      }
-      const img = document.createElement("img");
-      img.loading = "lazy";
-      img.src = localAvatarUrl(cardAvatar);
-      img.alt = booth.name;
-      img.onerror = () => {
-        // 로컬에 저장된 이미지 파일이 없으면 서클명 첫 글자로 대체
-        avatarWrap.innerHTML = "";
-        const fb = document.createElement("div");
-        fb.className = "fallback";
-        fb.textContent = (booth.name[0] || "?");
-        avatarWrap.appendChild(fb);
-      };
-      avatarWrap.appendChild(img);
-    } else {
-      const fb = document.createElement("div");
-      fb.className = "fallback";
-      fb.textContent = (booth.name[0] || "?");
-      avatarWrap.appendChild(fb);
-    }
-    card.appendChild(avatarWrap);
+    // 대표 이미지: 부스컷이 있으면 부스컷, 없으면(파일 404) 프로필 사진으로 대체
+    const cutThumb = document.createElement("div");
+    cutThumb.className = "cut-thumb";
+    const cutImg = document.createElement("img");
+    cutImg.loading = "lazy";
+    cutImg.src = boothCutUrl(booth);
+    cutImg.alt = t("boothCutAlt", { id: booth.id });
+    cutImg.onerror = () => cutThumb.replaceWith(buildCardAvatar(booth));
+    cutThumb.appendChild(cutImg);
+    card.appendChild(cutThumb);
 
     const nameEl = document.createElement("div");
     nameEl.className = "circle-name";
