@@ -220,7 +220,18 @@ def build():
                 "members": members,
                 "cut": row[8].strip().upper() == "O",
             })
-    return merge_double_booths(booths)
+    return sort_members_by_photo(merge_double_booths(booths))
+
+
+def sort_members_by_photo(booths):
+    """부스마다 프로필 사진(avatars/아이디.jpg)이 있는 부스원을 위로, 없는 부스원을 아래로 (같은 그룹 안에서는 원래 순서 유지).
+    카드에 보이는 사진·X 링크도 정렬된 첫 부스원 기준으로 다시 고름. 대표 이름(rep)은 리더 그대로."""
+    existing = {p.stem for p in AVATAR_DIR.glob("*.jpg")}
+    for b in booths:
+        b["members"].sort(key=lambda m: m["avatar"] not in existing)
+        b["avatar"] = b["members"][0]["avatar"] if b["members"] else None
+        b["twitter"] = next((m["twitter"] for m in b["members"] if m["twitter"]), None)
+    return booths
 
 
 def merge_double_booths(booths):
