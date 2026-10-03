@@ -1328,7 +1328,8 @@
     font-size:20px;
   }
   /* 모달이 열려 있는 동안 뒤 페이지가 같이 스크롤되지 않게 함 */
-  html.modal-open, html.modal-open body{ overflow:hidden; }
+  /* (body까지 막으면 body가 스크롤 기준이 되어 PC 상단바 sticky 고정이 풀리고 사라지므로 html에만 적용) */
+  html.modal-open{ overflow:hidden; }
 </style>
 </head>
 <body>
