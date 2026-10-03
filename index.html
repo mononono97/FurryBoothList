@@ -825,7 +825,8 @@
     left:50%;
     bottom:calc(100% + 10px);
     transform:translateX(-50%);
-    width:300px;
+    /* PC에서 좁아 보인다는 요청으로 300px → 420px (화면이 좁으면 max-width로 줄어듦) */
+    width:420px;
     max-width:calc(100vw - 20px);
     background:var(--panel);
     color:var(--on-panel);
@@ -1283,6 +1284,10 @@
   }
   .modal.modal-wide{
     width:560px;
+  }
+  /* 부스 상세 모달(배치도)도 팝오버와 같은 폭으로 넓힘 */
+  .modal.booth-modal{
+    width:420px;
   }
   .modal .modal-close{
     float:right;
