@@ -1339,6 +1339,35 @@
     .popover{width:250px;}
     .popover::before{left:var(--arrow-left, 24px); transform:translateX(-50%) rotate(45deg);}
   }
+
+  /* 모바일(좁은 화면·터치 기기)에서는 부스 상세를 말풍선 대신 화면을 거의 채우는 모달로 띄움.
+     바깥 여백을 조금 남겨 두어 창 밖을 터치해 닫을 수 있게 함. */
+  @media (max-width:640px), (hover:none) and (pointer:coarse){
+    .modal-backdrop{ padding:12px; }
+    .modal.booth-modal{
+      width:100%;
+      max-width:560px;
+      height:calc(100vh - 24px);
+      height:calc(100dvh - 24px);
+      max-height:none;
+      padding:16px;
+    }
+    /* 스크롤해도 닫기 버튼이 항상 보이도록 위쪽에 고정하고, 손가락으로 누르기 쉽게 키움 */
+    .modal.booth-modal .modal-close{
+      position:sticky;
+      top:0;
+      z-index:1;
+      width:40px;
+      height:40px;
+      margin:-6px -6px 0 8px;
+      border-radius:50%;
+      background:var(--panel);
+      border:1px solid var(--panel-border);
+      font-size:20px;
+    }
+  }
+  /* 모달이 열려 있는 동안 뒤 페이지가 같이 스크롤되지 않게 함 */
+  html.modal-open, html.modal-open body{ overflow:hidden; }
 </style>
 </head>
 <body>
@@ -2999,14 +3028,25 @@ function renderGrid(){
       if(textarea) textarea.value = getNote(booth.id);
     };
 
-    // 클릭(탭)으로 토글: PC/모바일 공통
+    // 클릭(탭)으로 토글. 모바일에서는 말풍선이 너무 작아서 큰 모달로 띄움(X 버튼·창 밖 터치로 닫힘).
     card.addEventListener("click", (e) => {
       e.stopPropagation();
+      if(useBoothModal()){
+        closeAllPopovers();
+        openBoothModal(booth.id);
+        return;
+      }
       card.classList.contains("show-pop") ? close() : open();
     });
 
     grid.appendChild(card);
   });
+}
+
+// 모바일(좁은 화면 또는 마우스 없는 터치 기기)인지. CSS의 booth-modal 미디어쿼리와 같은 조건.
+const BOOTH_MODAL_QUERY = "(max-width:640px), (hover:none) and (pointer:coarse)";
+function useBoothModal(){
+  return !!(window.matchMedia && window.matchMedia(BOOTH_MODAL_QUERY).matches);
 }
 
 // 열려 있는 모든 부스 팝오버를 닫음. exceptCard를 지정하면 해당 카드는 건너뜀
@@ -3280,7 +3320,7 @@ function renderInfoView(){
   });
 }
 
-/* ---------- 부스 상세 모달 (배치도에서 부스를 눌렀을 때) ---------- */
+/* ---------- 부스 상세 모달 (배치도에서 부스를 눌렀을 때, 모바일에서 부스 카드를 눌렀을 때) ---------- */
 function openBoothModal(boothId){
   const booth = BOOTHS.find(b => b.id === boothId);
   if(!booth) return;
@@ -3289,6 +3329,7 @@ function openBoothModal(boothId){
   const content = document.getElementById("modalContent");
   content.innerHTML = "";
   content.classList.remove("modal-wide");
+  content.classList.add("booth-modal");
 
   const closeBtn = document.createElement("button");
   closeBtn.className = "modal-close";
@@ -3440,12 +3481,15 @@ function openBoothModal(boothId){
   content.appendChild(memoBox);
 
   backdrop.classList.add("open");
+  document.documentElement.classList.add("modal-open");
+  content.scrollTop = 0;
 }
 
 function openHelpModal(){
   const backdrop = document.getElementById("modalBackdrop");
   const content = document.getElementById("modalContent");
   content.innerHTML = "";
+  content.classList.remove("booth-modal");
   content.classList.add("modal-wide");
 
   const closeBtn = document.createElement("button");
@@ -3469,6 +3513,7 @@ function openHelpModal(){
   content.appendChild(body);
 
   backdrop.classList.add("open");
+  document.documentElement.classList.add("modal-open");
 }
 
 document.getElementById("helpBtn").addEventListener("click", () => {
@@ -3492,6 +3537,7 @@ document.getElementById("sortPriorityBtn").addEventListener("click", toggleSortB
 
 function closeModal(){
   document.getElementById("modalBackdrop").classList.remove("open");
+  document.documentElement.classList.remove("modal-open");
 }
 
 document.getElementById("modalBackdrop").addEventListener("click", (e) => {
