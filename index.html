@@ -469,6 +469,11 @@
     font-size:20px;
     font-weight:700;
   }
+  /* 부스명·대표 이름은 글자 중간이 아니라 띄어쓰기 단위로 줄바꿈 (띄어쓰기 없는 아주 긴 단어만 글자 단위로) */
+  .circle-name, .rep-name, .pop-head .names, .modal .names{
+    word-break:keep-all;
+    overflow-wrap:anywhere;
+  }
   .circle-name{
     font-size:12.5px;
     font-weight:600;
