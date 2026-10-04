@@ -173,6 +173,8 @@ def collect(feed_dir, dry_run=False):
                 # X 는 민감한 글로 표시된 글을 로그인하지 않은 방문자에게 임베드해 주지 않음("Not found").
                 # 이런 글은 사이트에서 임베드 대신 글과 링크만 보여줌
                 "sensitive": bool(p.get("possibly_sensitive")),
+                # 인용한 글이 있는 글. X 임베드는 인용 글을 숨길 수 없어 사이트에서 본문·이미지 카드로 보여줌
+                "quote": bool(p.get("quote")),
                 "reasons": reasons,
                 "foundAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             })
