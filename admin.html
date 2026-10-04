@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://platform.twitter.com https://cdn.syndication.twimg.com https://www.gstatic.com https://apis.google.com;
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' data: https://pbs.twimg.com https://abs.twimg.com https://ton.twimg.com;
+  connect-src 'self' https://raw.githubusercontent.com https://cdn.syndication.twimg.com https://syndication.twitter.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com;
+  frame-src https://platform.twitter.com https://syndication.twitter.com https://accounts.google.com https://boothlist-4589c.firebaseapp.com;
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';
+">
+<title>상품 글 관리</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<script>
+  // 사이트와 같은 테마 설정(furstclass-theme)을 따름
+  (function(){
+    var saved = null;
+    try { saved = localStorage.getItem("furstclass-theme"); } catch (e) {}
+    var dark = saved === "dark" || (saved !== "light" && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+  })();
+</script>
+<style>
+  :root{
+    color-scheme:light;
+    --paper:#f6f4f3; --ink:#1d1a1c; --muted:#8a8285; --line:#e7e2e1; --card-bg:#ffffff;
+    --chip-bg:#f0ecea; --accent:#c8102e; --ok:#2e7d32;
+  }
+  :root[data-theme="dark"]{
+    color-scheme:dark;
+    --paper:#0f0c0e; --ink:#f2e8ea; --muted:#a2959a; --line:#2e252c; --card-bg:#1b161a;
+    --chip-bg:#251e23; --accent:#e0344f; --ok:#66bb6a;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    font-size:14px; line-height:1.5;
+  }
+  main{ max-width:980px; margin:0 auto; padding:16px; }
+  h1{ font-size:20px; margin:0 0 4px; }
+  .sub{ color:var(--muted); font-size:12.5px; }
+  .panel{
+    background:var(--card-bg); border:1px solid var(--line); border-radius:12px;
+    padding:12px 14px; margin:12px 0;
+  }
+  button{
+    font:inherit; font-size:13px; border:1px solid var(--line); background:var(--chip-bg); color:var(--ink);
+    border-radius:8px; padding:6px 12px; cursor:pointer;
+  }
+  button:disabled{ opacity:.5; cursor:default; }
+  button.primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  button.ok{ background:var(--ok); border-color:var(--ok); color:#fff; }
+  input, select{
+    font:inherit; font-size:13px; padding:6px 8px; border:1px solid var(--line); border-radius:8px;
+    background:var(--paper); color:var(--ink); min-width:0;
+  }
+  code{ background:var(--chip-bg); padding:1px 5px; border-radius:4px; font-size:12px; word-break:break-all; }
+  .row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .tabs{ display:flex; gap:6px; flex-wrap:wrap; margin:16px 0 8px; }
+  .tabs button.active{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+  .post{
+    background:var(--card-bg); border:1px solid var(--line); border-radius:12px;
+    padding:12px 14px; margin:10px 0;
+  }
+  .post-head{ display:flex; gap:8px; flex-wrap:wrap; align-items:baseline; font-size:13px; }
+  .booth-tag{ font-weight:700; }
+  .meta{ color:var(--muted); font-size:12px; }
+  .reasons span{
+    display:inline-block; font-size:11px; padding:1px 7px; margin:0 4px 2px 0;
+    border-radius:999px; background:var(--chip-bg); color:var(--muted);
+  }
+  .text{ white-space:pre-wrap; word-break:break-word; margin:8px 0; }
+  .images{ display:flex; gap:6px; flex-wrap:wrap; }
+  .images img{ width:120px; height:120px; object-fit:cover; border-radius:8px; border:1px solid var(--line); }
+  .actions{ display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-top:10px; }
+  .embed{ margin-top:8px; }
+  .msg{ font-size:12.5px; color:var(--muted); }
+  .msg.err{ color:var(--accent); }
+  .empty{ color:var(--muted); padding:24px 0; text-align:center; }
+  details summary{ cursor:pointer; color:var(--muted); font-size:12.5px; }
+  pre{ background:var(--chip-bg); padding:8px 10px; border-radius:8px; overflow-x:auto; font-size:12px; }
+  @media (max-width:600px){
+    .images img{ width:88px; height:88px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>상품 글 관리</h1>
+  <div class="sub">부스 X 계정에서 자동으로 찾은 상품 글 후보입니다. "반영"을 누르면 사이트의 부스 상세 창에 바로 나타납니다.</div>
+
+  <div class="panel">
+    <div class="row">
+      <button type="button" id="loginBtn" class="primary">Google 로그인</button>
+      <button type="button" id="logoutBtn" style="display:none;">로그아웃</button>
+      <span id="authStatus" class="msg"></span>
+    </div>
+    <details id="setupBox" style="margin-top:8px;">
+      <summary>처음 한 번: 반영 권한 설정 방법</summary>
+      <div style="margin-top:6px;">
+        Firebase 콘솔 → Firestore Database → 규칙에서, 기존 <code>match /databases/{database}/documents { ... }</code> 안에
+        아래 블록을 추가하고 게시하세요. UID는 로그인하면 위에 표시됩니다.
+        <pre id="rulesText"></pre>
+        <button type="button" id="copyRulesBtn">규칙 복사</button>
+      </div>
+    </details>
+  </div>
+
+  <div class="panel">
+    <div style="font-weight:600; margin-bottom:6px;">글 주소로 직접 추가</div>
+    <div class="row">
+      <input id="manualUrl" placeholder="https://x.com/아이디/status/1234..." style="flex:1 1 260px;">
+      <select id="manualBooth" style="flex:0 1 220px;"></select>
+      <button type="button" id="manualAddBtn" class="ok">반영</button>
+    </div>
+    <div class="msg" id="manualMsg" style="margin-top:4px;">자동 후보에 없는 글(예: 키워드가 없는 상품 글)을 직접 넣을 때 씁니다.</div>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button type="button" data-tab="pending" class="active">대기</button>
+    <button type="button" data-tab="approved">반영됨</button>
+    <button type="button" data-tab="excluded">제외됨</button>
+    <button type="button" id="reloadBtn" style="margin-left:auto;">새로고침</button>
+  </div>
+  <div class="msg" id="listMsg">불러오는 중…</div>
+  <div id="list"></div>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+/* ---------- 상품 글 관리 화면 ----------
+   후보: GitHub Actions(tools/collect_booth_posts.py)가 x-post-feed 브랜치에 쌓는 candidates.json
+   결정: Firestore boothPosts/main 문서
+     approved: { 글id: { booth: "A02", handle: "아이디", at: ISO 시각 } }  ← 사이트(index.html)가 읽어서 부스 상세에 표시
+     excluded: { 글id: true }                                               ← 대기 목록에서 숨김
+   쓰기 권한은 Firestore 규칙에서 운영자 UID 에게만 줌(이 화면 위쪽 "반영 권한 설정 방법").
+------------------------------------------ */
+const CANDIDATES_URL = "https://raw.githubusercontent.com/mononono97/FurryBoothList/x-post-feed/candidates.json";
+const firebaseConfig = {
+  apiKey: "AIzaSyAoTXtmEeze9iOAEJOPAKp97H-xn5hyH6w",
+  authDomain: "boothlist-4589c.firebaseapp.com",
+  projectId: "boothlist-4589c",
+  storageBucket: "boothlist-4589c.firebasestorage.app",
+  messagingSenderId: "759247982253",
+  appId: "1:759247982253:web:72d197f292be4b1d340024",
+  measurementId: "G-VHBV4DS1RS",
+};
+if(!window.firebase){
+  // 광고 차단 등으로 Firebase 스크립트가 막히면 아무것도 할 수 없으므로 안내만 보여줌
+  document.getElementById("listMsg").className = "msg err";
+  document.getElementById("listMsg").textContent = "Firebase를 불러오지 못했습니다. 광고 차단을 끄거나 다른 브라우저로 열어 주세요.";
+  throw new Error("firebase not loaded");
+}
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const decisionsRef = db.collection("boothPosts").doc("main");
+const FieldValue = firebase.firestore.FieldValue;
+
+let booths = [];
+let candidates = [];
+let decisions = { approved: {}, excluded: {} };
+let currentTab = "pending";
+let currentUser = null;
+let decisionsReadable = true;
+
+function escapeHtml(s){
+  return String(s || "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+}
+function theme(){ return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light"; }
+function boothName(id){ const b = booths.find(b => b.id === id); return b ? b.name : ""; }
+function fmtDate(iso){
+  const d = new Date(iso);
+  if(isNaN(d)) return "";
+  return d.toLocaleString("ko-KR", { month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit" });
+}
+// 글 id 는 시간이 지날수록 커지는 숫자(문자열)라 길이 → 사전순으로 비교하면 최신순 정렬이 됨
+function newestFirst(a, b){ return b.length - a.length || (b > a ? 1 : b < a ? -1 : 0); }
+
+/* 부스 목록: index.html 의 BOOTHS 줄을 그대로 읽음 (tools/build_booths.py 가 한 줄로 만들어 둠) */
+function loadBooths(){
+  return fetch("index.html", { cache: "no-cache" }).then(r => r.text()).then(html => {
+    const m = html.match(/^const BOOTHS = (.*);$/m);
+    booths = m ? JSON.parse(m[1]) : [];
+  });
+}
+function loadCandidates(){
+  return fetch(`${CANDIDATES_URL}?t=${Date.now()}`, { cache: "no-store" })
+    .then(r => r.ok ? r.json() : { posts: [] })
+    .then(data => { candidates = data.posts || []; });
+}
+function loadDecisions(){
+  return decisionsRef.get().then(doc => {
+    const d = doc.exists ? doc.data() : {};
+    decisions = { approved: d.approved || {}, excluded: d.excluded || {} };
+    decisionsReadable = true;
+  }).catch(err => {
+    // 규칙을 아직 넣지 않았으면 읽기도 막힘. 후보 목록은 그래도 보여줌
+    if(!err || err.code !== "permission-denied") throw err;
+    decisionsReadable = false;
+  });
+}
+
+function boothsForHandle(handle){
+  const h = (handle || "").toLowerCase();
+  return booths.filter(b => [b.twitter, ...(b.members || []).map(m => m.twitter)]
+    .some(x => x && x.toLowerCase() === h)).map(b => b.id);
+}
+
+function writeDecision(data){
+  if(!currentUser) return Promise.reject(new Error("먼저 Google 로그인을 해 주세요."));
+  return decisionsRef.set(data, { merge: true }).catch(err => {
+    if(err && err.code === "permission-denied"){
+      throw new Error("권한이 없습니다. 위쪽 \"반영 권한 설정 방법\"대로 Firebase 규칙에 이 계정의 UID를 넣어 주세요.");
+    }
+    throw err;
+  });
+}
+function approve(id, booth, handle){
+  return writeDecision({
+    approved: { [id]: { booth, handle, at: new Date().toISOString() } },
+    excluded: { [id]: FieldValue.delete() },
+  }).then(() => {
+    decisions.approved[id] = { booth, handle, at: new Date().toISOString() };
+    delete decisions.excluded[id];
+  });
+}
+function exclude(id){
+  return writeDecision({
+    approved: { [id]: FieldValue.delete() },
+    excluded: { [id]: true },
+  }).then(() => {
+    delete decisions.approved[id];
+    decisions.excluded[id] = true;
+  });
+}
+function undo(id){
+  return writeDecision({
+    approved: { [id]: FieldValue.delete() },
+    excluded: { [id]: FieldValue.delete() },
+  }).then(() => {
+    delete decisions.approved[id];
+    delete decisions.excluded[id];
+  });
+}
+
+function ensureWidgets(cb){
+  if(window.twttr && window.twttr.widgets){ cb(); return; }
+  if(!document.getElementById("twitterWidgets")){
+    const s = document.createElement("script");
+    s.id = "twitterWidgets";
+    s.src = "https://platform.twitter.com/widgets.js";
+    s.async = true;
+    document.body.appendChild(s);
+  }
+  setTimeout(() => ensureWidgets(cb), 300);
+}
+
+/* 탭별 목록. 반영됨/제외됨 탭에는 직접 추가한 글(후보 파일에 없는 글)도 보여야 하므로 결정 목록 기준으로 만듦 */
+function rowsForTab(){
+  const byId = new Map(candidates.map(c => [c.id, c]));
+  if(currentTab === "pending"){
+    return candidates.filter(c => !decisions.approved[c.id] && !decisions.excluded[c.id]);
+  }
+  const ids = Object.keys(currentTab === "approved" ? decisions.approved : decisions.excluded).sort(newestFirst);
+  return ids.map(id => byId.get(id) || {
+    id, handle: (decisions.approved[id] || {}).handle || "", booths: [(decisions.approved[id] || {}).booth].filter(Boolean),
+    text: "", images: [], reasons: ["직접 추가"], created: "",
+  });
+}
+
+function render(){
+  const pending = candidates.filter(c => !decisions.approved[c.id] && !decisions.excluded[c.id]).length;
+  const labels = { pending: `대기 ${pending}`, approved: `반영됨 ${Object.keys(decisions.approved).length}`, excluded: `제외됨 ${Object.keys(decisions.excluded).length}` };
+  document.querySelectorAll("#tabs button[data-tab]").forEach(btn => {
+    btn.textContent = labels[btn.dataset.tab];
+    btn.classList.toggle("active", btn.dataset.tab === currentTab);
+  });
+
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+  const rows = rowsForTab();
+  if(!rows.length){
+    list.innerHTML = `<div class="empty">${currentTab === "pending" ? "확인할 후보가 없습니다." : "아직 없습니다."}</div>`;
+    return;
+  }
+  rows.forEach(c => list.appendChild(buildPost(c)));
+}
+
+function buildPost(c){
+  const el = document.createElement("div");
+  el.className = "post";
+  const approvedBooth = (decisions.approved[c.id] || {}).booth;
+  const boothIds = c.booths && c.booths.length ? c.booths : boothsForHandle(c.handle);
+  const url = `https://x.com/${encodeURIComponent(c.handle || "i")}/status/${c.id}`;
+  el.innerHTML = `
+    <div class="post-head">
+      <span class="booth-tag">${escapeHtml((approvedBooth ? [approvedBooth] : boothIds).map(id => `${id} ${boothName(id)}`).join(" · "))}</span>
+      ${c.handle ? `<span class="meta">@${escapeHtml(c.handle)}</span>` : ""}
+      ${c.created ? `<span class="meta">${escapeHtml(fmtDate(c.created))}</span>` : ""}
+      <span class="reasons">${(c.reasons || []).map(r => `<span>${escapeHtml(r)}</span>`).join("")}</span>
+    </div>
+    ${c.text ? `<div class="text">${escapeHtml(c.text)}</div>` : ""}
+    ${(c.images || []).length ? `<div class="images">${c.images.map(src => `<a href="${escapeHtml(url)}" target="_blank" rel="noopener"><img loading="lazy" src="${escapeHtml(src)}" alt=""></a>`).join("")}</div>` : ""}
+    <div class="actions"></div>
+    <div class="msg err" hidden></div>
+    <div class="embed"></div>
+  `;
+  const actions = el.querySelector(".actions");
+  const errBox = el.querySelector(".msg.err");
+  const run = (fn) => {
+    actions.querySelectorAll("button, select").forEach(b => b.disabled = true);
+    errBox.hidden = true;
+    fn().then(render).catch(err => {
+      errBox.textContent = err.message || String(err);
+      errBox.hidden = false;
+      actions.querySelectorAll("button, select").forEach(b => b.disabled = false);
+    });
+  };
+
+  if(currentTab === "pending"){
+    // 부스원 한 명이 부스 두 곳에 있는 경우 어느 부스에 붙일지 고름
+    let select = null;
+    if(boothIds.length > 1){
+      select = document.createElement("select");
+      select.innerHTML = boothIds.map(id => `<option value="${escapeHtml(id)}">${escapeHtml(id)} ${escapeHtml(boothName(id))}</option>`).join("");
+      actions.appendChild(select);
+    }
+    const ok = document.createElement("button");
+    ok.className = "ok";
+    ok.textContent = "반영";
+    ok.addEventListener("click", () => run(() => approve(c.id, select ? select.value : boothIds[0], c.handle)));
+    const no = document.createElement("button");
+    no.textContent = "제외";
+    no.addEventListener("click", () => run(() => exclude(c.id)));
+    actions.append(ok, no);
+  } else {
+    const back = document.createElement("button");
+    back.textContent = "대기로 되돌리기";
+    back.addEventListener("click", () => run(() => undo(c.id)));
+    actions.appendChild(back);
+  }
+  const link = document.createElement("a");
+  link.href = url;
+  link.target = "_blank";
+  link.rel = "noopener";
+  link.textContent = "X에서 보기";
+  link.className = "meta";
+  const preview = document.createElement("button");
+  preview.textContent = "사이트에 보일 모양";
+  preview.addEventListener("click", () => {
+    preview.disabled = true;
+    const box = el.querySelector(".embed");
+    ensureWidgets(() => window.twttr.widgets.createTweet(c.id, box, { theme: theme(), dnt: true, conversation: "none" }));
+  });
+  actions.append(preview, link);
+  return el;
+}
+
+function refresh(){
+  const msg = document.getElementById("listMsg");
+  msg.className = "msg";
+  msg.textContent = "불러오는 중…";
+  return Promise.all([loadCandidates(), loadDecisions()]).then(() => {
+    msg.textContent = !decisionsReadable
+      ? "Firebase 규칙이 아직 없어 반영 기록을 읽지 못했습니다. 위쪽 \"반영 권한 설정 방법\"을 먼저 해 주세요."
+      : candidates.length ? "" : "아직 모인 후보가 없습니다. 후보는 1시간마다 자동으로 모입니다.";
+    if(!decisionsReadable) msg.className = "msg err";
+    render();
+  }).catch(err => {
+    msg.className = "msg err";
+    msg.textContent = `불러오기 실패: ${err.message || err}`;
+  });
+}
+
+/* ---------- 직접 추가 ---------- */
+function fillManualBooths(handle){
+  const select = document.getElementById("manualBooth");
+  const matched = boothsForHandle(handle);
+  const list = matched.length ? booths.filter(b => matched.includes(b.id)) : booths;
+  select.innerHTML = (matched.length ? "" : `<option value="">부스 선택</option>`) +
+    list.map(b => `<option value="${escapeHtml(b.id)}">${escapeHtml(b.id)} ${escapeHtml(b.name)}</option>`).join("");
+}
+function parseStatusUrl(text){
+  const m = String(text).trim().match(/(?:x|twitter)\.com\/([A-Za-z0-9_]{1,15})\/status(?:es)?\/(\d+)/i);
+  return m ? { handle: m[1], id: m[2] } : null;
+}
+document.getElementById("manualUrl").addEventListener("input", (e) => {
+  const parsed = parseStatusUrl(e.target.value);
+  fillManualBooths(parsed ? parsed.handle : "");
+});
+document.getElementById("manualAddBtn").addEventListener("click", () => {
+  const msg = document.getElementById("manualMsg");
+  const parsed = parseStatusUrl(document.getElementById("manualUrl").value);
+  const booth = document.getElementById("manualBooth").value;
+  msg.className = "msg err";
+  if(!parsed){ msg.textContent = "X 글 주소를 넣어 주세요. 예: https://x.com/아이디/status/1234"; return; }
+  if(!booth){ msg.textContent = "어느 부스의 글인지 골라 주세요."; return; }
+  approve(parsed.id, booth, parsed.handle).then(() => {
+    msg.className = "msg";
+    msg.textContent = `${booth} ${boothName(booth)}에 반영했습니다.`;
+    document.getElementById("manualUrl").value = "";
+    fillManualBooths("");
+    render();
+  }).catch(err => { msg.textContent = err.message || String(err); });
+});
+
+/* ---------- 로그인 ---------- */
+function rulesText(uid){
+  return `match /boothPosts/{doc} {
+  allow read: if true;
+  allow write: if request.auth != null && request.auth.uid == "${uid || "로그인하면 여기에 UID가 들어갑니다"}";
+}`;
+}
+function updateAuthUI(){
+  document.getElementById("loginBtn").style.display = currentUser ? "none" : "";
+  document.getElementById("logoutBtn").style.display = currentUser ? "" : "none";
+  document.getElementById("authStatus").innerHTML = currentUser
+    ? `${escapeHtml(currentUser.email || "")} · UID <code>${escapeHtml(currentUser.uid)}</code>`
+    : "반영·제외하려면 로그인하세요.";
+  document.getElementById("rulesText").textContent = rulesText(currentUser && currentUser.uid);
+}
+document.getElementById("loginBtn").addEventListener("click", () => {
+  firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(err => {
+    if(err && (err.code === "auth/popup-closed-by-user" || err.code === "auth/cancelled-popup-request")) return;
+    alert(`로그인 실패 (${(err && err.code) || "unknown"})`);
+  });
+});
+document.getElementById("logoutBtn").addEventListener("click", () => firebase.auth().signOut());
+document.getElementById("copyRulesBtn").addEventListener("click", () => {
+  navigator.clipboard.writeText(rulesText(currentUser && currentUser.uid)).then(() => {
+    document.getElementById("copyRulesBtn").textContent = "복사됨";
+  });
+});
+firebase.auth().onAuthStateChanged(user => { currentUser = user; updateAuthUI(); });
+
+document.getElementById("tabs").addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-tab]");
+  if(!btn) return;
+  currentTab = btn.dataset.tab;
+  render();
+});
+document.getElementById("reloadBtn").addEventListener("click", refresh);
+
+updateAuthUI();
+loadBooths().catch(() => {}).then(() => { fillManualBooths(""); return refresh(); });
+</script>
+</body>
+</html>
