@@ -20,6 +20,7 @@ import json
 import re
 import sys
 import time
+import urllib.error
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
@@ -28,8 +29,9 @@ ROOT = Path(__file__).resolve().parent.parent
 HTML_PATH = ROOT / "index.html"
 PROTECTED_PATH = ROOT / "data" / "x-protected-handles.txt"
 
-# 이 시각 이전 글은 후보로 보지 않음 (2026-10-04 기준, 부스 배치 발표 무렵)
-POST_SINCE = datetime(2026, 9, 1, tzinfo=timezone.utc)
+# 이 시각 이전 글은 후보로 보지 않음. 부스 작가 상당수가 2026-09-20 케모켓에도 나가서,
+# 그 행사 인포 글이 섞이지 않도록 케모켓 다음 날부터 봄 (2026-10-04 첫 시험 결과)
+POST_SINCE = datetime(2026, 9, 21, tzinfo=timezone.utc)
 MIN_SCORE = 2
 REQUEST_GAP_SECONDS = 1.0
 USER_AGENT = "FurryBoothList booth post collector (+https://github.com/mononono97/FurryBoothList)"
@@ -44,7 +46,7 @@ KEYWORDS = [
      r"뱃지|배지|缶バッジ|badge|회지|동인지|同人誌|일러스트북|イラスト集|artbook|포카|태피스트리|タペストリー|"
      r"마우스패드|머그|티셔츠|tシャツ|t-shirt|포스터|ポスター|print", 1, "품목"),
     (r"\d[\d,]*\s?원|₩\s?\d|\d[\d,]*\s?円|¥\s?\d|\d[\d,]*\s?(?:krw|jpy)", 2, "가격"),
-    (r"퍼스트\s?클래스|퍼클|furst\s?class|ファーストクラス|부스|ブース|booth|[A-H]-?\d{1,2}\b", 1, "행사·부스"),
+    (r"퍼스트\s?클래스|퍼클|furst\s?class|ファーストクラス|부스|ブース|booth|(?<![A-Za-z0-9])[A-C]-?\d{1,2}(?!\d)", 1, "행사·부스"),
 ]
 KEYWORD_RES = [(re.compile(p, re.I), s, label) for p, s, label in KEYWORDS]
 
@@ -80,11 +82,20 @@ def handle_map(booths):
 
 
 def fetch_statuses(handle):
-    # FxTwitter 는 프로필 글 목록에서 대문자 아이디를 넣으면 빈 결과(404)를 주므로 소문자로 요청함
-    url = f"https://api.fxtwitter.com/2/profile/{handle.lower()}/statuses"
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(req, timeout=20) as res:
-        return json.load(res).get("results") or []
+    # FxTwitter 는 같은 계정이라도 가끔 빈 결과(404)를 줌(대문자 아이디일 때 특히 자주).
+    # 소문자 → 표기 그대로 순서로, 잠깐 쉬었다가 한 번씩 더 시도함
+    last_error = None
+    for name in dict.fromkeys([handle.lower(), handle]):
+        for attempt in range(2):
+            url = f"https://api.fxtwitter.com/2/profile/{name}/statuses"
+            req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+            try:
+                with urllib.request.urlopen(req, timeout=20) as res:
+                    return json.load(res).get("results") or []
+            except urllib.error.HTTPError as e:
+                last_error = e
+                time.sleep(2)
+    raise last_error
 
 
 def post_text(p):
@@ -104,13 +115,14 @@ def post_images(p):
 
 
 def judge(text, images):
-    """(점수, 걸린 키워드 설명 목록). 이미지가 있으면 +1."""
+    """(점수, 걸린 키워드 설명 목록). 키워드가 하나라도 걸리고 이미지가 있으면 +1."""
+    text = re.sub(r"https?://\S+", " ", text)  # t.co 링크 안의 글자가 키워드로 잡히지 않게
     score, reasons = 0, []
     for regex, points, label in KEYWORD_RES:
         if regex.search(text):
             score += points
             reasons.append(label)
-    if images:
+    if images and score:
         score += 1
         reasons.append("이미지")
     return score, reasons
