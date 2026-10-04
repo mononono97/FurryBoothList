@@ -9,7 +9,7 @@
   script-src 'self' 'unsafe-inline' https://platform.twitter.com https://cdn.syndication.twimg.com https://www.gstatic.com https://apis.google.com;
   style-src 'self' 'unsafe-inline';
   img-src 'self' data: https://pbs.twimg.com https://abs.twimg.com https://ton.twimg.com;
-  connect-src 'self' https://raw.githubusercontent.com https://cdn.syndication.twimg.com https://syndication.twitter.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com;
+  connect-src 'self' https://raw.githubusercontent.com https://api.fxtwitter.com https://cdn.syndication.twimg.com https://syndication.twitter.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com;
   frame-src https://platform.twitter.com https://syndication.twitter.com https://accounts.google.com https://boothlist-4589c.firebaseapp.com;
   object-src 'none';
   base-uri 'self';
@@ -81,6 +81,8 @@
   .images img{ width:120px; height:120px; object-fit:cover; border-radius:8px; border:1px solid var(--line); }
   .actions{ display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-top:10px; }
   .embed{ margin-top:8px; }
+  .post-card{ border:1px dashed var(--line); border-radius:10px; padding:8px 10px; }
+  .sensitive-tag{ color:var(--accent) !important; }
   .msg{ font-size:12.5px; color:var(--muted); }
   .msg.err{ color:var(--accent); }
   .empty{ color:var(--muted); padding:24px 0; text-align:center; }
@@ -228,13 +230,39 @@ function writeDecision(data){
     throw err;
   });
 }
-function approve(id, booth, handle){
-  return writeDecision({
-    approved: { [id]: { booth, handle, at: new Date().toISOString() } },
-    excluded: { [id]: FieldValue.delete() },
-  }).then(() => {
-    decisions.approved[id] = { booth, handle, at: new Date().toISOString() };
-    delete decisions.excluded[id];
+/* 반영할 때 글 내용(본문·민감한 글 여부)도 같이 저장함.
+   X 는 민감한 글로 표시된 글을 임베드해 주지 않아서("Not found"), 사이트는 이런 글을 저장해 둔 본문과 링크로 보여줌.
+   FxTwitter 에서 최신 정보를 받고, 실패하면 후보 파일의 값을 씀 */
+function fetchPostInfo(id, candidate){
+  const fromCandidate = () => ({
+    text: (candidate && candidate.text) || "",
+    sensitive: !!(candidate && candidate.sensitive),
+  });
+  return fetch(`https://api.fxtwitter.com/2/status/${id}`)
+    .then(r => r.ok ? r.json() : Promise.reject(r.status))
+    .then(data => {
+      const st = data.status || {};
+      return {
+        text: (st.raw_text && st.raw_text.text) || st.text || fromCandidate().text,
+        sensitive: !!st.possibly_sensitive,
+        handle: st.author && st.author.screen_name,
+      };
+    })
+    .catch(fromCandidate);
+}
+function approve(id, booth, handle, candidate){
+  return fetchPostInfo(id, candidate).then(info => {
+    const entry = {
+      booth, handle: info.handle || handle, at: new Date().toISOString(),
+      text: (info.text || "").slice(0, 1000), sensitive: info.sensitive,
+    };
+    return writeDecision({
+      approved: { [id]: entry },
+      excluded: { [id]: FieldValue.delete() },
+    }).then(() => {
+      decisions.approved[id] = entry;
+      delete decisions.excluded[id];
+    });
   });
 }
 function exclude(id){
@@ -277,7 +305,8 @@ function rowsForTab(){
   const ids = Object.keys(currentTab === "approved" ? decisions.approved : decisions.excluded).sort(newestFirst);
   return ids.map(id => byId.get(id) || {
     id, handle: (decisions.approved[id] || {}).handle || "", booths: [(decisions.approved[id] || {}).booth].filter(Boolean),
-    text: "", images: [], reasons: ["직접 추가"], created: "",
+    text: (decisions.approved[id] || {}).text || "", images: [], reasons: ["직접 추가"], created: "",
+    sensitive: !!(decisions.approved[id] || {}).sensitive,
   });
 }
 
@@ -310,7 +339,7 @@ function buildPost(c){
       <span class="booth-tag">${escapeHtml((approvedBooth ? [approvedBooth] : boothIds).map(id => `${id} ${boothName(id)}`).join(" · "))}</span>
       ${c.handle ? `<span class="meta">@${escapeHtml(c.handle)}</span>` : ""}
       ${c.created ? `<span class="meta">${escapeHtml(fmtDate(c.created))}</span>` : ""}
-      <span class="reasons">${(c.reasons || []).map(r => `<span>${escapeHtml(r)}</span>`).join("")}</span>
+      <span class="reasons">${(c.reasons || []).map(r => `<span>${escapeHtml(r)}</span>`).join("")}${c.sensitive ? `<span class="sensitive-tag">민감한 글</span>` : ""}</span>
     </div>
     ${c.text ? `<div class="text">${escapeHtml(c.text)}</div>` : ""}
     ${(c.images || []).length ? `<div class="images">${c.images.map(src => `<a href="${escapeHtml(url)}" target="_blank" rel="noopener"><img loading="lazy" src="${escapeHtml(src)}" alt=""></a>`).join("")}</div>` : ""}
@@ -341,7 +370,7 @@ function buildPost(c){
     const ok = document.createElement("button");
     ok.className = "ok";
     ok.textContent = "반영";
-    ok.addEventListener("click", () => run(() => approve(c.id, select ? select.value : boothIds[0], c.handle)));
+    ok.addEventListener("click", () => run(() => approve(c.id, select ? select.value : boothIds[0], c.handle, c)));
     const no = document.createElement("button");
     no.textContent = "제외";
     no.addEventListener("click", () => run(() => exclude(c.id)));
@@ -363,7 +392,22 @@ function buildPost(c){
   preview.addEventListener("click", () => {
     preview.disabled = true;
     const box = el.querySelector(".embed");
-    ensureWidgets(() => window.twttr.widgets.createTweet(c.id, box, { theme: theme(), dnt: true, conversation: "none" }));
+    box.innerHTML = `<div class="meta">불러오는 중…</div>`;
+    const saved = decisions.approved[c.id] || {};
+    // 민감한 글 여부는 FxTwitter 로 다시 확인함(민감한 글 표시 기능 전에 모인 후보에는 이 값이 없음)
+    fetchPostInfo(c.id, c).then(info => {
+      if(info.sensitive || c.sensitive || saved.sensitive){
+        // 사이트(index.html 의 buildBoothPostCard)와 같은 모양
+        box.innerHTML = `<div class="post-card">
+          <div class="meta">@${escapeHtml(c.handle || saved.handle || "")}</div>
+          <div class="text">${escapeHtml(info.text || c.text || saved.text || "")}</div>
+          <div class="meta">X가 민감한 글로 표시해 임베드할 수 없는 글이라, 사이트에는 본문과 "X에서 보기" 링크만 보여요.</div>
+        </div>`;
+        return;
+      }
+      box.innerHTML = "";
+      ensureWidgets(() => window.twttr.widgets.createTweet(c.id, box, { theme: theme(), dnt: true, conversation: "none" }));
+    });
   });
   actions.append(preview, link);
   return el;

@@ -1011,6 +1011,20 @@
   .booth-posts{ margin-top:10px; }
   .booth-posts-title{ font-size:13px; font-weight:700; margin-bottom:2px; }
   .booth-post .twitter-tweet{ margin:6px 0 !important; }
+  .booth-post-card{
+    margin:6px 0;
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:12px;
+    background:var(--card-bg);
+    color:var(--ink);
+    font-size:13px;
+    line-height:1.5;
+  }
+  .booth-post-handle{ font-weight:700; margin-bottom:4px; }
+  .booth-post-text{ white-space:pre-wrap; word-break:break-word; }
+  .booth-post-note{ font-size:11.5px; color:var(--muted); margin:6px 0 4px; }
+  .booth-post-card a{ font-size:12.5px; color:var(--accent); }
   .official-feed{
     height:520px;
     overflow-y:auto;
@@ -1554,6 +1568,8 @@ const I18N = {
     noTwitterHint: "등록된 X 계정이 없습니다.",
     tweetLoadFail: "트윗을 불러오지 못했어요.",
     boothPostsTitle: "상품 정보",
+    boothPostOpenX: "X에서 보기",
+    boothPostSensitive: "X가 민감한 내용으로 표시한 글이라 이미지는 X에서 볼 수 있어요.",
     openProfile: "X 프로필 열기",
     visitPlanned: "🟡 방문 예정",
     visitVisited: "🟢 방문 완료",
@@ -1655,6 +1671,8 @@ const I18N = {
     noTwitterHint: "No X account registered.",
     tweetLoadFail: "Failed to load tweet.",
     boothPostsTitle: "Merch info",
+    boothPostOpenX: "View on X",
+    boothPostSensitive: "X marked this post as sensitive, so images are only visible on X.",
     openProfile: "Open X Profile",
     visitPlanned: "🟡 Plan to Visit",
     visitVisited: "🟢 Visited",
@@ -1756,6 +1774,8 @@ const I18N = {
     noTwitterHint: "登録されたXアカウントがありません。",
     tweetLoadFail: "ツイートを読み込めませんでした。",
     boothPostsTitle: "頒布物情報",
+    boothPostOpenX: "Xで見る",
+    boothPostSensitive: "Xでセンシティブな内容として表示された投稿のため、画像はXで確認できます。",
     openProfile: "Xプロフィールを開く",
     visitPlanned: "🟡 訪問予定",
     visitVisited: "🟢 訪問済み",
@@ -2586,7 +2606,8 @@ function updateNoteVisuals(boothId){
 
 /* ---------- 부스 상품 정보 ----------
    운영자가 관리 화면(admin.html)에서 "반영"한 X 글을 부스 상세 창에 보여줌.
-   반영 목록은 Firestore boothPosts/main 문서의 approved 필드: { 글id: { booth: "A02", handle, at } }.
+   반영 목록은 Firestore boothPosts/main 문서의 approved 필드: { 글id: { booth: "A02", handle, at, text, sensitive } }.
+   X 는 민감한 글로 표시된 글(sensitive)을 임베드해 주지 않아("Not found") 저장해 둔 본문과 링크로 보여줌.
    방문자마다 한 번만 읽고(첫 부스 상세를 열 때), 행사장처럼 오프라인일 때를 위해 마지막 값을 localStorage 에 둠.
 ------------------------------------------------- */
 const BOOTH_POSTS_CACHE_KEY = `${STORAGE_PREFIX}-booth-posts`;
@@ -2610,6 +2631,19 @@ function loadApprovedBoothPosts(){
   return boothPostsPromise;
 }
 
+function buildBoothPostCard(id, entry){
+  const card = document.createElement("div");
+  card.className = "booth-post-card";
+  const url = `https://x.com/${encodeURIComponent(entry.handle || "i")}/status/${encodeURIComponent(id)}`;
+  card.innerHTML = `
+    <div class="booth-post-handle">@${escapeHtml(entry.handle || "")}</div>
+    <div class="booth-post-text">${escapeHtml(entry.text || "")}</div>
+    ${entry.sensitive ? `<div class="booth-post-note">${escapeHtml(t("boothPostSensitive"))}</div>` : ""}
+    <a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(t("boothPostOpenX"))}</a>
+  `;
+  return card;
+}
+
 function buildBoothPosts(booth){
   const box = document.createElement("div");
   box.className = "booth-posts";
@@ -2622,16 +2656,34 @@ function buildBoothPosts(booth){
     if(!ids.length || !box.isConnected) return;
     box.hidden = false;
     box.innerHTML = `<div class="booth-posts-title">${escapeHtml(t("boothPostsTitle"))}</div>`;
+    // 순서를 지키려고 칸을 먼저 만들어 두고, 칸마다 따로 채움
+    const embedSlots = [];
+    ids.forEach(id => {
+      if(approved[id].sensitive){
+        box.appendChild(buildBoothPostCard(id, approved[id]));
+        return;
+      }
+      const item = document.createElement("div");
+      item.className = "booth-post";
+      box.appendChild(item);
+      // 그사이 민감한 글로 바뀌었거나 지워진 글은 X 가 "Not found" 만 보여주고 응답도 없음.
+      // X 스크립트가 막힌 경우도 포함해, 12초 안에 임베드가 안 되면 저장해 둔 본문과 링크로 바꿈
+      const fallback = setTimeout(() => {
+        if(item.isConnected) item.replaceWith(buildBoothPostCard(id, approved[id]));
+      }, 12000);
+      embedSlots.push([id, item, fallback]);
+    });
+    if(!embedSlots.length) return;
     ensureTwitterWidgets(function start(){
       if(!box.isConnected) return;
       if(!window.twttr || !window.twttr.widgets){ setTimeout(start, 300); return; }
-      ids.reduce((prev, id) => prev.then(() => {
-        const item = document.createElement("div");
-        item.className = "booth-post";
-        box.appendChild(item);
-        return window.twttr.widgets.createTweet(id, item, { theme: currentTheme(), dnt: true, lang: currentLang, conversation: "none" })
-          .then(el => { if(!el) item.remove(); }, () => item.remove());
-      }), Promise.resolve());
+      embedSlots.forEach(([id, item, fallback]) => {
+        window.twttr.widgets.createTweet(id, item, { theme: currentTheme(), dnt: true, lang: currentLang, conversation: "none" })
+          .then(el => {
+            clearTimeout(fallback);
+            if(!el && item.isConnected) item.replaceWith(buildBoothPostCard(id, approved[id]));
+          }, () => clearTimeout(fallback));
+      });
     });
   });
   // 상자 안을 눌러도 부스 카드 클릭(팝오버 닫힘)으로 처리되지 않도록 막음
