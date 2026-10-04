@@ -5,31 +5,28 @@ on:
 jobs:
   probe:
     runs-on: ubuntu-latest
+    timeout-minutes: 6
     steps:
       - uses: actions/checkout@v4
       - run: npm i playwright@1 && npx playwright install --with-deps chromium >/dev/null
       - run: |
-          python3 -m http.server 8000 >/dev/null 2>&1 &
-          sleep 1
           cat > probe.mjs <<'JS'
           import { chromium } from 'playwright';
           const b = await chromium.launch();
           const p = await b.newPage();
           p.on('console', m => console.log('console:', m.text()));
-          p.on('response', r => { const u = r.url(); if(/syndication|embed|Tweet/.test(u)) console.log('resp', r.status(), u.slice(0,160)); });
-          await p.goto('http://localhost:8000/admin.html');
-          await p.waitForTimeout(3000);
-          for (const id of ['2106719710876496350', '2104521337406726510']) {
-            const r = await p.evaluate(async (id) => {
-              await new Promise(res => { const s=document.createElement('script'); s.src='https://platform.twitter.com/widgets.js'; s.onload=res; document.body.appendChild(s); });
-              const box = document.createElement('div'); document.body.appendChild(box);
-              const el = await window.twttr.widgets.createTweet(id, box, { dnt: true, conversation: 'none' });
-              return { ok: !!el, html: box.innerHTML.slice(0, 400) };
-            }, id);
-            console.log(id, JSON.stringify(r));
+          p.on('response', r => { const u = r.url(); if(/syndication|embed|Tweet|widgets/.test(u)) console.log('resp', r.status(), u.slice(0,200)); });
+          await p.setContent('<html><body><div id="a"></div><div id="b"></div><script src="https://platform.twitter.com/widgets.js"></script></body></html>');
+          await p.waitForFunction(() => window.twttr && window.twttr.widgets, null, { timeout: 20000 });
+          for (const [id, box] of [['2106719710876496350','#a'], ['2104521337406726510','#b']]) {
+            const r = await Promise.race([
+              p.evaluate(async ([id, box]) => { const el = await window.twttr.widgets.createTweet(id, document.querySelector(box), { dnt: true, conversation: 'none' }); return !!el; }, [id, box]),
+              new Promise(res => setTimeout(() => res('timeout'), 20000)),
+            ]);
+            console.log('createTweet', id, r);
           }
-          await p.waitForTimeout(3000);
-          for (const f of p.frames()) { try { console.log('frame', f.url().slice(0,120), '=>', (await f.evaluate(() => document.body && document.body.innerText)).slice(0,200).replace(/\n/g,' | ')); } catch(e) { console.log('frame err', f.url().slice(0,80)); } }
+          await p.waitForTimeout(4000);
+          for (const f of p.frames()) { try { console.log('frame', f.url().slice(0,160), '=>', ((await f.evaluate(() => document.body && document.body.innerText)) || '').slice(0,200).replace(/\n/g,' | ')); } catch(e) { console.log('frame err', f.url().slice(0,80)); } }
           await b.close();
           JS
-          node probe.mjs
+          timeout 120 node probe.mjs
