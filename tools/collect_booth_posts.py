@@ -8,7 +8,7 @@ GitHub Actions(.github/workflows/collect-booth-posts.yml)가 1시간마다 실�
     python3 tools/collect_booth_posts.py <후보 폴더> --dry-run  # 파일은 건드리지 않고 결과만 출력
 
 동작:
-1. index.html 의 BOOTHS 줄에서 부스별 X 아이디(리더 + 부스원)를 읽음
+1. index.html 의 BOOTHS 줄에서 부스장 X 아이디를 읽음
 2. 아이디마다 FxTwitter 공개 JSON(무료·키 없음)으로 최근 글 약 20개를 받음
    (클라우드 개발 환경에서는 FxTwitter 가 막혀 있어 GitHub Actions 에서만 동작함)
 3. 리트윗·답글·POST_SINCE 이전 글은 거르고, judge() 로 점수를 매겨 MIN_SCORE 이상이면 후보로 추가
@@ -71,8 +71,8 @@ def handle_map(booths):
     protected = load_protected()
     result = {}
     for booth in booths:
-        handles = [booth.get("twitter")] + [m.get("twitter") for m in booth.get("members", [])]
-        for h in filter(None, handles):
+        # 부스장(booth.twitter) 계정 글만 봄. 부스원 계정까지 보면 후보가 너무 많아져서 뺌 (2026-10-04 사용자 요청)
+        for h in filter(None, [booth.get("twitter")]):
             if h.lower() in protected:
                 continue
             entry = result.setdefault(h.lower(), (h, []))
@@ -134,6 +134,10 @@ def collect(feed_dir, dry_run=False):
     handles = handle_map(booths)
     path = Path(feed_dir) / "candidates.json"
     data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"posts": []}
+    # 지금 보는 계정(부스장)이 아닌 글은 후보에서 뺌. 부스원 계정도 모으던 때(2026-10-04) 쌓인 후보 정리용
+    before = len(data["posts"])
+    data["posts"] = [p for p in data["posts"] if p.get("handle", "").lower() in handles]
+    removed = before - len(data["posts"])
     known = {p["id"] for p in data["posts"]}
 
     added, failed = [], []
@@ -176,7 +180,9 @@ def collect(feed_dir, dry_run=False):
         print(f"  + {c['booths']} @{c['handle']} 점수 {c['score']} {c['reasons']} {c['text'][:60]!r}")
     for f in failed:
         print(f"  ! {f}")
-    if dry_run or not added:
+    if removed:
+        print(f"  부스장이 아닌 계정의 후보 {removed}개 정리")
+    if dry_run or not (added or removed):
         return  # 새 후보가 없으면 파일을 그대로 둬서 쓸데없는 커밋이 생기지 않게 함
 
     # 최신 글이 위로 오도록 id(시간순으로 커지는 숫자) 기준 내림차순
