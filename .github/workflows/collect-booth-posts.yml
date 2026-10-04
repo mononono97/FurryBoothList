@@ -6,8 +6,6 @@ on:
   schedule:
     - cron: "17 * * * *"   # 매시 17분 (정각은 GitHub 쪽이 붐벼 늦어지기 쉬움)
   workflow_dispatch:        # Actions 탭에서 "Run workflow" 로 바로 실행
-  push:
-    branches: [claude/project-thread-c5a74z]
 
 permissions:
   contents: write
