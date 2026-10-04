@@ -1009,6 +1009,7 @@
   }
   .tweet-slot iframe{border-radius:6px;}
   .booth-posts{ margin:10px 0 12px; }
+  .booth .updated-on{ font-size:11px; color:var(--accent); font-weight:600; margin-top:2px; }
   .booth-posts-title{ font-size:13px; font-weight:700; margin-bottom:2px; }
   .booth-post .twitter-tweet{ margin:6px 0 !important; }
   .booth-post-card{
@@ -1488,7 +1489,7 @@ try {
 } catch {}
 
 const CURRENT_ROW_KEY = `${STORAGE_PREFIX}-current-row`;
-const VALID_ROWS = new Set([...ALL_ROWS, "ALL", "NOTES", "MAP", "INFO"]);
+const VALID_ROWS = new Set([...ALL_ROWS, "ALL", "NOTES", "UPDATES", "MAP", "INFO"]);
 let savedRow = null;
 try { savedRow = localStorage.getItem(CURRENT_ROW_KEY); } catch {}
 let currentRow = (savedRow && VALID_ROWS.has(savedRow))
@@ -1545,6 +1546,10 @@ const I18N = {
     ],
     allBtn: "📋 전체",
     notesBtn: "📝 메모",
+    updatesBtn: "🆕 최근 갱신",
+    updatesCount: "상품 정보가 올라온 부스 {n}개 (최근 순)",
+    emptyUpdates: "아직 상품 정보가 올라온 부스가 없어요.",
+    updatedOn: "{date} 갱신",
     notesBtnCount: "📝 메모({n})",
     mapBtn: "🗺️ 배치도",
     mapHint: "부스를 눌러서 메모/부스 정보를 확인하세요 (공식 일요일 부스 안내 기준)",
@@ -1648,6 +1653,10 @@ const I18N = {
     ],
     allBtn: "📋 All",
     notesBtn: "📝 Notes",
+    updatesBtn: "🆕 Updated",
+    updatesCount: "{n} booths with merch info (newest first)",
+    emptyUpdates: "No booths have posted merch info yet.",
+    updatedOn: "Updated {date}",
     notesBtnCount: "📝 Notes({n})",
     mapBtn: "🗺️ Map",
     mapHint: "Click a booth to see notes/booth info (based on the official Sunday booth guide)",
@@ -1751,6 +1760,10 @@ const I18N = {
     ],
     allBtn: "📋 全体",
     notesBtn: "📝 メモ",
+    updatesBtn: "🆕 最近の更新",
+    updatesCount: "頒布物情報があるブース {n}件（新しい順）",
+    emptyUpdates: "まだ頒布物情報が投稿されたブースはありません。",
+    updatedOn: "{date} 更新",
     notesBtnCount: "📝 メモ({n})",
     mapBtn: "🗺️ 配置図",
     mapHint: "ブースを押してメモ・ブース情報を確認してください（公式の日曜日ブース案内に基づく）",
@@ -2588,6 +2601,12 @@ function renderNav(){
   noteBtn.addEventListener("click", () => goToRow("NOTES"));
   tabNav.appendChild(noteBtn);
 
+  const updatesBtn = document.createElement("button");
+  updatesBtn.textContent = t("updatesBtn");
+  if(currentRow === "UPDATES") updatesBtn.classList.add("active");
+  updatesBtn.addEventListener("click", () => goToRow("UPDATES"));
+  tabNav.appendChild(updatesBtn);
+
   const mapBtn = document.createElement("button");
   mapBtn.textContent = t("mapBtn");
   if(currentRow === "MAP") mapBtn.classList.add("active");
@@ -2616,6 +2635,27 @@ function updateNoteVisuals(boothId){
 ------------------------------------------------- */
 const BOOTH_POSTS_CACHE_KEY = `${STORAGE_PREFIX}-booth-posts`;
 let boothPostsPromise = null;
+// 마지막으로 받은 반영 목록. "최근 갱신" 탭이 바로 그릴 수 있게 처음엔 localStorage 값으로 채움
+let approvedBoothPosts = {};
+try { approvedBoothPosts = JSON.parse(localStorage.getItem(BOOTH_POSTS_CACHE_KEY) || "{}") || {}; } catch {}
+
+// X 글 id 에는 글을 쓴 시각이 들어 있음(앞쪽 비트 = 2010-11-04 기준 밀리초)
+function postTime(id){
+  try { return Number(BigInt(id) >> 22n) + 1288834974657; } catch { return 0; }
+}
+
+// "최근 갱신" 탭: 반영된 글이 있는 부스를 가장 최근 글 시각 순으로
+function recentlyUpdatedBooths(){
+  const latest = {};
+  Object.keys(approvedBoothPosts).forEach(id => {
+    const entry = approvedBoothPosts[id];
+    if(!entry || !entry.booth) return;
+    latest[entry.booth] = Math.max(latest[entry.booth] || 0, postTime(id));
+  });
+  return BOOTHS.filter(b => latest[b.id])
+    .map(b => ({ booth: b, time: latest[b.id] }))
+    .sort((a, b) => b.time - a.time);
+}
 
 function loadApprovedBoothPosts(){
   if(boothPostsPromise) return boothPostsPromise;
@@ -2626,6 +2666,8 @@ function loadApprovedBoothPosts(){
     .then(doc => {
       const approved = (doc.exists && doc.data().approved) || {};
       try { localStorage.setItem(BOOTH_POSTS_CACHE_KEY, JSON.stringify(approved)); } catch {}
+      approvedBoothPosts = approved;
+      if(currentRow === "UPDATES") renderGrid();
       return approved;
     })
     .catch(() => {
@@ -2861,12 +2903,20 @@ function renderGrid(){
 
   const isNotesView = currentRow === "NOTES";
   const isAllView = currentRow === "ALL";
-  document.getElementById("currentLetter").textContent = isNotesView ? "📝" : isAllView ? "📋" : currentRow;
+  const isUpdatesView = currentRow === "UPDATES";
+  // 최근 갱신 탭은 글이 올라온 순서가 중요해서 우선순위 정렬을 쓰지 않음
+  if(isUpdatesView) document.getElementById("sortPriorityBtn").style.display = "none";
+  document.getElementById("currentLetter").textContent = isNotesView ? "📝" : isAllView ? "📋" : isUpdatesView ? "🆕" : currentRow;
   document.getElementById("notesExtra").style.display = isNotesView ? "flex" : "none";
   updateBudgetTotalDisplay();
 
   let list;
-  if(isNotesView){
+  const updatedAt = {};
+  if(isUpdatesView){
+    // 처음 열 때는 저장해 둔 목록으로 그리고, Firestore 에서 새로 받으면 다시 그림
+    loadApprovedBoothPosts();
+    list = recentlyUpdatedBooths().map(({ booth, time }) => { updatedAt[booth.id] = time; return booth; });
+  } else if(isNotesView){
     const trackedIds = new Set([
       ...Object.keys(notes),
       ...Object.keys(visitStatus),
@@ -2898,17 +2948,19 @@ function renderGrid(){
     );
   }
 
-  if(sortByPriority){
+  if(sortByPriority && !isUpdatesView){
     // Array#sort는 안정 정렬이라, 같은 우선순위(혹은 둘 다 없음)끼리는 원래 순서가 유지됨
     list = list.slice().sort((a, b) => (getPriority(a.id) || 4) - (getPriority(b.id) || 4));
   }
 
   document.getElementById("currentCount").textContent = isNotesView
     ? t("notesCount", { n: list.length })
+    : isUpdatesView ? t("updatesCount", { n: list.length })
     : t("circleCount", { n: list.length });
   document.getElementById("emptyState").style.display = list.length ? "none" : "block";
   document.getElementById("emptyState").textContent = isNotesView
     ? t("emptyNotes")
+    : isUpdatesView && !currentQuery ? t("emptyUpdates")
     : t("emptyDefault");
 
   list.forEach(booth => {
@@ -2959,6 +3011,14 @@ function renderGrid(){
     repEl.className = "rep-name";
     repEl.textContent = boothRepText(booth);
     card.appendChild(repEl);
+
+    if(updatedAt[booth.id]){
+      const d = new Date(updatedAt[booth.id]);
+      const updatedEl = document.createElement("div");
+      updatedEl.className = "updated-on";
+      updatedEl.textContent = t("updatedOn", { date: `${d.getMonth() + 1}/${d.getDate()}` });
+      card.appendChild(updatedEl);
+    }
 
     // 클릭(탭)하면 화면 가운데에 부스 상세 모달을 띄움(X 버튼·창 밖 클릭으로 닫힘). PC/모바일 공통.
     card.addEventListener("click", (e) => {
