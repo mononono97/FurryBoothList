@@ -181,6 +181,8 @@ let decisionsReadable = true;
 function escapeHtml(s){
   return String(s || "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 }
+// 카드 본문 끝의 t.co 링크(이미지·인용 글 주소)는 카드에 필요 없어 지움. index.html 의 cardText 와 같음
+function cardText(text){ return String(text || "").replace(/(\s*https:\/\/t\.co\/\w+)+\s*$/, ""); }
 function theme(){ return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light"; }
 function boothName(id){ const b = booths.find(b => b.id === id); return b ? b.name : ""; }
 function fmtDate(iso){
@@ -237,6 +239,8 @@ function fetchPostInfo(id, candidate){
   const fromCandidate = () => ({
     text: (candidate && candidate.text) || "",
     sensitive: !!(candidate && candidate.sensitive),
+    quote: !!(candidate && candidate.quote),
+    images: (candidate && candidate.images) || [],
   });
   return fetch(`https://api.fxtwitter.com/2/status/${id}`)
     .then(r => r.ok ? r.json() : Promise.reject(r.status))
@@ -245,6 +249,11 @@ function fetchPostInfo(id, candidate){
       return {
         text: (st.raw_text && st.raw_text.text) || st.text || fromCandidate().text,
         sensitive: !!st.possibly_sensitive,
+        quote: !!st.quote,
+        images: [
+          ...((st.media && st.media.photos) || []).map(m => m.url),
+          ...((st.media && st.media.videos) || []).map(m => m.thumbnail_url),
+        ].filter(Boolean).slice(0, 4),
         handle: st.author && st.author.screen_name,
       };
     })
@@ -255,6 +264,9 @@ function approve(id, booth, handle, candidate){
     const entry = {
       booth, handle: info.handle || handle, at: new Date().toISOString(),
       text: (info.text || "").slice(0, 1000), sensitive: info.sensitive,
+      // 인용한 글이 있는 글: X 임베드에는 인용 글을 숨기는 옵션이 없어서 사이트가 카드로 직접 그림
+      quote: info.quote,
+      images: info.sensitive ? [] : info.images,
     };
     return writeDecision({
       approved: { [id]: entry },
@@ -394,14 +406,19 @@ function buildPost(c){
     const box = el.querySelector(".embed");
     box.innerHTML = `<div class="meta">불러오는 중…</div>`;
     const saved = decisions.approved[c.id] || {};
-    // 민감한 글 여부는 FxTwitter 로 다시 확인함(민감한 글 표시 기능 전에 모인 후보에는 이 값이 없음)
+    // 민감한 글·인용 글 여부는 FxTwitter 로 다시 확인함(이 기능 전에 모인 후보에는 이 값이 없음)
     fetchPostInfo(c.id, c).then(info => {
-      if(info.sensitive || c.sensitive || saved.sensitive){
+      const sensitive = info.sensitive || c.sensitive || saved.sensitive;
+      if(sensitive || info.quote || saved.quote){
         // 사이트(index.html 의 buildBoothPostCard)와 같은 모양
+        const images = sensitive ? [] : (info.images.length ? info.images : (saved.images || []));
         box.innerHTML = `<div class="post-card">
           <div class="meta">@${escapeHtml(c.handle || saved.handle || "")}</div>
-          <div class="text">${escapeHtml(info.text || c.text || saved.text || "")}</div>
-          <div class="meta">X가 민감한 글로 표시해 임베드할 수 없는 글이라, 사이트에는 본문과 "X에서 보기" 링크만 보여요.</div>
+          <div class="text">${escapeHtml(cardText(info.text || c.text || saved.text || ""))}</div>
+          ${images.length ? `<div class="images">${images.map(src => `<img loading="lazy" src="${escapeHtml(src)}" alt="">`).join("")}</div>` : ""}
+          <div class="meta">${sensitive
+            ? "X가 민감한 글로 표시해 임베드할 수 없는 글이라, 사이트에는 본문과 \"X에서 보기\" 링크만 보여요."
+            : "인용한 글을 빼고 보여주려고, 사이트에는 X 임베드 대신 본문과 이미지 카드로 보여요."}</div>
         </div>`;
         return;
       }
