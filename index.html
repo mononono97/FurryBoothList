@@ -85,6 +85,26 @@
     --panel-border:transparent;
     --on-panel:#f4eef0;   /* 패널 위 글자 */
     --moss-light:#f2a0ad; /* 패널 위 보조 글자: 연핑크 */
+
+    /* 배치도 */
+    --map-wall:#c8102e;        /* 홀 벽 */
+    --map-room-line:#1d1a1c;   /* 탈의실 칸 */
+    --map-zone-a:#ecebeb;      /* A구역 바닥 */
+    --map-zone-bc:#fbe8ea;     /* B·C구역 바닥 */
+    --map-booth-a:#1d1a1c;     /* A구역 부스 테두리·글자 */
+    --map-booth-bc:#c8102e;    /* B·C구역 부스 테두리·글자 */
+    --map-stage:#1d1a1c;
+    --map-stage-fg:#ffffff;
+    --map-arrow:#f2a0ad;       /* 출입구 화살표 */
+    --map-pill-dark:#1d1a1c;   /* 주성홀 이름표 */
+    --map-pill-fg:#ffffff;
+    --map-planned:#e0b12c;
+    --map-planned-fg:#241b06;
+    --map-visited:#4a8f3c;
+    --map-visited-fg:#eafce6;
+    --map-prio-1:#d64545;
+    --map-prio-2:#8b5fbf;
+    --map-prio-3:#3b82c4;
   }
   :root[data-theme="dark"]{
     color-scheme:dark;
@@ -136,6 +156,25 @@
     --panel-border:rgba(214,180,106,.3);
     --on-panel:#f2e8ea;
     --moss-light:#e8c98a; /* 패널 위 보조 글자: 골드 */
+
+    --map-wall:#e0344f;
+    --map-room-line:#b3a3aa;
+    --map-zone-a:#211b20;
+    --map-zone-bc:#2a1820;
+    --map-booth-a:#e8dfe2;
+    --map-booth-bc:#ff5a73;
+    --map-stage:#2e252c;
+    --map-stage-fg:#f2e8ea;
+    --map-arrow:#e8899a;
+    --map-pill-dark:#2e252c;
+    --map-pill-fg:#f2e8ea;
+    --map-planned:#e0b12c;
+    --map-planned-fg:#241b06;
+    --map-visited:#4a8f3c;
+    --map-visited-fg:#eafce6;
+    --map-prio-1:#d64545;
+    --map-prio-2:#a77fdc;
+    --map-prio-3:#5aa0e0;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -1000,98 +1039,15 @@
     font-size:14px;
   }
 
-  /* 배치도(스키매틱 맵) */
-  .map-grid{
-    display:flex;
-    gap:16px;
-    overflow-x:auto;
-    padding-bottom:16px;
-  }
-  .map-col{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    flex:0 0 auto;
-  }
-  .map-col .map-col-label{
-    font-weight:800;
-    font-size:13px;
-    color:var(--clay);
-    margin-bottom:6px;
-    position:sticky;
-    top:0;
-  }
-  .map-col .map-cells{
-    display:flex;
-    flex-direction:column;
-    gap:2px;
-  }
-  .map-cells-pair{
-    display:grid;
-    grid-template-columns:22px 22px;
-    gap:2px;
-  }
-  .map-cells-pair .map-cell{ width:auto; height:auto; min-height:22px; }
-  .map-cell.double{ padding:0; }
-  .map-cell.double-v{ flex-direction:column; }
-  .map-cell.double .map-cell-half{
-    flex:1;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    align-self:stretch;
-  }
-  .map-cell.double-v .map-cell-half + .map-cell-half{ border-top:1px dashed var(--moss-light); }
-  .map-cell.double-h .map-cell-half + .map-cell-half{ border-left:1px dashed var(--moss-light); }
-  .map-cell{
-    width:22px;
-    height:22px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:8.5px;
-    font-family:"SFMono-Regular",Consolas,monospace;
-    background:var(--card-bg);
-    border:1px solid var(--line);
-    border-radius:3px;
-    color:var(--muted);
-    cursor:pointer;
-    user-select:none;
-  }
-  .map-cell.blank{
-    border-color:transparent;
-    background:transparent;
-    cursor:default;
-  }
-  .map-cell:hover{ border-color:var(--moss); }
-  .map-cell.has-note{
-    background:var(--clay);
-    border-color:var(--clay);
-    color:#fff;
-    font-weight:700;
-  }
-  .map-cell.visit-planned{
-    background:#e0b12c;
-    border-color:#e0b12c;
-    color:#241b06;
-    font-weight:700;
-  }
-  .map-cell.visit-visited{
-    background:#4a8f3c;
-    border-color:#4a8f3c;
-    color:#eafce6;
-    font-weight:700;
-  }
-  .map-cell.priority-1{ outline:2px solid #d64545; outline-offset:1px; }
-  .map-cell.priority-2{ outline:2px solid #8b5fbf; outline-offset:1px; }
-  .map-cell.priority-3{ outline:2px solid #3b82c4; outline-offset:1px; }
+  /* 배치도(공식 일요일 부스 안내를 SVG로 다시 그림) */
   .map-legend{
     display:flex;
+    flex-wrap:wrap;
     align-items:center;
-    gap:16px;
+    gap:8px 16px;
     font-size:12px;
     color:var(--text-2);
-    margin-bottom:14px;
+    margin-bottom:12px;
   }
   .map-legend .swatch{
     display:inline-block;
@@ -1101,8 +1057,70 @@
     vertical-align:-1px;
     margin-right:5px;
   }
-  .map-legend .swatch.normal{ background:var(--card-bg); border:1px solid var(--line); }
   .map-legend .swatch.note{ background:var(--clay); }
+  .map-legend .swatch.planned{ background:var(--map-planned); }
+  .map-legend .swatch.visited{ background:var(--map-visited); }
+  .map-legend .swatch.ring{ background:transparent; border:2px solid; margin-right:3px; }
+  .map-legend .swatch.ring:last-of-type{ margin-right:5px; }
+  .map-legend .swatch.p1{ border-color:var(--map-prio-1); }
+  .map-legend .swatch.p2{ border-color:var(--map-prio-2); }
+  .map-legend .swatch.p3{ border-color:var(--map-prio-3); }
+  /* 좁은 화면에서는 글자가 너무 작아지지 않도록 최소 폭을 두고 가로 스크롤 */
+  .venue-map-scroll{
+    overflow-x:auto;
+    padding-bottom:12px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .venue-map{
+    display:block;
+    width:100%;
+    min-width:960px;
+    height:auto;
+    font-family:inherit;
+  }
+  .venue-map text{ text-anchor:middle; dominant-baseline:central; }
+  .venue-map .map-wall{ fill:none; stroke:var(--map-wall); stroke-width:3; stroke-linejoin:round; }
+  .venue-map .map-room{ fill:none; stroke:var(--map-room-line); stroke-width:3; }
+  .venue-map .map-room-text{ fill:var(--ink); font-size:26px; font-weight:800; }
+  .venue-map .map-zone.zone-a{ fill:var(--map-zone-a); }
+  .venue-map .map-zone.zone-b, .venue-map .map-zone.zone-c{ fill:var(--map-zone-bc); }
+  .venue-map .map-zone-text{ font-size:40px; font-weight:900; pointer-events:none; }
+  .venue-map .map-zone-text.zone-a{ fill:var(--map-booth-a); }
+  .venue-map .map-zone-text.zone-b, .venue-map .map-zone-text.zone-c{ fill:var(--map-booth-bc); }
+  .venue-map .map-stage{ fill:var(--map-stage); }
+  .venue-map .map-stage-text{ fill:var(--map-stage-fg); font-size:30px; font-weight:900; }
+  .venue-map .map-arrow{ stroke:var(--map-arrow); stroke-width:7; stroke-linecap:round; }
+  .venue-map .map-arrow-head{ fill:none; stroke:var(--map-arrow); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .venue-map .map-hall-label rect{ fill:var(--map-pill-dark); }
+  .venue-map .map-hall-label.accent rect{ fill:var(--map-booth-bc); }
+  .venue-map .map-hall-label text{ fill:var(--map-pill-fg); font-size:24px; font-weight:800; }
+  /* 부스 칸: 기본은 구역 색 테두리, 메모·방문 상태·우선순위는 부스 탭 카드와 같은 의미의 색 */
+  .venue-map .map-booth{ cursor:pointer; outline:none; }
+  .venue-map .map-booth-box{ fill:var(--card-bg); stroke-width:2; }
+  .venue-map .map-booth-ring{ fill:none; stroke:none; stroke-width:3; }
+  .venue-map .map-booth-text{ font-size:15px; font-weight:800; pointer-events:none; }
+  .venue-map .map-booth-split{ stroke-width:1.5; stroke-dasharray:3 3; pointer-events:none; }
+  .venue-map .map-booth.zone-a .map-booth-box, .venue-map .map-booth.zone-a .map-booth-split{ stroke:var(--map-booth-a); }
+  .venue-map .map-booth.zone-a .map-booth-text{ fill:var(--map-booth-a); }
+  .venue-map .map-booth.zone-b .map-booth-box, .venue-map .map-booth.zone-c .map-booth-box,
+  .venue-map .map-booth.zone-b .map-booth-split, .venue-map .map-booth.zone-c .map-booth-split{ stroke:var(--map-booth-bc); }
+  .venue-map .map-booth.zone-b .map-booth-text, .venue-map .map-booth.zone-c .map-booth-text{ fill:var(--map-booth-bc); }
+  .venue-map .map-booth:hover .map-booth-box, .venue-map .map-booth:focus-visible .map-booth-box{ stroke-width:4; }
+  .venue-map .map-booth.has-note .map-booth-box{ fill:var(--clay); stroke:var(--clay); }
+  .venue-map .map-booth.visit-planned .map-booth-box{ fill:var(--map-planned); stroke:var(--map-planned); }
+  .venue-map .map-booth.visit-visited .map-booth-box{ fill:var(--map-visited); stroke:var(--map-visited); }
+  .venue-map .map-booth.has-note .map-booth-text{ fill:#fff; }
+  .venue-map .map-booth.visit-planned .map-booth-text{ fill:var(--map-planned-fg); }
+  .venue-map .map-booth.visit-visited .map-booth-text{ fill:var(--map-visited-fg); }
+  .venue-map .map-booth.has-note .map-booth-split,
+  .venue-map .map-booth.visit-planned .map-booth-split,
+  .venue-map .map-booth.visit-visited .map-booth-split{ stroke:rgba(255,255,255,.7); }
+  .venue-map .map-booth.priority-1 .map-booth-ring{ stroke:var(--map-prio-1); }
+  .venue-map .map-booth.priority-2 .map-booth-ring{ stroke:var(--map-prio-2); }
+  .venue-map .map-booth.priority-3 .map-booth-ring{ stroke:var(--map-prio-3); }
+  .venue-map .map-booth.empty{ cursor:default; }
+  .venue-map .map-booth.empty .map-booth-box{ stroke:var(--line); stroke-dasharray:4 3; }
+  .venue-map .map-booth.empty .map-booth-text{ fill:var(--muted); }
 
   /* 행사 안내 */
   .info-view{
@@ -1501,7 +1519,20 @@ const I18N = {
     notesBtn: "📝 메모",
     notesBtnCount: "📝 메모({n})",
     mapBtn: "🗺️ 배치도",
-    mapHint: "부스를 눌러서 메모/부스 정보를 확인하세요 (실제 배치와 다를 수 있음)",
+    mapHint: "부스를 눌러서 메모/부스 정보를 확인하세요 (공식 일요일 부스 안내 기준)",
+    mapTitle: "Furst Class 부스 배치도",
+    mapHallJusung: "주성홀",
+    mapHallGrand: "그랜드볼룸",
+    mapMaleRoom: "남자 탈의실",
+    mapFemaleRoom: "여자 탈의실",
+    mapStage: "무대",
+    mapZoneA: "A구역",
+    mapZoneB: "B구역",
+    mapZoneC: "C구역",
+    mapLegendNote: "메모",
+    mapLegendPlanned: "방문 예정",
+    mapLegendVisited: "방문 완료",
+    mapLegendPriority: "1·2·3순위 테두리",
     circleCount: "{n}개 부스",
     notesCount: "메모·방문·예산 등록 부스 {n}개",
     emptyDefault: "검색 결과가 없어요.",
@@ -1587,7 +1618,20 @@ const I18N = {
     notesBtn: "📝 Notes",
     notesBtnCount: "📝 Notes({n})",
     mapBtn: "🗺️ Map",
-    mapHint: "Click a booth to see notes/booth info (may differ from the actual layout)",
+    mapHint: "Click a booth to see notes/booth info (based on the official Sunday booth guide)",
+    mapTitle: "Furst Class booth map",
+    mapHallJusung: "Jusung Hall",
+    mapHallGrand: "Grand Ballroom",
+    mapMaleRoom: "Changing (M)",
+    mapFemaleRoom: "Changing (W)",
+    mapStage: "Stage",
+    mapZoneA: "Area A",
+    mapZoneB: "Area B",
+    mapZoneC: "Area C",
+    mapLegendNote: "Note",
+    mapLegendPlanned: "Plan to visit",
+    mapLegendVisited: "Visited",
+    mapLegendPriority: "Priority 1·2·3 border",
     circleCount: "{n} booths",
     notesCount: "{n} booths with notes/visit/budget",
     emptyDefault: "No search results.",
@@ -1673,7 +1717,20 @@ const I18N = {
     notesBtn: "📝 メモ",
     notesBtnCount: "📝 メモ({n})",
     mapBtn: "🗺️ 配置図",
-    mapHint: "ブースを押してメモ・ブース情報を確認してください（実際の配置と異なる場合があります）",
+    mapHint: "ブースを押してメモ・ブース情報を確認してください（公式の日曜日ブース案内に基づく）",
+    mapTitle: "Furst Class ブース配置図",
+    mapHallJusung: "ジュソンホール",
+    mapHallGrand: "グランドボールルーム",
+    mapMaleRoom: "男性更衣室",
+    mapFemaleRoom: "女性更衣室",
+    mapStage: "ステージ",
+    mapZoneA: "Aエリア",
+    mapZoneB: "Bエリア",
+    mapZoneC: "Cエリア",
+    mapLegendNote: "メモ",
+    mapLegendPlanned: "訪問予定",
+    mapLegendVisited: "訪問済み",
+    mapLegendPriority: "優先順位1・2・3の枠",
     circleCount: "{n}ブース",
     notesCount: "メモ・訪問・予算登録ブース {n}件",
     emptyDefault: "検索結果がありません。",
@@ -2638,7 +2695,7 @@ function renderGrid(){
   const isMapView = currentRow === "MAP";
   const isInfoView = currentRow === "INFO";
   grid.style.display = (isMapView || isInfoView) ? "none" : "";
-  mapGrid.style.display = isMapView ? "flex" : "none";
+  mapGrid.style.display = isMapView ? "block" : "none";
   infoView.style.display = isInfoView ? "block" : "none";
   emptyState.style.display = "none";
 
@@ -2791,111 +2848,185 @@ document.getElementById("searchInput").addEventListener("input", (e) => {
   renderGrid();
 });
 
-/* ---------- 배치도(스키매틱 맵) ----------
-   Furst Class 실제 부스 배치도는 아직 받지 못해서, 부스 번호 열(A, B, C ...)마다
-   "왼쪽은 큰 번호부터 내려오고 오른쪽은 1번부터 올라오는" 두 줄 마주보기 구조 +
-   4개마다 통로 틈으로 단순하게 표현함(실제 배치와 다를 수 있음).
-   실제 배치도를 받으면 MAP_ORDER 와 buildPairedColumn 을 그에 맞게 바꾸면 됨.
+/* ---------- 배치도 ----------
+   공식 "일요일 부스 안내" 이미지(2026-10-04 사용자 제공)를 보고 SVG로 다시 그린 배치도.
+   왼쪽 주성홀(탈의실 + C구역), 오른쪽 그랜드볼룸(무대 + A구역 + B구역), 출입구는 분홍 화살표.
+   칸 좌표는 MAP_SLOTS 에 부스 번호(예: "A1")별로 적어두고, BOOTHS 의 nums 와 맞춰 부스를 찾음.
+   두 칸 부스(A11-12 등)는 칸이 붙어 있으면 한 도형으로 합치고, 떨어져 있으면(A37·A38) 칸마다 그림.
+   색은 모두 CSS 토큰(--map-*)이라 라이트/다크 테마를 따라감.
 ------------------------------------------------------------- */
-const MAP_ORDER = ALL_ROWS;
+const MAP_W = 40, MAP_H = 26, MAP_STEP = 28;
+const MAP_SLOTS = (() => {
+  const slots = {};
+  // 세로 줄: 위→아래 순서로 번호 목록을 받음
+  const col = (block, nums, x, y0, step = MAP_STEP, h = MAP_H, w = MAP_W) =>
+    nums.forEach((n, i) => { slots[block + n] = { block, x, y: y0 + i * step, w, h }; });
+  // 가로 줄: 왼쪽→오른쪽 순서
+  const row = (block, nums, x0, y, w, step) =>
+    nums.forEach((n, i) => { slots[block + n] = { block, x: x0 + i * step, y, w, h: MAP_H }; });
+  const range = (a, b) => { const r = []; for(let i = a; a <= b ? i <= b : i >= b; i += a <= b ? 1 : -1) r.push(i); return r; };
 
-function buildPairedColumn(list){
-  // 부스 하나가 차지하는 칸 수만큼 칸(slot)을 펼침. 두 칸 부스(A37-38)는 칸 2개를 차지함.
-  const slots = [];
-  list.forEach(booth => (booth.nums || [booth.num]).forEach(n => slots.push({ booth, n })));
-  const n = slots.length;
-  const half = Math.ceil(n / 2);
-  // 칸 i 의 위치: 앞쪽 절반은 오른쪽 줄 위→아래(오름차순), 뒤쪽 절반은 왼쪽 줄 아래→위(내림차순)
-  const pos = i => i < half ? { col: 2, row: i } : { col: 1, row: n - 1 - i };
-  const rowCount = half;
-  // 4줄마다 통로(빈 줄)를 넣음 → grid 줄 번호 계산
-  const gridRow = r => r + Math.floor(r / 4) + 1;
+  // C구역(주성홀)
+  row("C", range(17, 24), 193, 462, MAP_W, 42);
+  col("C", range(16, 9), 146, 500);
+  col("C", range(25, 28), 534, 500);
+  row("C", range(8, 1), 193, 750, MAP_W, 42);
+  // A구역(그랜드볼룸 왼쪽)
+  col("A", range(1, 9), 832, 440);
+  col("A", range(18, 10), 900, 440);
+  col("A", range(19, 23), 1040, 440, 34, 30);
+  col("A", range(28, 24), 1082, 440, 34, 30);
+  col("A", range(29, 37), 1312, 440);
+  row("A", range(41, 38), 1020, 744, 80, 84);
+  // B구역(그랜드볼룸 오른쪽)
+  col("B", range(1, 9), 1414, 440);
+  col("B", range(34, 30), 1540, 440, 34, 30);
+  col("B", range(25, 29), 1582, 440, 34, 30);
+  col("B", range(24, 15), 1734, 440);
+  row("B", range(10, 14), 1470, 744, 52, 56);
+  return slots;
+})();
 
-  const wrap = document.createElement("div");
-  wrap.className = "map-cells-pair";
-  const tracks = [];
-  for(let r = 0; r < rowCount; r++){
-    if(r > 0 && r % 4 === 0) tracks.push("7px");
-    tracks.push("22px");
-  }
-  wrap.style.gridTemplateRows = tracks.join(" ");
+// 출입구 화살표(위·아래 또는 오른쪽·왼쪽 한 쌍)
+function mapDoorArrows(cx, cy, horizontal){
+  const a = (x1, y1, x2, y2) => `<line class="map-arrow" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" marker-end="url(#mapArrowHead)"/>`;
+  return horizontal
+    ? a(cx - 20, cy - 22, cx + 20, cy - 22) + a(cx + 20, cy + 22, cx - 20, cy + 22)
+    : a(cx - 16, cy + 16, cx - 16, cy - 16) + a(cx + 16, cy - 16, cx + 16, cy + 16);
+}
 
-  const makeCell = (booth, parts) => {
-    const cell = document.createElement("div");
-    const visitCls = getVisitStatus(booth.id) === "planned" ? " visit-planned"
-      : getVisitStatus(booth.id) === "visited" ? " visit-visited" : "";
-    const priorityCls = getPriority(booth.id) ? ` priority-${getPriority(booth.id)}` : "";
-    cell.className = "map-cell" + (getNote(booth.id) ? " has-note" : "") + visitCls + priorityCls;
-    cell.dataset.boothId = booth.id;
-    cell.title = `${booth.id} ${booth.name}`;
-    cell.addEventListener("click", () => openBoothModal(booth.id));
-    if(parts.length === 1){
-      cell.textContent = parts[0].n;
-    } else {
-      // 두 칸을 이어 붙인 모양: 칸마다 번호를 쓰고 사이에 옅은 구분선
-      const sameCol = parts.every(p => p.col === parts[0].col);
-      cell.classList.add("double", sameCol ? "double-v" : "double-h");
-      const ordered = sameCol ? [...parts].sort((a, b) => a.row - b.row) : [...parts].sort((a, b) => a.col - b.col);
-      ordered.forEach(p => {
-        const half = document.createElement("span");
-        half.className = "map-cell-half";
-        half.textContent = p.n;
-        cell.appendChild(half);
+function mapHallLabel(text, cx, cy, cls){
+  const w = Math.max(110, text.length * 22 + 40);
+  return `<g class="map-hall-label ${cls}"><rect x="${cx - w / 2}" y="${cy - 19}" width="${w}" height="38" rx="19"/>` +
+    `<text x="${cx}" y="${cy + 1}">${escapeHtml(text)}</text></g>`;
+}
+
+function buildMapSvg(){
+  const L = key => escapeHtml(t(key));
+  let s = `<svg class="venue-map" viewBox="100 200 1720 615" role="group" aria-label="${L("mapTitle")}" xmlns="http://www.w3.org/2000/svg">` +
+    `<defs><marker id="mapArrowHead" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto-start-reverse">` +
+    `<path d="M1,1 L7,5 L1,9" class="map-arrow-head"/></marker></defs>`;
+
+  // 주성홀: 탈의실 두 칸 + 복도 + C구역, 오른쪽 벽에 출입구
+  s += `<rect class="map-room" x="120" y="230" width="480" height="170"/>` +
+    `<line class="map-room" x1="360" y1="230" x2="360" y2="400"/>` +
+    `<text class="map-room-text" x="240" y="318">${L("mapMaleRoom")}</text>` +
+    `<text class="map-room-text" x="480" y="318">${L("mapFemaleRoom")}</text>` +
+    `<line class="map-wall" x1="120" y1="430" x2="600" y2="430"/>` +
+    `<path class="map-wall" d="M120,400 V800 H600 V740 H628 M628,630 H600 V400"/>` +
+    `<rect class="map-zone zone-c" x="132" y="450" width="456" height="338" rx="16"/>` +
+    `<text class="map-zone-text zone-c" x="360" y="635">${L("mapZoneC")}</text>` +
+    mapDoorArrows(645, 685, true) +
+    mapHallLabel(t("mapHallJusung"), 360, 230, "dark");
+
+  // 그랜드볼룸: 위쪽 벽에 출입구 두 곳, 무대, A·B구역(사이 칸막이)
+  s += `<path class="map-wall" d="M960,355 V380 H680 V800 H1800 V380 H1760 V355 M1640,355 V380 H1080 V355"/>` +
+    mapDoorArrows(1020, 372, false) + mapDoorArrows(1700, 372, false) +
+    `<rect class="map-stage" x="700" y="440" width="94" height="280" rx="14"/>` +
+    `<text class="map-stage-text" x="747" y="582">${L("mapStage")}</text>` +
+    `<rect class="map-zone zone-a" x="815" y="420" width="555" height="368" rx="16"/>` +
+    `<line class="map-wall" x1="1385" y1="420" x2="1385" y2="800"/>` +
+    `<rect class="map-zone zone-b" x="1400" y="420" width="388" height="368" rx="16"/>` +
+    `<text class="map-zone-text zone-a" x="1180" y="680">${L("mapZoneA")}</text>` +
+    `<text class="map-zone-text zone-b" x="1640" y="680">${L("mapZoneB")}</text>` +
+    mapHallLabel(t("mapHallGrand"), 1360, 380, "accent");
+
+  // 부스 칸: 부스 번호("A1")별 칸을 부스 단위로 묶음
+  const used = new Set();
+  BOOTHS.forEach(booth => {
+    const parts = (booth.nums || [booth.num])
+      .map(n => ({ n, slot: MAP_SLOTS[booth.block + parseInt(n, 10)] }))
+      .filter(p => p.slot);
+    if(!parts.length) return;
+    parts.forEach(p => used.add(booth.block + parseInt(p.n, 10)));
+    const status = getVisitStatus(booth.id);
+    const level = getPriority(booth.id);
+    const cls = "map-booth zone-" + booth.block.toLowerCase() +
+      (getNote(booth.id) ? " has-note" : "") +
+      (status === "planned" ? " visit-planned" : status === "visited" ? " visit-visited" : "") +
+      (level ? ` priority-${level}` : "");
+    const label = `${booth.id} ${booth.name}`;
+    const open = `<g class="${cls}" data-booth-id="${escapeHtml(booth.id)}" tabindex="0" role="button" aria-label="${escapeHtml(label)}"><title>${escapeHtml(label)}</title>`;
+
+    // 붙어 있는 칸(위아래·좌우로 4px 이내)이면 한 도형으로 합침
+    const touching = (a, b) =>
+      (a.x === b.x && (Math.abs(a.y + a.h - b.y) <= 4 || Math.abs(b.y + b.h - a.y) <= 4)) ||
+      (a.y === b.y && (Math.abs(a.x + a.w - b.x) <= 4 || Math.abs(b.x + b.w - a.x) <= 4));
+    const groups = parts.length === 2 && touching(parts[0].slot, parts[1].slot) ? [parts] : parts.map(p => [p]);
+    groups.forEach(g => {
+      const x1 = Math.min(...g.map(p => p.slot.x)), y1 = Math.min(...g.map(p => p.slot.y));
+      const x2 = Math.max(...g.map(p => p.slot.x + p.slot.w)), y2 = Math.max(...g.map(p => p.slot.y + p.slot.h));
+      s += open + `<rect class="map-booth-ring" x="${x1 - 3.5}" y="${y1 - 3.5}" width="${x2 - x1 + 7}" height="${y2 - y1 + 7}" rx="8"/>` +
+        `<rect class="map-booth-box" x="${x1}" y="${y1}" width="${x2 - x1}" height="${y2 - y1}" rx="6"/>`;
+      if(g.length > 1){
+        const vertical = g[0].slot.x === g[1].slot.x;
+        const mid = vertical ? (y1 + y2) / 2 : (x1 + x2) / 2;
+        s += vertical
+          ? `<line class="map-booth-split" x1="${x1 + 4}" y1="${mid}" x2="${x2 - 4}" y2="${mid}"/>`
+          : `<line class="map-booth-split" x1="${mid}" y1="${y1 + 4}" x2="${mid}" y2="${y2 - 4}"/>`;
+      }
+      g.forEach(p => {
+        s += `<text class="map-booth-text" x="${p.slot.x + p.slot.w / 2}" y="${p.slot.y + p.slot.h / 2 + 1}">${escapeHtml(booth.block + parseInt(p.n, 10))}</text>`;
       });
-    }
-    const cols = parts.map(p => p.col), rows = parts.map(p => gridRow(p.row));
-    cell.style.gridColumn = `${Math.min(...cols)} / ${Math.max(...cols) + 1}`;
-    cell.style.gridRow = `${Math.min(...rows)} / ${Math.max(...rows) + 1}`;
-    return cell;
-  };
-
-  // 같은 부스의 칸끼리 묶음. 위아래(같은 줄)나 좌우(같은 행)로 붙어 있으면 한 도형, 아니면 칸마다 따로 그림
-  let i = 0;
-  while(i < n){
-    const booth = slots[i].booth;
-    const parts = [];
-    while(i < n && slots[i].booth === booth){ parts.push({ n: slots[i].n, ...pos(i) }); i++; }
-    const adjacent = parts.length > 1 && parts.every((p, k) => k === 0 ||
-      (p.col === parts[k-1].col && Math.abs(p.row - parts[k-1].row) === 1) ||
-      (p.row === parts[k-1].row && Math.abs(p.col - parts[k-1].col) === 1));
-    if(adjacent) wrap.appendChild(makeCell(booth, parts));
-    else parts.forEach(p => wrap.appendChild(makeCell(booth, [p])));
-  }
-  // 칸 수가 홀수면 왼쪽 줄 맨 아래가 비므로 빈 칸으로 채움
-  if(n % 2 === 1){
-    const blank = document.createElement("div");
-    blank.className = "map-cell blank";
-    blank.style.gridColumn = "1";
-    blank.style.gridRow = String(gridRow(rowCount - 1));
-    wrap.appendChild(blank);
-  }
-
-  return wrap;
+      s += `</g>`;
+    });
+  });
+  // 배치도에는 있는데 부스 데이터에 없는 칸은 회색 빈 칸으로(누를 수 없음)
+  Object.entries(MAP_SLOTS).forEach(([key, slot]) => {
+    if(used.has(key)) return;
+    s += `<g class="map-booth empty"><rect class="map-booth-box" x="${slot.x}" y="${slot.y}" width="${slot.w}" height="${slot.h}" rx="6"/>` +
+      `<text class="map-booth-text" x="${slot.x + slot.w / 2}" y="${slot.y + slot.h / 2 + 1}">${key}</text></g>`;
+  });
+  return s + `</svg>`;
 }
 
 function renderMapView(){
   const mapGrid = document.getElementById("mapGrid");
   mapGrid.innerHTML = "";
+  if(!BOOTHS.length){
+    mapGrid.innerHTML = `<div class="empty-state" style="display:block;">${escapeHtml(t("noBoothData"))}</div>`;
+    return;
+  }
 
-  MAP_ORDER.forEach(r => {
-    const list = byRow[r];
-    if(!list || !list.length) return;
+  const legend = document.createElement("div");
+  legend.className = "map-legend";
+  legend.innerHTML =
+    `<span><i class="swatch note"></i>${escapeHtml(t("mapLegendNote"))}</span>` +
+    `<span><i class="swatch planned"></i>${escapeHtml(t("mapLegendPlanned"))}</span>` +
+    `<span><i class="swatch visited"></i>${escapeHtml(t("mapLegendVisited"))}</span>` +
+    `<span><i class="swatch ring p1"></i><i class="swatch ring p2"></i><i class="swatch ring p3"></i>${escapeHtml(t("mapLegendPriority"))}</span>`;
+  mapGrid.appendChild(legend);
 
-    const col = document.createElement("div");
-    col.className = "map-col";
-
-    const label = document.createElement("div");
-    label.className = "map-col-label";
-    label.textContent = r;
-    col.appendChild(label);
-
-    col.appendChild(buildPairedColumn(list));
-    mapGrid.appendChild(col);
+  const scroller = document.createElement("div");
+  scroller.className = "venue-map-scroll";
+  scroller.innerHTML = buildMapSvg();
+  mapGrid.appendChild(scroller);
+  // 홀 이름표는 언어마다 글자 길이가 달라서, 그려진 글자 폭에 맞춰 둥근 바탕을 다시 잡음
+  scroller.querySelectorAll(".map-hall-label").forEach(g => {
+    const rect = g.querySelector("rect"), text = g.querySelector("text");
+    let w = 0;
+    try { w = text.getBBox().width; } catch {}
+    if(!w) return;
+    const cx = parseFloat(text.getAttribute("x"));
+    rect.setAttribute("width", w + 48);
+    rect.setAttribute("x", cx - (w + 48) / 2);
   });
 
-  if(!mapGrid.querySelector(".map-col")){
-    mapGrid.innerHTML = `<div class="empty-state" style="display:block;">${escapeHtml(t("noBoothData"))}</div>`;
-  }
+  // 부스 칸을 누르면(또는 Enter/스페이스) 부스 탭의 카드와 같은 상세 창을 띄움
+  const svg = scroller.querySelector("svg");
+  svg.addEventListener("click", (e) => {
+    const g = e.target.closest("[data-booth-id]");
+    if(!g) return;
+    e.stopPropagation();
+    openBoothModal(g.dataset.boothId);
+  });
+  svg.addEventListener("keydown", (e) => {
+    if(e.key !== "Enter" && e.key !== " ") return;
+    const g = e.target.closest("[data-booth-id]");
+    if(!g) return;
+    e.preventDefault();
+    openBoothModal(g.dataset.boothId);
+  });
 }
 
 /* ---------- 행사 안내 (일정 · 약도 · 날씨) ----------
