@@ -1078,6 +1078,14 @@
     height:auto;
     font-family:inherit;
   }
+  /* 구역 하나만 볼 때: 화면 폭에 맞추되 너무 길어지지 않게 높이 제한 */
+  .venue-map.zoomed{ min-width:0; width:auto; max-width:100%; height:min(68vh, 660px); margin:0 auto; }
+  /* 휴대폰: 구역 하나도 글자가 읽히는 크기로(폭 520px 이상, 넘치면 옆으로 밀어서 봄) */
+  @media (max-width:640px){
+    .venue-map.zoomed{ width:100%; max-width:none; min-width:520px; height:auto; }
+  }
+  .map-zone-filter{ margin-bottom:12px; }
+  .map-zone-filter button{ font-size:13px; padding:6px 16px; }
   .venue-map text{ text-anchor:middle; dominant-baseline:central; }
   .venue-map .map-wall{ fill:none; stroke:var(--map-wall); stroke-width:3; stroke-linejoin:round; }
   .venue-map .map-room{ fill:none; stroke:var(--map-room-line); stroke-width:3; }
@@ -1526,6 +1534,7 @@ const I18N = {
     mapMaleRoom: "남자 탈의실",
     mapFemaleRoom: "여자 탈의실",
     mapStage: "무대",
+    mapZoneAll: "전체",
     mapZoneA: "A구역",
     mapZoneB: "B구역",
     mapZoneC: "C구역",
@@ -1625,6 +1634,7 @@ const I18N = {
     mapMaleRoom: "Changing (M)",
     mapFemaleRoom: "Changing (W)",
     mapStage: "Stage",
+    mapZoneAll: "All",
     mapZoneA: "Area A",
     mapZoneB: "Area B",
     mapZoneC: "Area C",
@@ -1724,6 +1734,7 @@ const I18N = {
     mapMaleRoom: "男性更衣室",
     mapFemaleRoom: "女性更衣室",
     mapStage: "ステージ",
+    mapZoneAll: "全体",
     mapZoneA: "Aエリア",
     mapZoneB: "Bエリア",
     mapZoneC: "Cエリア",
@@ -2855,7 +2866,7 @@ document.getElementById("searchInput").addEventListener("input", (e) => {
    두 칸 부스(A11-12 등)는 칸이 붙어 있으면 한 도형으로 합치고, 떨어져 있으면(A37·A38) 칸마다 그림.
    색은 모두 CSS 토큰(--map-*)이라 라이트/다크 테마를 따라감.
 ------------------------------------------------------------- */
-const MAP_W = 40, MAP_H = 26, MAP_STEP = 28;
+const MAP_W = 40, MAP_H = 32, MAP_STEP = 34;
 const MAP_SLOTS = (() => {
   const slots = {};
   // 세로 줄: 위→아래 순서로 번호 목록을 받음
@@ -2868,22 +2879,22 @@ const MAP_SLOTS = (() => {
 
   // C구역(주성홀)
   row("C", range(17, 24), 193, 462, MAP_W, 42);
-  col("C", range(16, 9), 146, 500);
-  col("C", range(25, 28), 534, 500);
-  row("C", range(8, 1), 193, 750, MAP_W, 42);
+  col("C", range(16, 9), 146, 506);
+  col("C", range(25, 28), 534, 506);
+  row("C", range(8, 1), 193, 790, MAP_W, 42);
   // A구역(그랜드볼룸 왼쪽)
   col("A", range(1, 9), 832, 440);
   col("A", range(18, 10), 900, 440);
-  col("A", range(19, 23), 1040, 440, 34, 30);
-  col("A", range(28, 24), 1082, 440, 34, 30);
+  col("A", range(19, 23), 1040, 440, 40, 36);
+  col("A", range(28, 24), 1082, 440, 40, 36);
   col("A", range(29, 37), 1312, 440);
-  row("A", range(41, 38), 1020, 744, 80, 84);
+  row("A", range(41, 38), 1020, 790, 80, 84);
   // B구역(그랜드볼룸 오른쪽)
   col("B", range(1, 9), 1414, 440);
-  col("B", range(34, 30), 1540, 440, 34, 30);
-  col("B", range(25, 29), 1582, 440, 34, 30);
+  col("B", range(34, 30), 1540, 440, 40, 36);
+  col("B", range(25, 29), 1582, 440, 40, 36);
   col("B", range(24, 15), 1734, 440);
-  row("B", range(10, 14), 1470, 744, 52, 56);
+  row("B", range(10, 14), 1470, 790, 52, 56);
   return slots;
 })();
 
@@ -2901,11 +2912,32 @@ function mapHallLabel(text, cx, cy, cls){
     `<text x="${cx}" y="${cy + 1}">${escapeHtml(text)}</text></g>`;
 }
 
+// 구역 필터: "ALL"(전체) / "A" / "B" / "C". 고른 구역만 크게 보이도록 SVG viewBox 를 그 구역으로 잘라냄. 새로고침해도 유지
+const MAP_ZONE_KEY = `${STORAGE_PREFIX}-map-zone`;
+const MAP_ZONE_VIEWBOX = {
+  ALL: "100 200 1720 663",
+  A: "690 330 705 533",   // 무대 + A구역
+  B: "1375 330 445 533",  // B구역
+  C: "100 200 560 663",   // 주성홀(탈의실 + C구역)
+};
+let mapZone = "ALL";
+try { const z = localStorage.getItem(MAP_ZONE_KEY); if(z && MAP_ZONE_VIEWBOX[z]) mapZone = z; } catch {}
+
+function setMapZone(zone){
+  mapZone = zone;
+  try { localStorage.setItem(MAP_ZONE_KEY, zone); } catch {}
+  renderMapView();
+}
+
 function buildMapSvg(){
   const L = key => escapeHtml(t(key));
-  let s = `<svg class="venue-map" viewBox="100 200 1720 615" role="group" aria-label="${L("mapTitle")}" xmlns="http://www.w3.org/2000/svg">` +
+  const vb = (MAP_ZONE_VIEWBOX[mapZone] || MAP_ZONE_VIEWBOX.ALL).split(" ").map(Number);
+  let s = `<svg class="venue-map${mapZone === "ALL" ? "" : " zoomed"}" viewBox="${vb.join(" ")}" role="group" aria-label="${L("mapTitle")}" xmlns="http://www.w3.org/2000/svg">` +
     `<defs><marker id="mapArrowHead" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto-start-reverse">` +
-    `<path d="M1,1 L7,5 L1,9" class="map-arrow-head"/></marker></defs>`;
+    `<path d="M1,1 L7,5 L1,9" class="map-arrow-head"/></marker>` +
+    // 구역만 볼 때 viewBox 바깥(옆 구역)이 화면 여백으로 비쳐 보이지 않게 잘라냄
+    `<clipPath id="mapClip"><rect x="${vb[0]}" y="${vb[1]}" width="${vb[2]}" height="${vb[3]}"/></clipPath></defs>` +
+    `<g clip-path="url(#mapClip)">`;
 
   // 주성홀: 탈의실 두 칸 + 복도 + C구역, 오른쪽 벽에 출입구
   s += `<rect class="map-room" x="120" y="230" width="480" height="170"/>` +
@@ -2913,23 +2945,23 @@ function buildMapSvg(){
     `<text class="map-room-text" x="240" y="318">${L("mapMaleRoom")}</text>` +
     `<text class="map-room-text" x="480" y="318">${L("mapFemaleRoom")}</text>` +
     `<line class="map-wall" x1="120" y1="430" x2="600" y2="430"/>` +
-    `<path class="map-wall" d="M120,400 V800 H600 V740 H628 M628,630 H600 V400"/>` +
-    `<rect class="map-zone zone-c" x="132" y="450" width="456" height="338" rx="16"/>` +
-    `<text class="map-zone-text zone-c" x="360" y="635">${L("mapZoneC")}</text>` +
-    mapDoorArrows(645, 685, true) +
+    `<path class="map-wall" d="M120,400 V848 H600 V780 H628 M628,670 H600 V400"/>` +
+    `<rect class="map-zone zone-c" x="132" y="450" width="456" height="386" rx="16"/>` +
+    `<text class="map-zone-text zone-c" x="360" y="650">${L("mapZoneC")}</text>` +
+    mapDoorArrows(645, 725, true) +
     mapHallLabel(t("mapHallJusung"), 360, 230, "dark");
 
   // 그랜드볼룸: 위쪽 벽에 출입구 두 곳, 무대, A·B구역(사이 칸막이)
-  s += `<path class="map-wall" d="M960,355 V380 H680 V800 H1800 V380 H1760 V355 M1640,355 V380 H1080 V355"/>` +
+  s += `<path class="map-wall" d="M960,355 V380 H680 V848 H1800 V380 H1760 V355 M1640,355 V380 H1080 V355"/>` +
     mapDoorArrows(1020, 372, false) + mapDoorArrows(1700, 372, false) +
-    `<rect class="map-stage" x="700" y="440" width="94" height="280" rx="14"/>` +
-    `<text class="map-stage-text" x="747" y="582">${L("mapStage")}</text>` +
-    `<rect class="map-zone zone-a" x="815" y="420" width="555" height="368" rx="16"/>` +
-    `<line class="map-wall" x1="1385" y1="420" x2="1385" y2="800"/>` +
-    `<rect class="map-zone zone-b" x="1400" y="420" width="388" height="368" rx="16"/>` +
-    `<text class="map-zone-text zone-a" x="1180" y="680">${L("mapZoneA")}</text>` +
-    `<text class="map-zone-text zone-b" x="1640" y="680">${L("mapZoneB")}</text>` +
-    mapHallLabel(t("mapHallGrand"), 1360, 380, "accent");
+    `<rect class="map-stage" x="700" y="440" width="94" height="320" rx="14"/>` +
+    `<text class="map-stage-text" x="747" y="602">${L("mapStage")}</text>` +
+    `<rect class="map-zone zone-a" x="815" y="420" width="555" height="416" rx="16"/>` +
+    `<line class="map-wall" x1="1385" y1="420" x2="1385" y2="848"/>` +
+    `<rect class="map-zone zone-b" x="1400" y="420" width="388" height="416" rx="16"/>` +
+    `<text class="map-zone-text zone-a" x="1180" y="715">${L("mapZoneA")}</text>` +
+    `<text class="map-zone-text zone-b" x="1640" y="715">${L("mapZoneB")}</text>` +
+    mapHallLabel(t("mapHallGrand"), 1250, 380, "accent");
 
   // 부스 칸: 부스 번호("A1")별 칸을 부스 단위로 묶음
   const used = new Set();
@@ -2977,7 +3009,7 @@ function buildMapSvg(){
     s += `<g class="map-booth empty"><rect class="map-booth-box" x="${slot.x}" y="${slot.y}" width="${slot.w}" height="${slot.h}" rx="6"/>` +
       `<text class="map-booth-text" x="${slot.x + slot.w / 2}" y="${slot.y + slot.h / 2 + 1}">${key}</text></g>`;
   });
-  return s + `</svg>`;
+  return s + `</g></svg>`;
 }
 
 function renderMapView(){
@@ -2987,6 +3019,19 @@ function renderMapView(){
     mapGrid.innerHTML = `<div class="empty-state" style="display:block;">${escapeHtml(t("noBoothData"))}</div>`;
     return;
   }
+
+  const zoneFilter = document.createElement("div");
+  zoneFilter.className = "visit-filter map-zone-filter";
+  [["ALL", "mapZoneAll"], ["A", "mapZoneA"], ["B", "mapZoneB"], ["C", "mapZoneC"]].forEach(([zone, key]) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = t(key);
+    btn.classList.toggle("active", mapZone === zone);
+    btn.setAttribute("aria-pressed", mapZone === zone ? "true" : "false");
+    btn.addEventListener("click", () => setMapZone(zone));
+    zoneFilter.appendChild(btn);
+  });
+  mapGrid.appendChild(zoneFilter);
 
   const legend = document.createElement("div");
   legend.className = "map-legend";
