@@ -1,6 +1,100 @@
 {
- "updatedAt": "2026-10-04T13:02:31+00:00",
+ "updatedAt": "2026-10-04T18:26:15+00:00",
  "posts": [
+  {
+   "id": "2106752957505327381",
+   "handle": "Tos_Tos_F_ski",
+   "booths": [
+    "B21"
+   ],
+   "boothNames": [
+    "Taishokukan Noirowze"
+   ],
+   "created": "2026-10-04T14:27:01+00:00",
+   "text": "FURST CLASSにブースで参加いたしますわ～！！B-21にございます🤟😉✨\n何卒よろしくお願いいたしますわ～！！ https://t.co/DZudu1ccIM",
+   "images": [
+    "https://pbs.twimg.com/media/HTywXP4aEAA3Y20.jpg?name=orig"
+   ],
+   "score": 2,
+   "sensitive": true,
+   "quote": true,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-04T18:25:56+00:00"
+  },
+  {
+   "id": "2106752421854847257",
+   "handle": "chiffonpaw",
+   "booths": [
+    "A31"
+   ],
+   "boothNames": [
+    "치폰의 레모네이드 가게"
+   ],
+   "created": "2026-10-04T14:24:53+00:00",
+   "text": "와글와글 실물샷\n선입금 폼 오픈했습니다! 코롯토 버전도 모자랑 의상부분이 투명입니다 ㅎ.ㅎ https://t.co/2DGBt7JTOq",
+   "images": [
+    "https://pbs.twimg.com/media/HTywJoYbkAAwQ9Q.jpg?name=orig",
+    "https://pbs.twimg.com/media/HTywJoKaoAA58ce.jpg?name=orig",
+    "https://pbs.twimg.com/media/HTywJoMawAAwwdB.jpg?name=orig",
+    "https://pbs.twimg.com/media/HTywJoWbIAAlKPJ.jpg?name=orig"
+   ],
+   "score": 3,
+   "sensitive": false,
+   "quote": true,
+   "reasons": [
+    "통판·예약",
+    "이미지"
+   ],
+   "foundAt": "2026-10-04T18:23:15+00:00"
+  },
+  {
+   "id": "2106749449812967669",
+   "handle": "mofuaki_",
+   "booths": [
+    "A41"
+   ],
+   "boothNames": [
+    "MOFUMOFUYA"
+   ],
+   "created": "2026-10-04T14:13:05+00:00",
+   "text": "FURST CLASS 2026にてイナリ君ともふもふ屋の何かしらのグッズを出します！来てね～\nFURST CLASS 2026에서 이나리 군과 모후모후야 굿즈를 낼 거야! 와줘~",
+   "images": [],
+   "score": 3,
+   "sensitive": false,
+   "quote": true,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스"
+   ],
+   "foundAt": "2026-10-04T18:24:38+00:00"
+  },
+  {
+   "id": "2106742103078527274",
+   "handle": "nrimbotree",
+   "booths": [
+    "A25"
+   ],
+   "boothNames": [
+    "숲속의 범"
+   ],
+   "created": "2026-10-04T13:43:53+00:00",
+   "text": "아르샤 타로코롯토 그림\n\n이전 애들과 동일하게 A-25 숲속의 범 부스에서 판매 예정입니다\n많은 관심 부탁드려요\n\n@skyse0696 https://t.co/9yn4ZqXfpk",
+   "images": [
+    "https://pbs.twimg.com/media/HTymxvzbgAIhFHN.jpg?name=orig"
+   ],
+   "score": 4,
+   "sensitive": false,
+   "quote": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-04T18:24:56+00:00"
+  },
   {
    "id": "2106719710876496350",
    "handle": "26_suigi",
