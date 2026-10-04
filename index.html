@@ -1008,7 +1008,7 @@
     line-height:1.5;
   }
   .tweet-slot iframe{border-radius:6px;}
-  .booth-posts{ margin-top:10px; }
+  .booth-posts{ margin:10px 0 12px; }
   .booth-posts-title{ font-size:13px; font-weight:700; margin-bottom:2px; }
   .booth-post .twitter-tweet{ margin:6px 0 !important; }
   .booth-post-card{
@@ -2644,7 +2644,7 @@ function buildBoothPostCard(id, entry){
   return card;
 }
 
-function buildBoothPosts(booth){
+function buildBoothPosts(booth, onShown){
   const box = document.createElement("div");
   box.className = "booth-posts";
   box.hidden = true;
@@ -2655,6 +2655,7 @@ function buildBoothPosts(booth){
       .sort((a, b) => b.length - a.length || (b > a ? 1 : b < a ? -1 : 0));
     if(!ids.length || !box.isConnected) return;
     box.hidden = false;
+    if(onShown) onShown();
     box.innerHTML = `<div class="booth-posts-title">${escapeHtml(t("boothPostsTitle"))}</div>`;
     // 순서를 지키려고 칸을 먼저 만들어 두고, 칸마다 따로 채움
     const embedSlots = [];
@@ -3343,9 +3344,11 @@ function openBoothModal(boothId){
   names.innerHTML = `<div class="c-name">${escapeHtml(booth.name)}</div><div class="r-name">${boothSubLine(booth)}</div>`;
   head.appendChild(names);
   content.appendChild(head);
-  content.appendChild(buildBoothCut(booth));
+  // 반영된 상품 정보 글이 있는 부스는 부스컷 자리에 그 글을 대신 보여줌 (2026-10-04 사용자 요청)
+  const cut = buildBoothCut(booth);
+  content.appendChild(buildBoothPosts(booth, () => cut.remove()));
+  content.appendChild(cut);
   content.appendChild(buildMemberList(booth));
-  content.appendChild(buildBoothPosts(booth));
 
   const slot = document.createElement("div");
   slot.className = "tweet-slot";
