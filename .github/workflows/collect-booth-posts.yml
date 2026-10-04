@@ -1,0 +1,46 @@
+# 부스 X 계정의 새 글 중 상품 글 후보를 1시간마다 모아 x-post-feed 브랜치의 candidates.json 에 쌓음.
+# main 에 커밋하지 않는 이유: main 에 커밋할 때마다 Cloudflare 가 사이트를 다시 배포하기 때문.
+# 관리 화면(admin.html)이 이 파일을 raw.githubusercontent.com 에서 읽음.
+name: 부스 상품 글 후보 모으기
+on:
+  schedule:
+    - cron: "17 * * * *"   # 매시 17분 (정각은 GitHub 쪽이 붐벼 늦어지기 쉬움)
+  workflow_dispatch:        # Actions 탭에서 "Run workflow" 로 바로 실행
+  push:
+    branches: [claude/project-thread-c5a74z]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: collect-booth-posts
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 후보 브랜치 가져오기
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git fetch --depth=1 origin x-post-feed; then
+            git worktree add feed FETCH_HEAD
+            git -C feed checkout -B x-post-feed
+          else
+            git worktree add --detach feed
+            git -C feed checkout --orphan x-post-feed
+            git -C feed rm -rfq .
+            printf '# 부스 상품 글 후보\n\nGitHub Actions 가 자동으로 갱신하는 브랜치입니다. 직접 수정하지 마세요.\n' > feed/README.md
+          fi
+      - name: 후보 모으기
+        run: python3 tools/collect_booth_posts.py feed ${{ github.ref_name != 'main' && '--dry-run' || '' }}
+      - name: 후보 저장
+        if: github.ref_name == 'main'
+        run: |
+          cd feed
+          git add -A
+          if git diff --cached --quiet; then echo "새 후보 없음"; exit 0; fi
+          git commit -qm "상품 글 후보 갱신"
+          git push origin x-post-feed
