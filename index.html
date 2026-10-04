@@ -1008,6 +1008,9 @@
     line-height:1.5;
   }
   .tweet-slot iframe{border-radius:6px;}
+  .booth-posts{ margin-top:10px; }
+  .booth-posts-title{ font-size:13px; font-weight:700; margin-bottom:2px; }
+  .booth-post .twitter-tweet{ margin:6px 0 !important; }
   .official-feed{
     height:520px;
     overflow-y:auto;
@@ -1550,6 +1553,7 @@ const I18N = {
     tweetLoadHint: "탭하면 트윗을 불러옵니다.",
     noTwitterHint: "등록된 X 계정이 없습니다.",
     tweetLoadFail: "트윗을 불러오지 못했어요.",
+    boothPostsTitle: "상품 정보",
     openProfile: "X 프로필 열기",
     visitPlanned: "🟡 방문 예정",
     visitVisited: "🟢 방문 완료",
@@ -1650,6 +1654,7 @@ const I18N = {
     tweetLoadHint: "Tap to load tweet.",
     noTwitterHint: "No X account registered.",
     tweetLoadFail: "Failed to load tweet.",
+    boothPostsTitle: "Merch info",
     openProfile: "Open X Profile",
     visitPlanned: "🟡 Plan to Visit",
     visitVisited: "🟢 Visited",
@@ -1750,6 +1755,7 @@ const I18N = {
     tweetLoadHint: "タップしてツイートを読み込みます。",
     noTwitterHint: "登録されたXアカウントがありません。",
     tweetLoadFail: "ツイートを読み込めませんでした。",
+    boothPostsTitle: "頒布物情報",
     openProfile: "Xプロフィールを開く",
     visitPlanned: "🟡 訪問予定",
     visitVisited: "🟢 訪問済み",
@@ -2578,6 +2584,61 @@ function updateNoteVisuals(boothId){
   });
 }
 
+/* ---------- 부스 상품 정보 ----------
+   운영자가 관리 화면(admin.html)에서 "반영"한 X 글을 부스 상세 창에 보여줌.
+   반영 목록은 Firestore boothPosts/main 문서의 approved 필드: { 글id: { booth: "A02", handle, at } }.
+   방문자마다 한 번만 읽고(첫 부스 상세를 열 때), 행사장처럼 오프라인일 때를 위해 마지막 값을 localStorage 에 둠.
+------------------------------------------------- */
+const BOOTH_POSTS_CACHE_KEY = `${STORAGE_PREFIX}-booth-posts`;
+let boothPostsPromise = null;
+
+function loadApprovedBoothPosts(){
+  if(boothPostsPromise) return boothPostsPromise;
+  let cached = {};
+  try { cached = JSON.parse(localStorage.getItem(BOOTH_POSTS_CACHE_KEY) || "{}") || {}; } catch {}
+  if(!firebaseReady) return (boothPostsPromise = Promise.resolve(cached));
+  boothPostsPromise = firebase.firestore().collection("boothPosts").doc("main").get()
+    .then(doc => {
+      const approved = (doc.exists && doc.data().approved) || {};
+      try { localStorage.setItem(BOOTH_POSTS_CACHE_KEY, JSON.stringify(approved)); } catch {}
+      return approved;
+    })
+    .catch(() => {
+      boothPostsPromise = null;   // 다음에 부스를 열 때 다시 시도
+      return cached;
+    });
+  return boothPostsPromise;
+}
+
+function buildBoothPosts(booth){
+  const box = document.createElement("div");
+  box.className = "booth-posts";
+  box.hidden = true;
+  loadApprovedBoothPosts().then(approved => {
+    // 글 id 는 시간이 지날수록 커지는 숫자라 길이 → 사전순 비교로 최신 글이 위로 옴
+    const ids = Object.keys(approved)
+      .filter(id => approved[id] && approved[id].booth === booth.id)
+      .sort((a, b) => b.length - a.length || (b > a ? 1 : b < a ? -1 : 0));
+    if(!ids.length || !box.isConnected) return;
+    box.hidden = false;
+    box.innerHTML = `<div class="booth-posts-title">${escapeHtml(t("boothPostsTitle"))}</div>`;
+    ensureTwitterWidgets(function start(){
+      if(!box.isConnected) return;
+      if(!window.twttr || !window.twttr.widgets){ setTimeout(start, 300); return; }
+      ids.reduce((prev, id) => prev.then(() => {
+        const item = document.createElement("div");
+        item.className = "booth-post";
+        box.appendChild(item);
+        return window.twttr.widgets.createTweet(id, item, { theme: currentTheme(), dnt: true, lang: currentLang, conversation: "none" })
+          .then(el => { if(!el) item.remove(); }, () => item.remove());
+      }), Promise.resolve());
+    });
+  });
+  // 상자 안을 눌러도 부스 카드 클릭(팝오버 닫힘)으로 처리되지 않도록 막음
+  box.addEventListener("click", (e) => e.stopPropagation());
+  return box;
+}
+
 function loadTimelineInto(slot, handle){
   ensureTwitterWidgets(() => {
     // X 스크립트가 막혀 불러와지지 않은 경우(광고 차단 등)에도 오류 없이 실패 문구만 보여줌
@@ -2616,7 +2677,8 @@ const OFFICIAL_POST_FALLBACK_IDS = [
 ];
 
 function fetchOfficialPostIds(){
-  const base = `https://api.fxtwitter.com/2/profile/${OFFICIAL_X_HANDLE}/statuses`;
+  // FxTwitter 는 프로필 글 목록에서 대문자 아이디를 넣으면 빈 결과(404)를 주므로 소문자로 요청함 (2026-10-04 확인)
+  const base = `https://api.fxtwitter.com/2/profile/${OFFICIAL_X_HANDLE.toLowerCase()}/statuses`;
   const ids = [];
   const seen = new Set();
   const page = (cursor, n) => fetch(cursor ? `${base}?cursor=${encodeURIComponent(cursor)}` : base)
@@ -3231,6 +3293,7 @@ function openBoothModal(boothId){
   content.appendChild(head);
   content.appendChild(buildBoothCut(booth));
   content.appendChild(buildMemberList(booth));
+  content.appendChild(buildBoothPosts(booth));
 
   const slot = document.createElement("div");
   slot.className = "tweet-slot";
