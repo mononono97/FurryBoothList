@@ -3446,7 +3446,23 @@ if("serviceWorker" in navigator){
     navigator.serviceWorker.register("sw.js").catch(() => {
       // 등록 실패해도(예: 지원 안 하는 브라우저) 사이트 자체 동작에는 지장 없음
     });
+    navigator.serviceWorker.ready.then((reg) => {
+      if(reg.active) reg.active.postMessage({ type: "precache-images", urls: allImageUrls() });
+    });
   });
+}
+
+// 처음 접속했을 때 보지 않은 부스의 사진도 오프라인에서 보이도록 서비스 워커에 미리 받을 목록을 넘김.
+// 부스컷·프로필 사진 전체(약 9MB). 이미 받아 둔 이미지는 서비스 워커가 건너뜀.
+function allImageUrls(){
+  const paths = new Set();
+  BOOTHS.forEach(booth => {
+    paths.add(boothCutUrl(booth));
+    [booth.avatar || booth.twitter, ...booth.members.map(m => m.avatar || m.twitter)]
+      .filter(Boolean)
+      .forEach(handle => paths.add(localAvatarUrl(handle)));
+  });
+  return [...paths].map(path => new URL(path, location.href).href);
 }
 </script>
 </body>
