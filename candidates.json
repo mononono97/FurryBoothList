@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-10-04T12:59:05+00:00",
+ "updatedAt": "2026-10-04T13:02:31+00:00",
  "posts": [
   {
    "id": "2106719710876496350",
@@ -44,27 +44,6 @@
     "이미지"
    ],
    "foundAt": "2026-10-04T12:56:17+00:00"
-  },
-  {
-   "id": "2106589352990249413",
-   "handle": "PaGom1121_",
-   "booths": [
-    "C19-20"
-   ],
-   "boothNames": [
-    "작전명: 에이전트 버니"
-   ],
-   "created": "2026-10-04T03:36:54+00:00",
-   "text": "C19 &amp; C20 많관부!!! https://t.co/q1IwCseHyo",
-   "images": [
-    "https://pbs.twimg.com/media/HTwb2ejaQAA9GCr.jpg?name=orig"
-   ],
-   "score": 2,
-   "reasons": [
-    "행사·부스",
-    "이미지"
-   ],
-   "foundAt": "2026-10-04T12:56:34+00:00"
   },
   {
    "id": "2106526522777710850",
@@ -171,28 +150,6 @@
     "이미지"
    ],
    "foundAt": "2026-10-04T12:53:18+00:00"
-  },
-  {
-   "id": "2106354502169461179",
-   "handle": "perel_fur",
-   "booths": [
-    "A26"
-   ],
-   "boothNames": [
-    "히잉 형아 꼬리 상점"
-   ],
-   "created": "2026-10-03T12:03:42+00:00",
-   "text": "A-26에 부스를 하게 되었어! \n\n키링과 아크릴스탠드 낼거야 기대해줘!\n\n그냥 날 보러오더라도 좋아! 와서 띠부띠부씰 가져가! https://t.co/siEYGtIQ0U",
-   "images": [
-    "https://pbs.twimg.com/media/HTtGQE8bEAA0J1q.jpg?name=orig"
-   ],
-   "score": 3,
-   "reasons": [
-    "품목",
-    "행사·부스",
-    "이미지"
-   ],
-   "foundAt": "2026-10-04T12:56:42+00:00"
   },
   {
    "id": "2106330835066720315",
@@ -305,25 +262,6 @@
    "foundAt": "2026-10-04T12:53:16+00:00"
   },
   {
-   "id": "2106209241988317443",
-   "handle": "AlphsBeep",
-   "booths": [
-    "B19"
-   ],
-   "boothNames": [
-    "OSURULE"
-   ],
-   "created": "2026-10-03T02:26:29+00:00",
-   "text": "皆さんは薄い本を読む時A5とB5どちらがお好みですか？\n여러분은 동인지를 보실 때 A5와 B5 중 어느쪽을 선호하시나요?",
-   "images": [],
-   "score": 2,
-   "reasons": [
-    "품목",
-    "행사·부스"
-   ],
-   "foundAt": "2026-10-04T12:51:40+00:00"
-  },
-  {
    "id": "2106028480395944160",
    "handle": "agitype01",
    "booths": [
@@ -340,6 +278,27 @@
     "굿즈·판매"
    ],
    "foundAt": "2026-10-04T12:51:39+00:00"
+  },
+  {
+   "id": "2106000739822928139",
+   "handle": "100symbol",
+   "booths": [
+    "C27"
+   ],
+   "boothNames": [
+    "Mr. furshowtime"
+   ],
+   "created": "2026-10-02T12:37:58+00:00",
+   "text": "퍼클 열심히 준비중 https://t.co/HIxudmR58J",
+   "images": [
+    "https://pbs.twimg.com/media/HToEfFZasAA3hQ0.jpg?name=orig"
+   ],
+   "score": 2,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-04T12:59:48+00:00"
   },
   {
    "id": "2105976084147937525",
@@ -410,27 +369,6 @@
    "foundAt": "2026-10-04T12:57:50+00:00"
   },
   {
-   "id": "2105506483375050922",
-   "handle": "perel_fur",
-   "booths": [
-    "A26"
-   ],
-   "boothNames": [
-    "히잉 형아 꼬리 상점"
-   ],
-   "created": "2026-10-01T03:53:58+00:00",
-   "text": "와글와글 파라엘 띠부띠부씰이 도착했어! \n\n서비스도 많이 줘서 11월 퍼클 행사 부스 놀러오면 다들 한 장씩 무료로 나눠줄게!!\n\n#띠부띠부씰 #아이텐션 #아이텐션서포팅 https://t.co/H9atk5Xqvw",
-   "images": [
-    "https://pbs.twimg.com/media/HThC641bgAA-2Cx.jpg?name=orig"
-   ],
-   "score": 2,
-   "reasons": [
-    "행사·부스",
-    "이미지"
-   ],
-   "foundAt": "2026-10-04T12:56:42+00:00"
-  },
-  {
    "id": "2105493973653762064",
    "handle": "syukapong",
    "booths": [
@@ -467,42 +405,6 @@
     "행사·부스"
    ],
    "foundAt": "2026-10-04T12:51:29+00:00"
-  },
-  {
-   "id": "2105232031923999199",
-   "handle": "pangpayaaaak",
-   "booths": [
-    "B31-32"
-   ],
-   "boothNames": [
-    "퍼리다이소 ~카지노점~"
-   ],
-   "created": "2026-09-30T09:43:24+00:00",
-   "text": "이번 주 주말에 쏘셰의 퍼레이드 정규 굿즈 야차폼을 열어두도록 하겠습니다! 접수해주시면 면밀히 검토하여 구매하도록 하겠습니다 자기 PR의 시대 쏘셰로 님의 굿즈 PR을 연습해보세요",
-   "images": [],
-   "score": 2,
-   "reasons": [
-    "굿즈·판매"
-   ],
-   "foundAt": "2026-10-04T12:56:38+00:00"
-  },
-  {
-   "id": "2105188222762664194",
-   "handle": "239_239",
-   "booths": [
-    "C15"
-   ],
-   "boothNames": [
-    "HONEYCOMB"
-   ],
-   "created": "2026-09-30T06:49:19+00:00",
-   "text": "【お知らせ】\n紙の本の通販も開始いたしました！ 😊👍\nたくさんのご関心をよろしくお願いいたします〜！\nhttps://t.co/SZa1J54HRj",
-   "images": [],
-   "score": 2,
-   "reasons": [
-    "통판·예약"
-   ],
-   "foundAt": "2026-10-04T12:51:18+00:00"
   },
   {
    "id": "2105158311452774408",
@@ -634,29 +536,6 @@
    "foundAt": "2026-10-04T12:51:20+00:00"
   },
   {
-   "id": "2104421477860958229",
-   "handle": "largo_furry",
-   "booths": [
-    "A18"
-   ],
-   "boothNames": [
-    "BAD PAW Co."
-   ],
-   "created": "2026-09-28T04:02:33+00:00",
-   "text": "조금씩 퍼클/커미션/리퀘 작업들 조금씩 진행하고있어요….!!\n한 번 건강이 무너지니 회복이 너무 더디네요..🙃 https://t.co/POCJ9CbP2u",
-   "images": [
-    "https://pbs.twimg.com/media/HTRoLaxb0AA4d65.jpg?name=orig",
-    "https://pbs.twimg.com/media/HTRoLbGbAAA9-eM.jpg?name=orig",
-    "https://pbs.twimg.com/media/HTRoLawasAAlzOA.jpg?name=orig"
-   ],
-   "score": 2,
-   "reasons": [
-    "행사·부스",
-    "이미지"
-   ],
-   "foundAt": "2026-10-04T12:54:52+00:00"
-  },
-  {
    "id": "2104148541782233336",
    "handle": "noodogi",
    "booths": [
@@ -678,28 +557,6 @@
    "foundAt": "2026-10-04T12:56:15+00:00"
   },
   {
-   "id": "2103753363745865757",
-   "handle": "ToriS6526",
-   "booths": [
-    "A19"
-   ],
-   "boothNames": [
-    "메이커 연합부스 - 아르모아"
-   ],
-   "created": "2026-09-26T07:47:42+00:00",
-   "text": "11월 Furst Class에서 [Armoa 연합부스] 에 참여하기에,판매용 사이트를 운영중입니다.\n\n아래 사이트의 모후카페에서 통신판매 및 예약중인 물품이니, 참고하시길 바랍니다.\n\n또한, Furst Class에서 부스 참여하시는 분들도 판매자로 사용 가능하니, 많은 관심 바랍니다.\n\nhttps://t.co/z6kKhXYIgi https://t.co/8gxJZueTZ2",
-   "images": [
-    "https://pbs.twimg.com/media/HTIIiMXaIAAsxMD.jpg?name=orig"
-   ],
-   "score": 4,
-   "reasons": [
-    "굿즈·판매",
-    "행사·부스",
-    "이미지"
-   ],
-   "foundAt": "2026-10-04T12:58:15+00:00"
-  },
-  {
    "id": "2103459294700319143",
    "handle": "Trad_monmon",
    "booths": [
@@ -716,6 +573,27 @@
     "통판·예약"
    ],
    "foundAt": "2026-10-04T12:58:24+00:00"
+  },
+  {
+   "id": "2103458245574611435",
+   "handle": "tappe124",
+   "booths": [
+    "B30"
+   ],
+   "boothNames": [
+    "마운자로 결사반대 위원회"
+   ],
+   "created": "2026-09-25T12:15:00+00:00",
+   "text": "26년 11월 FURST CLASS\n\n빠정(pazzy)@Pa_zzy_art 님 함께 부스를 열게 됐습니다.\n함께 마운자로 파괴에 일조 해주시면 감사합니다.❤️ https://t.co/JCpoa7NtnH",
+   "images": [
+    "https://pbs.twimg.com/media/HTDUEp5asAA7C4Y.jpg?name=orig"
+   ],
+   "score": 2,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-04T13:02:11+00:00"
   },
   {
    "id": "2103329623358734499",
@@ -739,25 +617,6 @@
    "foundAt": "2026-10-04T12:53:05+00:00"
   },
   {
-   "id": "2103123816511877458",
-   "handle": "GoShee248",
-   "booths": [
-    "C09"
-   ],
-   "boothNames": [
-    "퍼리중독신고는7811"
-   ],
-   "created": "2026-09-24T14:06:06+00:00",
-   "text": "오야야! \n이상성욕 변태 동인지, 맛깔난 소설, 흥미로운 화보집 등등\n볼거리 아주 많습니다요이! \n많은 관심 부탁드려요 🙇‍♂️🙇‍♂️🙇‍♂️🙇‍♂️\n이번 11월 퍼스트 클래스 행사에 뵙겠습니다!!\n야호이~!!",
-   "images": [],
-   "score": 2,
-   "reasons": [
-    "품목",
-    "행사·부스"
-   ],
-   "foundAt": "2026-10-04T12:53:39+00:00"
-  },
-  {
    "id": "2102988418989044045",
    "handle": "ideatami",
    "booths": [
@@ -779,27 +638,6 @@
     "이미지"
    ],
    "foundAt": "2026-10-04T12:54:08+00:00"
-  },
-  {
-   "id": "2102771480530723211",
-   "handle": "ToriS6526",
-   "booths": [
-    "A19"
-   ],
-   "boothNames": [
-    "메이커 연합부스 - 아르모아"
-   ],
-   "created": "2026-09-23T14:46:03+00:00",
-   "text": "퍼리 TCG 개발 동기\n\n사실 TCG 카드로 굿즈화를 통해 내 캐릭터가 카드게임 포토굿즈로 내놓는다는게 원래 주요 목표였는데,\n\n기왕 이렇게 된거 인게임까지 개발해보자 해서 시작한 프로젝트 https://t.co/SlZr1hSkYU",
-   "images": [
-    "https://pbs.twimg.com/media/HS6LVroaEAANEo8.jpg?name=orig"
-   ],
-   "score": 3,
-   "reasons": [
-    "굿즈·판매",
-    "이미지"
-   ],
-   "foundAt": "2026-10-04T12:58:15+00:00"
   },
   {
    "id": "2102711803264536982",
@@ -863,22 +701,26 @@
    "foundAt": "2026-10-04T12:58:20+00:00"
   },
   {
-   "id": "2102229799934816716",
-   "handle": "d0ve_XD",
+   "id": "2102345427916132746",
+   "handle": "rikose",
    "booths": [
-    "C12"
+    "B13"
    ],
    "boothNames": [
-    "누도브즈"
+    "RIKOSE"
    ],
-   "created": "2026-09-22T02:53:36+00:00",
-   "text": "11월에 뵙겠습니다 잘부탁드려요!\n이쁜굿즈 열심히 준비 해오겠습니다🫡",
-   "images": [],
-   "score": 2,
+   "created": "2026-09-22T10:33:04+00:00",
+   "text": "イベントの頂きもの本当にありがとうございました！大事に消費させて頂きます。グッズや絵は家宝にします🙏 https://t.co/AMSZYe4LQM",
+   "images": [
+    "https://pbs.twimg.com/media/HS0HMLUbgAArF8D.jpg?name=orig",
+    "https://pbs.twimg.com/media/HS0HOfjagAA1eU1.jpg?name=orig"
+   ],
+   "score": 3,
    "reasons": [
-    "굿즈·판매"
+    "굿즈·판매",
+    "이미지"
    ],
-   "foundAt": "2026-10-04T12:52:53+00:00"
+   "foundAt": "2026-10-04T13:01:57+00:00"
   },
   {
    "id": "2102229004107632770",
