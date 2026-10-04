@@ -102,17 +102,20 @@
       <button type="button" id="logoutBtn" style="display:none;">로그아웃</button>
       <span id="authStatus" class="msg"></span>
     </div>
+    <div class="msg err" id="gateMsg" style="margin-top:6px;"></div>
     <details id="setupBox" style="margin-top:8px;">
       <summary>처음 한 번: 반영 권한 설정 방법</summary>
       <div style="margin-top:6px;">
         Firebase 콘솔 → Firestore Database → 규칙에서, 기존 <code>match /databases/{database}/documents { ... }</code> 안에
         아래 블록을 추가하고 게시하세요. UID는 로그인하면 위에 표시됩니다.
+        사이트는 반영 목록(<code>main</code>)만 읽을 수 있고, 관리 화면과 반영·제외는 이 UID 계정만 쓸 수 있습니다.
         <pre id="rulesText"></pre>
         <button type="button" id="copyRulesBtn">규칙 복사</button>
       </div>
     </details>
   </div>
 
+  <div id="adminArea" hidden>
   <div class="panel">
     <div style="font-weight:600; margin-bottom:6px;">글 주소로 직접 추가</div>
     <div class="row">
@@ -131,6 +134,7 @@
   </div>
   <div class="msg" id="listMsg">불러오는 중…</div>
   <div id="list"></div>
+  </div>
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
@@ -416,8 +420,11 @@ document.getElementById("manualAddBtn").addEventListener("click", () => {
 /* ---------- 로그인 ---------- */
 function rulesText(uid){
   return `match /boothPosts/{doc} {
-  allow read: if true;
-  allow write: if request.auth != null && request.auth.uid == "${uid || "로그인하면 여기에 UID가 들어갑니다"}";
+  allow read: if doc == "main" || isBoothPostsAdmin();
+  allow write: if isBoothPostsAdmin();
+}
+function isBoothPostsAdmin() {
+  return request.auth != null && request.auth.uid == "${uid || "로그인하면 여기에 UID가 들어갑니다"}";
 }`;
 }
 function updateAuthUI(){
@@ -440,7 +447,32 @@ document.getElementById("copyRulesBtn").addEventListener("click", () => {
     document.getElementById("copyRulesBtn").textContent = "복사됨";
   });
 });
-firebase.auth().onAuthStateChanged(user => { currentUser = user; updateAuthUI(); });
+/* 운영자 확인: UID 를 코드에 넣지 않고, 운영자만 읽을 수 있게 규칙을 건 boothPosts/admin 문서를
+   읽어 봄(문서가 없어도 됨). 읽히면 운영자, 권한 오류면 운영자가 아님 → 목록을 보여주지 않음.
+   후보 파일은 GitHub 공개 저장소에 있어서 완전히 숨기는 것은 아니고, 이 화면에서만 가림. */
+let adminLoaded = false;
+function checkAdmin(user){
+  const area = document.getElementById("adminArea");
+  const gate = document.getElementById("gateMsg");
+  area.hidden = true;
+  if(!user){
+    gate.textContent = "운영자 계정으로 로그인하세요.";
+    return;
+  }
+  gate.textContent = "권한 확인 중…";
+  db.collection("boothPosts").doc("admin").get().then(() => {
+    if(currentUser !== user) return;
+    gate.textContent = "";
+    area.hidden = false;
+    if(!adminLoaded){ adminLoaded = true; boothsReady.then(refresh); }
+  }).catch(err => {
+    if(currentUser !== user) return;
+    gate.textContent = err && err.code === "permission-denied"
+      ? "이 계정은 관리 권한이 없습니다. 운영자라면 아래 \"반영 권한 설정 방법\"대로 Firebase 규칙을 넣어 주세요."
+      : `권한 확인 실패: ${(err && (err.code || err.message)) || err}`;
+  });
+}
+firebase.auth().onAuthStateChanged(user => { currentUser = user; updateAuthUI(); checkAdmin(user); });
 
 document.getElementById("tabs").addEventListener("click", (e) => {
   const btn = e.target.closest("button[data-tab]");
@@ -451,7 +483,7 @@ document.getElementById("tabs").addEventListener("click", (e) => {
 document.getElementById("reloadBtn").addEventListener("click", refresh);
 
 updateAuthUI();
-loadBooths().catch(() => {}).then(() => { fillManualBooths(""); return refresh(); });
+const boothsReady = loadBooths().catch(() => {}).then(() => fillManualBooths(""));
 </script>
 </body>
 </html>
