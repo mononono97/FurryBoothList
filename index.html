@@ -944,6 +944,19 @@
     margin:10px 0 4px;
   }
   .preorder-box .budget-input-row input{ color-scheme:dark; }
+  .preorder-box textarea{
+    width:100%;
+    min-height:72px;
+    resize:vertical;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.25);
+    border-radius:6px;
+    color:var(--on-panel);
+    font-size:12px;
+    font-family:inherit;
+    padding:6px 8px;
+    box-sizing:border-box;
+  }
   .preorder-received-btn{
     width:100%;
     font-size:13px;
@@ -1187,6 +1200,7 @@
   .venue-map .map-booth.priority-1 .map-booth-ring{ stroke:var(--map-prio-1); }
   .venue-map .map-booth.priority-2 .map-booth-ring{ stroke:var(--map-prio-2); }
   .venue-map .map-booth.priority-3 .map-booth-ring{ stroke:var(--map-prio-3); }
+  .venue-map .map-booth.dim{ opacity:.35; }
   .venue-map .map-booth.empty{ cursor:default; }
   .venue-map .map-booth.empty .map-booth-box{ stroke:var(--line); stroke-dasharray:4 3; }
   .venue-map .map-booth.empty .map-booth-text{ fill:var(--muted); }
@@ -1578,7 +1592,7 @@ const I18N = {
       "검색창에서는 현재 탭에 위치한 부스를 부스 이름,\n부스 리더·부스원 이름, X 아이디로 필터링 가능합니다(전체 탭에서는 전체 검색)",
       "부스를 누르면 부스컷과 부스 리더·부스원 목록이 나오고,\n각 사람의 프로필 사진이나 @아이디를 누르면 X 프로필로 이동합니다.\n🔞 표시는 성인 부스입니다.",
       "메모(📝) 탭에서 내가 메모해둔 작가들을 확인 가능하며,\n방문 예정 혹은 방문 완료 기준으로 필터링 할 수 있습니다.\n설정 메뉴의 \"데이터 초기화\"를 누르면 작성한 메모, 방문 예정/완료 상태, 예산,\n우선순위가 전부 삭제됩니다(되돌릴 수 없으니 주의해주세요).",
-      "부스 창에서 \"💳 선입금\"을 켜면 선입금(💳) 탭에 모입니다.\n선입금 탭에서 부스를 누르면 선입금 날짜·플랫폼·금액·입금자명을 적고\n\"선입금 수령 완료\"를 표시할 수 있습니다.",
+      "부스 창에서 \"💳 선입금\"을 켜면 선입금(💳) 탭에 모입니다.\n선입금 탭에서 부스를 누르면 선입금 날짜·플랫폼·금액·입금자명·품목 메모를 적고\n\"선입금 수령 완료\"를 표시할 수 있습니다.",
       "배치도에서는 방문 예정인 부스는 노란색,\n방문 완료한 부스는 초록색으로 표시됩니다.",
       "부스별로 1~3순위를 정할 수 있으며, 순위에 따라 카드/배치도 테두리 색이\n빨강(1순위)·보라(2순위)·파랑(3순위)으로 구분되어 표시됩니다.",
       "언어는 한국어, 영어, 일본어가 지원됩니다.",
@@ -1607,7 +1621,9 @@ const I18N = {
     preorderAmount: "선입금 금액 (원)",
     preorderPayer: "선입금 입금자명",
     preorderPayerPlaceholder: "입금할 때 쓴 이름",
-    preorderOffConfirm: "선입금 표시를 끄면 이 부스에 적은 선입금 정보(날짜·플랫폼·금액·입금자명·수령 여부)도 함께 지워집니다. 계속할까요?",
+    preorderMemo: "선입금 메모 (품목 등)",
+    preorderMemoPlaceholder: "예: 아크릴 스탠드 1, 엽서 세트 2, 현장 수령",
+    preorderOffConfirm: "선입금 표시를 끄면 이 부스에 적은 선입금 정보(날짜·플랫폼·금액·입금자명·메모·수령 여부)도 함께 지워집니다. 계속할까요?",
     preorderOff: "끄기",
     mapBtn: "🗺️ 배치도",
     mapHint: "부스를 눌러서 메모/부스 정보를 확인하세요 (공식 일요일 부스 안내 기준)",
@@ -1625,6 +1641,9 @@ const I18N = {
     mapLegendPlanned: "방문 예정",
     mapLegendVisited: "방문 완료",
     mapLegendPriority: "1·2·3순위 테두리",
+    mapModeBasic: "🗺️ 기본 보기",
+    mapModePreorder: "💳 선입금 보기",
+    mapPreorderHint: "선입금 부스를 누르면 선입금 메모가 열려요",
     circleCount: "{n}개 부스",
     notesCount: "메모·방문·예산 등록 부스 {n}개",
     emptyDefault: "검색 결과가 없어요.",
@@ -1732,7 +1751,9 @@ const I18N = {
     preorderAmount: "Amount (KRW)",
     preorderPayer: "Payer name",
     preorderPayerPlaceholder: "Name used for the payment",
-    preorderOffConfirm: "Turning off pre-order also deletes the pre-order details for this booth (date, platform, amount, payer name, received). Continue?",
+    preorderMemo: "Pre-order notes (items, etc.)",
+    preorderMemoPlaceholder: "e.g. 1 acrylic stand, 2 postcard sets, pick up on site",
+    preorderOffConfirm: "Turning off pre-order also deletes the pre-order details for this booth (date, platform, amount, payer name, notes, received). Continue?",
     preorderOff: "Turn off",
     mapBtn: "🗺️ Map",
     mapHint: "Click a booth to see notes/booth info (based on the official Sunday booth guide)",
@@ -1750,6 +1771,9 @@ const I18N = {
     mapLegendPlanned: "Plan to visit",
     mapLegendVisited: "Visited",
     mapLegendPriority: "Priority 1·2·3 border",
+    mapModeBasic: "🗺️ Basic",
+    mapModePreorder: "💳 Pre-orders",
+    mapPreorderHint: "Tap a pre-order booth to see its pre-order notes",
     circleCount: "{n} booths",
     notesCount: "{n} booths with notes/visit/budget",
     emptyDefault: "No search results.",
@@ -1857,7 +1881,9 @@ const I18N = {
     preorderAmount: "金額（ウォン）",
     preorderPayer: "入金者名",
     preorderPayerPlaceholder: "入金時に使った名前",
-    preorderOffConfirm: "事前通販をオフにすると、このブースに記入した事前通販の情報（入金日・プラットフォーム・金額・入金者名・受取状態）も削除されます。続行しますか？",
+    preorderMemo: "事前通販メモ（品目など）",
+    preorderMemoPlaceholder: "例：アクリルスタンド1、ポストカードセット2、現地受取",
+    preorderOffConfirm: "事前通販をオフにすると、このブースに記入した事前通販の情報（入金日・プラットフォーム・金額・入金者名・メモ・受取状態）も削除されます。続行しますか？",
     preorderOff: "オフにする",
     mapBtn: "🗺️ 配置図",
     mapHint: "ブースを押してメモ・ブース情報を確認してください（公式の日曜日ブース案内に基づく）",
@@ -1875,6 +1901,9 @@ const I18N = {
     mapLegendPlanned: "訪問予定",
     mapLegendVisited: "訪問済み",
     mapLegendPriority: "優先順位1・2・3の枠",
+    mapModeBasic: "🗺️ 基本表示",
+    mapModePreorder: "💳 事前通販表示",
+    mapPreorderHint: "事前通販ブースを押すと事前通販メモが開きます",
     circleCount: "{n}ブース",
     notesCount: "メモ・訪問・予算登録ブース {n}件",
     emptyDefault: "検索結果がありません。",
@@ -2211,7 +2240,7 @@ function updatePriorityVisuals(boothId){
 }
 
 /* ---------- 부스별 선입금 ----------
-   { "A01": { received: false, date: "2026-11-01", platform: "위치폼", amount: 30000, payer: "홍길동" }, ... }
+   { "A01": { received: false, date: "2026-11-01", platform: "위치폼", amount: 30000, payer: "홍길동", memo: "아크릴 스탠드 1" }, ... }
    형태로 브라우저(localStorage)에 저장됨. 부스가 이 객체에 있으면 "선입금" 버튼이 켜진 것.
    메모·방문상태·예산과 같이 로그인하면 클라우드 동기화에도 포함됨.
 ------------------------------------------------ */
@@ -2251,7 +2280,7 @@ function setPreorderOn(boothId, on){
   savePreorders();
 }
 
-// 날짜·플랫폼·금액·입금자명·수령 여부 중 하나를 바꿈. 선입금이 꺼져 있으면 켜면서 저장함.
+// 날짜·플랫폼·금액·입금자명·메모·수령 여부 중 하나를 바꿈. 선입금이 꺼져 있으면 켜면서 저장함.
 function setPreorderField(boothId, field, value){
   const p = getPreorder(boothId) || { received: false };
   if(field === "amount"){
@@ -2260,7 +2289,7 @@ function setPreorderField(boothId, field, value){
   } else if(field === "received"){
     p.received = !!value;
   } else {
-    const v = String(value || "").trim().slice(0, MAX_PREORDER_TEXT);
+    const v = String(value || "").trim().slice(0, field === "memo" ? MAX_NOTE_LENGTH : MAX_PREORDER_TEXT);
     if(v) p[field] = v; else delete p[field];
   }
   preorders[boothId] = p;
@@ -2270,7 +2299,7 @@ function setPreorderField(boothId, field, value){
 // 수령 여부 말고 적어 둔 정보가 있는지 (선입금을 끌 때 확인 창을 띄울지 판단)
 function preorderHasDetails(boothId){
   const p = getPreorder(boothId);
-  return !!(p && (p.received || p.date || p.platform || p.amount || p.payer));
+  return !!(p && (p.received || p.date || p.platform || p.amount || p.payer || p.memo));
 }
 
 function getPreorderTotal(ids){
@@ -3302,6 +3331,17 @@ const MAP_ZONE_VIEWBOX = {
 let mapZone = "ALL";
 try { const z = localStorage.getItem(MAP_ZONE_KEY); if(z && MAP_ZONE_VIEWBOX[z]) mapZone = z; } catch {}
 
+// 배치도 보기 방식: "basic"(메모·방문 상태·우선순위 색) | "preorder"(선입금 수령 전 노랑·수령 완료 초록)
+const MAP_MODE_KEY = `${STORAGE_PREFIX}-map-mode`;
+let mapMode = "basic";
+try { if(localStorage.getItem(MAP_MODE_KEY) === "preorder") mapMode = "preorder"; } catch {}
+
+function setMapMode(mode){
+  mapMode = mode;
+  try { localStorage.setItem(MAP_MODE_KEY, mode); } catch {}
+  renderMapView();
+}
+
 function setMapZone(zone){
   mapZone = zone;
   try { localStorage.setItem(MAP_ZONE_KEY, zone); } catch {}
@@ -3352,10 +3392,13 @@ function buildMapSvg(){
     parts.forEach(p => used.add(booth.block + parseInt(p.n, 10)));
     const status = getVisitStatus(booth.id);
     const level = getPriority(booth.id);
-    const cls = "map-booth zone-" + booth.block.toLowerCase() +
-      (getNote(booth.id) ? " has-note" : "") +
-      (status === "planned" ? " visit-planned" : status === "visited" ? " visit-visited" : "") +
-      (level ? ` priority-${level}` : "");
+    const pre = getPreorder(booth.id);
+    // 선입금 보기에서는 방문 예정/완료와 같은 노랑·초록을 선입금 수령 전/완료에 쓰고, 선입금이 없는 부스는 흐리게
+    const cls = "map-booth zone-" + booth.block.toLowerCase() + (mapMode === "preorder"
+      ? (pre ? (pre.received ? " visit-visited" : " visit-planned") : " dim")
+      : (getNote(booth.id) ? " has-note" : "") +
+        (status === "planned" ? " visit-planned" : status === "visited" ? " visit-visited" : "") +
+        (level ? ` priority-${level}` : ""));
     const label = `${booth.id} ${booth.name}`;
     const open = `<g class="${cls}" data-booth-id="${escapeHtml(booth.id)}" tabindex="0" role="button" aria-label="${escapeHtml(label)}"><title>${escapeHtml(label)}</title>`;
 
@@ -3399,6 +3442,19 @@ function renderMapView(){
     return;
   }
 
+  const modeFilter = document.createElement("div");
+  modeFilter.className = "visit-filter map-zone-filter";
+  [["basic", "mapModeBasic"], ["preorder", "mapModePreorder"]].forEach(([mode, key]) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = t(key);
+    btn.classList.toggle("active", mapMode === mode);
+    btn.setAttribute("aria-pressed", mapMode === mode ? "true" : "false");
+    btn.addEventListener("click", () => setMapMode(mode));
+    modeFilter.appendChild(btn);
+  });
+  mapGrid.appendChild(modeFilter);
+
   const zoneFilter = document.createElement("div");
   zoneFilter.className = "visit-filter map-zone-filter";
   [["ALL", "mapZoneAll"], ["A", "mapZoneA"], ["B", "mapZoneB"], ["C", "mapZoneC"]].forEach(([zone, key]) => {
@@ -3414,7 +3470,10 @@ function renderMapView(){
 
   const legend = document.createElement("div");
   legend.className = "map-legend";
-  legend.innerHTML =
+  legend.innerHTML = mapMode === "preorder" ?
+    `<span><i class="swatch planned"></i>${escapeHtml(t("preorderPending"))}</span>` +
+    `<span><i class="swatch visited"></i>${escapeHtml(t("preorderDoneShort"))}</span>` +
+    `<span>${escapeHtml(t("mapPreorderHint"))}</span>` :
     `<span><i class="swatch note"></i>${escapeHtml(t("mapLegendNote"))}</span>` +
     `<span><i class="swatch planned"></i>${escapeHtml(t("mapLegendPlanned"))}</span>` +
     `<span><i class="swatch visited"></i>${escapeHtml(t("mapLegendVisited"))}</span>` +
@@ -3442,15 +3501,21 @@ function renderMapView(){
     const g = e.target.closest("[data-booth-id]");
     if(!g) return;
     e.stopPropagation();
-    openBoothModal(g.dataset.boothId);
+    openMapBooth(g.dataset.boothId);
   });
   svg.addEventListener("keydown", (e) => {
     if(e.key !== "Enter" && e.key !== " ") return;
     const g = e.target.closest("[data-booth-id]");
     if(!g) return;
     e.preventDefault();
-    openBoothModal(g.dataset.boothId);
+    openMapBooth(g.dataset.boothId);
   });
+}
+
+// 선입금 보기에서 선입금 부스를 누르면 선입금 창(메모 등), 그 밖에는 일반 부스 상세 창
+function openMapBooth(boothId){
+  if(mapMode === "preorder" && getPreorder(boothId)) openPreorderModal(boothId);
+  else openBoothModal(boothId);
 }
 
 /* ---------- 행사 안내 (일정 · 약도 · 날씨) ----------
@@ -3688,6 +3753,7 @@ function openBoothModal(boothId){
     syncPreorderButton();
     renderNav();
     if(currentRow === "PREORDER") renderGrid();
+    if(currentRow === "MAP") renderMapView();
   });
   content.appendChild(visitBox);
 
@@ -3779,7 +3845,7 @@ function openBoothModal(boothId){
 }
 
 /* ---------- 선입금 창 (선입금 탭에서 부스를 눌렀을 때) ----------
-   부스 정보·부스원은 일반 창과 같고, 그 아래에 수령 완료 버튼과 선입금 정보 4가지를 적는 칸을 보여줌.
+   부스 정보·부스원은 일반 창과 같고, 그 아래에 수령 완료 버튼과 선입금 정보 4가지·선입금 메모(품목 등) 칸을 보여줌.
    입력하는 즉시 저장되고, 칸에서 벗어나면 선입금 탭 카드(수령 여부·금액)도 다시 그림.
 ------------------------------------------------------------------ */
 function openPreorderModal(boothId){
@@ -3787,7 +3853,10 @@ function openPreorderModal(boothId){
   if(!booth) return;
   const content = openBoothModalShell(booth);
   const p = getPreorder(booth.id) || {};
-  const refreshPreorderTab = () => { if(currentRow === "PREORDER") renderGrid(); };
+  const refreshPreorderTab = () => {
+    if(currentRow === "PREORDER") renderGrid();
+    if(currentRow === "MAP") renderMapView();
+  };
 
   const box = document.createElement("div");
   box.className = "preorder-box";
@@ -3804,6 +3873,8 @@ function openPreorderModal(boothId){
     </div>
     <label>${escapeHtml(t("preorderPayer"))}</label>
     <div class="budget-input-row"><input type="text" data-field="payer" maxlength="${MAX_PREORDER_TEXT}" value="${escapeHtml(p.payer || "")}" placeholder="${escapeHtml(t("preorderPayerPlaceholder"))}"></div>
+    <label>${escapeHtml(t("preorderMemo"))}</label>
+    <textarea data-field="memo" maxlength="${MAX_NOTE_LENGTH}" placeholder="${escapeHtml(t("preorderMemoPlaceholder"))}">${escapeHtml(p.memo || "")}</textarea>
   `;
   const receivedBtn = box.querySelector(".preorder-received-btn");
   const syncReceivedButton = () => {
@@ -3818,7 +3889,7 @@ function openPreorderModal(boothId){
     renderNav();
     refreshPreorderTab();
   });
-  box.querySelectorAll("input[data-field]").forEach(input => {
+  box.querySelectorAll("[data-field]").forEach(input => {
     input.addEventListener("input", () => setPreorderField(booth.id, input.dataset.field, input.value));
     input.addEventListener("change", () => { renderNav(); refreshPreorderTab(); });
   });
