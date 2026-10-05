@@ -944,6 +944,19 @@
     margin:10px 0 4px;
   }
   .preorder-box .budget-input-row input{ color-scheme:dark; }
+  .preorder-box textarea{
+    width:100%;
+    min-height:72px;
+    resize:vertical;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.25);
+    border-radius:6px;
+    color:var(--on-panel);
+    font-size:12px;
+    font-family:inherit;
+    padding:6px 8px;
+    box-sizing:border-box;
+  }
   .preorder-received-btn{
     width:100%;
     font-size:13px;
@@ -1578,7 +1591,7 @@ const I18N = {
       "검색창에서는 현재 탭에 위치한 부스를 부스 이름,\n부스 리더·부스원 이름, X 아이디로 필터링 가능합니다(전체 탭에서는 전체 검색)",
       "부스를 누르면 부스컷과 부스 리더·부스원 목록이 나오고,\n각 사람의 프로필 사진이나 @아이디를 누르면 X 프로필로 이동합니다.\n🔞 표시는 성인 부스입니다.",
       "메모(📝) 탭에서 내가 메모해둔 작가들을 확인 가능하며,\n방문 예정 혹은 방문 완료 기준으로 필터링 할 수 있습니다.\n설정 메뉴의 \"데이터 초기화\"를 누르면 작성한 메모, 방문 예정/완료 상태, 예산,\n우선순위가 전부 삭제됩니다(되돌릴 수 없으니 주의해주세요).",
-      "부스 창에서 \"💳 선입금\"을 켜면 선입금(💳) 탭에 모입니다.\n선입금 탭에서 부스를 누르면 선입금 날짜·플랫폼·금액·입금자명을 적고\n\"선입금 수령 완료\"를 표시할 수 있습니다.",
+      "부스 창에서 \"💳 선입금\"을 켜면 선입금(💳) 탭에 모입니다.\n선입금 탭에서 부스를 누르면 선입금 날짜·플랫폼·금액·입금자명·품목 메모를 적고\n\"선입금 수령 완료\"를 표시할 수 있습니다.",
       "배치도에서는 방문 예정인 부스는 노란색,\n방문 완료한 부스는 초록색으로 표시됩니다.",
       "부스별로 1~3순위를 정할 수 있으며, 순위에 따라 카드/배치도 테두리 색이\n빨강(1순위)·보라(2순위)·파랑(3순위)으로 구분되어 표시됩니다.",
       "언어는 한국어, 영어, 일본어가 지원됩니다.",
@@ -1607,7 +1620,9 @@ const I18N = {
     preorderAmount: "선입금 금액 (원)",
     preorderPayer: "선입금 입금자명",
     preorderPayerPlaceholder: "입금할 때 쓴 이름",
-    preorderOffConfirm: "선입금 표시를 끄면 이 부스에 적은 선입금 정보(날짜·플랫폼·금액·입금자명·수령 여부)도 함께 지워집니다. 계속할까요?",
+    preorderMemo: "선입금 메모 (품목 등)",
+    preorderMemoPlaceholder: "예: 아크릴 스탠드 1, 엽서 세트 2, 현장 수령",
+    preorderOffConfirm: "선입금 표시를 끄면 이 부스에 적은 선입금 정보(날짜·플랫폼·금액·입금자명·메모·수령 여부)도 함께 지워집니다. 계속할까요?",
     preorderOff: "끄기",
     mapBtn: "🗺️ 배치도",
     mapHint: "부스를 눌러서 메모/부스 정보를 확인하세요 (공식 일요일 부스 안내 기준)",
@@ -1732,7 +1747,9 @@ const I18N = {
     preorderAmount: "Amount (KRW)",
     preorderPayer: "Payer name",
     preorderPayerPlaceholder: "Name used for the payment",
-    preorderOffConfirm: "Turning off pre-order also deletes the pre-order details for this booth (date, platform, amount, payer name, received). Continue?",
+    preorderMemo: "Pre-order notes (items, etc.)",
+    preorderMemoPlaceholder: "e.g. 1 acrylic stand, 2 postcard sets, pick up on site",
+    preorderOffConfirm: "Turning off pre-order also deletes the pre-order details for this booth (date, platform, amount, payer name, notes, received). Continue?",
     preorderOff: "Turn off",
     mapBtn: "🗺️ Map",
     mapHint: "Click a booth to see notes/booth info (based on the official Sunday booth guide)",
@@ -1857,7 +1874,9 @@ const I18N = {
     preorderAmount: "金額（ウォン）",
     preorderPayer: "入金者名",
     preorderPayerPlaceholder: "入金時に使った名前",
-    preorderOffConfirm: "事前通販をオフにすると、このブースに記入した事前通販の情報（入金日・プラットフォーム・金額・入金者名・受取状態）も削除されます。続行しますか？",
+    preorderMemo: "事前通販メモ（品目など）",
+    preorderMemoPlaceholder: "例：アクリルスタンド1、ポストカードセット2、現地受取",
+    preorderOffConfirm: "事前通販をオフにすると、このブースに記入した事前通販の情報（入金日・プラットフォーム・金額・入金者名・メモ・受取状態）も削除されます。続行しますか？",
     preorderOff: "オフにする",
     mapBtn: "🗺️ 配置図",
     mapHint: "ブースを押してメモ・ブース情報を確認してください（公式の日曜日ブース案内に基づく）",
@@ -2211,7 +2230,7 @@ function updatePriorityVisuals(boothId){
 }
 
 /* ---------- 부스별 선입금 ----------
-   { "A01": { received: false, date: "2026-11-01", platform: "위치폼", amount: 30000, payer: "홍길동" }, ... }
+   { "A01": { received: false, date: "2026-11-01", platform: "위치폼", amount: 30000, payer: "홍길동", memo: "아크릴 스탠드 1" }, ... }
    형태로 브라우저(localStorage)에 저장됨. 부스가 이 객체에 있으면 "선입금" 버튼이 켜진 것.
    메모·방문상태·예산과 같이 로그인하면 클라우드 동기화에도 포함됨.
 ------------------------------------------------ */
@@ -2251,7 +2270,7 @@ function setPreorderOn(boothId, on){
   savePreorders();
 }
 
-// 날짜·플랫폼·금액·입금자명·수령 여부 중 하나를 바꿈. 선입금이 꺼져 있으면 켜면서 저장함.
+// 날짜·플랫폼·금액·입금자명·메모·수령 여부 중 하나를 바꿈. 선입금이 꺼져 있으면 켜면서 저장함.
 function setPreorderField(boothId, field, value){
   const p = getPreorder(boothId) || { received: false };
   if(field === "amount"){
@@ -2260,7 +2279,7 @@ function setPreorderField(boothId, field, value){
   } else if(field === "received"){
     p.received = !!value;
   } else {
-    const v = String(value || "").trim().slice(0, MAX_PREORDER_TEXT);
+    const v = String(value || "").trim().slice(0, field === "memo" ? MAX_NOTE_LENGTH : MAX_PREORDER_TEXT);
     if(v) p[field] = v; else delete p[field];
   }
   preorders[boothId] = p;
@@ -2270,7 +2289,7 @@ function setPreorderField(boothId, field, value){
 // 수령 여부 말고 적어 둔 정보가 있는지 (선입금을 끌 때 확인 창을 띄울지 판단)
 function preorderHasDetails(boothId){
   const p = getPreorder(boothId);
-  return !!(p && (p.received || p.date || p.platform || p.amount || p.payer));
+  return !!(p && (p.received || p.date || p.platform || p.amount || p.payer || p.memo));
 }
 
 function getPreorderTotal(ids){
@@ -3779,7 +3798,7 @@ function openBoothModal(boothId){
 }
 
 /* ---------- 선입금 창 (선입금 탭에서 부스를 눌렀을 때) ----------
-   부스 정보·부스원은 일반 창과 같고, 그 아래에 수령 완료 버튼과 선입금 정보 4가지를 적는 칸을 보여줌.
+   부스 정보·부스원은 일반 창과 같고, 그 아래에 수령 완료 버튼과 선입금 정보 4가지·선입금 메모(품목 등) 칸을 보여줌.
    입력하는 즉시 저장되고, 칸에서 벗어나면 선입금 탭 카드(수령 여부·금액)도 다시 그림.
 ------------------------------------------------------------------ */
 function openPreorderModal(boothId){
@@ -3804,6 +3823,8 @@ function openPreorderModal(boothId){
     </div>
     <label>${escapeHtml(t("preorderPayer"))}</label>
     <div class="budget-input-row"><input type="text" data-field="payer" maxlength="${MAX_PREORDER_TEXT}" value="${escapeHtml(p.payer || "")}" placeholder="${escapeHtml(t("preorderPayerPlaceholder"))}"></div>
+    <label>${escapeHtml(t("preorderMemo"))}</label>
+    <textarea data-field="memo" maxlength="${MAX_NOTE_LENGTH}" placeholder="${escapeHtml(t("preorderMemoPlaceholder"))}">${escapeHtml(p.memo || "")}</textarea>
   `;
   const receivedBtn = box.querySelector(".preorder-received-btn");
   const syncReceivedButton = () => {
@@ -3818,7 +3839,7 @@ function openPreorderModal(boothId){
     renderNav();
     refreshPreorderTab();
   });
-  box.querySelectorAll("input[data-field]").forEach(input => {
+  box.querySelectorAll("[data-field]").forEach(input => {
     input.addEventListener("input", () => setPreorderField(booth.id, input.dataset.field, input.value));
     input.addEventListener("change", () => { renderNav(); refreshPreorderTab(); });
   });
