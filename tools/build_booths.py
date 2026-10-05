@@ -95,6 +95,7 @@ def parse_person(raw):
 # 시트에 X 아이디가 빠져 있던 사람들. 사용자가 따로 알려준 아이디 (2026-10-02)
 # (부스 번호, 시트에 적힌 이름) → X 아이디
 HANDLE_FILL = {
+    ("A01", "Luf"): "musou_luf",  # 2026-10-05 사용자가 알려줌
     ("A02", "DAI-XT."): "Hijiki_DaiXt",
     ("A03", "Raigo"): "RaigoTohdoh",
     ("A04", "Wald"): "OumagaWald",
