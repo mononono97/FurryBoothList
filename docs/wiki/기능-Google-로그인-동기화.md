@@ -19,7 +19,7 @@
 ## 어떻게 구현했나
 - Firebase compat SDK(app/auth/firestore), 설정값 `firebaseConfig` (웹 설정값은 공개 값)
 - 로그인/로그아웃: `signInWithGoogle()`, `signOutUser()`, UI 갱신 `updateAuthUI()`
-- 데이터: Firestore `users/<uid>` 문서의 `furstclass` 필드에 `{ notes, visitStatus, budgets, priority }`.
+- 데이터: Firestore `users/<uid>` 문서의 `furstclass` 필드에 `{ notes, visitStatus, budgets, priority, preorders }`.
   동기화할 때 문서 전체를 덮어쓰므로 케모켓 때 문서 최상위에 있던 필드는 첫 동기화에서 지워집니다.
 - 병합: `mergeField(local, cloud)` = `Object.assign({}, cloud, local)`
 - 흐름: `syncFromCloudOnLogin()` → `pullAndMergeFromCloud()` → `pushToCloud()`
@@ -36,3 +36,4 @@
 - 2026-09-27 로그인 실패 에러 코드 표시 (`b32b400`), 로그인 버튼을 톱니바퀴 옆으로 이동 (`3fb5684`)
 - 2026-10-02 Furst Class 개편: 저장 위치를 `furstclass` 필드로 옮기고 케모켓 데이터 삭제 (#3)
 - 2026-09-27 자동 동기화 → 수동 "지금 동기화" + 10초 쿨다운 (`f721497`)
+- 2026-10-05 선입금 정보(`preorders`)도 동기화 ([선입금](기능-선입금.md), [#38](https://github.com/mononono97/FurryBoothList/pull/38))
