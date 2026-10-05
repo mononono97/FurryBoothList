@@ -1328,6 +1328,77 @@
     color:var(--text-2);
   }
 
+  /* PC 펼침 상세: 누른 카드가 있는 줄 바로 아래에 그리드 한 줄을 통째로 차지하며 펼쳐짐.
+     왼쪽은 부스 정보·부스원, 오른쪽은 방문 상태·우선순위·예산·메모(선입금 탭이면 선입금 정보).
+     패널은 모달처럼 두 테마 모두 어두운 바탕(--panel)에 --on-panel 글자. */
+  .booth-inline{
+    grid-column:1 / -1;
+    position:relative;
+    display:grid;
+    grid-template-columns:minmax(260px, 2fr) 3fr;
+    gap:24px;
+    align-items:start;
+    margin:2px 0 6px;
+    background:var(--panel);
+    color:var(--on-panel);
+    border:1px solid var(--panel-border);
+    border-radius:16px;
+    padding:18px 20px 20px;
+    text-align:left;
+    box-shadow:0 14px 36px rgba(0,0,0,.28);
+    animation:booth-inline-open .18s ease-out;
+  }
+  @keyframes booth-inline-open{
+    from{ opacity:0; transform:translateY(-6px); }
+    to{ opacity:1; transform:none; }
+  }
+  /* 누른 카드를 가리키는 작은 화살표(--arrow-x 는 JS가 카드 가운데 위치로 넣어 줌) */
+  .booth-inline::before{
+    content:"";
+    position:absolute;
+    top:-9px;
+    left:calc(var(--arrow-x, 50%) - 8px);
+    width:16px;
+    height:16px;
+    background:var(--panel);
+    border-left:1px solid var(--panel-border);
+    border-top:1px solid var(--panel-border);
+    transform:rotate(45deg);
+  }
+  .booth-inline .inline-close{
+    position:absolute;
+    top:12px;
+    right:12px;
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    color:var(--on-panel);
+    font-size:18px;
+    line-height:1;
+    cursor:pointer;
+  }
+  .booth-inline .inline-close:hover{ background:rgba(255,255,255,.12); }
+  .booth-inline-info, .booth-inline-actions{ min-width:0; }
+  /* 오른쪽 칸 맨 위가 닫기 버튼과 겹치지 않게 */
+  .booth-inline-actions{ padding-top:44px; }
+  /* 부스컷은 상세 전체가 상단바 아래 한 화면에 들어오도록 화면 높이에 맞춤 */
+  /* 선입금 칸은 오른쪽 칸 맨 위에 오므로 모달에서 쓰던 위쪽 구분선은 뺌 */
+  .booth-inline-actions > .preorder-box:first-child{ margin-top:0; padding-top:0; border-top:none; }
+  .booth-inline .booth-cut img{ max-height:max(240px, calc(100vh - 460px)); max-height:max(240px, calc(100dvh - 460px)); }
+  /* 펼쳐 둔 카드 표시 */
+  .booth.detail-open{
+    border-color:var(--card-border-hover);
+    box-shadow:var(--card-shadow-hover);
+    transform:translateY(-3px);
+  }
+  /* 창이 좁아 두 칸이 비좁으면 위아래로 쌓음 */
+  @media (max-width:760px){
+    .booth-inline{ grid-template-columns:1fr; gap:4px; }
+    .booth-inline-actions{ padding-top:0; }
+  }
+
   /* 모달 */
   .modal-backdrop{
     display:none;
@@ -3070,6 +3141,8 @@ function renderGrid(){
   infoView.style.display = isInfoView ? "block" : "none";
   emptyState.style.display = "none";
 
+  if(isMapView || isInfoView) closeInlineDetail();
+
   if(isInfoView){
     document.getElementById("currentLetter").textContent = "🎪";
     document.getElementById("currentCount").textContent = t("infoHint");
@@ -3229,15 +3302,20 @@ function renderGrid(){
       card.appendChild(preEl);
     }
 
-    // 클릭(탭)하면 화면 가운데에 부스 상세 모달을 띄움(X 버튼·창 밖 클릭으로 닫힘). PC/모바일 공통.
+    // 모바일(좁은 화면·손가락·펜)은 화면 가운데에 부스 상세 모달을 띄우고(X 버튼·창 밖 클릭으로 닫힘),
+    // PC(넓은 화면에서 마우스로 클릭)는 누른 카드가 있는 줄 바로 아래에 상세를 펼침(2026-10-05 사용자 요청).
     card.addEventListener("click", (e) => {
       e.stopPropagation();
-      if(isPreorderView) openPreorderModal(booth.id);
+      const kind = isPreorderView ? "preorder" : "booth";
+      if(!useBoothModal()) openInlineDetail(booth.id, kind);
+      else if(kind === "preorder") openPreorderModal(booth.id);
       else openBoothModal(booth.id);
     });
 
     grid.appendChild(card);
   });
+  // 목록을 다시 그려도(메모 저장·정렬·선입금 수정 등) 펼쳐 둔 상세는 같은 부스 아래에 그대로 둠
+  placeInlineDetail(false);
 }
 
 // 부스 상세 모달을 화면을 거의 채우는 큰 창으로 띄울지. 화면이 좁거나, 이번 클릭을 손가락·펜으로 했으면 큰 창.
@@ -3250,6 +3328,96 @@ function useBoothModal(){
   if(lastPointerType === "touch" || lastPointerType === "pen") return true;
   return !!(window.matchMedia && window.matchMedia(NARROW_QUERY).matches);
 }
+
+/* ---------- PC 펼침 상세 ----------
+   PC에서 부스 카드를 누르면 새 창 대신 그 카드가 있는 줄 바로 아래에 상세를 펼침.
+   왼쪽: 부스 이름·상품 정보(부스컷)·부스원 / 오른쪽: 방문 예정·완료·우선순위·예산·메모(선입금 탭이면 선입금 정보).
+   칸 내용은 모달과 같은 함수(fillBoothInfo / fillBoothActions / fillPreorderActions)로 만듦.
+   같은 카드를 다시 누르거나, ✕ 버튼, Esc 로 닫힘. 한 번에 하나만 펼쳐짐.
+------------------------------------------------------------- */
+let inlineDetail = null; // { boothId, kind: "booth"|"preorder", el }
+
+function closeInlineDetail(){
+  if(!inlineDetail) return;
+  inlineDetail.el.remove();
+  document.querySelectorAll(".booth.detail-open").forEach(c => c.classList.remove("detail-open"));
+  inlineDetail = null;
+}
+
+function openInlineDetail(boothId, kind){
+  if(inlineDetail && inlineDetail.boothId === boothId && inlineDetail.kind === kind){
+    closeInlineDetail();
+    return;
+  }
+  const booth = BOOTHS.find(b => b.id === boothId);
+  if(!booth) return;
+  closeInlineDetail();
+
+  const el = document.createElement("div");
+  el.className = "booth-inline";
+  const closeBtn = document.createElement("button");
+  closeBtn.type = "button";
+  closeBtn.className = "inline-close";
+  closeBtn.textContent = "✕";
+  closeBtn.addEventListener("click", closeInlineDetail);
+  const info = document.createElement("div");
+  info.className = "booth-inline-info";
+  fillBoothInfo(info, booth);
+  const actions = document.createElement("div");
+  actions.className = "booth-inline-actions";
+  if(kind === "preorder") fillPreorderActions(actions, booth);
+  else fillBoothActions(actions, booth);
+  el.append(closeBtn, info, actions);
+
+  inlineDetail = { boothId, kind, el };
+  placeInlineDetail(true);
+}
+
+// 펼친 상세를 누른 카드와 같은 줄의 마지막 카드 바로 뒤에 끼워 넣음(그리드 한 줄을 통째로 차지).
+// 창 크기가 바뀌어 한 줄의 카드 수가 달라지거나 목록을 다시 그렸을 때도 다시 불러 위치를 맞춤.
+function placeInlineDetail(scroll){
+  if(!inlineDetail) return;
+  const grid = document.getElementById("grid");
+  const card = grid.querySelector(`.booth[data-booth-id="${inlineDetail.boothId}"]`);
+  if(!card || grid.style.display === "none"){
+    closeInlineDetail();
+    return;
+  }
+  const el = inlineDetail.el;
+  // 자리를 재기 전에 빼 둬야 카드 줄 위치가 상세 때문에 흐트러지지 않음.
+  // 빼고 넣는 사이 입력 중이던 칸의 포커스가 풀리므로 다시 돌려줌.
+  const focused = el.contains(document.activeElement) ? document.activeElement : null;
+  el.remove();
+  const top = card.offsetTop;
+  let last = card;
+  for(let next = card.nextElementSibling; next && next.classList.contains("booth") && next.offsetTop === top; next = next.nextElementSibling){
+    last = next;
+  }
+  last.after(el);
+  if(focused) focused.focus({ preventScroll: true });
+  document.querySelectorAll(".booth.detail-open").forEach(c => { if(c !== card) c.classList.remove("detail-open"); });
+  card.classList.add("detail-open");
+  // 위쪽 작은 화살표가 누른 카드 가운데를 가리키게 함
+  el.style.setProperty("--arrow-x", `${card.offsetLeft - el.offsetLeft + card.offsetWidth / 2}px`);
+  if(scroll) scrollInlineDetailIntoView(card, el);
+}
+
+// 펼친 상세가 화면 아래로 잘리면 끌어올리되, 누른 카드의 이름 부분은 위쪽 고정 상단바 아래에 남겨 둠
+function scrollInlineDetailIntoView(card, el){
+  const header = document.querySelector("header.top");
+  const headerBottom = header && getComputedStyle(header).position === "sticky" ? header.getBoundingClientRect().bottom : 0;
+  const cardRect = card.getBoundingClientRect();
+  const elRect = el.getBoundingClientRect();
+  let dy = 0;
+  if(cardRect.top < headerBottom + 8){
+    dy = cardRect.top - headerBottom - 8;
+  } else if(elRect.bottom > window.innerHeight - 16){
+    dy = Math.min(elRect.bottom - window.innerHeight + 16, cardRect.top + cardRect.height * 0.55 - headerBottom);
+  }
+  if(dy) window.scrollBy({ top: dy, behavior: "smooth" });
+}
+
+window.addEventListener("resize", () => placeInlineDetail(false));
 
 document.getElementById("searchInput").addEventListener("input", (e) => {
   currentQuery = e.target.value.trim();
@@ -3638,6 +3806,7 @@ function renderInfoView(){
    부스 정보(이름·상품 정보 또는 부스컷)와 부스원 목록은 일반 상세 창과 선입금 창이 같이 씀.
 ------------------------------------------------------------------------- */
 function openBoothModalShell(booth){
+  closeInlineDetail();
   const backdrop = document.getElementById("modalBackdrop");
   const content = document.getElementById("modalContent");
   content.innerHTML = "";
@@ -3653,6 +3822,12 @@ function openBoothModalShell(booth){
   closeBtn.addEventListener("click", closeModal);
   content.appendChild(closeBtn);
 
+  fillBoothInfo(content, booth);
+  return content;
+}
+
+// 부스 이름·상품 정보(또는 부스컷)·부스원 목록. 모달에서는 창 위쪽, PC 펼침 상세에서는 왼쪽 칸.
+function fillBoothInfo(container, booth){
   const head = document.createElement("div");
   head.className = "pop-head";
   head.style.marginTop = "6px";
@@ -3660,13 +3835,12 @@ function openBoothModalShell(booth){
   names.className = "names";
   names.innerHTML = `<div class="c-name">${escapeHtml(booth.name)}</div><div class="r-name">${boothSubLine(booth)}</div>`;
   head.appendChild(names);
-  content.appendChild(head);
+  container.appendChild(head);
   // 반영된 상품 정보 글이 있는 부스는 부스컷 자리에 그 글을 대신 보여줌 (2026-10-04 사용자 요청)
   const cut = buildBoothCut(booth);
-  content.appendChild(buildBoothPosts(booth, () => cut.remove()));
-  content.appendChild(cut);
-  content.appendChild(buildMemberList(booth));
-  return content;
+  container.appendChild(buildBoothPosts(booth, () => cut.remove()));
+  container.appendChild(cut);
+  container.appendChild(buildMemberList(booth));
 }
 
 function showBoothModal(){
@@ -3680,7 +3854,12 @@ function openBoothModal(boothId){
   const booth = BOOTHS.find(b => b.id === boothId);
   if(!booth) return;
   const content = openBoothModalShell(booth);
+  fillBoothActions(content, booth);
+  showBoothModal();
+}
 
+// 트윗·X 링크·방문 예정/완료·선입금·우선순위·예산·메모. 모달에서는 부스 정보 아래, PC 펼침 상세에서는 오른쪽 칸.
+function fillBoothActions(content, booth){
   const slot = document.createElement("div");
   slot.className = "tweet-slot";
   const ph = document.createElement("div");
@@ -3829,8 +4008,6 @@ function openBoothModal(boothId){
   });
 
   content.appendChild(memoBox);
-
-  showBoothModal();
 }
 
 /* ---------- 선입금 창 (선입금 탭에서 부스를 눌렀을 때) ----------
@@ -3841,6 +4018,12 @@ function openPreorderModal(boothId){
   const booth = BOOTHS.find(b => b.id === boothId);
   if(!booth) return;
   const content = openBoothModalShell(booth);
+  fillPreorderActions(content, booth);
+  showBoothModal();
+}
+
+// 수령 완료 버튼과 선입금 정보 칸. 모달에서는 부스 정보 아래, PC 펼침 상세에서는 오른쪽 칸.
+function fillPreorderActions(content, booth){
   const p = getPreorder(booth.id) || {};
   const refreshPreorderTab = () => {
     if(currentRow === "PREORDER") renderGrid();
@@ -3883,8 +4066,6 @@ function openPreorderModal(boothId){
     input.addEventListener("change", () => { renderNav(); refreshPreorderTab(); });
   });
   content.appendChild(box);
-
-  showBoothModal();
 }
 
 // 사용법 설명서(PDF) 구글 드라이브 링크
@@ -3959,6 +4140,11 @@ document.getElementById("modalBackdrop").addEventListener("click", (e) => {
 });
 document.addEventListener("keydown", (e) => {
   if(e.key === "Escape"){
+    // 큰 이미지·모달·확인 창이 떠 있으면 그것만 닫고, 아무것도 없을 때 PC 펼침 상세를 닫음
+    const overlayOpen = document.querySelector(".cut-lightbox") ||
+      document.getElementById("modalBackdrop").classList.contains("open") ||
+      document.getElementById("confirmBackdrop").classList.contains("open");
+    if(!overlayOpen) closeInlineDetail();
     closeCutLightbox();
     closeModal();
     closeConfirmDialog(false);
