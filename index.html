@@ -1354,17 +1354,18 @@
   }
   .booth-inline .inline-close:hover{ background:rgba(255,255,255,.12); }
   .booth-inline-info, .booth-inline-actions{ min-width:0; }
-  /* 왼쪽 칸 맨 위 큰 제목 "[A15] PPP2" */
-  .booth-inline-title{
-    margin:0 0 12px;
-    font-size:26px;
+  /* 부스 상세 큰 제목 "[A15] PPP2": 모달은 20px(닫기 버튼 옆), PC 펼침 상세 왼쪽 칸 맨 위는 26px */
+  .booth-title{
+    margin:8px 0 12px;
+    font-size:20px;
     font-weight:800;
-    line-height:1.25;
+    line-height:1.3;
     word-break:keep-all;
     overflow-wrap:anywhere;
   }
-  .booth-inline-title .inline-id{ color:var(--moss-light); }
-  .booth-inline-title .inline-adult{ font-size:14px; vertical-align:middle; }
+  .booth-title-id{ color:var(--moss-light); }
+  .booth-title-adult{ font-size:13px; vertical-align:middle; }
+  .booth-inline .booth-title{ margin:0 0 12px; font-size:26px; line-height:1.25; }
   /* 오른쪽 칸 맨 위 부스원: 가로로 나열하고 많으면 다음 줄로. 오른쪽은 닫기 버튼 자리를 비워 둠 */
   .booth-inline .member-list{
     flex-direction:row;
@@ -3322,11 +3323,7 @@ function openInlineDetail(boothId, kind){
   // 왼쪽 칸 맨 위: "[A15] PPP2"처럼 부스 번호와 이름을 크게 (2026-10-05 사용자 요청)
   const info = document.createElement("div");
   info.className = "booth-inline-info";
-  const title = document.createElement("h2");
-  title.className = "booth-inline-title";
-  title.innerHTML = `<span class="inline-id">[${escapeHtml(booth.id)}]</span> ${escapeHtml(booth.name)}` +
-    (booth.adult ? ` <span class="inline-adult">${escapeHtml(t("adultTag"))}</span>` : "");
-  info.appendChild(title);
+  info.appendChild(buildBoothTitle(booth));
   fillBoothInfo(info, booth, { withHead: false, withMembers: false });
   // 오른쪽 칸 맨 위: 부스원 목록을 가로로 나열(많으면 다음 줄로 넘어감)
   const actions = document.createElement("div");
@@ -3789,8 +3786,19 @@ function openBoothModalShell(booth){
   closeBtn.addEventListener("click", closeModal);
   content.appendChild(closeBtn);
 
-  fillBoothInfo(content, booth);
+  // 부스 번호·이름을 PC 펼침 상세처럼 "[A03] GYM LIGER" 큰 제목으로 (2026-10-05 사용자 요청)
+  content.appendChild(buildBoothTitle(booth));
+  fillBoothInfo(content, booth, { withHead: false });
   return content;
+}
+
+// 부스 상세 큰 제목 "[A15] PPP2" (모달·PC 펼침 상세 공통, 글자 크기는 CSS에서 따로)
+function buildBoothTitle(booth){
+  const title = document.createElement("h2");
+  title.className = "booth-title";
+  title.innerHTML = `<span class="booth-title-id">[${escapeHtml(booth.id)}]</span> ${escapeHtml(booth.name)}` +
+    (booth.adult ? ` <span class="booth-title-adult">${escapeHtml(t("adultTag"))}</span>` : "");
+  return title;
 }
 
 // 부스 이름·상품 정보(또는 부스컷)·부스원 목록. 모달에서는 창 위쪽에 차례로 붙임.
