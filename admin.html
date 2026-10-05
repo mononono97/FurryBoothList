@@ -358,7 +358,7 @@ function drawEmbed(box){
       <a class="meta" href="${escapeHtml(url)}" target="_blank" rel="noopener">X에서 내용 확인하기</a></div>`;
   };
   if(sensitive === "1"){
-    linkOnly("X가 민감한 글로 표시해 임베드할 수 없는 글입니다. 사이트에는 아이디와 \"X에서 보기\" 링크만 보여요.");
+    linkOnly("X가 민감한 글로 표시해 임베드할 수 없는 글입니다. 사이트에는 아이디·작성 날짜와 \"X에서 보기\" 링크만 보여요.");
     return;
   }
   box.innerHTML = `<div class="meta">불러오는 중…</div>`;

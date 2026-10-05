@@ -1065,6 +1065,7 @@
     line-height:1.5;
   }
   .booth-post-handle{ font-weight:700; margin-bottom:4px; }
+  .booth-post-date{ font-weight:400; color:var(--muted); }
   .booth-post-note{ font-size:11.5px; color:var(--muted); margin:6px 0 4px; }
   .booth-post-card a{ font-size:12.5px; color:var(--accent); }
   .official-feed{
@@ -2929,13 +2930,16 @@ function loadBoothPostsDoc(){
 function loadApprovedBoothPosts(){ return loadBoothPostsDoc().then(d => d.approved); }
 
 // X 임베드 대신 보여주는 링크 카드. 민감한 글(임베드가 막힘)과 임베드가 안 되는 글(지워졌거나 X 스크립트가 막힘)에 씀.
-// 글 본문·이미지는 X 밖에 사본을 두지 않으려고 넣지 않음
+// 글 본문·이미지는 X 밖에 사본을 두지 않으려고 넣지 않음. 작성 날짜는 글 id 에서 계산함(저장한 값 아님)
 function buildBoothPostCard(id, entry){
   const card = document.createElement("div");
   card.className = "booth-post-card";
   const url = `https://x.com/${encodeURIComponent(entry.handle || "i")}/status/${encodeURIComponent(id)}`;
+  const time = postTime(id);
+  const date = time ? new Date(time).toLocaleDateString(currentLang === "jp" ? "ja-JP" : currentLang === "en" ? "en-US" : "ko-KR",
+    { year: "numeric", month: "short", day: "numeric" }) : "";
   card.innerHTML = `
-    <div class="booth-post-handle">@${escapeHtml(entry.handle || "")}</div>
+    <div class="booth-post-handle">@${escapeHtml(entry.handle || "")}${date ? `<span class="booth-post-date"> · ${escapeHtml(date)}</span>` : ""}</div>
     ${entry.sensitive ? `<div class="booth-post-note">${escapeHtml(t("boothPostSensitive"))}</div>` : ""}
     <a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(t("boothPostOpenX"))}</a>
   `;
