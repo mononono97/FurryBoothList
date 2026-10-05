@@ -404,6 +404,22 @@
   }
   .help-body p:last-child{margin-bottom:0;}
   .help-body a{color:inherit;}
+  /* 도움말 창의 사용법 설명서(구글 드라이브) 링크 버튼 */
+  .help-guide-btn{
+    display:block;
+    margin:0 0 16px;
+    text-align:center;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:700;
+    padding:10px 8px;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,.25);
+    background:rgba(255,255,255,.08);
+    color:var(--on-panel);
+    transition:background .15s;
+  }
+  .help-guide-btn:hover{background:rgba(255,255,255,.16);}
 
   nav.rows{
     max-width:1180px;
@@ -1585,18 +1601,9 @@ const I18N = {
     themeLight: "☀️ 라이트",
     themeDark: "🌙 다크",
     helpTitle: "도움말",
+    helpGuideBtn: "📖 사용법 설명서 보기 (Google 드라이브)",
     helpBody: [
       "이 사이트는 Furst Class 부스 목록을 쉽게 보기 위해 만든 사이트 입니다.\n자동 번역 및 개발에 AI를 사용하여 내용에 오류가 있을 수 있습니다.\n자세한 내용은 {link} 을 참고해주세요",
-      "설정 메뉴에서 Google 계정으로 로그인하면, 메모/방문상태/예산/우선순위/선입금을\n다른 기기(휴대폰, PC 등)에서도 이어서 볼 수 있습니다. 자동으로 계속 동기화되는 것은 아니며,\n로그인 시 1회, 이후에는 설정 메뉴의 \"지금 동기화\" 버튼을 눌렀을 때만 반영됩니다.\n로그인하지 않아도 지금처럼 이 브라우저에서만 사용하는 것도 그대로 가능합니다.\n비로그인으로 사용 시, 브라우저의 데이터를 삭제할 경우 사이트에 기록한 내용들이 삭제될 수 있습니다.",
-      "온라인 상태로 한 번 접속해두면, 이후 인터넷이 끊겨도 사이트를 계속 열람할 수 있습니다",
-      "검색창에서는 현재 탭에 위치한 부스를 부스 이름,\n부스 리더·부스원 이름, X 아이디로 필터링 가능합니다(전체 탭에서는 전체 검색)",
-      "부스를 누르면 부스컷과 부스 리더·부스원 목록이 나오고,\n각 사람의 프로필 사진이나 @아이디를 누르면 X 프로필로 이동합니다.\n🔞 표시는 성인 부스입니다.",
-      "메모(📝) 탭에서 내가 메모해둔 작가들을 확인 가능하며,\n방문 예정 혹은 방문 완료 기준으로 필터링 할 수 있습니다.\n설정 메뉴의 \"데이터 초기화\"를 누르면 작성한 메모, 방문 예정/완료 상태, 예산,\n우선순위가 전부 삭제됩니다(되돌릴 수 없으니 주의해주세요).",
-      "부스 창에서 \"💳 선입금\"을 켜면 선입금(💳) 탭에 모입니다.\n선입금 탭에서 부스를 누르면 선입금 날짜·플랫폼·금액·입금자명·품목 메모를 적고\n\"선입금 수령 완료\"를 표시할 수 있습니다.",
-      "배치도에서는 방문 예정인 부스는 노란색,\n방문 완료한 부스는 초록색으로 표시됩니다.",
-      "부스별로 1~3순위를 정할 수 있으며, 순위에 따라 카드/배치도 테두리 색이\n빨강(1순위)·보라(2순위)·파랑(3순위)으로 구분되어 표시됩니다.",
-      "언어는 한국어, 영어, 일본어가 지원됩니다.",
-      "설정 메뉴에서 라이트/다크 화면을 고를 수 있습니다.\n고르지 않으면 브라우저(기기)의 다크 모드 설정을 따릅니다.",
       "제작 : X @Chung_Hwani",
     ],
     allBtn: "📋 전체",
@@ -1715,18 +1722,9 @@ const I18N = {
     themeLight: "☀️ Light",
     themeDark: "🌙 Dark",
     helpTitle: "Help",
+    helpGuideBtn: "📖 User guide (Google Drive, Korean)",
     helpBody: [
       "This site was made to make it easy to browse the Furst Class booth list.\nAI was used for automatic translation and development, so there may be errors in the content.\nFor more details, please refer to {link}",
-      "Sign in with your Google account from the settings menu to keep your notes/visit status/budget/priority\nin sync across devices (phone, PC, etc). It doesn't sync continuously — it syncs once when you sign in,\nand afterward only when you tap \"Sync Now\" in the settings menu. You can still use the site fully\nin this browser only without signing in.\nIf you use it without signing in, your recorded data may be lost if you clear your browser's site data.",
-      "Once you've visited the site while online, you can keep browsing it even if you lose connection later.",
-      "The search box filters booths in the current tab by booth name,\nleader/member name, or X handle (in the All tab, it searches everything).",
-      "Tap a booth to see its booth cut and the list of the leader and members.\nTap a profile picture or @handle to open that person's X profile.\n🔞 marks an adult booth.",
-      "In the Notes (📝) tab, you can see the circles you've noted,\nand filter them by Plan to Visit or Visited status.\nUsing \"Reset Data\" in the settings menu deletes all your notes, visit statuses,\nbudgets, and priorities (this cannot be undone).",
-      "Turn on \"💳 Pre-order\" in a booth window to collect it in the Pre-order (💳) tab.\nTap a booth in that tab to note the payment date, platform, amount and payer name,\nand mark the pre-order as received.",
-      "On the floor map, booths marked Plan to Visit are shown in yellow,\nand booths marked Visited are shown in green.",
-      "You can set a priority (1–3) for each booth; the card/map border color shows it as\nred (priority 1), purple (priority 2), or blue (priority 3).",
-      "Korean, English, and Japanese are supported.",
-      "You can choose a Light or Dark look in the settings menu.\nIf you don't choose, it follows your browser (device) dark mode setting.",
       "Made by: X @Chung_Hwani",
     ],
     allBtn: "📋 All",
@@ -1845,18 +1843,9 @@ const I18N = {
     themeLight: "☀️ ライト",
     themeDark: "🌙 ダーク",
     helpTitle: "ヘルプ",
+    helpGuideBtn: "📖 使い方ガイド (Google ドライブ・韓国語)",
     helpBody: [
       "このサイトは、Furst Classのブース一覧を簡単に見られるように作られたサイトです。\n自動翻訳および開発にAIを使用しているため、内容に誤りがある場合があります。\n詳細は {link} をご参照ください。",
-      "設定メニューからGoogleアカウントでログインすると、メモ・訪問状態・予算・優先度を\n他の端末（スマホ・PCなど）でも引き続き確認できます。常に自動で同期されるわけではなく、\nログイン時に1回、それ以降は設定メニューの「今すぐ同期」を押したときだけ反映されます。\nログインしなくてもこれまで通りこのブラウザだけで利用することもできます。\n未ログインで利用する場合、ブラウザのデータを削除すると記録した内容が失われることがあります。",
-      "一度オンラインでサイトにアクセスしておけば、その後オフラインになってもサイトの閲覧を続けられます。",
-      "検索欄では現在のタブにいるブースをブース名、\nリーダー・メンバー名、Xアカウントで絞り込めます（全体タブでは全体検索）。",
-      "ブースを押すとブースカットとリーダー・メンバーの一覧が表示され、\nプロフィール画像や@IDを押すとそのXプロフィールに移動します。\n🔞は成人向けブースです。",
-      "メモ（📝）タブでは自分がメモしたサークルを確認でき、\n訪問予定または訪問済みの状態で絞り込むことができます。\n設定メニューの「データを初期化」を押すと、書いたメモ・訪問予定/済みの状態・\n予算・優先度がすべて削除されます（元に戻せませんのでご注意ください）。",
-      "ブース画面で「💳 事前通販」をオンにすると事前通販（💳）タブにまとまります。\n事前通販タブでブースを押すと入金日・プラットフォーム・金額・入金者名を記入し、\n「受取済み」を表示できます。",
-      "配置図では、訪問予定のブースは黄色、\n訪問済みのブースは緑色で表示されます。",
-      "ブースごとに優先度（1〜3）を設定でき、カード・配置図の枠線の色で\n赤（優先度1）・紫（優先度2）・青（優先度3）として表示されます。",
-      "言語は韓国語・英語・日本語に対応しています。",
-      "設定メニューでライト/ダーク表示を選べます。\n選ばない場合はブラウザ（端末）のダークモード設定に従います。",
       "制作：X @Chung_Hwani",
     ],
     allBtn: "📋 全体",
@@ -3898,6 +3887,9 @@ function openPreorderModal(boothId){
   showBoothModal();
 }
 
+// 사용법 설명서(PDF) 구글 드라이브 링크
+const HELP_GUIDE_URL = "https://drive.google.com/file/d/1unDx84F7E-Pqt-jlvf9hWLFRSCs-Z4x0/view?usp=drive_link";
+
 function openHelpModal(){
   const backdrop = document.getElementById("modalBackdrop");
   const content = document.getElementById("modalContent");
@@ -3916,6 +3908,14 @@ function openHelpModal(){
   title.style.margin = "6px 0 14px";
   title.textContent = t("helpTitle");
   content.appendChild(title);
+
+  const guideBtn = document.createElement("a");
+  guideBtn.className = "help-guide-btn";
+  guideBtn.href = HELP_GUIDE_URL;
+  guideBtn.target = "_blank";
+  guideBtn.rel = "noopener";
+  guideBtn.textContent = t("helpGuideBtn");
+  content.appendChild(guideBtn);
 
   const body = document.createElement("div");
   body.className = "help-body";
