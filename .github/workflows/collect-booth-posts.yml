@@ -1,4 +1,4 @@
-# 부스 X 계정의 새 글 중 상품 글 후보를 1시간마다 모아 x-post-feed 브랜치의 candidates.json 에 쌓음.
+# 부스 X 계정의 새 상품 글 후보와 공식 계정의 새 글 후보를 1시간마다 모아 x-post-feed 브랜치의 candidates.json 에 쌓음.
 # main 에 커밋하지 않는 이유: main 에 커밋할 때마다 Cloudflare 가 사이트를 다시 배포하기 때문.
 # 관리 화면(admin.html)이 이 파일을 raw.githubusercontent.com 에서 읽음.
 name: 부스 상품 글 후보 모으기

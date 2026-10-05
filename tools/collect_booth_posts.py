@@ -1,7 +1,12 @@
-"""부스 X 계정의 새 글 중 "상품 글 같아 보이는 글"을 모아 후보 목록(candidates.json)을 만드는 스크립트.
+"""부스 X 계정의 새 글 중 "상품 글 같아 보이는 글"과 공식 계정(@FURSTCLASS_KR)의 새 글을 모아
+후보 목록(candidates.json)을 만드는 스크립트.
 
 GitHub Actions(.github/workflows/collect-booth-posts.yml)가 1시간마다 실행함.
-후보는 사이트에 바로 나가지 않고, 관리 화면(admin.html)에서 운영자가 "반영"을 눌러야 부스 상세에 보임.
+후보는 사이트에 바로 나가지 않고, 관리 화면(admin.html)에서 운영자가 "반영"을 눌러야
+부스 상세(상품 글) 또는 행사 안내 탭(공식 글)에 보임.
+
+후보 파일은 공개 저장소에 있어서 글 본문·이미지는 넣지 않고 글 id·아이디·시각·판단 근거만 둠.
+X 약관상 X 밖에 글 사본을 두지 않는 편이 안전해서 (2026-10-05). 관리 화면은 X 공식 임베드로 글을 보여줌.
 
 사용법 (저장소 루트에서):
     python3 tools/collect_booth_posts.py <후보 폴더>            # <후보 폴더>/candidates.json 갱신
@@ -13,6 +18,8 @@ GitHub Actions(.github/workflows/collect-booth-posts.yml)가 1시간마다 실�
    (클라우드 개발 환경에서는 FxTwitter 가 막혀 있어 GitHub Actions 에서만 동작함)
 3. 리트윗·답글·POST_SINCE 이전 글은 거르고, judge() 로 점수를 매겨 MIN_SCORE 이상이면 후보로 추가
 4. 이미 후보에 있는 글은 다시 넣지 않음. 후보는 지우지 않고 계속 쌓임(반영/제외 여부는 Firestore 에 저장됨)
+5. 공식 계정은 키워드 판단 없이 리트윗·답글(번역 글)만 거르고 모두 후보로 넣음(official 목록).
+   처음엔 OFFICIAL_SINCE 까지 페이지를 넘겨 가며 받고, 그 뒤로는 이미 아는 글이 나오면 멈춤
 
 AI 판단을 붙일 때는 judge() 안에서 키워드 점수가 애매한 글만 Claude API 로 다시 물어보도록 바꾸면 됨.
 """
@@ -21,6 +28,7 @@ import re
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
@@ -32,6 +40,14 @@ PROTECTED_PATH = ROOT / "data" / "x-protected-handles.txt"
 # 이 시각 이전 글은 후보로 보지 않음. 부스 작가 상당수가 2026-09-20 케모켓에도 나가서,
 # 그 행사 인포 글이 섞이지 않도록 케모켓 다음 날부터 봄 (2026-10-04 첫 시험 결과)
 POST_SINCE = datetime(2026, 9, 21, tzinfo=timezone.utc)
+# 공식 계정 글은 이 시각 이후 글만 후보로 봄(예전 사이트가 행사 안내 탭에 보여주던 범위와 같음)
+OFFICIAL_HANDLE = "FURSTCLASS_KR"
+OFFICIAL_SINCE = datetime(2026, 6, 15, 15, tzinfo=timezone.utc)   # 2026-06-16 00:00 KST
+OFFICIAL_MAX_PAGES = 8   # 페이지당 약 20개
+# 후보로도 넣지 않을 공식 글 (2026-10-02 사용자 요청: 8/21 게스트 관련 글)
+OFFICIAL_SKIP_IDS = {"2090723233784099271"}
+# 후보 파일에 남기지 않는 값. 예전 후보 파일에 들어 있던 본문·이미지도 다음 실행 때 지움
+DROP_KEYS = ("text", "images", "quote")
 MIN_SCORE = 2
 REQUEST_GAP_SECONDS = 1.0
 USER_AGENT = "FurryBoothList booth post collector (+https://github.com/mononono97/FurryBoothList)"
@@ -81,21 +97,63 @@ def handle_map(booths):
     return result
 
 
-def fetch_statuses(handle):
+def fetch_page(handle, cursor=None):
+    """프로필 글 목록 한 페이지의 원본 JSON. cursor 를 주면 그 다음 페이지."""
     # FxTwitter 는 같은 계정이라도 가끔 빈 결과(404)를 줌(대문자 아이디일 때 특히 자주).
     # 소문자 → 표기 그대로 순서로, 잠깐 쉬었다가 한 번씩 더 시도함
     last_error = None
+    query = f"?cursor={urllib.parse.quote(cursor)}" if cursor else ""
     for name in dict.fromkeys([handle.lower(), handle]):
         for attempt in range(2):
-            url = f"https://api.fxtwitter.com/2/profile/{name}/statuses"
+            url = f"https://api.fxtwitter.com/2/profile/{name}/statuses{query}"
             req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
             try:
                 with urllib.request.urlopen(req, timeout=20) as res:
-                    return json.load(res).get("results") or []
+                    return json.load(res)
             except urllib.error.HTTPError as e:
                 last_error = e
                 time.sleep(2)
     raise last_error
+
+
+def fetch_statuses(handle):
+    return fetch_page(handle).get("results") or []
+
+
+def created_at(p):
+    return datetime.fromtimestamp(p.get("created_timestamp") or 0, tz=timezone.utc)
+
+
+def collect_official(known):
+    """공식 계정의 새 글 후보 목록. known 은 이미 후보에 있는 글 id 집합."""
+    added, cursor = [], None
+    for _ in range(OFFICIAL_MAX_PAGES):
+        page = fetch_page(OFFICIAL_HANDLE, cursor)
+        results = page.get("results") or []
+        stop = not results
+        for p in results:
+            pid = str(p.get("id") or "")
+            if not pid:
+                continue
+            if created_at(p) < OFFICIAL_SINCE or pid in known:
+                stop = True   # 목록은 최신순이라 오래된 글·이미 아는 글이 나오면 그 뒤는 볼 필요 없음
+                continue
+            author = ((p.get("author") or {}).get("screen_name") or "").lower()
+            if p.get("reposted_by") or p.get("replying_to") or author != OFFICIAL_HANDLE.lower() or pid in OFFICIAL_SKIP_IDS:
+                continue
+            known.add(pid)
+            added.append({
+                "id": pid,
+                "handle": (p.get("author") or {}).get("screen_name") or OFFICIAL_HANDLE,
+                "created": created_at(p).isoformat(),
+                "sensitive": bool(p.get("possibly_sensitive")),
+                "foundAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            })
+        cursor = (page.get("cursor") or {}).get("bottom")
+        if stop or not cursor:
+            break
+        time.sleep(REQUEST_GAP_SECONDS)
+    return added
 
 
 def post_text(p):
@@ -134,6 +192,14 @@ def collect(feed_dir, dry_run=False):
     handles = handle_map(booths)
     path = Path(feed_dir) / "candidates.json"
     data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"posts": []}
+    data.setdefault("official", [])
+    # 예전 후보에 들어 있던 본문·이미지를 지움
+    stripped = 0
+    for c in data["posts"] + data["official"]:
+        if any(k in c for k in DROP_KEYS):
+            stripped += 1
+            for k in DROP_KEYS:
+                c.pop(k, None)
     # 지금 보는 계정(부스장)이 아닌 글은 후보에서 뺌. 부스원 계정도 모으던 때(2026-10-04) 쌓인 후보 정리용
     before = len(data["posts"])
     data["posts"] = [p for p in data["posts"] if p.get("handle", "").lower() in handles]
@@ -152,7 +218,7 @@ def collect(feed_dir, dry_run=False):
             author = ((p.get("author") or {}).get("screen_name") or "").lower()
             if not pid or pid in known or p.get("reposted_by") or p.get("replying_to") or author != key:
                 continue
-            created = datetime.fromtimestamp(p.get("created_timestamp") or 0, tz=timezone.utc)
+            created = created_at(p)
             if created < POST_SINCE:
                 continue
             text = post_text(p)
@@ -167,32 +233,42 @@ def collect(feed_dir, dry_run=False):
                 "booths": booth_ids,
                 "boothNames": [names.get(b, b) for b in booth_ids],
                 "created": created.isoformat(),
-                "text": text,
-                "images": images,
                 "score": score,
                 # X 는 민감한 글로 표시된 글을 로그인하지 않은 방문자에게 임베드해 주지 않음("Not found").
-                # 이런 글은 사이트에서 임베드 대신 글과 링크만 보여줌
+                # 이런 글은 사이트에서 임베드 대신 아이디와 "X에서 보기" 링크만 보여줌
                 "sensitive": bool(p.get("possibly_sensitive")),
-                # 인용한 글이 있는 글. X 임베드는 인용 글을 숨길 수 없어 사이트에서 본문·이미지 카드로 보여줌
-                "quote": bool(p.get("quote")),
                 "reasons": reasons,
                 "foundAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             })
         time.sleep(REQUEST_GAP_SECONDS)
 
-    print(f"계정 {len(handles)}개 확인, 새 후보 {len(added)}개, 실패 {len(failed)}개")
+    try:
+        official_added = collect_official({c["id"] for c in data["official"]})
+    except Exception as e:
+        failed.append(f"{OFFICIAL_HANDLE}(공식): {e}")
+        official_added = []
+
+    print(f"계정 {len(handles)}개 확인, 새 후보 {len(added)}개, 공식 글 새 후보 {len(official_added)}개, 실패 {len(failed)}개")
     for c in added:
-        print(f"  + {c['booths']} @{c['handle']} 점수 {c['score']} {c['reasons']} {c['text'][:60]!r}")
+        print(f"  + {c['booths']} @{c['handle']} 점수 {c['score']} {c['reasons']} https://x.com/{c['handle']}/status/{c['id']}")
+    for c in official_added:
+        print(f"  + 공식 https://x.com/{c['handle']}/status/{c['id']}")
     for f in failed:
         print(f"  ! {f}")
     if removed:
         print(f"  부스장이 아닌 계정의 후보 {removed}개 정리")
-    if dry_run or not (added or removed):
+    if stripped:
+        print(f"  후보 {stripped}개에서 본문·이미지 지움")
+    if dry_run or not (added or official_added or removed or stripped):
         return  # 새 후보가 없으면 파일을 그대로 둬서 쓸데없는 커밋이 생기지 않게 함
 
     # 최신 글이 위로 오도록 id(시간순으로 커지는 숫자) 기준 내림차순
-    posts = sorted(data["posts"] + added, key=lambda c: int(c["id"]), reverse=True)
-    out = {"updatedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"), "posts": posts}
+    newest = lambda items: sorted(items, key=lambda c: int(c["id"]), reverse=True)
+    out = {
+        "updatedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "posts": newest(data["posts"] + added),
+        "official": newest(data["official"] + official_added),
+    }
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(out, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 

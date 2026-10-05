@@ -8,14 +8,14 @@
   default-src 'self';
   script-src 'self' 'unsafe-inline' https://platform.twitter.com https://cdn.syndication.twimg.com https://www.gstatic.com https://apis.google.com;
   style-src 'self' 'unsafe-inline';
-  img-src 'self' data: https://pbs.twimg.com https://abs.twimg.com https://ton.twimg.com;
+  img-src 'self' data: https://abs.twimg.com https://ton.twimg.com;
   connect-src 'self' https://raw.githubusercontent.com https://api.fxtwitter.com https://cdn.syndication.twimg.com https://syndication.twitter.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com;
   frame-src https://platform.twitter.com https://syndication.twitter.com https://accounts.google.com https://boothlist-4589c.firebaseapp.com;
   object-src 'none';
   base-uri 'self';
   form-action 'self';
 ">
-<title>상품 글 관리</title>
+<title>X 글 관리</title>
 <link rel="icon" type="image/png" href="favicon.png">
 <script>
   // 사이트와 같은 테마 설정(furstclass-theme)을 따름
@@ -76,9 +76,6 @@
     display:inline-block; font-size:11px; padding:1px 7px; margin:0 4px 2px 0;
     border-radius:999px; background:var(--chip-bg); color:var(--muted);
   }
-  .text{ white-space:pre-wrap; word-break:break-word; margin:8px 0; }
-  .images{ display:flex; gap:6px; flex-wrap:wrap; }
-  .images img{ width:120px; height:120px; object-fit:cover; border-radius:8px; border:1px solid var(--line); }
   .actions{ display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-top:10px; }
   .embed{ margin-top:8px; }
   .post-card{ border:1px dashed var(--line); border-radius:10px; padding:8px 10px; }
@@ -88,15 +85,12 @@
   .empty{ color:var(--muted); padding:24px 0; text-align:center; }
   details summary{ cursor:pointer; color:var(--muted); font-size:12.5px; }
   pre{ background:var(--chip-bg); padding:8px 10px; border-radius:8px; overflow-x:auto; font-size:12px; }
-  @media (max-width:600px){
-    .images img{ width:88px; height:88px; }
-  }
 </style>
 </head>
 <body>
 <main>
-  <h1>상품 글 관리</h1>
-  <div class="sub">부스 X 계정에서 자동으로 찾은 상품 글 후보입니다. "반영"을 누르면 사이트의 부스 상세 창에 바로 나타납니다.</div>
+  <h1>X 글 관리</h1>
+  <div class="sub">사이트에 보여줄 X 글을 고릅니다. 글은 X 공식 임베드로만 보여주고, 본문·이미지는 따로 저장하지 않습니다.</div>
 
   <div class="panel">
     <div class="row">
@@ -118,6 +112,11 @@
   </div>
 
   <div id="adminArea" hidden>
+  <div class="tabs" id="modes">
+    <button type="button" data-mode="booth" class="active">부스 상품 글</button>
+    <button type="button" data-mode="official">행사 안내 글</button>
+  </div>
+  <div class="sub" id="modeDesc"></div>
   <div class="panel">
     <div style="font-weight:600; margin-bottom:6px;">글 주소로 직접 추가</div>
     <div class="row">
@@ -132,6 +131,7 @@
     <button type="button" data-tab="pending" class="active">대기</button>
     <button type="button" data-tab="approved">반영됨</button>
     <button type="button" data-tab="excluded">제외됨</button>
+    <button type="button" id="approveAllBtn" class="ok" hidden>대기 글 모두 반영</button>
     <button type="button" id="reloadBtn" style="margin-left:auto;">새로고침</button>
   </div>
   <div class="msg" id="listMsg">불러오는 중…</div>
@@ -143,11 +143,15 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
-/* ---------- 상품 글 관리 화면 ----------
+/* ---------- 상품 글·행사 안내 글 관리 화면 ----------
    후보: GitHub Actions(tools/collect_booth_posts.py)가 x-post-feed 브랜치에 쌓는 candidates.json
+     posts:    부스장 계정의 상품 글 후보   official: 공식 계정(@FURSTCLASS_KR)의 글 후보
    결정: Firestore boothPosts/main 문서
-     approved: { 글id: { booth: "A02", handle: "아이디", at: ISO 시각 } }  ← 사이트(index.html)가 읽어서 부스 상세에 표시
-     excluded: { 글id: true }                                               ← 대기 목록에서 숨김
+     approved: { 글id: { booth: "A02", handle: "아이디", at: ISO 시각, sensitive } }  ← 사이트가 부스 상세에 표시
+     excluded: { 글id: true }                                                      ← 상품 글 대기 목록에서 숨김
+     official: { 글id: { handle, at } }                                            ← 사이트가 행사 안내 탭에 표시
+     officialExcluded: { 글id: true }                                              ← 행사 안내 글 대기 목록에서 숨김
+   X 약관에 맞추려고 글 본문·이미지는 후보 파일에도 Firestore 에도 저장하지 않고, 화면에는 X 공식 임베드로만 보여줌 (2026-10-05).
    쓰기 권한은 Firestore 규칙에서 운영자 UID 에게만 줌(이 화면 위쪽 "반영 권한 설정 방법").
 ------------------------------------------ */
 const CANDIDATES_URL = "https://raw.githubusercontent.com/mononono97/FurryBoothList/x-post-feed/candidates.json";
@@ -170,19 +174,27 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const decisionsRef = db.collection("boothPosts").doc("main");
 const FieldValue = firebase.firestore.FieldValue;
+const OFFICIAL_HANDLE = "FURSTCLASS_KR";
 
 let booths = [];
-let candidates = [];
-let decisions = { approved: {}, excluded: {} };
+let candidates = [];          // 상품 글 후보
+let officialCandidates = [];  // 행사 안내 글 후보
+let decisions = { approved: {}, excluded: {}, official: {}, officialExcluded: {} };
+let currentMode = "booth";    // "booth" = 부스 상품 글, "official" = 행사 안내 글
 let currentTab = "pending";
 let currentUser = null;
 let decisionsReadable = true;
 
+// 모드별로 쓰는 후보 목록과 Firestore 필드 이름
+function modeInfo(mode = currentMode){
+  return mode === "official"
+    ? { list: officialCandidates, approvedKey: "official", excludedKey: "officialExcluded" }
+    : { list: candidates, approvedKey: "approved", excludedKey: "excluded" };
+}
+
 function escapeHtml(s){
   return String(s || "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 }
-// 카드 본문 끝의 t.co 링크(이미지·인용 글 주소)는 카드에 필요 없어 지움. index.html 의 cardText 와 같음
-function cardText(text){ return String(text || "").replace(/(\s*https:\/\/t\.co\/\w+)+\s*$/, ""); }
 function theme(){ return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light"; }
 function boothName(id){ const b = booths.find(b => b.id === id); return b ? b.name : ""; }
 function fmtDate(iso){
@@ -203,18 +215,43 @@ function loadBooths(){
 function loadCandidates(){
   return fetch(`${CANDIDATES_URL}?t=${Date.now()}`, { cache: "no-store" })
     .then(r => r.ok ? r.json() : { posts: [] })
-    .then(data => { candidates = data.posts || []; });
+    .then(data => {
+      candidates = data.posts || [];
+      officialCandidates = data.official || [];
+    });
 }
 function loadDecisions(){
   return decisionsRef.get().then(doc => {
     const d = doc.exists ? doc.data() : {};
-    decisions = { approved: d.approved || {}, excluded: d.excluded || {} };
+    decisions = {
+      approved: d.approved || {}, excluded: d.excluded || {},
+      official: d.official || {}, officialExcluded: d.officialExcluded || {},
+    };
     decisionsReadable = true;
+    return cleanupStoredContent();
   }).catch(err => {
     // 규칙을 아직 넣지 않았으면 읽기도 막힘. 후보 목록은 그래도 보여줌
     if(!err || err.code !== "permission-denied") throw err;
     decisionsReadable = false;
   });
+}
+/* 2026-10-05 이전에 반영한 글에는 본문·이미지 주소(text, images)와 quote 가 함께 저장돼 있었음.
+   X 밖에 글 사본을 두지 않으려고, 운영자가 이 화면을 열 때 한 번에 지움 */
+function cleanupStoredContent(){
+  const patch = {};
+  Object.keys(decisions.approved).forEach(id => {
+    const entry = decisions.approved[id] || {};
+    if(!("text" in entry || "images" in entry || "quote" in entry)) return;
+    patch[id] = { text: FieldValue.delete(), images: FieldValue.delete(), quote: FieldValue.delete() };
+  });
+  const ids = Object.keys(patch);
+  if(!ids.length || !currentUser) return;
+  return decisionsRef.set({ approved: patch }, { merge: true }).then(() => {
+    ids.forEach(id => {
+      const entry = decisions.approved[id];
+      delete entry.text; delete entry.images; delete entry.quote;
+    });
+  }).catch(() => {});   // 실패해도 다음에 열 때 다시 시도함
 }
 
 function boothsForHandle(handle){
@@ -232,42 +269,22 @@ function writeDecision(data){
     throw err;
   });
 }
-/* 반영할 때 글 내용(본문·민감한 글 여부)도 같이 저장함.
-   X 는 민감한 글로 표시된 글을 임베드해 주지 않아서("Not found"), 사이트는 이런 글을 저장해 둔 본문과 링크로 보여줌.
+/* 반영할 때 민감한 글 여부와 아이디만 확인해 저장함(본문·이미지는 저장하지 않음).
+   X 는 민감한 글로 표시된 글을 임베드해 주지 않아서("Not found"), 사이트는 이런 글을 "X에서 보기" 링크로 보여줌.
    FxTwitter 에서 최신 정보를 받고, 실패하면 후보 파일의 값을 씀 */
 function fetchPostInfo(id, candidate){
-  const fromCandidate = () => ({
-    text: (candidate && candidate.text) || "",
-    sensitive: !!(candidate && candidate.sensitive),
-    quote: !!(candidate && candidate.quote),
-    images: (candidate && candidate.images) || [],
-  });
+  const fromCandidate = () => ({ sensitive: !!(candidate && candidate.sensitive) });
   return fetch(`https://api.fxtwitter.com/2/status/${id}`)
     .then(r => r.ok ? r.json() : Promise.reject(r.status))
     .then(data => {
       const st = data.status || {};
-      return {
-        text: (st.raw_text && st.raw_text.text) || st.text || fromCandidate().text,
-        sensitive: !!st.possibly_sensitive,
-        quote: !!st.quote,
-        images: [
-          ...((st.media && st.media.photos) || []).map(m => m.url),
-          ...((st.media && st.media.videos) || []).map(m => m.thumbnail_url),
-        ].filter(Boolean).slice(0, 4),
-        handle: st.author && st.author.screen_name,
-      };
+      return { sensitive: !!st.possibly_sensitive, handle: st.author && st.author.screen_name };
     })
     .catch(fromCandidate);
 }
 function approve(id, booth, handle, candidate){
   return fetchPostInfo(id, candidate).then(info => {
-    const entry = {
-      booth, handle: info.handle || handle, at: new Date().toISOString(),
-      text: (info.text || "").slice(0, 1000), sensitive: info.sensitive,
-      // 인용한 글이 있는 글: X 임베드에는 인용 글을 숨기는 옵션이 없어서 사이트가 카드로 직접 그림
-      quote: info.quote,
-      images: info.sensitive ? [] : info.images,
-    };
+    const entry = { booth, handle: info.handle || handle, at: new Date().toISOString(), sensitive: info.sensitive };
     return writeDecision({
       approved: { [id]: entry },
       excluded: { [id]: FieldValue.delete() },
@@ -277,22 +294,39 @@ function approve(id, booth, handle, candidate){
     });
   });
 }
+// 행사 안내 글 반영. 여러 개를 한 번에 반영할 수 있게 id 목록을 받음
+function approveOfficial(ids){
+  const at = new Date().toISOString();
+  const approved = {}, excluded = {};
+  ids.forEach(id => {
+    approved[id] = { handle: OFFICIAL_HANDLE, at };
+    excluded[id] = FieldValue.delete();
+  });
+  return writeDecision({ official: approved, officialExcluded: excluded }).then(() => {
+    ids.forEach(id => {
+      decisions.official[id] = approved[id];
+      delete decisions.officialExcluded[id];
+    });
+  });
+}
 function exclude(id){
+  const { approvedKey, excludedKey } = modeInfo();
   return writeDecision({
-    approved: { [id]: FieldValue.delete() },
-    excluded: { [id]: true },
+    [approvedKey]: { [id]: FieldValue.delete() },
+    [excludedKey]: { [id]: true },
   }).then(() => {
-    delete decisions.approved[id];
-    decisions.excluded[id] = true;
+    delete decisions[approvedKey][id];
+    decisions[excludedKey][id] = true;
   });
 }
 function undo(id){
+  const { approvedKey, excludedKey } = modeInfo();
   return writeDecision({
-    approved: { [id]: FieldValue.delete() },
-    excluded: { [id]: FieldValue.delete() },
+    [approvedKey]: { [id]: FieldValue.delete() },
+    [excludedKey]: { [id]: FieldValue.delete() },
   }).then(() => {
-    delete decisions.approved[id];
-    delete decisions.excluded[id];
+    delete decisions[approvedKey][id];
+    delete decisions[excludedKey][id];
   });
 }
 
@@ -308,27 +342,83 @@ function ensureWidgets(cb){
   setTimeout(() => ensureWidgets(cb), 300);
 }
 
-/* 탭별 목록. 반영됨/제외됨 탭에는 직접 추가한 글(후보 파일에 없는 글)도 보여야 하므로 결정 목록 기준으로 만듦 */
-function rowsForTab(){
-  const byId = new Map(candidates.map(c => [c.id, c]));
-  if(currentTab === "pending"){
-    return candidates.filter(c => !decisions.approved[c.id] && !decisions.excluded[c.id]);
+/* 글 임베드는 화면에 가까워졌을 때 그림(후보가 많으면 한꺼번에 그리기 무거움) */
+const embedObserver = "IntersectionObserver" in window ? new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(!e.isIntersecting) return;
+    embedObserver.unobserve(e.target);
+    drawEmbed(e.target);
+  });
+}, { rootMargin: "600px 0px" }) : null;
+function drawEmbed(box){
+  const { id, handle, sensitive } = box.dataset;
+  const url = `https://x.com/${encodeURIComponent(handle || "i")}/status/${id}`;
+  const linkOnly = (note) => {
+    box.innerHTML = `<div class="post-card"><div class="meta">${escapeHtml(note)}</div>
+      <a class="meta" href="${escapeHtml(url)}" target="_blank" rel="noopener">X에서 내용 확인하기</a></div>`;
+  };
+  if(sensitive === "1"){
+    linkOnly("X가 민감한 글로 표시해 임베드할 수 없는 글입니다. 사이트에는 아이디와 \"X에서 보기\" 링크만 보여요.");
+    return;
   }
-  const ids = Object.keys(currentTab === "approved" ? decisions.approved : decisions.excluded).sort(newestFirst);
-  return ids.map(id => byId.get(id) || {
-    id, handle: (decisions.approved[id] || {}).handle || "", booths: [(decisions.approved[id] || {}).booth].filter(Boolean),
-    text: (decisions.approved[id] || {}).text || "", images: [], reasons: ["직접 추가"], created: "",
-    sensitive: !!(decisions.approved[id] || {}).sensitive,
+  box.innerHTML = `<div class="meta">불러오는 중…</div>`;
+  // 민감한 글로 바뀌었거나 지워진 글은 X 가 응답을 주지 않으므로 일정 시간 뒤 링크로 바꿈
+  const fallback = setTimeout(() => {
+    if(!box.querySelector("iframe")) linkOnly("임베드를 불러오지 못했습니다(지워졌거나 민감한 글일 수 있음). 사이트에는 링크만 보여요.");
+  }, 12000);
+  ensureWidgets(() => {
+    box.innerHTML = "";
+    window.twttr.widgets.createTweet(id, box, { theme: theme(), dnt: true, conversation: "none" })
+      .then(el => {
+        clearTimeout(fallback);
+        if(!el) linkOnly("임베드를 불러오지 못했습니다(지워졌거나 민감한 글일 수 있음). 사이트에는 링크만 보여요.");
+      }, () => {});
+  });
+}
+
+/* 탭별 목록. 반영됨/제외됨 탭에는 직접 추가한 글(후보 파일에 없는 글)도 보여야 하므로 결정 목록 기준으로 만듦 */
+function pendingRows(){
+  const { list, approvedKey, excludedKey } = modeInfo();
+  return list.filter(c => !decisions[approvedKey][c.id] && !decisions[excludedKey][c.id]);
+}
+function rowsForTab(){
+  const { list, approvedKey, excludedKey } = modeInfo();
+  if(currentTab === "pending") return pendingRows();
+  const byId = new Map(list.map(c => [c.id, c]));
+  const ids = Object.keys(currentTab === "approved" ? decisions[approvedKey] : decisions[excludedKey]).sort(newestFirst);
+  return ids.map(id => {
+    const saved = decisions[approvedKey][id] || {};
+    return byId.get(id) || {
+      id, handle: saved.handle || (currentMode === "official" ? OFFICIAL_HANDLE : ""),
+      booths: [saved.booth].filter(Boolean), reasons: ["직접 추가"], created: "", sensitive: !!saved.sensitive,
+    };
   });
 }
 
 function render(){
-  const pending = candidates.filter(c => !decisions.approved[c.id] && !decisions.excluded[c.id]).length;
-  const labels = { pending: `대기 ${pending}`, approved: `반영됨 ${Object.keys(decisions.approved).length}`, excluded: `제외됨 ${Object.keys(decisions.excluded).length}` };
+  const { approvedKey, excludedKey } = modeInfo();
+  const labels = {
+    pending: `대기 ${pendingRows().length}`,
+    approved: `반영됨 ${Object.keys(decisions[approvedKey]).length}`,
+    excluded: `제외됨 ${Object.keys(decisions[excludedKey]).length}`,
+  };
   document.querySelectorAll("#tabs button[data-tab]").forEach(btn => {
     btn.textContent = labels[btn.dataset.tab];
     btn.classList.toggle("active", btn.dataset.tab === currentTab);
   });
+  document.querySelectorAll("#modes button[data-mode]").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.mode === currentMode);
+  });
+  const official = currentMode === "official";
+  document.getElementById("modeDesc").textContent = official
+    ? `공식 계정(@${OFFICIAL_HANDLE})의 새 글입니다. "반영"한 글만 사이트의 행사 안내 탭에 최신순으로 나옵니다. 하나도 반영하지 않으면 미리 정해 둔 최근 글 6개가 나옵니다.`
+    : "부스 X 계정에서 자동으로 찾은 상품 글 후보입니다. \"반영\"을 누르면 사이트의 부스 상세 창에 바로 나타납니다.";
+  document.getElementById("manualBooth").hidden = official;
+  document.getElementById("manualUrl").placeholder = official
+    ? `https://x.com/${OFFICIAL_HANDLE}/status/1234...`
+    : "https://x.com/아이디/status/1234...";
+  const approveAll = document.getElementById("approveAllBtn");
+  approveAll.hidden = !(official && currentTab === "pending" && pendingRows().length > 1);
 
   const list = document.getElementById("list");
   list.innerHTML = "";
@@ -343,21 +433,20 @@ function render(){
 function buildPost(c){
   const el = document.createElement("div");
   el.className = "post";
+  const official = currentMode === "official";
   const approvedBooth = (decisions.approved[c.id] || {}).booth;
-  const boothIds = c.booths && c.booths.length ? c.booths : boothsForHandle(c.handle);
+  const boothIds = official ? [] : (c.booths && c.booths.length ? c.booths : boothsForHandle(c.handle));
   const url = `https://x.com/${encodeURIComponent(c.handle || "i")}/status/${c.id}`;
   el.innerHTML = `
     <div class="post-head">
-      <span class="booth-tag">${escapeHtml((approvedBooth ? [approvedBooth] : boothIds).map(id => `${id} ${boothName(id)}`).join(" · "))}</span>
+      <span class="booth-tag">${official ? "행사 안내" : escapeHtml((approvedBooth ? [approvedBooth] : boothIds).map(id => `${id} ${boothName(id)}`).join(" · "))}</span>
       ${c.handle ? `<span class="meta">@${escapeHtml(c.handle)}</span>` : ""}
       ${c.created ? `<span class="meta">${escapeHtml(fmtDate(c.created))}</span>` : ""}
       <span class="reasons">${(c.reasons || []).map(r => `<span>${escapeHtml(r)}</span>`).join("")}${c.sensitive ? `<span class="sensitive-tag">민감한 글</span>` : ""}</span>
     </div>
-    ${c.text ? `<div class="text">${escapeHtml(c.text)}</div>` : ""}
-    ${(c.images || []).length ? `<div class="images">${c.images.map(src => `<a href="${escapeHtml(url)}" target="_blank" rel="noopener"><img loading="lazy" src="${escapeHtml(src)}" alt=""></a>`).join("")}</div>` : ""}
+    <div class="embed"></div>
     <div class="actions"></div>
     <div class="msg err" hidden></div>
-    <div class="embed"></div>
   `;
   const actions = el.querySelector(".actions");
   const errBox = el.querySelector(".msg.err");
@@ -382,7 +471,9 @@ function buildPost(c){
     const ok = document.createElement("button");
     ok.className = "ok";
     ok.textContent = "반영";
-    ok.addEventListener("click", () => run(() => approve(c.id, select ? select.value : boothIds[0], c.handle, c)));
+    ok.addEventListener("click", () => run(() => official
+      ? approveOfficial([c.id])
+      : approve(c.id, select ? select.value : boothIds[0], c.handle, c)));
     const no = document.createElement("button");
     no.textContent = "제외";
     no.addEventListener("click", () => run(() => exclude(c.id)));
@@ -399,34 +490,12 @@ function buildPost(c){
   link.rel = "noopener";
   link.textContent = "X에서 보기";
   link.className = "meta";
-  const preview = document.createElement("button");
-  preview.textContent = "사이트에 보일 모양";
-  preview.addEventListener("click", () => {
-    preview.disabled = true;
-    const box = el.querySelector(".embed");
-    box.innerHTML = `<div class="meta">불러오는 중…</div>`;
-    const saved = decisions.approved[c.id] || {};
-    // 민감한 글·인용 글 여부는 FxTwitter 로 다시 확인함(이 기능 전에 모인 후보에는 이 값이 없음)
-    fetchPostInfo(c.id, c).then(info => {
-      const sensitive = info.sensitive || c.sensitive || saved.sensitive;
-      if(sensitive || info.quote || saved.quote){
-        // 사이트(index.html 의 buildBoothPostCard)와 같은 모양
-        const images = sensitive ? [] : (info.images.length ? info.images : (saved.images || []));
-        box.innerHTML = `<div class="post-card">
-          <div class="meta">@${escapeHtml(c.handle || saved.handle || "")}</div>
-          <div class="text">${escapeHtml(cardText(info.text || c.text || saved.text || ""))}</div>
-          ${images.length ? `<div class="images">${images.map(src => `<img loading="lazy" src="${escapeHtml(src)}" alt="">`).join("")}</div>` : ""}
-          <div class="meta">${sensitive
-            ? "X가 민감한 글로 표시해 임베드할 수 없는 글이라, 사이트에는 본문과 \"X에서 보기\" 링크만 보여요."
-            : "인용한 글을 빼고 보여주려고, 사이트에는 X 임베드 대신 본문과 이미지 카드로 보여요."}</div>
-        </div>`;
-        return;
-      }
-      box.innerHTML = "";
-      ensureWidgets(() => window.twttr.widgets.createTweet(c.id, box, { theme: theme(), dnt: true, conversation: "none" }));
-    });
-  });
-  actions.append(preview, link);
+  actions.append(link);
+
+  const box = el.querySelector(".embed");
+  const saved = decisions[modeInfo().approvedKey][c.id] || {};
+  Object.assign(box.dataset, { id: c.id, handle: c.handle || "", sensitive: (c.sensitive || saved.sensitive) ? "1" : "" });
+  if(embedObserver) embedObserver.observe(box); else drawEmbed(box);
   return el;
 }
 
@@ -437,7 +506,7 @@ function refresh(){
   return Promise.all([loadCandidates(), loadDecisions()]).then(() => {
     msg.textContent = !decisionsReadable
       ? "Firebase 규칙이 아직 없어 반영 기록을 읽지 못했습니다. 위쪽 \"반영 권한 설정 방법\"을 먼저 해 주세요."
-      : candidates.length ? "" : "아직 모인 후보가 없습니다. 후보는 1시간마다 자동으로 모입니다.";
+      : candidates.length || officialCandidates.length ? "" : "아직 모인 후보가 없습니다. 후보는 1시간마다 자동으로 모입니다.";
     if(!decisionsReadable) msg.className = "msg err";
     render();
   }).catch(err => {
@@ -465,17 +534,29 @@ document.getElementById("manualUrl").addEventListener("input", (e) => {
 document.getElementById("manualAddBtn").addEventListener("click", () => {
   const msg = document.getElementById("manualMsg");
   const parsed = parseStatusUrl(document.getElementById("manualUrl").value);
+  const official = currentMode === "official";
   const booth = document.getElementById("manualBooth").value;
   msg.className = "msg err";
   if(!parsed){ msg.textContent = "X 글 주소를 넣어 주세요. 예: https://x.com/아이디/status/1234"; return; }
-  if(!booth){ msg.textContent = "어느 부스의 글인지 골라 주세요."; return; }
-  approve(parsed.id, booth, parsed.handle).then(() => {
+  if(official && parsed.handle.toLowerCase() !== OFFICIAL_HANDLE.toLowerCase()){
+    msg.textContent = `공식 계정(@${OFFICIAL_HANDLE})의 글 주소를 넣어 주세요.`;
+    return;
+  }
+  if(!official && !booth){ msg.textContent = "어느 부스의 글인지 골라 주세요."; return; }
+  (official ? approveOfficial([parsed.id]) : approve(parsed.id, booth, parsed.handle)).then(() => {
     msg.className = "msg";
-    msg.textContent = `${booth} ${boothName(booth)}에 반영했습니다.`;
+    msg.textContent = official ? "행사 안내 탭에 반영했습니다." : `${booth} ${boothName(booth)}에 반영했습니다.`;
     document.getElementById("manualUrl").value = "";
     fillManualBooths("");
     render();
   }).catch(err => { msg.textContent = err.message || String(err); });
+});
+document.getElementById("approveAllBtn").addEventListener("click", (e) => {
+  const ids = pendingRows().map(c => c.id);
+  if(!ids.length || !confirm(`대기 중인 행사 안내 글 ${ids.length}개를 모두 반영할까요?`)) return;
+  e.target.disabled = true;
+  approveOfficial(ids).then(render).catch(err => alert(err.message || String(err)))
+    .then(() => { e.target.disabled = false; });
 });
 
 /* ---------- 로그인 ---------- */
@@ -539,6 +620,18 @@ document.getElementById("tabs").addEventListener("click", (e) => {
   const btn = e.target.closest("button[data-tab]");
   if(!btn) return;
   currentTab = btn.dataset.tab;
+  render();
+});
+document.getElementById("modes").addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-mode]");
+  if(!btn) return;
+  currentMode = btn.dataset.mode;
+  currentTab = "pending";
+  const msg = document.getElementById("manualMsg");
+  msg.className = "msg";
+  msg.textContent = currentMode === "official"
+    ? "자동 후보에 없는 공식 글을 직접 넣을 때 씁니다."
+    : "자동 후보에 없는 글(예: 키워드가 없는 상품 글)을 직접 넣을 때 씁니다.";
   render();
 });
 document.getElementById("reloadBtn").addEventListener("click", refresh);
