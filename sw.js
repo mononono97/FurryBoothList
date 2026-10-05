@@ -4,7 +4,7 @@
 // 또 페이지가 보내준 이미지 목록(precache-images 메시지)을 백그라운드에서 미리 받아 두어서,
 // 처음 접속한 뒤에는 보지 않은 부스의 사진도 오프라인에서 보이게 함.
 // 이미지를 같은 파일명으로 교체했을 때 바로 반영되게 하려면 CACHE_VERSION 을 올리면 됨.
-const CACHE_VERSION = "v4";
+const CACHE_VERSION = "v5";
 const CACHE_NAME = `furstclass-cache-${CACHE_VERSION}`;
 const SHELL_URLS = ["./", "./index.html", "./favicon.png"];
 

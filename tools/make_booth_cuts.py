@@ -26,6 +26,8 @@ MAX_W = 830  # 이보다 넓은 원본(C21 1660px)은 이 너비로 줄임
 MERGED = {"A11": "A11-12", "A12": "A11-12", "A37": "A37-38", "A38": "A37-38",
           "B31": "B31-32", "B32": "B31-32", "C19": "C19-20", "C20": "C19-20"}
 SAME_PICTURE = {"A11-12", "A37-38"}
+# 원본에서 번호 옆 제목 칸이 비어 있는 부스: 예전 공식 부스컷에 적혀 있던 제목을 넣는다(2026-10-05)
+TITLES = {"A10": "푸딩파르페", "B16": "NANKAARU", "C27": "Mr.furshowtime"}
 
 
 def decode_name(name):
@@ -103,7 +105,32 @@ def draw_label(im, cell, font_path):
         size += 1
     font = ImageFont.truetype(font_path, size)
     d.text(((l + r) / 2, (t + b) / 2), label_text(cell), font=font, fill="black", anchor="mm")
+    if cell in TITLES:
+        draw_title(im, box, TITLES[cell], font_path, size)
     return im
+
+
+def draw_title(im, box, title, font_path, label_size):
+    """번호 칸 오른쪽의 빈 제목 칸(검은 선 사이 흰 칸)에 제목을 가운데 맞춰 넣는다."""
+    l, t, r, b = box
+    g = im.convert("L")
+    y = (t + b) // 2
+    x = r
+    while x < im.width and g.getpixel((x, y)) < 128:  # 번호 칸 오른쪽 검은 선
+        x += 1
+    left = x
+    while x < im.width and g.getpixel((x, y)) >= 128:
+        x += 1
+    right = x
+    d = ImageDraw.Draw(im)
+    # 번호 글자의 1.4배까지, 칸 너비의 85% 안에 들어가게
+    size = round(label_size * 1.4)
+    while size > 10:
+        font = ImageFont.truetype(font_path, size)
+        if d.textlength(title, font=font) <= (right - left) * 0.85:
+            break
+        size -= 1
+    d.text(((left + right) / 2, (t + b) / 2), title, font=font, fill="black", anchor="mm")
 
 
 def load(path):
