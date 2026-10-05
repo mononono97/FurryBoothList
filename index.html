@@ -78,6 +78,7 @@
     --note-bg:#fff0f2;
     --planned-bg:#fff6d1;
     --visited-bg:#e3f3df;
+    --preorder-done:#3f7a33;     /* 선입금 탭 카드의 "수령 완료" 글자 */
 
     /* 팝오버·모달·설정 메뉴(두 테마 모두 어두운 패널) */
     --panel:#1d1a1c;
@@ -150,6 +151,7 @@
     --note-bg:#2a1820;
     --planned-bg:#2a2414;
     --visited-bg:#172417;
+    --preorder-done:#7cc46a;
 
     --panel:#0d0a0c;
     --panel-2:#221b21;
@@ -923,6 +925,42 @@
     border-color:#4a8f3c;
     color:#eafce6;
   }
+  .visit-box button.preorder.active{
+    background:#2f8f8a;
+    border-color:#2f8f8a;
+    color:#eafcfb;
+  }
+
+  /* 선입금 창: 수령 완료 버튼과 선입금 정보 입력 칸 */
+  .preorder-box{
+    margin-top:12px;
+    padding-top:10px;
+    border-top:1px solid rgba(255,255,255,.18);
+  }
+  .preorder-box label{
+    display:block;
+    font-size:11px;
+    color:var(--moss-light);
+    margin:10px 0 4px;
+  }
+  .preorder-box .budget-input-row input{ color-scheme:dark; }
+  .preorder-received-btn{
+    width:100%;
+    font-size:13px;
+    font-weight:700;
+    padding:10px 8px;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,.25);
+    background:rgba(255,255,255,.08);
+    color:var(--on-panel);
+    cursor:pointer;
+    transition:background .15s, border-color .15s, color .15s;
+  }
+  .preorder-received-btn.active{
+    background:#4a8f3c;
+    border-color:#4a8f3c;
+    color:#eafce6;
+  }
 
   /* 우선순위 선택 버튼 */
   .priority-box{
@@ -1009,6 +1047,8 @@
   }
   .tweet-slot iframe{border-radius:6px;}
   .booth-posts{ margin:10px 0 12px; }
+  .booth .preorder-line{ font-size:11px; color:var(--text-2); font-weight:600; margin-top:2px; }
+  .booth .preorder-line.received{ color:var(--preorder-done); }
   .booth .updated-on{ font-size:11px; color:var(--accent); font-weight:600; margin-top:2px; }
   .booth-posts-title{ font-size:13px; font-weight:700; margin-bottom:2px; }
   .booth-post .twitter-tweet{ margin:6px 0 !important; }
@@ -1489,7 +1529,7 @@ try {
 } catch {}
 
 const CURRENT_ROW_KEY = `${STORAGE_PREFIX}-current-row`;
-const VALID_ROWS = new Set([...ALL_ROWS, "ALL", "NOTES", "UPDATES", "MAP", "INFO"]);
+const VALID_ROWS = new Set([...ALL_ROWS, "ALL", "NOTES", "PREORDER", "UPDATES", "MAP", "INFO"]);
 let savedRow = null;
 try { savedRow = localStorage.getItem(CURRENT_ROW_KEY); } catch {}
 let currentRow = (savedRow && VALID_ROWS.has(savedRow))
@@ -1533,11 +1573,12 @@ const I18N = {
     helpTitle: "도움말",
     helpBody: [
       "이 사이트는 Furst Class 부스 목록을 쉽게 보기 위해 만든 사이트 입니다.\n자동 번역 및 개발에 AI를 사용하여 내용에 오류가 있을 수 있습니다.\n자세한 내용은 {link} 을 참고해주세요",
-      "설정 메뉴에서 Google 계정으로 로그인하면, 메모/방문상태/예산/우선순위를\n다른 기기(휴대폰, PC 등)에서도 이어서 볼 수 있습니다. 자동으로 계속 동기화되는 것은 아니며,\n로그인 시 1회, 이후에는 설정 메뉴의 \"지금 동기화\" 버튼을 눌렀을 때만 반영됩니다.\n로그인하지 않아도 지금처럼 이 브라우저에서만 사용하는 것도 그대로 가능합니다.\n비로그인으로 사용 시, 브라우저의 데이터를 삭제할 경우 사이트에 기록한 내용들이 삭제될 수 있습니다.",
+      "설정 메뉴에서 Google 계정으로 로그인하면, 메모/방문상태/예산/우선순위/선입금을\n다른 기기(휴대폰, PC 등)에서도 이어서 볼 수 있습니다. 자동으로 계속 동기화되는 것은 아니며,\n로그인 시 1회, 이후에는 설정 메뉴의 \"지금 동기화\" 버튼을 눌렀을 때만 반영됩니다.\n로그인하지 않아도 지금처럼 이 브라우저에서만 사용하는 것도 그대로 가능합니다.\n비로그인으로 사용 시, 브라우저의 데이터를 삭제할 경우 사이트에 기록한 내용들이 삭제될 수 있습니다.",
       "온라인 상태로 한 번 접속해두면, 이후 인터넷이 끊겨도 사이트를 계속 열람할 수 있습니다",
       "검색창에서는 현재 탭에 위치한 부스를 부스 이름,\n부스 리더·부스원 이름, X 아이디로 필터링 가능합니다(전체 탭에서는 전체 검색)",
       "부스를 누르면 부스컷과 부스 리더·부스원 목록이 나오고,\n각 사람의 프로필 사진이나 @아이디를 누르면 X 프로필로 이동합니다.\n🔞 표시는 성인 부스입니다.",
       "메모(📝) 탭에서 내가 메모해둔 작가들을 확인 가능하며,\n방문 예정 혹은 방문 완료 기준으로 필터링 할 수 있습니다.\n설정 메뉴의 \"데이터 초기화\"를 누르면 작성한 메모, 방문 예정/완료 상태, 예산,\n우선순위가 전부 삭제됩니다(되돌릴 수 없으니 주의해주세요).",
+      "부스 창에서 \"💳 선입금\"을 켜면 선입금(💳) 탭에 모입니다.\n선입금 탭에서 부스를 누르면 선입금 날짜·플랫폼·금액·입금자명을 적고\n\"선입금 수령 완료\"를 표시할 수 있습니다.",
       "배치도에서는 방문 예정인 부스는 노란색,\n방문 완료한 부스는 초록색으로 표시됩니다.",
       "부스별로 1~3순위를 정할 수 있으며, 순위에 따라 카드/배치도 테두리 색이\n빨강(1순위)·보라(2순위)·파랑(3순위)으로 구분되어 표시됩니다.",
       "언어는 한국어, 영어, 일본어가 지원됩니다.",
@@ -1551,6 +1592,23 @@ const I18N = {
     emptyUpdates: "아직 상품 정보가 올라온 부스가 없어요.",
     updatedOn: "{date} 갱신",
     notesBtnCount: "📝 메모({n})",
+    preorderBtn: "💳 선입금",
+    preorderBtnCount: "💳 선입금({n})",
+    preorderCount: "선입금 부스 {n}개 · 수령 완료 {done}개 · 합계 {amount}",
+    emptyPreorder: "아직 선입금 부스가 없어요. 부스를 열어서 \"💳 선입금\" 버튼을 눌러보세요.",
+    preorderToggle: "💳 선입금",
+    preorderReceived: "✅ 선입금 수령 완료",
+    preorderNotReceived: "📦 수령 완료로 표시",
+    preorderPending: "⏳ 수령 전",
+    preorderDoneShort: "✅ 수령 완료",
+    preorderDate: "선입금 날짜",
+    preorderPlatform: "선입금 플랫폼",
+    preorderPlatformPlaceholder: "예: 위치폼, 포스타입, 계좌이체",
+    preorderAmount: "선입금 금액 (원)",
+    preorderPayer: "선입금 입금자명",
+    preorderPayerPlaceholder: "입금할 때 쓴 이름",
+    preorderOffConfirm: "선입금 표시를 끄면 이 부스에 적은 선입금 정보(날짜·플랫폼·금액·입금자명·수령 여부)도 함께 지워집니다. 계속할까요?",
+    preorderOff: "끄기",
     mapBtn: "🗺️ 배치도",
     mapHint: "부스를 눌러서 메모/부스 정보를 확인하세요 (공식 일요일 부스 안내 기준)",
     mapTitle: "Furst Class 부스 배치도",
@@ -1613,7 +1671,7 @@ const I18N = {
     savedStatus: "저장됨",
     deletedStatus: "삭제됨",
     resetBtn: "🗑️ 데이터 초기화",
-    resetConfirm: "메모, 방문 상태, 예산, 우선순위 등 저장된 모든 데이터가 삭제됩니다. 이 작업은 되돌릴 수 없습니다. 계속할까요?",
+    resetConfirm: "메모, 방문 상태, 예산, 우선순위, 선입금 정보 등 저장된 모든 데이터가 삭제됩니다. 이 작업은 되돌릴 수 없습니다. 계속할까요?",
     resetDone: "모든 데이터가 삭제되었습니다.",
     loginBtn: "🔑 Google로 로그인",
     logoutBtn: "🔓 로그아웃",
@@ -1645,6 +1703,7 @@ const I18N = {
       "The search box filters booths in the current tab by booth name,\nleader/member name, or X handle (in the All tab, it searches everything).",
       "Tap a booth to see its booth cut and the list of the leader and members.\nTap a profile picture or @handle to open that person's X profile.\n🔞 marks an adult booth.",
       "In the Notes (📝) tab, you can see the circles you've noted,\nand filter them by Plan to Visit or Visited status.\nUsing \"Reset Data\" in the settings menu deletes all your notes, visit statuses,\nbudgets, and priorities (this cannot be undone).",
+      "Turn on \"💳 Pre-order\" in a booth window to collect it in the Pre-order (💳) tab.\nTap a booth in that tab to note the payment date, platform, amount and payer name,\nand mark the pre-order as received.",
       "On the floor map, booths marked Plan to Visit are shown in yellow,\nand booths marked Visited are shown in green.",
       "You can set a priority (1–3) for each booth; the card/map border color shows it as\nred (priority 1), purple (priority 2), or blue (priority 3).",
       "Korean, English, and Japanese are supported.",
@@ -1658,6 +1717,23 @@ const I18N = {
     emptyUpdates: "No booths have posted merch info yet.",
     updatedOn: "Updated {date}",
     notesBtnCount: "📝 Notes({n})",
+    preorderBtn: "💳 Pre-order",
+    preorderBtnCount: "💳 Pre-order({n})",
+    preorderCount: "{n} pre-order booths · {done} received · Total {amount}",
+    emptyPreorder: "No pre-order booths yet. Open a booth and tap \"💳 Pre-order\".",
+    preorderToggle: "💳 Pre-order",
+    preorderReceived: "✅ Pre-order received",
+    preorderNotReceived: "📦 Mark as received",
+    preorderPending: "⏳ Not received",
+    preorderDoneShort: "✅ Received",
+    preorderDate: "Payment date",
+    preorderPlatform: "Platform",
+    preorderPlatformPlaceholder: "e.g. Witchform, Postype, bank transfer",
+    preorderAmount: "Amount (KRW)",
+    preorderPayer: "Payer name",
+    preorderPayerPlaceholder: "Name used for the payment",
+    preorderOffConfirm: "Turning off pre-order also deletes the pre-order details for this booth (date, platform, amount, payer name, received). Continue?",
+    preorderOff: "Turn off",
     mapBtn: "🗺️ Map",
     mapHint: "Click a booth to see notes/booth info (based on the official Sunday booth guide)",
     mapTitle: "Furst Class booth map",
@@ -1720,7 +1796,7 @@ const I18N = {
     savedStatus: "Saved",
     deletedStatus: "Deleted",
     resetBtn: "🗑️ Reset Data",
-    resetConfirm: "This will delete all your saved data — notes, visit status, budget, and priority. This cannot be undone. Continue?",
+    resetConfirm: "This will delete all your saved data — notes, visit status, budget, priority, and pre-orders. This cannot be undone. Continue?",
     resetDone: "All data has been deleted.",
     loginBtn: "🔑 Sign in with Google",
     logoutBtn: "🔓 Sign out",
@@ -1752,6 +1828,7 @@ const I18N = {
       "検索欄では現在のタブにいるブースをブース名、\nリーダー・メンバー名、Xアカウントで絞り込めます（全体タブでは全体検索）。",
       "ブースを押すとブースカットとリーダー・メンバーの一覧が表示され、\nプロフィール画像や@IDを押すとそのXプロフィールに移動します。\n🔞は成人向けブースです。",
       "メモ（📝）タブでは自分がメモしたサークルを確認でき、\n訪問予定または訪問済みの状態で絞り込むことができます。\n設定メニューの「データを初期化」を押すと、書いたメモ・訪問予定/済みの状態・\n予算・優先度がすべて削除されます（元に戻せませんのでご注意ください）。",
+      "ブース画面で「💳 事前通販」をオンにすると事前通販（💳）タブにまとまります。\n事前通販タブでブースを押すと入金日・プラットフォーム・金額・入金者名を記入し、\n「受取済み」を表示できます。",
       "配置図では、訪問予定のブースは黄色、\n訪問済みのブースは緑色で表示されます。",
       "ブースごとに優先度（1〜3）を設定でき、カード・配置図の枠線の色で\n赤（優先度1）・紫（優先度2）・青（優先度3）として表示されます。",
       "言語は韓国語・英語・日本語に対応しています。",
@@ -1765,6 +1842,23 @@ const I18N = {
     emptyUpdates: "まだ頒布物情報が投稿されたブースはありません。",
     updatedOn: "{date} 更新",
     notesBtnCount: "📝 メモ({n})",
+    preorderBtn: "💳 事前通販",
+    preorderBtnCount: "💳 事前通販({n})",
+    preorderCount: "事前通販ブース {n}件 · 受取済み {done}件 · 合計 {amount}",
+    emptyPreorder: "事前通販のブースはまだありません。ブースを開いて「💳 事前通販」を押してください。",
+    preorderToggle: "💳 事前通販",
+    preorderReceived: "✅ 事前通販 受取済み",
+    preorderNotReceived: "📦 受取済みにする",
+    preorderPending: "⏳ 未受取",
+    preorderDoneShort: "✅ 受取済み",
+    preorderDate: "入金日",
+    preorderPlatform: "プラットフォーム",
+    preorderPlatformPlaceholder: "例：Witchform、Postype、銀行振込",
+    preorderAmount: "金額（ウォン）",
+    preorderPayer: "入金者名",
+    preorderPayerPlaceholder: "入金時に使った名前",
+    preorderOffConfirm: "事前通販をオフにすると、このブースに記入した事前通販の情報（入金日・プラットフォーム・金額・入金者名・受取状態）も削除されます。続行しますか？",
+    preorderOff: "オフにする",
     mapBtn: "🗺️ 配置図",
     mapHint: "ブースを押してメモ・ブース情報を確認してください（公式の日曜日ブース案内に基づく）",
     mapTitle: "Furst Class ブース配置図",
@@ -1827,7 +1921,7 @@ const I18N = {
     savedStatus: "保存済み",
     deletedStatus: "削除済み",
     resetBtn: "🗑️ データを初期化",
-    resetConfirm: "メモ・訪問状態・予算・優先度など保存されたすべてのデータが削除されます。この操作は元に戻せません。続行しますか？",
+    resetConfirm: "メモ・訪問状態・予算・優先度・事前通販情報など保存されたすべてのデータが削除されます。この操作は元に戻せません。続行しますか？",
     resetDone: "すべてのデータが削除されました。",
     loginBtn: "🔑 Googleでログイン",
     logoutBtn: "🔓 ログアウト",
@@ -2116,6 +2210,73 @@ function updatePriorityVisuals(boothId){
   });
 }
 
+/* ---------- 부스별 선입금 ----------
+   { "A01": { received: false, date: "2026-11-01", platform: "위치폼", amount: 30000, payer: "홍길동" }, ... }
+   형태로 브라우저(localStorage)에 저장됨. 부스가 이 객체에 있으면 "선입금" 버튼이 켜진 것.
+   메모·방문상태·예산과 같이 로그인하면 클라우드 동기화에도 포함됨.
+------------------------------------------------ */
+const PREORDER_KEY = `${STORAGE_PREFIX}-preorder`;
+const MAX_PREORDER_TEXT = 100;
+
+function loadPreorders(){
+  try {
+    const obj = JSON.parse(localStorage.getItem(PREORDER_KEY)) || {};
+    return (obj && typeof obj === "object") ? obj : {};
+  } catch {
+    return {};
+  }
+}
+
+function savePreorders(){
+  try {
+    localStorage.setItem(PREORDER_KEY, JSON.stringify(preorders));
+  } catch {
+    // 저장 실패(용량 초과 등)해도 사이트 동작에는 지장 없도록 무시
+  }
+}
+
+let preorders = loadPreorders();
+
+function getPreorder(boothId){
+  const p = preorders[boothId];
+  return (p && typeof p === "object") ? p : null;
+}
+
+function setPreorderOn(boothId, on){
+  if(on){
+    if(!getPreorder(boothId)) preorders[boothId] = { received: false };
+  } else {
+    delete preorders[boothId];
+  }
+  savePreorders();
+}
+
+// 날짜·플랫폼·금액·입금자명·수령 여부 중 하나를 바꿈. 선입금이 꺼져 있으면 켜면서 저장함.
+function setPreorderField(boothId, field, value){
+  const p = getPreorder(boothId) || { received: false };
+  if(field === "amount"){
+    const n = Math.max(0, Math.floor(Number(value) || 0));
+    if(n > 0) p.amount = n; else delete p.amount;
+  } else if(field === "received"){
+    p.received = !!value;
+  } else {
+    const v = String(value || "").trim().slice(0, MAX_PREORDER_TEXT);
+    if(v) p[field] = v; else delete p[field];
+  }
+  preorders[boothId] = p;
+  savePreorders();
+}
+
+// 수령 여부 말고 적어 둔 정보가 있는지 (선입금을 끌 때 확인 창을 띄울지 판단)
+function preorderHasDetails(boothId){
+  const p = getPreorder(boothId);
+  return !!(p && (p.received || p.date || p.platform || p.amount || p.payer));
+}
+
+function getPreorderTotal(ids){
+  return ids.reduce((sum, id) => sum + ((getPreorder(id) || {}).amount || 0), 0);
+}
+
 /* ---------- 부스별 예산 ----------
    { "A01": 30000, ... } 형태로 브라우저(localStorage)에만 저장됨. 단위는 원.
 ------------------------------------------------ */
@@ -2160,6 +2321,7 @@ function migrateAllMergedBoothIds(){
   if(migrateMergedBoothIds(visitStatus)) saveVisitStatus();
   if(migrateMergedBoothIds(priority)) savePriority();
   if(migrateMergedBoothIds(budgets)) saveBudgets();
+  if(migrateMergedBoothIds(preorders)) savePreorders();
 }
 migrateAllMergedBoothIds();
 
@@ -2192,7 +2354,7 @@ function updateBudgetTotalDisplay(){
 
 /* ---------- 구글 로그인 & 기기 간 동기화 ----------
    로그인하지 않아도 사이트는 지금까지와 완전히 동일하게(로컬 전용) 동작함.
-   로그인한 경우에만 메모/방문상태/예산/우선순위를 Firestore에도 저장해서
+   로그인한 경우에만 메모/방문상태/예산/우선순위/선입금을 Firestore에도 저장해서
    같은 구글 계정으로 다른 기기에서 접속했을 때도 이어서 볼 수 있게 함.
    네트워크가 불안정해도(행사장 등) 저장은 항상 localStorage에 먼저 되고,
    클라우드 동기화는 실패해도 무시되는 best-effort 방식으로만 동작함.
@@ -2253,7 +2415,7 @@ function mergeField(local, cloud){
 function pushToCloud(uid){
   return firebase.firestore().collection("users").doc(uid).set({
     [STORAGE_PREFIX]: {
-      notes, visitStatus, budgets, priority,
+      notes, visitStatus, budgets, priority, preorders,
       updatedAt: new Date().toISOString(),
     },
   });
@@ -2266,11 +2428,13 @@ function pullAndMergeFromCloud(uid){
     visitStatus = mergeField(visitStatus, cloud.visitStatus);
     budgets = mergeField(budgets, cloud.budgets);
     priority = mergeField(priority, cloud.priority);
+    preorders = mergeField(preorders, cloud.preorders);
     migrateAllMergedBoothIds();
     saveNotes();
     saveVisitStatus();
     saveBudgets();
     savePriority();
+    savePreorders();
     renderNav();
     renderGrid();
     updateBudgetTotalDisplay();
@@ -2382,10 +2546,10 @@ document.getElementById("confirmBackdrop").addEventListener("click", (e) => {
 });
 
 /* ---------- 전체 데이터 초기화 ----------
-   메모/방문상태/예산/우선순위를 전부 삭제함(로그인 중이면 클라우드에도 반영됨).
+   메모/방문상태/예산/우선순위/선입금을 전부 삭제함(로그인 중이면 클라우드에도 반영됨).
 ------------------------------------------------- */
 async function resetAllData(){
-  if(!Object.keys(notes).length && !Object.keys(visitStatus).length && !Object.keys(budgets).length && !Object.keys(priority).length){
+  if(!Object.keys(notes).length && !Object.keys(visitStatus).length && !Object.keys(budgets).length && !Object.keys(priority).length && !Object.keys(preorders).length){
     return;
   }
   const confirmed = await showConfirmDialog(t("resetConfirm"), t("delete"));
@@ -2395,10 +2559,12 @@ async function resetAllData(){
   visitStatus = {};
   budgets = {};
   priority = {};
+  preorders = {};
   saveNotes();
   saveVisitStatus();
   saveBudgets();
   savePriority();
+  savePreorders();
   renderNav();
   renderGrid();
   alert(t("resetDone"));
@@ -2600,6 +2766,13 @@ function renderNav(){
   if(currentRow === "NOTES") noteBtn.classList.add("active");
   noteBtn.addEventListener("click", () => goToRow("NOTES"));
   tabNav.appendChild(noteBtn);
+
+  const preorderCount = Object.keys(preorders).filter(id => BOOTH_IDS.has(id)).length;
+  const preorderBtn = document.createElement("button");
+  preorderBtn.textContent = preorderCount ? t("preorderBtnCount", { n: preorderCount }) : t("preorderBtn");
+  if(currentRow === "PREORDER") preorderBtn.classList.add("active");
+  preorderBtn.addEventListener("click", () => goToRow("PREORDER"));
+  tabNav.appendChild(preorderBtn);
 
   const updatesBtn = document.createElement("button");
   updatesBtn.textContent = t("updatesBtn");
@@ -2904,9 +3077,10 @@ function renderGrid(){
   const isNotesView = currentRow === "NOTES";
   const isAllView = currentRow === "ALL";
   const isUpdatesView = currentRow === "UPDATES";
+  const isPreorderView = currentRow === "PREORDER";
   // 최근 갱신 탭은 글이 올라온 순서가 중요해서 우선순위 정렬을 쓰지 않음
   if(isUpdatesView) document.getElementById("sortPriorityBtn").style.display = "none";
-  document.getElementById("currentLetter").textContent = isNotesView ? "📝" : isAllView ? "📋" : isUpdatesView ? "🆕" : currentRow;
+  document.getElementById("currentLetter").textContent = isNotesView ? "📝" : isPreorderView ? "💳" : isAllView ? "📋" : isUpdatesView ? "🆕" : currentRow;
   document.getElementById("notesExtra").style.display = isNotesView ? "flex" : "none";
   updateBudgetTotalDisplay();
 
@@ -2930,6 +3104,8 @@ function renderGrid(){
     document.querySelectorAll("#visitFilter button").forEach(btn => {
       btn.classList.toggle("active", btn.dataset.filter === notesVisitFilter);
     });
+  } else if(isPreorderView){
+    list = BOOTHS.filter(b => getPreorder(b.id));
   } else if(isAllView){
     list = BOOTHS;
   } else {
@@ -2956,11 +3132,17 @@ function renderGrid(){
   document.getElementById("currentCount").textContent = isNotesView
     ? t("notesCount", { n: list.length })
     : isUpdatesView ? t("updatesCount", { n: list.length })
+    : isPreorderView ? t("preorderCount", {
+        n: list.length,
+        done: list.filter(b => getPreorder(b.id).received).length,
+        amount: formatWon(getPreorderTotal(list.map(b => b.id))),
+      })
     : t("circleCount", { n: list.length });
   document.getElementById("emptyState").style.display = list.length ? "none" : "block";
   document.getElementById("emptyState").textContent = isNotesView
     ? t("emptyNotes")
     : isUpdatesView && !currentQuery ? t("emptyUpdates")
+    : isPreorderView && !currentQuery ? t("emptyPreorder")
     : t("emptyDefault");
 
   list.forEach(booth => {
@@ -3020,10 +3202,20 @@ function renderGrid(){
       card.appendChild(updatedEl);
     }
 
+    if(isPreorderView){
+      const p = getPreorder(booth.id);
+      const preEl = document.createElement("div");
+      preEl.className = "preorder-line" + (p.received ? " received" : "");
+      preEl.textContent = (p.received ? t("preorderDoneShort") : t("preorderPending")) +
+        (p.amount ? ` · ${formatWon(p.amount)}` : "");
+      card.appendChild(preEl);
+    }
+
     // 클릭(탭)하면 화면 가운데에 부스 상세 모달을 띄움(X 버튼·창 밖 클릭으로 닫힘). PC/모바일 공통.
     card.addEventListener("click", (e) => {
       e.stopPropagation();
-      openBoothModal(booth.id);
+      if(isPreorderView) openPreorderModal(booth.id);
+      else openBoothModal(booth.id);
     });
 
     grid.appendChild(card);
@@ -3388,11 +3580,10 @@ function renderInfoView(){
   });
 }
 
-/* ---------- 부스 상세 모달 (부스 카드나 배치도의 부스를 눌렀을 때) ---------- */
-function openBoothModal(boothId){
-  const booth = BOOTHS.find(b => b.id === boothId);
-  if(!booth) return;
-
+/* ---------- 부스 상세 모달 (부스 카드나 배치도의 부스를 눌렀을 때) ----------
+   부스 정보(이름·상품 정보 또는 부스컷)와 부스원 목록은 일반 상세 창과 선입금 창이 같이 씀.
+------------------------------------------------------------------------- */
+function openBoothModalShell(booth){
   const backdrop = document.getElementById("modalBackdrop");
   const content = document.getElementById("modalContent");
   content.innerHTML = "";
@@ -3421,6 +3612,20 @@ function openBoothModal(boothId){
   content.appendChild(buildBoothPosts(booth, () => cut.remove()));
   content.appendChild(cut);
   content.appendChild(buildMemberList(booth));
+  return content;
+}
+
+function showBoothModal(){
+  const content = document.getElementById("modalContent");
+  document.getElementById("modalBackdrop").classList.add("open");
+  document.documentElement.classList.add("modal-open");
+  content.scrollTop = 0;
+}
+
+function openBoothModal(boothId){
+  const booth = BOOTHS.find(b => b.id === boothId);
+  if(!booth) return;
+  const content = openBoothModalShell(booth);
 
   const slot = document.createElement("div");
   slot.className = "tweet-slot";
@@ -3445,6 +3650,7 @@ function openBoothModal(boothId){
   visitBox.innerHTML = `
     <button type="button" class="visit-btn planned">${escapeHtml(t("visitPlanned"))}</button>
     <button type="button" class="visit-btn visited">${escapeHtml(t("visitVisited"))}</button>
+    <button type="button" class="visit-btn preorder">${escapeHtml(t("preorderToggle"))}</button>
   `;
   const plannedBtn = visitBox.querySelector(".planned");
   const visitedBtn = visitBox.querySelector(".visited");
@@ -3467,6 +3673,21 @@ function openBoothModal(boothId){
     setVisitStatus(booth.id, getVisitStatus(booth.id) === "visited" ? null : "visited");
     refreshVisitViews();
     syncVisitButtons();
+  });
+  const preorderBtn = visitBox.querySelector(".preorder");
+  const syncPreorderButton = () => preorderBtn.classList.toggle("active", !!getPreorder(booth.id));
+  syncPreorderButton();
+  preorderBtn.addEventListener("click", async () => {
+    if(getPreorder(booth.id)){
+      // 적어 둔 선입금 정보가 있으면 실수로 지우지 않게 한 번 묻고 끔
+      if(preorderHasDetails(booth.id) && !(await showConfirmDialog(t("preorderOffConfirm"), t("preorderOff")))) return;
+      setPreorderOn(booth.id, false);
+    } else {
+      setPreorderOn(booth.id, true);
+    }
+    syncPreorderButton();
+    renderNav();
+    if(currentRow === "PREORDER") renderGrid();
   });
   content.appendChild(visitBox);
 
@@ -3554,9 +3775,56 @@ function openBoothModal(boothId){
 
   content.appendChild(memoBox);
 
-  backdrop.classList.add("open");
-  document.documentElement.classList.add("modal-open");
-  content.scrollTop = 0;
+  showBoothModal();
+}
+
+/* ---------- 선입금 창 (선입금 탭에서 부스를 눌렀을 때) ----------
+   부스 정보·부스원은 일반 창과 같고, 그 아래에 수령 완료 버튼과 선입금 정보 4가지를 적는 칸을 보여줌.
+   입력하는 즉시 저장되고, 칸에서 벗어나면 선입금 탭 카드(수령 여부·금액)도 다시 그림.
+------------------------------------------------------------------ */
+function openPreorderModal(boothId){
+  const booth = BOOTHS.find(b => b.id === boothId);
+  if(!booth) return;
+  const content = openBoothModalShell(booth);
+  const p = getPreorder(booth.id) || {};
+  const refreshPreorderTab = () => { if(currentRow === "PREORDER") renderGrid(); };
+
+  const box = document.createElement("div");
+  box.className = "preorder-box";
+  box.innerHTML = `
+    <button type="button" class="preorder-received-btn"></button>
+    <label>${escapeHtml(t("preorderDate"))}</label>
+    <div class="budget-input-row"><input type="date" data-field="date" value="${escapeHtml(p.date || "")}"></div>
+    <label>${escapeHtml(t("preorderPlatform"))}</label>
+    <div class="budget-input-row"><input type="text" data-field="platform" maxlength="${MAX_PREORDER_TEXT}" value="${escapeHtml(p.platform || "")}" placeholder="${escapeHtml(t("preorderPlatformPlaceholder"))}"></div>
+    <label>${escapeHtml(t("preorderAmount"))}</label>
+    <div class="budget-input-row">
+      <span class="yen">₩</span>
+      <input type="number" data-field="amount" min="0" step="1000" inputmode="numeric" value="${p.amount || ""}" placeholder="0">
+    </div>
+    <label>${escapeHtml(t("preorderPayer"))}</label>
+    <div class="budget-input-row"><input type="text" data-field="payer" maxlength="${MAX_PREORDER_TEXT}" value="${escapeHtml(p.payer || "")}" placeholder="${escapeHtml(t("preorderPayerPlaceholder"))}"></div>
+  `;
+  const receivedBtn = box.querySelector(".preorder-received-btn");
+  const syncReceivedButton = () => {
+    const received = !!(getPreorder(booth.id) || {}).received;
+    receivedBtn.classList.toggle("active", received);
+    receivedBtn.textContent = received ? t("preorderReceived") : t("preorderNotReceived");
+  };
+  syncReceivedButton();
+  receivedBtn.addEventListener("click", () => {
+    setPreorderField(booth.id, "received", !(getPreorder(booth.id) || {}).received);
+    syncReceivedButton();
+    renderNav();
+    refreshPreorderTab();
+  });
+  box.querySelectorAll("input[data-field]").forEach(input => {
+    input.addEventListener("input", () => setPreorderField(booth.id, input.dataset.field, input.value));
+    input.addEventListener("change", () => { renderNav(); refreshPreorderTab(); });
+  });
+  content.appendChild(box);
+
+  showBoothModal();
 }
 
 function openHelpModal(){
