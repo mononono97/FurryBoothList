@@ -898,20 +898,6 @@
   .pop-head .names{font-size:13px;}
   .pop-head .c-name{font-weight:700;}
   .pop-head .r-name{color:var(--moss-light);font-size:11px;}
-  .pop-links{
-    display:flex;
-    gap:8px;
-    margin-top:10px;
-    font-size:11px;
-  }
-  .pop-links a{
-    color:var(--moss-light);
-    text-decoration:none;
-    border:1px solid rgba(255,255,255,.25);
-    padding:4px 8px;
-    border-radius:5px;
-  }
-  .pop-links a:hover{background:rgba(255,255,255,.1);}
 
   /* 방문 예정/완료 표시 버튼 */
   .visit-box{
@@ -1062,19 +1048,6 @@
     padding:6px 0;
   }
 
-  .tweet-slot{
-    margin-top:2px;
-    min-height:20px;
-  }
-  .tweet-slot .placeholder{
-    font-size:11.5px;
-    color:#e9c6d0;
-    border:1px dashed rgba(255,255,255,.25);
-    border-radius:6px;
-    padding:8px;
-    line-height:1.5;
-  }
-  .tweet-slot iframe{border-radius:6px;}
   .booth-posts{ margin:10px 0 12px; }
   .booth .preorder-line{ font-size:11px; color:var(--text-2); font-weight:600; margin-top:2px; }
   .booth .preorder-line.received{ color:var(--preorder-done); }
@@ -1742,9 +1715,6 @@ const I18N = {
     emptyDefault: "검색 결과가 없어요.",
     emptyNotes: "아직 등록된 부스가 없어요. 부스를 열어서 메모, 방문 상태, 예산 중 하나를 추가해보세요.",
     noBoothData: "표시할 부스 데이터가 없어요.",
-    tweetLoadHint: "탭하면 트윗을 불러옵니다.",
-    noTwitterHint: "등록된 X 계정이 없습니다.",
-    tweetLoadFail: "트윗을 불러오지 못했어요.",
     boothPostsTitle: "상품 정보",
     boothPostOpenX: "X에서 보기",
     boothPostSensitive: "X가 민감한 내용으로 표시한 글이라 이미지는 X에서 볼 수 있어요.",
@@ -1863,9 +1833,6 @@ const I18N = {
     emptyDefault: "No search results.",
     emptyNotes: "No booths tracked yet. Open a booth to add a note, visit status, or budget.",
     noBoothData: "No booth data to display.",
-    tweetLoadHint: "Tap to load tweet.",
-    noTwitterHint: "No X account registered.",
-    tweetLoadFail: "Failed to load tweet.",
     boothPostsTitle: "Merch info",
     boothPostOpenX: "View on X",
     boothPostSensitive: "X marked this post as sensitive, so images are only visible on X.",
@@ -1984,9 +1951,6 @@ const I18N = {
     emptyDefault: "検索結果がありません。",
     emptyNotes: "まだ登録されたブースがありません。ブースを開いてメモ・訪問状態・予算のいずれかを追加してみましょう。",
     noBoothData: "表示するブースデータがありません。",
-    tweetLoadHint: "タップしてツイートを読み込みます。",
-    noTwitterHint: "登録されたXアカウントがありません。",
-    tweetLoadFail: "ツイートを読み込めませんでした。",
     boothPostsTitle: "頒布物情報",
     boothPostOpenX: "Xで見る",
     boothPostSensitive: "Xでセンシティブな内容として表示された投稿のため、画像はXで確認できます。",
@@ -3023,26 +2987,6 @@ function buildBoothPosts(booth, onShown){
   return box;
 }
 
-function loadTimelineInto(slot, handle){
-  ensureTwitterWidgets(() => {
-    // X 스크립트가 막혀 불러와지지 않은 경우(광고 차단 등)에도 오류 없이 실패 문구만 보여줌
-    if(!window.twttr || !window.twttr.widgets){
-      slot.innerHTML = `<div class="placeholder">${escapeHtml(t("tweetLoadFail"))}</div>`;
-      return;
-    }
-    slot.innerHTML = "";
-    const container = document.createElement("div");
-    slot.appendChild(container);
-    window.twttr.widgets.createTimeline(
-      { sourceType: "profile", screenName: handle },
-      container,
-      { tweetLimit: 1, theme: "dark", dnt: true, chrome: "noheader nofooter noborders transparent" }
-    ).catch(() => {
-      slot.innerHTML = `<div class="placeholder">${escapeHtml(t("tweetLoadFail"))}</div>`;
-    });
-  });
-}
-
 // 행사 안내 탭: 공식 X 계정(@FURSTCLASS_KR)의 글을 정해진 높이 안에서 스크롤로 보여줌.
 // X 타임라인 위젯은 로그인하지 않은 방문자에게 막혀(429) 빈 상자만 보이므로 쓰지 않음.
 // 1) FxTwitter 공개 JSON(무료·키 없음)에서 OFFICIAL_POST_SINCE 이후 글을 페이지를 넘겨 가며 받고
@@ -3389,7 +3333,7 @@ function openInlineDetail(boothId, kind){
   actions.className = "booth-inline-actions";
   actions.appendChild(buildMemberList(booth));
   if(kind === "preorder") fillPreorderActions(actions, booth);
-  else fillBoothActions(actions, booth, { withTweet: false });
+  else fillBoothActions(actions, booth);
   el.append(closeBtn, info, actions);
 
   inlineDetail = { boothId, kind, el };
@@ -3884,32 +3828,9 @@ function openBoothModal(boothId){
   showBoothModal();
 }
 
-// 대표자 X 글 칸과 "X 프로필 열기" 링크 (모달 전용)
-function appendTweetAndLinks(content, booth){
-  const slot = document.createElement("div");
-  slot.className = "tweet-slot";
-  const ph = document.createElement("div");
-  ph.className = "placeholder";
-  ph.textContent = booth.twitter ? t("tweetLoadHint") : t("noTwitterHint");
-  slot.appendChild(ph);
-  content.appendChild(slot);
-  if(booth.twitter){
-    loadTimelineInto(slot, booth.twitter);
-  }
-
-  const links = document.createElement("div");
-  links.className = "pop-links";
-  if(booth.twitter){
-    links.innerHTML = `<a href="https://x.com/${booth.twitter}" target="_blank" rel="noopener">${escapeHtml(t("openProfile"))}</a>`;
-  }
-  content.appendChild(links);
-}
-
-// 트윗·X 링크·방문 예정/완료·선입금·우선순위·예산·메모. 모달에서는 부스 정보 아래, PC 펼침 상세에서는 오른쪽 칸.
-// PC 펼침 상세는 트윗 칸·X 프로필 열기 버튼을 빼고 부름(withTweet:false). X는 부스원 사진·아이디로 갈 수 있음 (2026-10-05 사용자 요청)
-function fillBoothActions(content, booth, { withTweet = true } = {}){
-  if(withTweet) appendTweetAndLinks(content, booth);
-
+// 방문 예정/완료·선입금·우선순위·예산·메모. 모달에서는 부스 정보 아래, PC 펼침 상세에서는 오른쪽 칸.
+// 대표자 X 글 칸과 "X 프로필 열기" 버튼은 2026-10-05 사용자 요청으로 뺌(X는 부스원 사진·아이디로 이동).
+function fillBoothActions(content, booth){
   const visitBox = document.createElement("div");
   visitBox.className = "visit-box";
   visitBox.innerHTML = `
