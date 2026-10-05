@@ -18,6 +18,10 @@
 
 ## 어떻게 구현했나
 - Firebase compat SDK(app/auth/firestore), 설정값 `firebaseConfig` (웹 설정값은 공개 값)
+- SDK 불러오기: `<script>` 태그 대신 `FIREBASE_SDK_URLS`를 코드로 끼워 넣어 백그라운드에서 받고(`async = false`로 app → auth → firestore 순서 유지),
+  다 받으면 `firebaseLoaded` 프로미스가 `true`로 끝나면서 초기화·`onAuthStateChanged` 등록을 함. 실패하면 `false`.
+  예전처럼 태그로 넣으면 SDK(압축 약 150KB)를 다 받을 때까지 부스 목록을 그리지 못해, 행사장처럼 회선이 붐비면 목록이 한참 안 떴음.
+  그래서 로그인 버튼은 SDK를 다 받은 뒤에 나타납니다.
 - 로그인/로그아웃: `signInWithGoogle()`, `signOutUser()`, UI 갱신 `updateAuthUI()`
 - 데이터: Firestore `users/<uid>` 문서의 `furstclass` 필드에 `{ notes, visitStatus, budgets, priority, preorders }`.
   동기화할 때 문서 전체를 덮어쓰므로 케모켓 때 문서 최상위에 있던 필드는 첫 동기화에서 지워집니다.
@@ -30,6 +34,7 @@
 2. 다른 브라우저(또는 시크릿 창)에서 같은 계정으로 로그인 → 메모가 보이는지 확인
 3. "지금 동기화" 직후 버튼에 남은 초가 표시되고 10초 뒤 다시 활성화되는지 확인
 4. 로그아웃 상태에서 버튼이 비활성화되어 있는지 확인
+5. F12 → Network → 회선 속도를 "Slow 3G"로 바꾸고 새로고침 → 로그인 버튼보다 부스 목록이 먼저 뜨는지, 잠시 뒤 로그인 버튼이 나타나는지 확인
 
 ## 변경 기록
 - 2026-09-27 최초 구현 (`77cefc2`)
@@ -37,3 +42,4 @@
 - 2026-10-02 Furst Class 개편: 저장 위치를 `furstclass` 필드로 옮기고 케모켓 데이터 삭제 (#3)
 - 2026-09-27 자동 동기화 → 수동 "지금 동기화" + 10초 쿨다운 (`f721497`)
 - 2026-10-05 선입금 정보(`preorders`)도 동기화 ([선입금](기능-선입금.md), [#38](https://github.com/mononono97/FurryBoothList/pull/38))
+- 2026-10-05 Firebase SDK를 백그라운드에서 받도록 바꿔 SDK를 받는 동안에도 부스 목록이 먼저 뜨게 함 (이 PR)
