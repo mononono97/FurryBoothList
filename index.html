@@ -1580,9 +1580,6 @@
 
 <footer id="siteFooter"></footer>
 
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
 /* ---------- 데이터 ----------
    아래 BOOTHS 줄은 tools/build_booths.py 가 data/furstclass_booths.csv(부스 시트)를 읽어서
@@ -2438,12 +2435,27 @@ const firebaseConfig = {
 let firebaseReady = false;
 let currentUser = null;
 
-try {
+// Firebase SDK(압축 약 150KB)는 gstatic 에서 받아 오는데, 예전처럼 <script> 태그로 넣으면
+// 다 받을 때까지 부스 목록을 그리지 못해서 행사장처럼 회선이 붐비는 곳에서는 목록이 한참 안 떴음.
+// 그래서 스크립트를 코드로 끼워 넣어 백그라운드에서 받고, 다 받으면 그때 초기화함 (2026-10-05).
+// async = false 는 세 파일을 받은 순서와 상관없이 app → auth → firestore 순서로 실행하게 함.
+const FIREBASE_SDK_URLS = ["app", "auth", "firestore"]
+  .map(name => `https://www.gstatic.com/firebasejs/10.14.1/firebase-${name}-compat.js`);
+const firebaseLoaded = Promise.all(FIREBASE_SDK_URLS.map(src => new Promise((resolve, reject) => {
+  const s = document.createElement("script");
+  s.src = src;
+  s.async = false;
+  s.onload = resolve;
+  s.onerror = reject;
+  document.head.appendChild(s);
+}))).then(() => {
   firebase.initializeApp(firebaseConfig);
   firebaseReady = true;
-} catch {
-  // 초기화 실패해도(오프라인, SDK 로드 실패 등) 나머지 사이트 기능에는 지장 없음
-}
+  return true;
+}).catch(() => {
+  // 받기나 초기화에 실패해도(오프라인 등) 나머지 사이트 기능에는 지장 없음
+  return false;
+});
 
 function updateAuthUI(){
   const loginBtn = document.getElementById("loginBtn");
@@ -2568,13 +2580,15 @@ function signOutUser(){
   firebase.auth().signOut();
 }
 
-if(firebaseReady){
+firebaseLoaded.then((ok) => {
+  if(!ok) return;
+  updateAuthUI();   // SDK 를 받은 뒤에야 로그인 버튼을 보여줌
   firebase.auth().onAuthStateChanged((user) => {
     currentUser = user;
     updateAuthUI();
     if(user) syncFromCloudOnLogin(user.uid);
   });
-}
+});
 
 document.getElementById("loginBtn").addEventListener("click", signInWithGoogle);
 document.getElementById("logoutBtn").addEventListener("click", signOutUser);
@@ -2903,12 +2917,27 @@ function recentlyUpdatedBooths(){
     .sort((a, b) => b.time - a.time);
 }
 
+// 행사 당일처럼 많은 사람이 페이지를 자주 새로 열어도 Firestore 무료 읽기 한도(하루 5만)를 넘지 않도록,
+// 마지막으로 받은 지 이 시간이 안 지났으면 Firestore 를 다시 읽지 않고 저장해 둔 값을 씀 (2026-10-05).
+// 그래서 관리 화면에서 반영한 글은 방문자에게 최대 10분 늦게 보일 수 있음.
+const BOOTH_POSTS_FETCHED_AT_KEY = `${STORAGE_PREFIX}-booth-posts-fetched-at`;
+const BOOTH_POSTS_REFRESH_MS = 10 * 60 * 1000;
+
 // boothPosts/main 문서를 한 번 읽어 { approved, official } 로 돌려줌. 실패하면 저장해 둔 값
 function loadBoothPostsDoc(){
   if(boothPostsDocPromise) return boothPostsDocPromise;
   const cached = () => ({ approved: readCache(BOOTH_POSTS_CACHE_KEY), official: readCache(OFFICIAL_POSTS_CACHE_KEY) });
-  if(!firebaseReady) return (boothPostsDocPromise = Promise.resolve(cached()));
-  boothPostsDocPromise = firebase.firestore().collection("boothPosts").doc("main").get()
+  let fetchedAt = 0;
+  try { fetchedAt = Number(localStorage.getItem(BOOTH_POSTS_FETCHED_AT_KEY)) || 0; } catch {}
+  const age = Date.now() - fetchedAt;
+  if(age >= 0 && age < BOOTH_POSTS_REFRESH_MS) return (boothPostsDocPromise = Promise.resolve(cached()));
+  // SDK 를 받는 중에 회선이 멈춰 버려도 상품 정보가 끝없이 기다리지 않도록 15초가 지나면 저장해 둔 값을 씀
+  const sdkTimeout = new Promise(resolve => setTimeout(() => resolve(false), 15000));
+  boothPostsDocPromise = Promise.race([firebaseLoaded, sdkTimeout])
+    .then(ok => {
+      if(!ok) throw new Error("firebase unavailable");
+      return firebase.firestore().collection("boothPosts").doc("main").get();
+    })
     .then(doc => {
       const data = doc.exists ? doc.data() : {};
       const approved = data.approved || {};
@@ -2916,6 +2945,7 @@ function loadBoothPostsDoc(){
       try {
         localStorage.setItem(BOOTH_POSTS_CACHE_KEY, JSON.stringify(approved));
         localStorage.setItem(OFFICIAL_POSTS_CACHE_KEY, JSON.stringify(official));
+        localStorage.setItem(BOOTH_POSTS_FETCHED_AT_KEY, String(Date.now()));
       } catch {}
       approvedBoothPosts = approved;
       if(currentRow === "UPDATES") renderGrid();
