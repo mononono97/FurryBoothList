@@ -2655,7 +2655,7 @@ function localAvatarUrl(handle){
 }
 
 /* ---------- 부스컷 ----------
-   booth-cuts/ 폴더에 "부스번호.jpg"(예: booth-cuts/A01.jpg) 로 넣어두면 팝오버/모달 위쪽에 표시됨.
+   booth-cuts/ 폴더에 "부스번호.webp"(예: booth-cuts/A01.webp) 로 넣어두면 팝오버/모달 위쪽에 표시됨.
    파일이 아직 없으면 "부스컷 준비 중"(시트 I열이 O) 또는 "부스컷 미제출" 문구로 대신 표시함.
    이미지를 누르면 화면 전체 크기로 크게 볼 수 있음.
 ------------------------------------------------- */
@@ -2697,7 +2697,7 @@ function buildCardAvatar(booth){
 }
 
 function boothCutUrl(booth){
-  return `booth-cuts/${booth.id}.jpg`;
+  return `booth-cuts/${booth.id}.webp`;
 }
 
 function closeCutLightbox(){
@@ -4110,7 +4110,7 @@ if("serviceWorker" in navigator){
 }
 
 // 처음 접속했을 때 보지 않은 부스의 사진도 오프라인에서 보이도록 서비스 워커에 미리 받을 목록을 넘김.
-// 부스컷·프로필 사진 전체(약 9MB). 이미 받아 둔 이미지는 서비스 워커가 건너뜀.
+// 부스컷·프로필 사진 전체(약 13MB). 이미 받아 둔 이미지는 서비스 워커가 건너뜀.
 function allImageUrls(){
   const paths = new Set();
   BOOTHS.forEach(booth => {
