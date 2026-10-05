@@ -1,6 +1,31 @@
 {
- "updatedAt": "2026-10-05T03:34:53+00:00",
+ "updatedAt": "2026-10-05T04:34:24+00:00",
  "posts": [
+  {
+   "id": "2106963240714637474",
+   "handle": "makidogang",
+   "booths": [
+    "C10"
+   ],
+   "boothNames": [
+    "지금이 절호의 찬스잖아"
+   ],
+   "created": "2026-10-05T04:22:36+00:00",
+   "text": "Ah… This is so Epic merch I ever seen https://t.co/cDeqBmjZrh",
+   "images": [
+    "https://pbs.twimg.com/media/HT1v3JubAAAaA0B.jpg?name=orig",
+    "https://pbs.twimg.com/amplify_video_thumb/2106963193994289152/img/X1JyQl85e5QHXG4Q.jpg",
+    "https://pbs.twimg.com/amplify_video_thumb/2106963193985974272/img/SGa69NAgZP0SJm0L.jpg"
+   ],
+   "score": 3,
+   "sensitive": true,
+   "quote": false,
+   "reasons": [
+    "굿즈·판매",
+    "이미지"
+   ],
+   "foundAt": "2026-10-05T04:33:01+00:00"
+  },
   {
    "id": "2106942200093249982",
    "handle": "Beuu0920",
