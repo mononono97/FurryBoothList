@@ -1381,11 +1381,27 @@
   }
   .booth-inline .inline-close:hover{ background:rgba(255,255,255,.12); }
   .booth-inline-info, .booth-inline-actions{ min-width:0; }
-  /* 오른쪽 칸 맨 위가 닫기 버튼과 겹치지 않게 */
-  .booth-inline-actions{ padding-top:44px; }
+  /* 왼쪽 칸 맨 위 큰 제목 "[A15] PPP2" */
+  .booth-inline-title{
+    margin:0 0 12px;
+    font-size:26px;
+    font-weight:800;
+    line-height:1.25;
+    word-break:keep-all;
+    overflow-wrap:anywhere;
+  }
+  .booth-inline-title .inline-id{ color:var(--moss-light); }
+  .booth-inline-title .inline-adult{ font-size:14px; vertical-align:middle; }
+  /* 오른쪽 칸 맨 위 부스원: 가로로 나열하고 많으면 다음 줄로. 오른쪽은 닫기 버튼 자리를 비워 둠 */
+  .booth-inline .member-list{
+    flex-direction:row;
+    flex-wrap:wrap;
+    gap:10px 22px;
+    margin:6px 52px 14px 0;
+  }
+  .booth-inline .member-row{ max-width:230px; font-size:13px; }
+  .booth-inline .member-avatar{ width:36px; height:36px; }
   /* 부스컷은 상세 전체가 상단바 아래 한 화면에 들어오도록 화면 높이에 맞춤 */
-  /* 선입금 칸은 오른쪽 칸 맨 위에 오므로 모달에서 쓰던 위쪽 구분선은 뺌 */
-  .booth-inline-actions > .preorder-box:first-child{ margin-top:0; padding-top:0; border-top:none; }
   .booth-inline .booth-cut img{ max-height:max(240px, calc(100vh - 460px)); max-height:max(240px, calc(100dvh - 460px)); }
   /* 펼쳐 둔 카드 표시 */
   .booth.detail-open{
@@ -1396,7 +1412,6 @@
   /* 창이 좁아 두 칸이 비좁으면 위아래로 쌓음 */
   @media (max-width:760px){
     .booth-inline{ grid-template-columns:1fr; gap:4px; }
-    .booth-inline-actions{ padding-top:0; }
   }
 
   /* 모달 */
@@ -3360,11 +3375,19 @@ function openInlineDetail(boothId, kind){
   closeBtn.className = "inline-close";
   closeBtn.textContent = "✕";
   closeBtn.addEventListener("click", closeInlineDetail);
+  // 왼쪽 칸 맨 위: "[A15] PPP2"처럼 부스 번호와 이름을 크게 (2026-10-05 사용자 요청)
   const info = document.createElement("div");
   info.className = "booth-inline-info";
-  fillBoothInfo(info, booth);
+  const title = document.createElement("h2");
+  title.className = "booth-inline-title";
+  title.innerHTML = `<span class="inline-id">[${escapeHtml(booth.id)}]</span> ${escapeHtml(booth.name)}` +
+    (booth.adult ? ` <span class="inline-adult">${escapeHtml(t("adultTag"))}</span>` : "");
+  info.appendChild(title);
+  fillBoothInfo(info, booth, { withHead: false, withMembers: false });
+  // 오른쪽 칸 맨 위: 부스원 목록을 가로로 나열(많으면 다음 줄로 넘어감)
   const actions = document.createElement("div");
   actions.className = "booth-inline-actions";
+  actions.appendChild(buildMemberList(booth));
   if(kind === "preorder") fillPreorderActions(actions, booth);
   else fillBoothActions(actions, booth);
   el.append(closeBtn, info, actions);
@@ -3826,21 +3849,24 @@ function openBoothModalShell(booth){
   return content;
 }
 
-// 부스 이름·상품 정보(또는 부스컷)·부스원 목록. 모달에서는 창 위쪽, PC 펼침 상세에서는 왼쪽 칸.
-function fillBoothInfo(container, booth){
-  const head = document.createElement("div");
-  head.className = "pop-head";
-  head.style.marginTop = "6px";
-  const names = document.createElement("div");
-  names.className = "names";
-  names.innerHTML = `<div class="c-name">${escapeHtml(booth.name)}</div><div class="r-name">${boothSubLine(booth)}</div>`;
-  head.appendChild(names);
-  container.appendChild(head);
+// 부스 이름·상품 정보(또는 부스컷)·부스원 목록. 모달에서는 창 위쪽에 차례로 붙임.
+// PC 펼침 상세는 큰 제목을 따로 달고(withHead:false) 부스원은 오른쪽 칸 위로 옮김(withMembers:false).
+function fillBoothInfo(container, booth, { withHead = true, withMembers = true } = {}){
+  if(withHead){
+    const head = document.createElement("div");
+    head.className = "pop-head";
+    head.style.marginTop = "6px";
+    const names = document.createElement("div");
+    names.className = "names";
+    names.innerHTML = `<div class="c-name">${escapeHtml(booth.name)}</div><div class="r-name">${boothSubLine(booth)}</div>`;
+    head.appendChild(names);
+    container.appendChild(head);
+  }
   // 반영된 상품 정보 글이 있는 부스는 부스컷 자리에 그 글을 대신 보여줌 (2026-10-04 사용자 요청)
   const cut = buildBoothCut(booth);
   container.appendChild(buildBoothPosts(booth, () => cut.remove()));
   container.appendChild(cut);
-  container.appendChild(buildMemberList(booth));
+  if(withMembers) container.appendChild(buildMemberList(booth));
 }
 
 function showBoothModal(){
