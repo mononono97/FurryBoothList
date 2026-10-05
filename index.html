@@ -1200,6 +1200,7 @@
   .venue-map .map-booth.priority-1 .map-booth-ring{ stroke:var(--map-prio-1); }
   .venue-map .map-booth.priority-2 .map-booth-ring{ stroke:var(--map-prio-2); }
   .venue-map .map-booth.priority-3 .map-booth-ring{ stroke:var(--map-prio-3); }
+  .venue-map .map-booth.dim{ opacity:.35; }
   .venue-map .map-booth.empty{ cursor:default; }
   .venue-map .map-booth.empty .map-booth-box{ stroke:var(--line); stroke-dasharray:4 3; }
   .venue-map .map-booth.empty .map-booth-text{ fill:var(--muted); }
@@ -1640,6 +1641,9 @@ const I18N = {
     mapLegendPlanned: "방문 예정",
     mapLegendVisited: "방문 완료",
     mapLegendPriority: "1·2·3순위 테두리",
+    mapModeBasic: "🗺️ 기본 보기",
+    mapModePreorder: "💳 선입금 보기",
+    mapPreorderHint: "선입금 부스를 누르면 선입금 메모가 열려요",
     circleCount: "{n}개 부스",
     notesCount: "메모·방문·예산 등록 부스 {n}개",
     emptyDefault: "검색 결과가 없어요.",
@@ -1767,6 +1771,9 @@ const I18N = {
     mapLegendPlanned: "Plan to visit",
     mapLegendVisited: "Visited",
     mapLegendPriority: "Priority 1·2·3 border",
+    mapModeBasic: "🗺️ Basic",
+    mapModePreorder: "💳 Pre-orders",
+    mapPreorderHint: "Tap a pre-order booth to see its pre-order notes",
     circleCount: "{n} booths",
     notesCount: "{n} booths with notes/visit/budget",
     emptyDefault: "No search results.",
@@ -1894,6 +1901,9 @@ const I18N = {
     mapLegendPlanned: "訪問予定",
     mapLegendVisited: "訪問済み",
     mapLegendPriority: "優先順位1・2・3の枠",
+    mapModeBasic: "🗺️ 基本表示",
+    mapModePreorder: "💳 事前通販表示",
+    mapPreorderHint: "事前通販ブースを押すと事前通販メモが開きます",
     circleCount: "{n}ブース",
     notesCount: "メモ・訪問・予算登録ブース {n}件",
     emptyDefault: "検索結果がありません。",
@@ -3321,6 +3331,17 @@ const MAP_ZONE_VIEWBOX = {
 let mapZone = "ALL";
 try { const z = localStorage.getItem(MAP_ZONE_KEY); if(z && MAP_ZONE_VIEWBOX[z]) mapZone = z; } catch {}
 
+// 배치도 보기 방식: "basic"(메모·방문 상태·우선순위 색) | "preorder"(선입금 수령 전 노랑·수령 완료 초록)
+const MAP_MODE_KEY = `${STORAGE_PREFIX}-map-mode`;
+let mapMode = "basic";
+try { if(localStorage.getItem(MAP_MODE_KEY) === "preorder") mapMode = "preorder"; } catch {}
+
+function setMapMode(mode){
+  mapMode = mode;
+  try { localStorage.setItem(MAP_MODE_KEY, mode); } catch {}
+  renderMapView();
+}
+
 function setMapZone(zone){
   mapZone = zone;
   try { localStorage.setItem(MAP_ZONE_KEY, zone); } catch {}
@@ -3371,10 +3392,13 @@ function buildMapSvg(){
     parts.forEach(p => used.add(booth.block + parseInt(p.n, 10)));
     const status = getVisitStatus(booth.id);
     const level = getPriority(booth.id);
-    const cls = "map-booth zone-" + booth.block.toLowerCase() +
-      (getNote(booth.id) ? " has-note" : "") +
-      (status === "planned" ? " visit-planned" : status === "visited" ? " visit-visited" : "") +
-      (level ? ` priority-${level}` : "");
+    const pre = getPreorder(booth.id);
+    // 선입금 보기에서는 방문 예정/완료와 같은 노랑·초록을 선입금 수령 전/완료에 쓰고, 선입금이 없는 부스는 흐리게
+    const cls = "map-booth zone-" + booth.block.toLowerCase() + (mapMode === "preorder"
+      ? (pre ? (pre.received ? " visit-visited" : " visit-planned") : " dim")
+      : (getNote(booth.id) ? " has-note" : "") +
+        (status === "planned" ? " visit-planned" : status === "visited" ? " visit-visited" : "") +
+        (level ? ` priority-${level}` : ""));
     const label = `${booth.id} ${booth.name}`;
     const open = `<g class="${cls}" data-booth-id="${escapeHtml(booth.id)}" tabindex="0" role="button" aria-label="${escapeHtml(label)}"><title>${escapeHtml(label)}</title>`;
 
@@ -3418,6 +3442,19 @@ function renderMapView(){
     return;
   }
 
+  const modeFilter = document.createElement("div");
+  modeFilter.className = "visit-filter map-zone-filter";
+  [["basic", "mapModeBasic"], ["preorder", "mapModePreorder"]].forEach(([mode, key]) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = t(key);
+    btn.classList.toggle("active", mapMode === mode);
+    btn.setAttribute("aria-pressed", mapMode === mode ? "true" : "false");
+    btn.addEventListener("click", () => setMapMode(mode));
+    modeFilter.appendChild(btn);
+  });
+  mapGrid.appendChild(modeFilter);
+
   const zoneFilter = document.createElement("div");
   zoneFilter.className = "visit-filter map-zone-filter";
   [["ALL", "mapZoneAll"], ["A", "mapZoneA"], ["B", "mapZoneB"], ["C", "mapZoneC"]].forEach(([zone, key]) => {
@@ -3433,7 +3470,10 @@ function renderMapView(){
 
   const legend = document.createElement("div");
   legend.className = "map-legend";
-  legend.innerHTML =
+  legend.innerHTML = mapMode === "preorder" ?
+    `<span><i class="swatch planned"></i>${escapeHtml(t("preorderPending"))}</span>` +
+    `<span><i class="swatch visited"></i>${escapeHtml(t("preorderDoneShort"))}</span>` +
+    `<span>${escapeHtml(t("mapPreorderHint"))}</span>` :
     `<span><i class="swatch note"></i>${escapeHtml(t("mapLegendNote"))}</span>` +
     `<span><i class="swatch planned"></i>${escapeHtml(t("mapLegendPlanned"))}</span>` +
     `<span><i class="swatch visited"></i>${escapeHtml(t("mapLegendVisited"))}</span>` +
@@ -3461,15 +3501,21 @@ function renderMapView(){
     const g = e.target.closest("[data-booth-id]");
     if(!g) return;
     e.stopPropagation();
-    openBoothModal(g.dataset.boothId);
+    openMapBooth(g.dataset.boothId);
   });
   svg.addEventListener("keydown", (e) => {
     if(e.key !== "Enter" && e.key !== " ") return;
     const g = e.target.closest("[data-booth-id]");
     if(!g) return;
     e.preventDefault();
-    openBoothModal(g.dataset.boothId);
+    openMapBooth(g.dataset.boothId);
   });
+}
+
+// 선입금 보기에서 선입금 부스를 누르면 선입금 창(메모 등), 그 밖에는 일반 부스 상세 창
+function openMapBooth(boothId){
+  if(mapMode === "preorder" && getPreorder(boothId)) openPreorderModal(boothId);
+  else openBoothModal(boothId);
 }
 
 /* ---------- 행사 안내 (일정 · 약도 · 날씨) ----------
@@ -3707,6 +3753,7 @@ function openBoothModal(boothId){
     syncPreorderButton();
     renderNav();
     if(currentRow === "PREORDER") renderGrid();
+    if(currentRow === "MAP") renderMapView();
   });
   content.appendChild(visitBox);
 
@@ -3806,7 +3853,10 @@ function openPreorderModal(boothId){
   if(!booth) return;
   const content = openBoothModalShell(booth);
   const p = getPreorder(booth.id) || {};
-  const refreshPreorderTab = () => { if(currentRow === "PREORDER") renderGrid(); };
+  const refreshPreorderTab = () => {
+    if(currentRow === "PREORDER") renderGrid();
+    if(currentRow === "MAP") renderMapView();
+  };
 
   const box = document.createElement("div");
   box.className = "preorder-box";
