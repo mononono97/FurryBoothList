@@ -8,9 +8,9 @@
   script-src 'self' 'unsafe-inline' https://platform.twitter.com https://cdn.syndication.twimg.com https://www.gstatic.com https://apis.google.com;
   worker-src 'self';
   style-src 'self' 'unsafe-inline';
-  img-src 'self' data: https://pbs.twimg.com https://abs.twimg.com https://ton.twimg.com;
+  img-src 'self' data: https://abs.twimg.com https://ton.twimg.com;
   font-src 'self' data:;
-  connect-src 'self' https://api.fxtwitter.com https://cdn.syndication.twimg.com https://syndication.twitter.com https://twitter.com https://x.com https://api.open-meteo.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com;
+  connect-src 'self' https://cdn.syndication.twimg.com https://syndication.twitter.com https://twitter.com https://x.com https://api.open-meteo.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com;
   frame-src https://platform.twitter.com https://syndication.twitter.com https://www.google.com https://accounts.google.com https://boothlist-4589c.firebaseapp.com;
   object-src 'none';
   base-uri 'self';
@@ -1065,10 +1065,6 @@
     line-height:1.5;
   }
   .booth-post-handle{ font-weight:700; margin-bottom:4px; }
-  .booth-post-text{ white-space:pre-wrap; word-break:break-word; }
-  .booth-post-images{ display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
-  .booth-post-images a{ flex:1 1 45%; max-width:100%; }
-  .booth-post-images img{ display:block; width:100%; max-height:360px; object-fit:cover; border-radius:8px; }
   .booth-post-note{ font-size:11.5px; color:var(--muted); margin:6px 0 4px; }
   .booth-post-card a{ font-size:12.5px; color:var(--accent); }
   .official-feed{
@@ -1718,7 +1714,7 @@ const I18N = {
     noBoothData: "표시할 부스 데이터가 없어요.",
     boothPostsTitle: "상품 정보",
     boothPostOpenX: "X에서 보기",
-    boothPostSensitive: "X가 민감한 내용으로 표시한 글이라 이미지는 X에서 볼 수 있어요.",
+    boothPostSensitive: "X가 민감한 내용으로 표시한 글이라 X에서만 볼 수 있어요.",
     openProfile: "X 프로필 열기",
     visitPlanned: "🟡 방문 예정",
     visitVisited: "🟢 방문 완료",
@@ -1836,7 +1832,7 @@ const I18N = {
     noBoothData: "No booth data to display.",
     boothPostsTitle: "Merch info",
     boothPostOpenX: "View on X",
-    boothPostSensitive: "X marked this post as sensitive, so images are only visible on X.",
+    boothPostSensitive: "X marked this post as sensitive, so it can only be viewed on X.",
     openProfile: "Open X Profile",
     visitPlanned: "🟡 Plan to Visit",
     visitVisited: "🟢 Visited",
@@ -1954,7 +1950,7 @@ const I18N = {
     noBoothData: "表示するブースデータがありません。",
     boothPostsTitle: "頒布物情報",
     boothPostOpenX: "Xで見る",
-    boothPostSensitive: "Xでセンシティブな内容として表示された投稿のため、画像はXで確認できます。",
+    boothPostSensitive: "Xでセンシティブな内容として表示された投稿のため、Xでのみ確認できます。",
     openProfile: "Xプロフィールを開く",
     visitPlanned: "🟡 訪問予定",
     visitVisited: "🟢 訪問済み",
@@ -2870,21 +2866,28 @@ function updateNoteVisuals(boothId){
 
 /* ---------- 부스 상품 정보 ----------
    운영자가 관리 화면(admin.html)에서 "반영"한 X 글을 부스 상세 창에 보여줌.
-   반영 목록은 Firestore boothPosts/main 문서의 approved 필드: { 글id: { booth: "A02", handle, at, text, sensitive } }.
-   X 는 민감한 글로 표시된 글(sensitive)을 임베드해 주지 않아("Not found") 저장해 둔 본문과 링크로 보여줌.
-   인용한 글이 있는 글(quote)도 임베드에 인용 글을 숨기는 옵션이 없어 저장해 둔 본문·이미지 카드로 보여줌.
+   반영 목록은 Firestore boothPosts/main 문서의 approved 필드: { 글id: { booth: "A02", handle, at, sensitive } }.
+   X 약관(공식 임베드로 표시, 글 사본을 따로 두지 않기)에 맞추려고 글 본문·이미지는 저장하지도 직접 그리지도 않음 (2026-10-05).
+   - 보통 글(인용한 글이 있는 글 포함): X 공식 임베드
+   - 민감한 글(X 가 임베드를 막음)·임베드가 안 되는 글: 아이디와 "X에서 보기" 링크만
+   같은 문서의 official 필드는 행사 안내 탭에 보여줄 공식 계정 글 목록: { 글id: { at } }.
    방문자마다 한 번만 읽고(첫 부스 상세를 열 때), 행사장처럼 오프라인일 때를 위해 마지막 값을 localStorage 에 둠.
 ------------------------------------------------- */
 const BOOTH_POSTS_CACHE_KEY = `${STORAGE_PREFIX}-booth-posts`;
-let boothPostsPromise = null;
+const OFFICIAL_POSTS_CACHE_KEY = `${STORAGE_PREFIX}-official-posts`;
+let boothPostsDocPromise = null;
+function readCache(key){
+  try { return JSON.parse(localStorage.getItem(key) || "{}") || {}; } catch { return {}; }
+}
 // 마지막으로 받은 반영 목록. "최근 갱신" 탭이 바로 그릴 수 있게 처음엔 localStorage 값으로 채움
-let approvedBoothPosts = {};
-try { approvedBoothPosts = JSON.parse(localStorage.getItem(BOOTH_POSTS_CACHE_KEY) || "{}") || {}; } catch {}
+let approvedBoothPosts = readCache(BOOTH_POSTS_CACHE_KEY);
 
 // X 글 id 에는 글을 쓴 시각이 들어 있음(앞쪽 비트 = 2010-11-04 기준 밀리초)
 function postTime(id){
   try { return Number(BigInt(id) >> 22n) + 1288834974657; } catch { return 0; }
 }
+// 글 id 는 시간이 지날수록 커지는 숫자라 길이 → 사전순 비교로 최신 글이 앞으로 옴
+function newestPostFirst(a, b){ return b.length - a.length || (b > a ? 1 : b < a ? -1 : 0); }
 
 // "최근 갱신" 탭: 반영된 글이 있는 부스를 가장 최근 글 시각 순으로
 function recentlyUpdatedBooths(){
@@ -2899,41 +2902,40 @@ function recentlyUpdatedBooths(){
     .sort((a, b) => b.time - a.time);
 }
 
-function loadApprovedBoothPosts(){
-  if(boothPostsPromise) return boothPostsPromise;
-  let cached = {};
-  try { cached = JSON.parse(localStorage.getItem(BOOTH_POSTS_CACHE_KEY) || "{}") || {}; } catch {}
-  if(!firebaseReady) return (boothPostsPromise = Promise.resolve(cached));
-  boothPostsPromise = firebase.firestore().collection("boothPosts").doc("main").get()
+// boothPosts/main 문서를 한 번 읽어 { approved, official } 로 돌려줌. 실패하면 저장해 둔 값
+function loadBoothPostsDoc(){
+  if(boothPostsDocPromise) return boothPostsDocPromise;
+  const cached = () => ({ approved: readCache(BOOTH_POSTS_CACHE_KEY), official: readCache(OFFICIAL_POSTS_CACHE_KEY) });
+  if(!firebaseReady) return (boothPostsDocPromise = Promise.resolve(cached()));
+  boothPostsDocPromise = firebase.firestore().collection("boothPosts").doc("main").get()
     .then(doc => {
-      const approved = (doc.exists && doc.data().approved) || {};
-      try { localStorage.setItem(BOOTH_POSTS_CACHE_KEY, JSON.stringify(approved)); } catch {}
+      const data = doc.exists ? doc.data() : {};
+      const approved = data.approved || {};
+      const official = data.official || {};
+      try {
+        localStorage.setItem(BOOTH_POSTS_CACHE_KEY, JSON.stringify(approved));
+        localStorage.setItem(OFFICIAL_POSTS_CACHE_KEY, JSON.stringify(official));
+      } catch {}
       approvedBoothPosts = approved;
       if(currentRow === "UPDATES") renderGrid();
-      return approved;
+      return { approved, official };
     })
     .catch(() => {
-      boothPostsPromise = null;   // 다음에 부스를 열 때 다시 시도
-      return cached;
+      boothPostsDocPromise = null;   // 다음에 열 때 다시 시도
+      return cached();
     });
-  return boothPostsPromise;
+  return boothPostsDocPromise;
 }
+function loadApprovedBoothPosts(){ return loadBoothPostsDoc().then(d => d.approved); }
 
-// 카드 본문 끝의 t.co 링크(이미지·인용 글 주소)는 카드에 필요 없어 지움
-function cardText(text){ return String(text || "").replace(/(\s*https:\/\/t\.co\/\w+)+\s*$/, ""); }
-
-// X 임베드 대신 직접 그리는 카드. 민감한 글(임베드가 막힘)과 인용한 글이 있는 글(인용 글을 빼고 보여주려고)에 씀.
-// 이미지는 민감한 글이 아닐 때만 넣음
+// X 임베드 대신 보여주는 링크 카드. 민감한 글(임베드가 막힘)과 임베드가 안 되는 글(지워졌거나 X 스크립트가 막힘)에 씀.
+// 글 본문·이미지는 X 밖에 사본을 두지 않으려고 넣지 않음
 function buildBoothPostCard(id, entry){
   const card = document.createElement("div");
   card.className = "booth-post-card";
   const url = `https://x.com/${encodeURIComponent(entry.handle || "i")}/status/${encodeURIComponent(id)}`;
-  const images = entry.sensitive ? [] : (entry.images || []);
   card.innerHTML = `
     <div class="booth-post-handle">@${escapeHtml(entry.handle || "")}</div>
-    <div class="booth-post-text">${escapeHtml(cardText(entry.text))}</div>
-    ${images.length ? `<div class="booth-post-images">${images.map(src =>
-      `<a href="${escapeHtml(url)}" target="_blank" rel="noopener"><img loading="lazy" src="${escapeHtml(src)}" alt=""></a>`).join("")}</div>` : ""}
     ${entry.sensitive ? `<div class="booth-post-note">${escapeHtml(t("boothPostSensitive"))}</div>` : ""}
     <a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(t("boothPostOpenX"))}</a>
   `;
@@ -2945,10 +2947,9 @@ function buildBoothPosts(booth, onShown){
   box.className = "booth-posts";
   box.hidden = true;
   loadApprovedBoothPosts().then(approved => {
-    // 글 id 는 시간이 지날수록 커지는 숫자라 길이 → 사전순 비교로 최신 글이 위로 옴
     const ids = Object.keys(approved)
       .filter(id => approved[id] && approved[id].booth === booth.id)
-      .sort((a, b) => b.length - a.length || (b > a ? 1 : b < a ? -1 : 0));
+      .sort(newestPostFirst);
     if(!ids.length || !box.isConnected) return;
     box.hidden = false;
     if(onShown) onShown();
@@ -2956,7 +2957,7 @@ function buildBoothPosts(booth, onShown){
     // 순서를 지키려고 칸을 먼저 만들어 두고, 칸마다 따로 채움
     const embedSlots = [];
     ids.forEach(id => {
-      if(approved[id].sensitive || approved[id].quote){
+      if(approved[id].sensitive){
         box.appendChild(buildBoothPostCard(id, approved[id]));
         return;
       }
@@ -2964,7 +2965,7 @@ function buildBoothPosts(booth, onShown){
       item.className = "booth-post";
       box.appendChild(item);
       // 그사이 민감한 글로 바뀌었거나 지워진 글은 X 가 "Not found" 만 보여주고 응답도 없음.
-      // X 스크립트가 막힌 경우도 포함해, 12초 안에 임베드가 안 되면 저장해 둔 본문과 링크로 바꿈
+      // X 스크립트가 막힌 경우도 포함해, 12초 안에 임베드가 안 되면 링크 카드로 바꿈
       const fallback = setTimeout(() => {
         if(item.isConnected) item.replaceWith(buildBoothPostCard(id, approved[id]));
       }, 12000);
@@ -2990,46 +2991,22 @@ function buildBoothPosts(booth, onShown){
 
 // 행사 안내 탭: 공식 X 계정(@FURSTCLASS_KR)의 글을 정해진 높이 안에서 스크롤로 보여줌.
 // X 타임라인 위젯은 로그인하지 않은 방문자에게 막혀(429) 빈 상자만 보이므로 쓰지 않음.
-// 1) FxTwitter 공개 JSON(무료·키 없음)에서 OFFICIAL_POST_SINCE 이후 글을 페이지를 넘겨 가며 받고
-//    리트윗·답글(번역 글)·숨김 글을 거름
+// 1) 보여줄 글은 운영자가 관리 화면(admin.html)의 "행사 안내 글"에서 반영한 글(boothPosts/main 의 official).
+//    예전에는 방문자 브라우저가 비공식 API(FxTwitter)에서 글 목록을 받았는데, X 약관에 맞추려고 뺌 (2026-10-05)
 // 2) 글마다 X 개별 글 임베드(createTweet, 로그인 불필요)로 그림. 한 번에 다 그리면 무거우므로
 //    처음 몇 개만 그리고, 상자 안에서 아래로 스크롤하면 이어서 그림.
-// FxTwitter 가 실패하면 OFFICIAL_POST_FALLBACK_IDS(2026-10-02 기준 최근 글)를 대신 씀.
-const OFFICIAL_POST_SINCE = Date.parse("2026-06-16T00:00:00+09:00");
-const OFFICIAL_POST_MAX_PAGES = 8;   // 페이지당 약 20개
+// 반영된 글이 하나도 없거나 읽지 못하면 OFFICIAL_POST_FALLBACK_IDS(2026-10-02 기준 최근 글)를 대신 씀.
 const OFFICIAL_POST_BATCH = 4;       // 한 번에 그리는 글 수
-// 사이트에 보여주지 않을 글 (2026-10-02 사용자 요청: 8/21 게스트 관련 글)
-const OFFICIAL_POST_HIDDEN_IDS = new Set(["2090723233784099271"]);
 const OFFICIAL_POST_FALLBACK_IDS = [
   "2104521337406726510", "2103382992215560409", "2102277349509050694",
   "2097718475032809727", "2091465987191136588", "2089244521016197369",
 ];
 
 function fetchOfficialPostIds(){
-  // FxTwitter 는 프로필 글 목록에서 대문자 아이디를 넣으면 빈 결과(404)를 주므로 소문자로 요청함 (2026-10-04 확인)
-  const base = `https://api.fxtwitter.com/2/profile/${OFFICIAL_X_HANDLE.toLowerCase()}/statuses`;
-  const ids = [];
-  const seen = new Set();
-  const page = (cursor, n) => fetch(cursor ? `${base}?cursor=${encodeURIComponent(cursor)}` : base)
-    .then(res => res.ok ? res.json() : Promise.reject(res.status))
-    .then(data => {
-      const results = data.results || [];
-      let reachedOld = false;
-      results.forEach(p => {
-        const ts = p.created_timestamp ? p.created_timestamp * 1000 : Date.parse(p.created_at);
-        if(ts && ts < OFFICIAL_POST_SINCE){ reachedOld = true; return; }
-        const id = String(p.id);
-        if(seen.has(id) || p.reposted_by || p.replying_to || OFFICIAL_POST_HIDDEN_IDS.has(id)) return;
-        if(String((p.author && p.author.screen_name) || "").toLowerCase() !== OFFICIAL_X_HANDLE.toLowerCase()) return;
-        seen.add(id);
-        ids.push(id);
-      });
-      const next = data.cursor && data.cursor.bottom;
-      if(!reachedOld && next && results.length && n < OFFICIAL_POST_MAX_PAGES) return page(next, n + 1);
-    });
-  return page(null, 1)
-    .catch(() => {})   // 중간 페이지가 실패해도 그때까지 받은 글은 보여줌
-    .then(() => ids.length ? ids : OFFICIAL_POST_FALLBACK_IDS);
+  return loadBoothPostsDoc().then(d => {
+    const ids = Object.keys(d.official || {}).sort(newestPostFirst);
+    return ids.length ? ids : OFFICIAL_POST_FALLBACK_IDS;
+  });
 }
 
 function loadOfficialFeed(box){
