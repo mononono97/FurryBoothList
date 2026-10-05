@@ -3389,7 +3389,7 @@ function openInlineDetail(boothId, kind){
   actions.className = "booth-inline-actions";
   actions.appendChild(buildMemberList(booth));
   if(kind === "preorder") fillPreorderActions(actions, booth);
-  else fillBoothActions(actions, booth);
+  else fillBoothActions(actions, booth, { withTweet: false });
   el.append(closeBtn, info, actions);
 
   inlineDetail = { boothId, kind, el };
@@ -3884,8 +3884,8 @@ function openBoothModal(boothId){
   showBoothModal();
 }
 
-// 트윗·X 링크·방문 예정/완료·선입금·우선순위·예산·메모. 모달에서는 부스 정보 아래, PC 펼침 상세에서는 오른쪽 칸.
-function fillBoothActions(content, booth){
+// 대표자 X 글 칸과 "X 프로필 열기" 링크 (모달 전용)
+function appendTweetAndLinks(content, booth){
   const slot = document.createElement("div");
   slot.className = "tweet-slot";
   const ph = document.createElement("div");
@@ -3903,6 +3903,12 @@ function fillBoothActions(content, booth){
     links.innerHTML = `<a href="https://x.com/${booth.twitter}" target="_blank" rel="noopener">${escapeHtml(t("openProfile"))}</a>`;
   }
   content.appendChild(links);
+}
+
+// 트윗·X 링크·방문 예정/완료·선입금·우선순위·예산·메모. 모달에서는 부스 정보 아래, PC 펼침 상세에서는 오른쪽 칸.
+// PC 펼침 상세는 트윗 칸·X 프로필 열기 버튼을 빼고 부름(withTweet:false). X는 부스원 사진·아이디로 갈 수 있음 (2026-10-05 사용자 요청)
+function fillBoothActions(content, booth, { withTweet = true } = {}){
+  if(withTweet) appendTweetAndLinks(content, booth);
 
   const visitBox = document.createElement("div");
   visitBox.className = "visit-box";
