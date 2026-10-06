@@ -3933,7 +3933,7 @@ function fillBoothActions(content, booth){
     <label>${escapeHtml(t("budgetLabel"))}</label>
     <div class="budget-input-row">
       <span class="yen">₩</span>
-      <input type="number" min="0" step="1000" inputmode="numeric" value="${getBudget(booth.id) || ""}" placeholder="0">
+      <input type="number" min="0" step="1000" inputmode="numeric" value="${Number(getBudget(booth.id)) || ""}" placeholder="0">
     </div>
   `;
   const budgetInput = budgetBox.querySelector("input");
@@ -4013,7 +4013,7 @@ function fillPreorderActions(content, booth){
     <label>${escapeHtml(t("preorderAmount"))}</label>
     <div class="budget-input-row">
       <span class="yen">₩</span>
-      <input type="number" data-field="amount" min="0" step="1000" inputmode="numeric" value="${p.amount || ""}" placeholder="0">
+      <input type="number" data-field="amount" min="0" step="1000" inputmode="numeric" value="${Number(p.amount) || ""}" placeholder="0">
     </div>
     <label>${escapeHtml(t("preorderPayer"))}</label>
     <div class="budget-input-row"><input type="text" data-field="payer" maxlength="${MAX_PREORDER_TEXT}" value="${escapeHtml(p.payer || "")}" placeholder="${escapeHtml(t("preorderPayerPlaceholder"))}"></div>

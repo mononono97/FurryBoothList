@@ -1,0 +1,9 @@
+# Cloudflare Workers 정적 배포에서 뺄 파일 (사이트가 쓰지 않는 저장소 내부 파일)
+# 2026-10-06 보안 점검: data/ 의 부스 시트에는 부스비 입금 여부 같은 내부 정보가 있음
+.git
+.github
+.idea
+.gitignore
+data
+docs
+tools

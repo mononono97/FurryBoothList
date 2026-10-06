@@ -1,0 +1,8 @@
+# Cloudflare Workers 정적 배포 응답 헤더 (2026-10-06 보안 점검)
+# 다른 사이트가 이 사이트(특히 admin.html)를 iframe 으로 끼워 넣지 못하게 막음(클릭재킹 방지).
+# CSP 는 각 HTML 의 <meta> 에 있는데, frame-ancestors 는 <meta> 로는 동작하지 않아 여기서 응답 헤더로 줌.
+/*
+  X-Frame-Options: DENY
+  Content-Security-Policy: frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
