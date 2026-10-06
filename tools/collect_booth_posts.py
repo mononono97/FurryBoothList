@@ -56,7 +56,8 @@ USER_AGENT = "FurryBoothList booth post collector (+https://github.com/mononono9
 KEYWORDS = [
     (r"인포|お品書き|おしながき|品書き|\binfo\b", 3, "인포"),
     (r"신간|新刊|既刊|구간|new release", 3, "신간"),
-    (r"통판|通販|선입금|예약 ?판매|사전 ?예약|予約|pre-?order", 2, "통판·예약"),
+    (r"통판|通販|선입금|입금|송금|振込|振り込み|先入金|예약 ?판매|사전 ?예약|予約|pre-?order|"
+     r"구글 ?폼|네이버 ?폼|폼 ?링크|주문서|신청서|현장 ?수령|배송비", 2, "통판·선입금·예약"),
     (r"굿즈|グッズ|상품|頒布|판매|販売|merch|goods", 2, "굿즈·판매"),
     (r"아크릴|アクリル|acryl|스티커|ステッカー|sticker|엽서|ポストカード|postcard|키링|キーホルダー|keychain|"
      r"뱃지|배지|缶バッジ|badge|회지|동인지|同人誌|일러스트북|イラスト集|artbook|포카|태피스트리|タペストリー|"
