@@ -430,6 +430,7 @@
     gap:6px;
   }
   nav.rows button{
+    white-space:nowrap;
     appearance:none;
     border:1px solid var(--chip-border);
     background:var(--chip-bg);
@@ -475,6 +476,7 @@
   }
   .tab-group button{
     appearance:none;
+    white-space:nowrap;
     border:1px solid var(--chip-border);
     background:var(--chip-bg);
     color:var(--header-fg);
@@ -519,6 +521,13 @@
   .row-heading .count{
     font-size:13px;
     color:var(--text-2);
+    min-width:0;
+  }
+  /* 좁은 화면에서는 큰 글자와 정렬 버튼을 한 줄에 두고, 길어지기 쉬운 개수·합계 문구는 그 아래 줄로 내림.
+     정렬 버튼 글자가 두세 줄로 쪼개지지 않게 하기 위함 */
+  @media (max-width:640px){
+    .row-heading{ flex-wrap:wrap; align-items:center; row-gap:6px; }
+    .row-heading .count{ order:3; flex-basis:100%; }
   }
   .sort-priority-btn{
     appearance:none;
@@ -531,6 +540,8 @@
     font-weight:600;
     cursor:pointer;
     margin-left:auto;
+    white-space:nowrap;
+    flex-shrink:0;
     transition:background .15s, border-color .15s;
   }
   .sort-priority-btn:hover{background:var(--hover-tint);}
@@ -554,6 +565,7 @@
   }
   .visit-filter button{
     appearance:none;
+    white-space:nowrap;
     border:1px solid var(--line);
     background:var(--card-bg);
     color:var(--ink);
@@ -571,6 +583,7 @@
     color:var(--pill-active-fg);
   }
   .budget-total{
+    white-space:nowrap;
     font-size:13px;
     font-weight:700;
     color:var(--ink);
