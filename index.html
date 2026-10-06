@@ -1451,6 +1451,8 @@
     font-size:13.5px;
     white-space:pre-line;
   }
+  /* 한국어는 단어 중간에서 줄이 바뀌지 않게(일본어는 띄어쓰기가 없어 적용하지 않음) */
+  .confirm-dialog p:lang(ko){ word-break:keep-all; }
   .confirm-actions{
     display:flex;
     gap:8px;
@@ -1775,7 +1777,7 @@ const I18N = {
     delete: "삭제",
     cancel: "취소",
     ok: "확인",
-    adultNotice: "🔞 성인 부스 안내\n\n성인 부스는 행사 당일 추가적인 인증이 필요할 수 있으며,\n미성년자의 경우 구매가 어려울 수 있습니다.",
+    adultNotice: "🔞 성인 부스 안내\n\n성인 부스는 행사 당일\n추가적인 인증이 필요할 수 있으며,\n미성년자의 경우 구매가 어려울 수 있습니다.",
     savedStatus: "저장됨",
     deletedStatus: "삭제됨",
     resetBtn: "🗑️ 데이터 초기화",
@@ -1895,7 +1897,7 @@ const I18N = {
     delete: "Delete",
     cancel: "Cancel",
     ok: "OK",
-    adultNotice: "🔞 Adult booth notice\n\nAdult booths may require additional age verification on the event day,\nand minors may not be able to make purchases.",
+    adultNotice: "🔞 Adult booth notice\n\nAdult booths may require additional age verification on the event day, and minors may not be able to make purchases.",
     savedStatus: "Saved",
     deletedStatus: "Deleted",
     resetBtn: "🗑️ Reset Data",
