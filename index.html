@@ -1474,6 +1474,13 @@
     color:#fff;
   }
   .confirm-actions button.danger:hover{background:#c23b3b;}
+  /* 확인 버튼 하나만 있는 안내 창(성인 부스 안내)의 확인 버튼 */
+  .confirm-actions button.primary{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+  }
+  .confirm-actions button.primary:hover{filter:brightness(.92);}
 
   footer{
     max-width:1180px;
@@ -1625,6 +1632,15 @@ try {
     .forEach(key => localStorage.removeItem(key));
 } catch {}
 
+// 처음 방문했는지: 이 브라우저에 furstclass-* 값이 하나도 없으면 첫 방문으로 보고 도움말 창을 한 번 띄움.
+// (이미 쓰던 사람은 탭·언어 등 저장된 값이 있으므로 이번 기능이 배포돼도 도움말이 갑자기 뜨지 않음)
+const WELCOME_SEEN_KEY = `${STORAGE_PREFIX}-welcome-seen`;
+let isFirstVisit = false;
+try {
+  isFirstVisit = !Object.keys(localStorage).some(key => key.startsWith(`${STORAGE_PREFIX}-`));
+  if(isFirstVisit) localStorage.setItem(WELCOME_SEEN_KEY, "1");
+} catch {}
+
 const CURRENT_ROW_KEY = `${STORAGE_PREFIX}-current-row`;
 const VALID_ROWS = new Set([...ALL_ROWS, "ALL", "NOTES", "PREORDER", "UPDATES", "MAP", "INFO"]);
 let savedRow = null;
@@ -1758,6 +1774,8 @@ const I18N = {
     save: "저장",
     delete: "삭제",
     cancel: "취소",
+    ok: "확인",
+    adultNotice: "🔞 성인 부스 안내\n\n성인 부스는 행사 당일 추가적인 인증이 필요할 수 있으며,\n미성년자의 경우 구매가 어려울 수 있습니다.",
     savedStatus: "저장됨",
     deletedStatus: "삭제됨",
     resetBtn: "🗑️ 데이터 초기화",
@@ -1876,6 +1894,8 @@ const I18N = {
     save: "Save",
     delete: "Delete",
     cancel: "Cancel",
+    ok: "OK",
+    adultNotice: "🔞 Adult booth notice\n\nAdult booths may require additional age verification on the event day,\nand minors may not be able to make purchases.",
     savedStatus: "Saved",
     deletedStatus: "Deleted",
     resetBtn: "🗑️ Reset Data",
@@ -1994,6 +2014,8 @@ const I18N = {
     save: "保存",
     delete: "削除",
     cancel: "キャンセル",
+    ok: "OK",
+    adultNotice: "🔞 成人向けブースのご案内\n\n成人向けブースでは、イベント当日に追加の年齢確認が必要になる場合があります。\n未成年の方は購入が難しい場合があります。",
     savedStatus: "保存済み",
     deletedStatus: "削除済み",
     resetBtn: "🗑️ データを初期化",
@@ -2616,12 +2638,47 @@ let confirmResolve = null;
 function showConfirmDialog(message, okLabel){
   return new Promise((resolve) => {
     confirmResolve = resolve;
+    const okBtn = document.getElementById("confirmOkBtn");
+    const cancelBtn = document.getElementById("confirmCancelBtn");
     document.getElementById("confirmMessage").textContent = message;
-    document.getElementById("confirmOkBtn").textContent = okLabel;
-    document.getElementById("confirmCancelBtn").textContent = t("cancel");
+    okBtn.textContent = okLabel;
+    okBtn.className = "danger";
+    cancelBtn.hidden = false;
+    cancelBtn.textContent = t("cancel");
     document.getElementById("confirmBackdrop").classList.add("open");
-    document.getElementById("confirmCancelBtn").focus();
+    cancelBtn.focus();
   });
+}
+
+// 같은 대화상자를 "확인" 버튼 하나짜리 안내 창으로 씀. 확인을 누르면 true, 창 밖 클릭·Esc는 false.
+function showNoticeDialog(message){
+  return new Promise((resolve) => {
+    confirmResolve = resolve;
+    const okBtn = document.getElementById("confirmOkBtn");
+    document.getElementById("confirmMessage").textContent = message;
+    okBtn.textContent = t("ok");
+    okBtn.className = "primary";
+    document.getElementById("confirmCancelBtn").hidden = true;
+    document.getElementById("confirmBackdrop").classList.add("open");
+    okBtn.focus();
+  });
+}
+
+/* ---------- 성인 부스 첫 클릭 안내 ----------
+   성인 부스를 처음 열 때 한 번 안내 창을 띄움. "확인"을 눌러 닫으면 이 기기에서는 다시 띄우지 않음
+   (창 밖 클릭·Esc로 닫으면 다음에 성인 부스를 열 때 다시 뜸). 기기마다 따로 저장(동기화 안 함).
+------------------------------------------------- */
+const ADULT_NOTICE_KEY = `${STORAGE_PREFIX}-adult-notice-seen`;
+let adultNoticeOpen = false;
+async function maybeShowAdultNotice(booth){
+  if(!booth || !booth.adult || adultNoticeOpen) return;
+  try { if(localStorage.getItem(ADULT_NOTICE_KEY) === "1") return; } catch {}
+  adultNoticeOpen = true;
+  const ok = await showNoticeDialog(t("adultNotice"));
+  adultNoticeOpen = false;
+  if(ok){
+    try { localStorage.setItem(ADULT_NOTICE_KEY, "1"); } catch {}
+  }
 }
 
 function closeConfirmDialog(result){
@@ -3336,6 +3393,7 @@ function openInlineDetail(boothId, kind){
   const booth = BOOTHS.find(b => b.id === boothId);
   if(!booth) return;
   closeInlineDetail();
+  maybeShowAdultNotice(booth);
 
   const el = document.createElement("div");
   el.className = "booth-inline";
@@ -3845,11 +3903,12 @@ function fillBoothInfo(container, booth, { withHead = true, withMembers = true }
   if(withMembers) container.appendChild(buildMemberList(booth));
 }
 
-function showBoothModal(){
+function showBoothModal(booth){
   const content = document.getElementById("modalContent");
   document.getElementById("modalBackdrop").classList.add("open");
   document.documentElement.classList.add("modal-open");
   content.scrollTop = 0;
+  maybeShowAdultNotice(booth);
 }
 
 function openBoothModal(boothId){
@@ -3857,7 +3916,7 @@ function openBoothModal(boothId){
   if(!booth) return;
   const content = openBoothModalShell(booth);
   fillBoothActions(content, booth);
-  showBoothModal();
+  showBoothModal(booth);
 }
 
 // 방문 예정/완료·선입금·우선순위·예산·메모. 모달에서는 부스 정보 아래, PC 펼침 상세에서는 오른쪽 칸.
@@ -4004,7 +4063,7 @@ function openPreorderModal(boothId){
   if(!booth) return;
   const content = openBoothModalShell(booth);
   fillPreorderActions(content, booth);
-  showBoothModal();
+  showBoothModal(booth);
 }
 
 // 수령 완료 버튼과 선입금 정보 칸. 모달에서는 부스 정보 아래, PC 펼침 상세에서는 오른쪽 칸.
@@ -4139,6 +4198,9 @@ document.addEventListener("keydown", (e) => {
 applyStaticTexts();
 renderNav();
 renderGrid();
+
+// 처음 방문한 사람에게는 도움말 창을 한 번 열어 사이트 소개와 사용법 설명서 링크를 보여줌
+if(isFirstVisit) openHelpModal();
 
 // 오프라인에서도 사이트를 열람할 수 있도록 서비스 워커 등록
 if("serviceWorker" in navigator){
