@@ -16,7 +16,7 @@ X 약관상 X 밖에 글 사본을 두지 않는 편이 안전해서 (2026-10-05
 1. index.html 의 BOOTHS 줄에서 부스장 X 아이디를 읽음
 2. 아이디마다 FxTwitter 공개 JSON(무료·키 없음)으로 최근 글 약 20개를 받음
    (클라우드 개발 환경에서는 FxTwitter 가 막혀 있어 GitHub Actions 에서만 동작함)
-3. 리트윗·답글·POST_SINCE 이전 글은 거르고, judge() 로 점수를 매겨 MIN_SCORE 이상이면 후보로 추가
+3. 리트윗·답글·POST_SINCE 이전 글은 거르고, judge() 로 점수를 매겨(키워드 + 위치폼·구글폼 링크 + 이미지) MIN_SCORE 이상이면 후보로 추가
 4. 이미 후보에 있는 글은 다시 넣지 않음. 후보는 지우지 않고 계속 쌓임(반영/제외 여부는 Firestore 에 저장됨)
 5. 공식 계정은 키워드 판단 없이 리트윗·답글(번역 글)만 거르고 모두 후보로 넣음(official 목록).
    처음엔 OFFICIAL_SINCE 까지 페이지를 넘겨 가며 받고, 그 뒤로는 이미 아는 글이 나오면 멈춤
@@ -65,6 +65,10 @@ KEYWORDS = [
     (r"퍼스트\s?클래스|퍼클|furst\s?class|ファーストクラス|부스|ブース|booth|(?<![A-Za-z0-9])[A-C]-?\d{1,2}(?!\d)", 1, "행사·부스"),
 ]
 KEYWORD_RES = [(re.compile(p, re.I), s, label) for p, s, label in KEYWORDS]
+# 선입금·통판 주문서 링크(2026-10-06 사용자 요청). 본문의 t.co 링크는 판단 전에 지우므로
+# post_links() 가 모은 원래 주소(FxTwitter raw_text.facets)에서 따로 찾음
+FORM_LINK_RE = re.compile(r"witchform\.com|forms\.gle|docs\.google\.com/forms", re.I)
+FORM_LINK_POINTS = 2
 
 
 def load_booths():
@@ -160,6 +164,18 @@ def post_text(p):
     return (p.get("raw_text") or {}).get("text") or p.get("text") or ""
 
 
+def post_links(p):
+    """글에 붙은 링크의 원래 주소들(공백으로 이음). t.co 단축 주소 대신 펼친 주소를 씀."""
+    raw = p.get("raw_text") or {}
+    urls = []
+    for facet in raw.get("facets") or []:
+        if facet.get("type") == "url":
+            urls += [facet.get("replacement") or "", facet.get("display") or ""]
+    # facets 가 없을 때를 대비해 펼친 주소가 들어 있는 text 의 링크도 봄
+    urls += re.findall(r"\S*(?:\.com|\.gle)/\S*", p.get("text") or "")
+    return " ".join(u for u in urls if u)
+
+
 def post_images(p):
     media = p.get("media") or {}
     urls = []
@@ -172,14 +188,18 @@ def post_images(p):
     return urls[:4]
 
 
-def judge(text, images):
-    """(점수, 걸린 키워드 설명 목록). 키워드가 하나라도 걸리고 이미지가 있으면 +1."""
+def judge(text, images, links=""):
+    """(점수, 걸린 키워드 설명 목록). 키워드가 하나라도 걸리고 이미지가 있으면 +1.
+    위치폼·구글폼 링크가 있으면 +2."""
     text = re.sub(r"https?://\S+", " ", text)  # t.co 링크 안의 글자가 키워드로 잡히지 않게
     score, reasons = 0, []
     for regex, points, label in KEYWORD_RES:
         if regex.search(text):
             score += points
             reasons.append(label)
+    if FORM_LINK_RE.search(links):
+        score += FORM_LINK_POINTS
+        reasons.append("주문서 링크")
     if images and score:
         score += 1
         reasons.append("이미지")
@@ -223,7 +243,7 @@ def collect(feed_dir, dry_run=False):
                 continue
             text = post_text(p)
             images = post_images(p)
-            score, reasons = judge(text, images)
+            score, reasons = judge(text, images, post_links(p))
             if score < MIN_SCORE:
                 continue
             known.add(pid)
