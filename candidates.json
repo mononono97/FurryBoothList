@@ -1,6 +1,25 @@
 {
- "updatedAt": "2026-10-07T02:34:35+00:00",
+ "updatedAt": "2026-10-07T03:32:39+00:00",
  "posts": [
+  {
+   "id": "2107666975677919491",
+   "handle": "Beuu0920",
+   "booths": [
+    "A16"
+   ],
+   "boothNames": [
+    "브 BEUU / FURPPET"
+   ],
+   "created": "2026-10-07T02:59:00+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-07T03:30:24+00:00"
+  },
   {
    "id": "2107646209230073992",
    "handle": "Hijiki_DaiXt",
