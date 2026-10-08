@@ -1,6 +1,23 @@
 {
- "updatedAt": "2026-10-08T08:38:49+00:00",
+ "updatedAt": "2026-10-08T11:33:20+00:00",
  "posts": [
+  {
+   "id": "2108153765509603702",
+   "handle": "minongminong",
+   "booths": [
+    "A29"
+   ],
+   "boothNames": [
+    "해적판 아니고 정발입니다"
+   ],
+   "created": "2026-10-08T11:13:19+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "통판·예약"
+   ],
+   "foundAt": "2026-10-08T11:32:05+00:00"
+  },
   {
    "id": "2108110431525183497",
    "handle": "noway_jin",
