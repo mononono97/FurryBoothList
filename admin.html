@@ -461,7 +461,7 @@ function render(){
 }
 
 /* ---------- 반영됨 탭(부스 상품 글): 부스별로 모아 보기 ----------
-   반영된 글이 있는 부스만 사이트 부스 목록처럼 카드로 나열하고(부스 번호 순), 카드를 누르면
+   반영된 글이 있는 부스만 사이트 부스 목록처럼 카드로 나열하고(가장 최근 글이 올라온 부스부터, 사이트 "최근 갱신" 탭과 같은 기준), 카드를 누르면
    그 부스에 반영된 글만 최신순으로 펼쳐 보여줌. 글이 한 부스에 몰려 있어도 한눈에 찾기 쉽게 하려는 것 */
 function approvedByBooth(){
   const groups = new Map();
@@ -471,6 +471,10 @@ function approvedByBooth(){
     groups.get(booth).push(id);
   });
   return groups;
+}
+// 글 id(스노플레이크)에서 작성 시각(ms)을 계산. 사이트 index.html 의 같은 계산과 같음
+function postTime(id){
+  try { return Number(BigInt(id) >> 22n) + 1288834974657; } catch { return 0; }
 }
 function boothOrder(id){
   const i = booths.findIndex(b => b.id === id);
@@ -485,10 +489,12 @@ function renderApprovedBooths(list){
   }
   if(openBooth !== null){ renderBoothPosts(list, openBooth, groups.get(openBooth)); return; }
 
-  const ids = [...groups.keys()].sort((a, b) => boothOrder(a) - boothOrder(b) || (a > b ? 1 : -1));
+  // 각 부스의 글 목록은 최신순이라 첫 글이 그 부스의 가장 최근 글
+  const ids = [...groups.keys()].sort((a, b) =>
+    newestFirst(groups.get(a)[0], groups.get(b)[0]) || boothOrder(a) - boothOrder(b));
   const summary = document.createElement("div");
   summary.className = "sub";
-  summary.textContent = `반영된 글이 있는 부스 ${ids.length}곳 · 글 ${Object.keys(decisions.approved).length}개. 부스를 누르면 그 부스의 글을 봅니다.`;
+  summary.textContent = `반영된 글이 있는 부스 ${ids.length}곳 · 글 ${Object.keys(decisions.approved).length}개. 최근 글이 올라온 부스부터 보여주며, 부스를 누르면 그 부스의 글을 봅니다.`;
   const grid = document.createElement("div");
   grid.className = "booth-grid";
   ids.forEach(id => grid.appendChild(buildBoothCard(id, groups.get(id))));
@@ -499,14 +505,14 @@ function buildBoothCard(id, postIds){
   const card = document.createElement("button");
   card.type = "button";
   card.className = "booth-card";
-  const latest = new Date((decisions.approved[postIds[0]] || {}).at);
+  const latest = new Date(postTime(postIds[0]));
   card.innerHTML = `
     <span class="count" title="반영된 글 수">${postIds.length}</span>
     <div class="id">${escapeHtml(id || "?")}</div>
     <div class="thumb"></div>
     <div class="name">${escapeHtml(booth.name)}</div>
     ${booth.rep ? `<div class="rep">${escapeHtml(booth.rep)}</div>` : ""}
-    ${isNaN(latest) ? "" : `<div class="latest">최근 반영 ${latest.getMonth() + 1}/${latest.getDate()}</div>`}
+    ${latest.getTime() ? `<div class="latest">${latest.getMonth() + 1}/${latest.getDate()} 갱신</div>` : ""}
   `;
   // 사이트와 같은 순서로 대표 이미지를 고름: 부스컷 → 프로필 사진 → 부스명 첫 글자
   const thumb = card.querySelector(".thumb");
