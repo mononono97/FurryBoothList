@@ -799,12 +799,6 @@
     color:var(--on-panel);
     cursor:pointer;
   }
-  .memo-box button.save{
-    background:var(--accent);
-    border-color:var(--accent);
-    color:#fff;
-    font-weight:600;
-  }
   .memo-box .memo-status{
     font-size:10.5px;
     color:var(--moss-light);
@@ -1805,6 +1799,8 @@ const I18N = {
     deletedStatus: "삭제됨",
     resetBtn: "🗑️ 데이터 초기화",
     resetConfirm: "메모, 방문 상태, 예산, 우선순위, 선입금 정보 등 저장된 모든 데이터가 삭제됩니다. 이 작업은 되돌릴 수 없습니다. 계속할까요?",
+    resetConfirmCloud: "Google 계정으로 로그인되어 있어서 이 기기뿐 아니라 클라우드에 저장된 데이터(다른 기기에서 보던 메모·방문 상태·예산·우선순위·선입금)도 모두 삭제됩니다. 이 작업은 되돌릴 수 없습니다. 계속할까요?",
+    resetCloudFail: "클라우드 데이터를 지우지 못해서 초기화를 멈췄습니다. 인터넷 연결을 확인한 뒤 다시 시도해주세요.",
     resetDone: "모든 데이터가 삭제되었습니다.",
     loginBtn: "🔑 Google로 로그인",
     logoutBtn: "🔓 로그아웃",
@@ -1925,6 +1921,8 @@ const I18N = {
     deletedStatus: "Deleted",
     resetBtn: "🗑️ Reset Data",
     resetConfirm: "This will delete all your saved data — notes, visit status, budget, priority, and pre-orders. This cannot be undone. Continue?",
+    resetConfirmCloud: "You're signed in with Google, so this will also delete the data saved in the cloud (notes, visit status, budget, priority, and pre-orders on your other devices). This cannot be undone. Continue?",
+    resetCloudFail: "Couldn't delete the cloud data, so the reset was stopped. Please check your internet connection and try again.",
     resetDone: "All data has been deleted.",
     loginBtn: "🔑 Sign in with Google",
     logoutBtn: "🔓 Sign out",
@@ -2045,6 +2043,8 @@ const I18N = {
     deletedStatus: "削除済み",
     resetBtn: "🗑️ データを初期化",
     resetConfirm: "メモ・訪問状態・予算・優先度・事前通販情報など保存されたすべてのデータが削除されます。この操作は元に戻せません。続行しますか？",
+    resetConfirmCloud: "Googleでログイン中のため、この端末だけでなくクラウドに保存されたデータ（他の端末で見ていたメモ・訪問状態・予算・優先度・事前通販）もすべて削除されます。この操作は元に戻せません。続行しますか？",
+    resetCloudFail: "クラウドのデータを削除できなかったため、初期化を中止しました。インターネット接続を確認してもう一度お試しください。",
     resetDone: "すべてのデータが削除されました。",
     loginBtn: "🔑 Googleでログイン",
     logoutBtn: "🔓 ログアウト",
@@ -2721,14 +2721,32 @@ document.getElementById("confirmBackdrop").addEventListener("click", (e) => {
 });
 
 /* ---------- 전체 데이터 초기화 ----------
-   메모/방문상태/예산/우선순위/선입금을 전부 삭제함(로그인 중이면 클라우드에도 반영됨).
+   메모/방문상태/예산/우선순위/선입금을 전부 삭제함.
+   로그인 중이면 클라우드 데이터도 지운다는 경고를 띄우고 클라우드 문서도 비움 (2026-10-08 사용자 요청).
+   예전에는 이 기기만 지워서, 다음에 페이지를 열 때 클라우드 값이 다시 합쳐져 돌아왔음.
+   클라우드를 먼저 비우고, 실패하면(오프라인 등) 이 기기 데이터도 지우지 않고 멈춤
+   (기기만 지워지면 다음 접속 때 클라우드 값이 되살아나 초기화가 된 것처럼 보이지 않으므로).
 ------------------------------------------------- */
 async function resetAllData(){
-  if(!Object.keys(notes).length && !Object.keys(visitStatus).length && !Object.keys(budgets).length && !Object.keys(priority).length && !Object.keys(preorders).length){
-    return;
-  }
-  const confirmed = await showConfirmDialog(t("resetConfirm"), t("delete"));
+  const signedIn = !!(firebaseReady && currentUser);
+  const hasLocal = Object.keys(notes).length || Object.keys(visitStatus).length || Object.keys(budgets).length || Object.keys(priority).length || Object.keys(preorders).length;
+  if(!hasLocal && !signedIn) return;
+  const confirmed = await showConfirmDialog(t(signedIn ? "resetConfirmCloud" : "resetConfirm"), t("delete"));
   if(!confirmed) return;
+
+  if(signedIn){
+    try {
+      await firebase.firestore().collection("users").doc(currentUser.uid).set({
+        [STORAGE_PREFIX]: {
+          notes: {}, visitStatus: {}, budgets: {}, priority: {}, preorders: {},
+          updatedAt: new Date().toISOString(),
+        },
+      });
+    } catch {
+      alert(t("resetCloudFail"));
+      return;
+    }
+  }
 
   notes = {};
   visitStatus = {};
@@ -2966,6 +2984,15 @@ function renderNav(){
   if(currentRow === "INFO") infoBtn.classList.add("active");
   infoBtn.addEventListener("click", () => goToRow("INFO"));
   tabNav.appendChild(infoBtn);
+}
+
+// 메모를 입력하는 동안 미뤄 둔 메모 탭 목록 갱신 (칸에서 벗어날 때·창을 닫을 때 부름)
+let notesListStale = false;
+function refreshNotesList(){
+  if(!notesListStale) return;
+  notesListStale = false;
+  renderNav();
+  if(currentRow === "NOTES") renderGrid();
 }
 
 function updateNoteVisuals(boothId){
@@ -3408,6 +3435,8 @@ function closeInlineDetail(){
   inlineDetail.el.remove();
   document.querySelectorAll(".booth.detail-open").forEach(c => c.classList.remove("detail-open"));
   inlineDetail = null;
+  // 메모를 쓰다 바로 닫았으면 메모 탭 목록·개수를 맞춤(닫는 도중이라 다음 차례에)
+  if(notesListStale) setTimeout(refreshNotesList, 0);
 }
 
 function openInlineDetail(boothId, kind){
@@ -3933,6 +3962,7 @@ function showBoothModal(booth){
   document.getElementById("modalBackdrop").classList.add("open");
   document.documentElement.classList.add("modal-open");
   content.scrollTop = 0;
+  pushModalHistory();
   maybeShowAdultNotice(booth);
 }
 
@@ -4046,29 +4076,39 @@ function fillBoothActions(content, booth){
     <label>${escapeHtml(t("memoLabel"))}</label>
     <textarea maxlength="1000" placeholder="${escapeHtml(t("memoPlaceholder"))}">${escapeHtml(getNote(booth.id))}</textarea>
     <div class="memo-actions">
-      <button type="button" class="save">${escapeHtml(t("save"))}</button>
       <button type="button" class="delete">${escapeHtml(t("delete"))}</button>
       <span class="memo-status"></span>
     </div>
   `;
   const textarea = memoBox.querySelector("textarea");
-  const saveBtn = memoBox.querySelector(".save");
   const deleteBtn = memoBox.querySelector(".delete");
   const status = memoBox.querySelector(".memo-status");
 
-  saveBtn.addEventListener("click", () => {
+  // 메모는 저장 버튼 없이 입력하는 즉시 저장함 (2026-10-08 사용자 요청: 저장을 안 누르고 창을 닫으면 사라졌음).
+  // 글자마다 이 기기(localStorage)에 저장하고 카드의 메모 표시만 바로 바꿈. 탭 버튼의 개수·배치도 색은
+  // 입력이 잠깐 멈췄을 때, 메모 탭 목록은 칸에서 벗어나거나 창을 닫을 때 다시 그림
+  // (입력 중에 목록을 다시 그리면 메모를 다 지운 순간 그 부스가 메모 탭에서 빠져 펼친 상세가 닫힘).
+  let refreshTimer = null;
+  let statusTimer = null;
+  textarea.addEventListener("input", () => {
     setNote(booth.id, textarea.value);
     updateNoteVisuals(booth.id);
-    renderNav();
-    if(currentRow === "MAP") renderMapView();
-    if(currentRow === "NOTES") renderGrid();
+    notesListStale = true;
+    clearTimeout(refreshTimer);
+    refreshTimer = setTimeout(() => {
+      renderNav();
+      if(currentRow === "MAP") renderMapView();
+    }, 400);
     status.textContent = t("savedStatus");
-    setTimeout(() => { status.textContent = ""; }, 1500);
+    clearTimeout(statusTimer);
+    statusTimer = setTimeout(() => { status.textContent = ""; }, 1500);
   });
+  textarea.addEventListener("change", refreshNotesList);
   deleteBtn.addEventListener("click", () => {
     textarea.value = "";
     setNote(booth.id, "");
     updateNoteVisuals(booth.id);
+    notesListStale = false;
     renderNav();
     if(currentRow === "MAP") renderMapView();
     if(currentRow === "NOTES") renderGrid();
@@ -4178,6 +4218,7 @@ function openHelpModal(){
 
   backdrop.classList.add("open");
   document.documentElement.classList.add("modal-open");
+  pushModalHistory();
 }
 
 document.getElementById("helpBtn").addEventListener("click", () => {
@@ -4199,9 +4240,38 @@ document.getElementById("visitFilter").addEventListener("click", (e) => {
 
 document.getElementById("sortPriorityBtn").addEventListener("click", toggleSortByPriority);
 
-function closeModal(){
-  document.getElementById("modalBackdrop").classList.remove("open");
+/* ---------- 뒤로 가기로 창 닫기 ----------
+   휴대폰에서 부스 상세 창(선입금 창·도움말 포함)이 열려 있을 때 뒤로 가기를 누르면 사이트를 떠나지 않고 창만 닫음
+   (2026-10-08 사용자 요청). 창을 열 때 브라우저 기록을 하나 넣어 두고, 뒤로 가기(popstate)가 오면 창을 닫음.
+   ✕·창 밖·Esc로 닫을 때는 넣어 둔 기록을 history.back()으로 빼서, 다음 뒤로 가기가 헛돌지 않게 함.
+------------------------------------------------- */
+let modalHistoryPushed = false;
+function pushModalHistory(){
+  if(modalHistoryPushed) return;
+  try {
+    history.pushState({ furstclassModal: true }, "");
+    modalHistoryPushed = true;
+  } catch {}
+}
+window.addEventListener("popstate", () => {
+  if(!modalHistoryPushed) return;
+  modalHistoryPushed = false;
+  // 창 위에 떠 있는 큰 부스컷·성인 부스 안내도 함께 닫음
+  closeCutLightbox();
+  closeConfirmDialog(false);
+  closeModal(true);
+});
+
+function closeModal(fromHistory){
+  const backdrop = document.getElementById("modalBackdrop");
+  const wasOpen = backdrop.classList.contains("open");
+  backdrop.classList.remove("open");
   document.documentElement.classList.remove("modal-open");
+  if(wasOpen) refreshNotesList();
+  if(modalHistoryPushed && fromHistory !== true){
+    modalHistoryPushed = false;
+    history.back();
+  }
 }
 
 document.getElementById("modalBackdrop").addEventListener("click", (e) => {
