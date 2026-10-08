@@ -80,12 +80,24 @@
     --visited-bg:#e3f3df;
     --preorder-done:#3f7a33;     /* 선입금 탭 카드의 "수령 완료" 글자 */
 
-    /* 팝오버·모달·설정 메뉴(두 테마 모두 어두운 패널) */
-    --panel:#1d1a1c;
-    --panel-2:#2c2729;
-    --panel-border:transparent;
-    --on-panel:#f4eef0;   /* 패널 위 글자 */
-    --moss-light:#f2a0ad; /* 패널 위 보조 글자: 연핑크 */
+    /* 팝오버·모달·설정 메뉴·확인창(라이트는 흰 패널, 다크는 어두운 패널) */
+    --panel:#ffffff;
+    --panel-2:#f0ecea;
+    --panel-border:#e7e2e1;
+    --on-panel:#1d1a1c;   /* 패널 위 글자 */
+    --on-panel-dim:#6b6265; /* 패널 위 흐린 글자(로그인 상태, X 계정 없음, 부스컷 없음) */
+    --moss-light:#c8102e; /* 패널 위 보조 글자: 크림슨 */
+    --panel-line:rgba(29,26,28,.16);      /* 패널 안 버튼·입력칸 테두리 */
+    --panel-divider:rgba(29,26,28,.1);    /* 패널 안 구분선 */
+    --panel-field:rgba(29,26,28,.04);     /* 패널 안 버튼·입력칸 바탕 */
+    --panel-hover:rgba(29,26,28,.07);     /* 패널 안 버튼 마우스 오버 */
+    --panel-danger:#c23b3b;               /* 설정 메뉴 "데이터 초기화" 글자 */
+    --panel-shadow:rgba(29,26,28,.18);
+    --panel-scroll:rgba(29,26,28,.22);    /* 모달 스크롤바 */
+    --panel-scroll-hover:rgba(29,26,28,.4);
+    --scroll-thumb:#2c2729;               /* 페이지 스크롤바 */
+    --scroll-thumb-hover:#1d1a1c;
+    --thumb-bg:#2c2729;                   /* 부스 카드의 부스컷·아바타 빈 바탕 */
 
     /* 배치도 */
     --map-wall:#c8102e;        /* 홀 벽 */
@@ -157,7 +169,19 @@
     --panel-2:#221b21;
     --panel-border:rgba(214,180,106,.3);
     --on-panel:#f2e8ea;
+    --on-panel-dim:rgba(248,240,242,.75);
     --moss-light:#e8c98a; /* 패널 위 보조 글자: 골드 */
+    --panel-line:rgba(255,255,255,.25);
+    --panel-divider:rgba(255,255,255,.18);
+    --panel-field:rgba(255,255,255,.08);
+    --panel-hover:rgba(255,255,255,.12);
+    --panel-danger:#ff9a9a;
+    --panel-shadow:rgba(0,0,0,.4);
+    --panel-scroll:rgba(255,255,255,.3);
+    --panel-scroll-hover:rgba(255,255,255,.5);
+    --scroll-thumb:#221b21;
+    --scroll-thumb-hover:#0d0a0c;
+    --thumb-bg:#221b21;
 
     --map-wall:#e0344f;
     --map-room-line:#b3a3aa;
@@ -190,7 +214,7 @@
 
   /* 스크롤바를 사이트 테마 색상에 맞춤 */
   html{
-    scrollbar-color:var(--panel-2) var(--paper);
+    scrollbar-color:var(--scroll-thumb) var(--paper);
     scrollbar-width:thin;
   }
   ::-webkit-scrollbar{
@@ -201,25 +225,25 @@
     background:var(--paper);
   }
   ::-webkit-scrollbar-thumb{
-    background:var(--panel-2);
+    background:var(--scroll-thumb);
     border-radius:8px;
     border:3px solid var(--paper);
   }
   ::-webkit-scrollbar-thumb:hover{
-    background:var(--panel);
+    background:var(--scroll-thumb-hover);
   }
   .modal{
-    scrollbar-color:rgba(255,255,255,.35) transparent;
+    scrollbar-color:var(--panel-scroll) transparent;
   }
   .modal::-webkit-scrollbar-track{
     background:transparent;
   }
   .modal::-webkit-scrollbar-thumb{
-    background:rgba(255,255,255,.3);
+    background:var(--panel-scroll);
     border:3px solid var(--panel);
   }
   .modal::-webkit-scrollbar-thumb:hover{
-    background:rgba(255,255,255,.5);
+    background:var(--panel-scroll-hover);
   }
 
   header.top{
@@ -296,7 +320,7 @@
   }
   .lang-switch button{
     appearance:none;
-    border:1px solid rgba(255,255,255,.25);
+    border:1px solid var(--panel-line);
     background:transparent;
     color:var(--on-panel);
     padding:5px 10px;
@@ -307,7 +331,7 @@
     cursor:pointer;
     transition:background .15s;
   }
-  .lang-switch button:hover{background:rgba(255,255,255,.12);}
+  .lang-switch button:hover{background:var(--panel-hover);}
   .lang-switch button.active{
     background:var(--clay);
     border-color:var(--clay);
@@ -359,7 +383,7 @@
     border:1px solid var(--panel-border);
     border-radius:14px;
     padding:12px;
-    box-shadow:0 12px 30px rgba(0,0,0,.35);
+    box-shadow:0 12px 30px var(--panel-shadow);
   }
   .settings-menu.open{
     display:flex;
@@ -371,7 +395,7 @@
   }
   .settings-item{
     appearance:none;
-    border:1px solid rgba(255,255,255,.25);
+    border:1px solid var(--panel-line);
     background:transparent;
     color:var(--on-panel);
     padding:7px 12px;
@@ -383,17 +407,17 @@
     text-align:left;
     transition:background .15s;
   }
-  .settings-item:hover{background:rgba(255,255,255,.12);}
+  .settings-item:hover{background:var(--panel-hover);}
   .settings-item:disabled{opacity:.5; cursor:default;}
   .settings-item:disabled:hover{background:transparent;}
   .settings-item.danger{
     border-color:rgba(214,69,69,.55);
-    color:#ff9a9a;
+    color:var(--panel-danger);
   }
   .settings-item.danger:hover{background:rgba(214,69,69,.18);}
   .auth-status{
     font-size:11px;
-    color:rgba(248,240,242,.75);
+    color:var(--on-panel-dim);
     padding:0 2px;
     word-break:break-all;
   }
@@ -414,12 +438,12 @@
     font-weight:700;
     padding:10px 8px;
     border-radius:8px;
-    border:1px solid rgba(255,255,255,.25);
-    background:rgba(255,255,255,.08);
+    border:1px solid var(--panel-line);
+    background:var(--panel-field);
     color:var(--on-panel);
     transition:background .15s;
   }
-  .help-guide-btn:hover{background:rgba(255,255,255,.16);}
+  .help-guide-btn:hover{background:var(--panel-hover);}
 
   nav.rows{
     max-width:1180px;
@@ -634,7 +658,7 @@
     margin:0 auto 8px;
     border-radius:10px;
     overflow:hidden;
-    background:var(--panel-2);
+    background:var(--thumb-bg);
   }
   .cut-thumb img{
     width:100%;
@@ -648,7 +672,7 @@
     margin:0 auto 8px;
     border-radius:50%;
     overflow:hidden;
-    background:var(--panel-2);
+    background:var(--thumb-bg);
     display:flex;
     align-items:center;
     justify-content:center;
@@ -740,7 +764,7 @@
   .memo-box{
     margin-top:10px;
     padding-top:10px;
-    border-top:1px solid rgba(255,255,255,.18);
+    border-top:1px solid var(--panel-divider);
   }
   .memo-box label{
     display:block;
@@ -752,8 +776,8 @@
     width:100%;
     min-height:52px;
     resize:vertical;
-    background:rgba(255,255,255,.08);
-    border:1px solid rgba(255,255,255,.25);
+    background:var(--panel-field);
+    border:1px solid var(--panel-line);
     border-radius:6px;
     color:var(--on-panel);
     font-size:12px;
@@ -770,8 +794,8 @@
     font-size:11px;
     padding:4px 10px;
     border-radius:5px;
-    border:1px solid rgba(255,255,255,.25);
-    background:rgba(255,255,255,.08);
+    border:1px solid var(--panel-line);
+    background:var(--panel-field);
     color:var(--on-panel);
     cursor:pointer;
   }
@@ -818,8 +842,8 @@
   }
   .booth-cut .cut-placeholder{
     font-size:11.5px;
-    color:#e9c6d0;
-    border:1px dashed rgba(255,255,255,.25);
+    color:var(--on-panel-dim);
+    border:1px dashed var(--panel-line);
     border-radius:8px;
     padding:14px 8px;
     text-align:center;
@@ -885,7 +909,7 @@
   .member-handle{ font-size:11px; }
   .member-handle a{ color:var(--moss-light); text-decoration:none; }
   .member-handle a:hover{ text-decoration:underline; }
-  .member-handle .no-x{ color:#b99aa5; }
+  .member-handle .no-x{ color:var(--on-panel-dim); }
 
   .pop-head{
     display:flex;
@@ -924,8 +948,8 @@
     font-weight:600;
     padding:6px 8px;
     border-radius:6px;
-    border:1px solid rgba(255,255,255,.25);
-    background:rgba(255,255,255,.08);
+    border:1px solid var(--panel-line);
+    background:var(--panel-field);
     color:var(--on-panel);
     cursor:pointer;
     transition:background .15s, border-color .15s, color .15s;
@@ -950,7 +974,7 @@
   .preorder-box{
     margin-top:12px;
     padding-top:10px;
-    border-top:1px solid rgba(255,255,255,.18);
+    border-top:1px solid var(--panel-divider);
   }
   .preorder-box label{
     display:block;
@@ -958,13 +982,12 @@
     color:var(--moss-light);
     margin:10px 0 4px;
   }
-  .preorder-box .budget-input-row input{ color-scheme:dark; }
   .preorder-box textarea{
     width:100%;
     min-height:72px;
     resize:vertical;
-    background:rgba(255,255,255,.08);
-    border:1px solid rgba(255,255,255,.25);
+    background:var(--panel-field);
+    border:1px solid var(--panel-line);
     border-radius:6px;
     color:var(--on-panel);
     font-size:12px;
@@ -978,8 +1001,8 @@
     font-weight:700;
     padding:10px 8px;
     border-radius:8px;
-    border:1px solid rgba(255,255,255,.25);
-    background:rgba(255,255,255,.08);
+    border:1px solid var(--panel-line);
+    background:var(--panel-field);
     color:var(--on-panel);
     cursor:pointer;
     transition:background .15s, border-color .15s, color .15s;
@@ -1002,8 +1025,8 @@
     font-weight:600;
     padding:6px 8px;
     border-radius:6px;
-    border:1px solid rgba(255,255,255,.25);
-    background:rgba(255,255,255,.08);
+    border:1px solid var(--panel-line);
+    background:var(--panel-field);
     color:var(--on-panel);
     cursor:pointer;
     transition:background .15s, border-color .15s, color .15s;
@@ -1028,7 +1051,7 @@
   .budget-box{
     margin-top:10px;
     padding-top:10px;
-    border-top:1px solid rgba(255,255,255,.18);
+    border-top:1px solid var(--panel-divider);
   }
   .budget-box label{
     display:block;
@@ -1040,8 +1063,8 @@
     display:flex;
     align-items:center;
     gap:6px;
-    background:rgba(255,255,255,.08);
-    border:1px solid rgba(255,255,255,.25);
+    background:var(--panel-field);
+    border:1px solid var(--panel-line);
     border-radius:6px;
     padding:2px 8px;
   }
@@ -1313,7 +1336,7 @@
 
   /* PC 펼침 상세: 누른 카드가 있는 줄 바로 아래에 그리드 한 줄을 통째로 차지하며 펼쳐짐.
      왼쪽은 부스 정보·부스원, 오른쪽은 방문 상태·우선순위·예산·메모(선입금 탭이면 선입금 정보).
-     패널은 모달처럼 두 테마 모두 어두운 바탕(--panel)에 --on-panel 글자. */
+     패널은 모달처럼 테마별 패널 바탕(--panel)에 --on-panel 글자. */
   .booth-inline{
     grid-column:1 / -1;
     position:relative;
@@ -1328,7 +1351,7 @@
     border-radius:16px;
     padding:18px 20px 20px;
     text-align:left;
-    box-shadow:0 14px 36px rgba(0,0,0,.28);
+    box-shadow:0 14px 36px var(--panel-shadow);
     animation:booth-inline-open .18s ease-out;
   }
   @keyframes booth-inline-open{
@@ -1362,7 +1385,7 @@
     line-height:1;
     cursor:pointer;
   }
-  .booth-inline .inline-close:hover{ background:rgba(255,255,255,.12); }
+  .booth-inline .inline-close:hover{ background:var(--panel-hover); }
   .booth-inline-info, .booth-inline-actions{ min-width:0; }
   /* 부스 상세 큰 제목 "[A15] PPP2": 모달은 20px(닫기 버튼 옆), PC 펼침 상세 왼쪽 칸 맨 위는 26px */
   .booth-title{
@@ -1420,7 +1443,7 @@
     max-width:100%;
     max-height:85vh;
     overflow-y:auto;
-    box-shadow:0 20px 50px rgba(0,0,0,.4);
+    box-shadow:0 20px 50px var(--panel-shadow);
   }
   .modal.modal-wide{
     width:560px;
@@ -1460,7 +1483,7 @@
   }
   .confirm-actions button{
     appearance:none;
-    border:1px solid rgba(255,255,255,.3);
+    border:1px solid var(--panel-line);
     background:transparent;
     color:var(--on-panel);
     padding:8px 14px;
@@ -1469,7 +1492,7 @@
     font-weight:600;
     cursor:pointer;
   }
-  .confirm-actions button:hover{background:rgba(255,255,255,.12);}
+  .confirm-actions button:hover{background:var(--panel-hover);}
   .confirm-actions button.danger{
     background:#d64545;
     border-color:#d64545;
