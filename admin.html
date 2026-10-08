@@ -85,6 +85,34 @@
   .empty{ color:var(--muted); padding:24px 0; text-align:center; }
   details summary{ cursor:pointer; color:var(--muted); font-size:12.5px; }
   pre{ background:var(--chip-bg); padding:8px 10px; border-radius:8px; overflow-x:auto; font-size:12px; }
+  /* 반영됨 탭(부스 상품 글): 사이트 부스 목록처럼 부스 카드를 나열 */
+  .booth-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(136px,1fr)); gap:12px; margin-top:10px; }
+  .booth-card{
+    position:relative; display:block; width:100%; text-align:center; padding:10px 10px 12px;
+    background:var(--card-bg); border:1px solid var(--line); border-radius:12px; cursor:pointer;
+    transition:border-color .15s, transform .12s;
+  }
+  .booth-card:hover{ border-color:var(--accent); transform:translateY(-2px); }
+  .booth-card .id{
+    display:inline-block; font-family:"SFMono-Regular",Consolas,monospace; font-size:11px; font-weight:600;
+    background:var(--chip-bg); border-radius:999px; padding:1px 8px; letter-spacing:.06em; margin-bottom:6px;
+  }
+  .booth-card .count{
+    position:absolute; top:8px; right:8px; min-width:22px; padding:1px 7px; border-radius:999px;
+    background:var(--ok); color:#fff; font-size:11.5px; font-weight:700;
+  }
+  .booth-card .thumb{
+    width:100%; aspect-ratio:3/4; margin:0 auto 8px; border-radius:10px; overflow:hidden; background:var(--chip-bg);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .booth-card .thumb img{ width:100%; height:100%; object-fit:contain; display:block; }
+  .booth-card .thumb .fallback{ font-size:28px; font-weight:700; color:var(--muted); }
+  .booth-card .name{ font-weight:700; font-size:13px; word-break:keep-all; overflow-wrap:anywhere; }
+  .booth-card .rep{ color:var(--muted); font-size:11.5px; word-break:keep-all; overflow-wrap:anywhere; }
+  .booth-card .latest{ color:var(--muted); font-size:11px; margin-top:2px; }
+  .booth-detail-head{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px; }
+  .booth-detail-head .title{ font-weight:700; font-size:15px; }
+  @media (max-width:520px){ .booth-grid{ grid-template-columns:repeat(auto-fill,minmax(104px,1fr)); gap:8px; } }
 </style>
 </head>
 <body>
@@ -182,6 +210,7 @@ let officialCandidates = [];  // 행사 안내 글 후보
 let decisions = { approved: {}, excluded: {}, official: {}, officialExcluded: {} };
 let currentMode = "booth";    // "booth" = 부스 상품 글, "official" = 행사 안내 글
 let currentTab = "pending";
+let openBooth = null;         // 반영됨 탭(부스 상품 글)에서 글을 펼쳐 보는 부스 id. null 이면 부스 목록
 let currentUser = null;
 let decisionsReadable = true;
 
@@ -422,12 +451,102 @@ function render(){
 
   const list = document.getElementById("list");
   list.innerHTML = "";
+  if(!official && currentTab === "approved"){ renderApprovedBooths(list); return; }
   const rows = rowsForTab();
   if(!rows.length){
     list.innerHTML = `<div class="empty">${currentTab === "pending" ? "확인할 후보가 없습니다." : "아직 없습니다."}</div>`;
     return;
   }
   rows.forEach(c => list.appendChild(buildPost(c)));
+}
+
+/* ---------- 반영됨 탭(부스 상품 글): 부스별로 모아 보기 ----------
+   반영된 글이 있는 부스만 사이트 부스 목록처럼 카드로 나열하고(부스 번호 순), 카드를 누르면
+   그 부스에 반영된 글만 최신순으로 펼쳐 보여줌. 글이 한 부스에 몰려 있어도 한눈에 찾기 쉽게 하려는 것 */
+function approvedByBooth(){
+  const groups = new Map();
+  Object.keys(decisions.approved).sort(newestFirst).forEach(id => {
+    const booth = (decisions.approved[id] || {}).booth || "";
+    if(!groups.has(booth)) groups.set(booth, []);
+    groups.get(booth).push(id);
+  });
+  return groups;
+}
+function boothOrder(id){
+  const i = booths.findIndex(b => b.id === id);
+  return i < 0 ? Infinity : i;
+}
+function renderApprovedBooths(list){
+  const groups = approvedByBooth();
+  if(openBooth !== null && !groups.has(openBooth)) openBooth = null;   // 마지막 글을 되돌리면 목록으로
+  if(!groups.size){
+    list.innerHTML = `<div class="empty">아직 없습니다.</div>`;
+    return;
+  }
+  if(openBooth !== null){ renderBoothPosts(list, openBooth, groups.get(openBooth)); return; }
+
+  const ids = [...groups.keys()].sort((a, b) => boothOrder(a) - boothOrder(b) || (a > b ? 1 : -1));
+  const summary = document.createElement("div");
+  summary.className = "sub";
+  summary.textContent = `반영된 글이 있는 부스 ${ids.length}곳 · 글 ${Object.keys(decisions.approved).length}개. 부스를 누르면 그 부스의 글을 봅니다.`;
+  const grid = document.createElement("div");
+  grid.className = "booth-grid";
+  ids.forEach(id => grid.appendChild(buildBoothCard(id, groups.get(id))));
+  list.append(summary, grid);
+}
+function buildBoothCard(id, postIds){
+  const booth = booths.find(b => b.id === id) || { id, name: id ? "" : "부스 미지정", rep: "" };
+  const card = document.createElement("button");
+  card.type = "button";
+  card.className = "booth-card";
+  const latest = new Date((decisions.approved[postIds[0]] || {}).at);
+  card.innerHTML = `
+    <span class="count" title="반영된 글 수">${postIds.length}</span>
+    <div class="id">${escapeHtml(id || "?")}</div>
+    <div class="thumb"></div>
+    <div class="name">${escapeHtml(booth.name)}</div>
+    ${booth.rep ? `<div class="rep">${escapeHtml(booth.rep)}</div>` : ""}
+    ${isNaN(latest) ? "" : `<div class="latest">최근 반영 ${latest.getMonth() + 1}/${latest.getDate()}</div>`}
+  `;
+  // 사이트와 같은 순서로 대표 이미지를 고름: 부스컷 → 프로필 사진 → 부스명 첫 글자
+  const thumb = card.querySelector(".thumb");
+  const fallback = () => { thumb.innerHTML = `<span class="fallback">${escapeHtml((booth.name || "?").charAt(0))}</span>`; };
+  const img = document.createElement("img");
+  img.loading = "lazy";
+  img.alt = `${id} 부스컷`;
+  img.onerror = () => {
+    if(booth.avatar && !img.dataset.avatar){ img.dataset.avatar = "1"; img.src = `avatars/${booth.avatar}.jpg`; return; }
+    fallback();
+  };
+  if(booth.cut) img.src = `booth-cuts/${id}.webp`;
+  else if(booth.avatar){ img.dataset.avatar = "1"; img.src = `avatars/${booth.avatar}.jpg`; }
+  if(img.src) thumb.appendChild(img); else fallback();
+  card.addEventListener("click", () => { openBooth = id; render(); window.scrollTo({ top: document.getElementById("tabs").offsetTop - 8 }); });
+  return card;
+}
+function renderBoothPosts(list, id, postIds){
+  const head = document.createElement("div");
+  head.className = "booth-detail-head";
+  const back = document.createElement("button");
+  back.type = "button";
+  back.textContent = "← 부스 목록";
+  back.addEventListener("click", () => { openBooth = null; render(); });
+  const title = document.createElement("span");
+  title.className = "title";
+  title.textContent = `${id || "부스 미지정"} ${boothName(id)}`;
+  const count = document.createElement("span");
+  count.className = "meta";
+  count.textContent = `반영된 글 ${postIds.length}개`;
+  head.append(back, title, count);
+  list.appendChild(head);
+  const byId = new Map(candidates.map(c => [c.id, c]));
+  postIds.forEach(pid => {
+    const saved = decisions.approved[pid] || {};
+    list.appendChild(buildPost(byId.get(pid) || {
+      id: pid, handle: saved.handle || "", booths: [saved.booth].filter(Boolean),
+      reasons: ["직접 추가"], created: "", sensitive: !!saved.sensitive,
+    }));
+  });
 }
 
 function buildPost(c){
@@ -620,6 +739,7 @@ document.getElementById("tabs").addEventListener("click", (e) => {
   const btn = e.target.closest("button[data-tab]");
   if(!btn) return;
   currentTab = btn.dataset.tab;
+  openBooth = null;
   render();
 });
 document.getElementById("modes").addEventListener("click", (e) => {
@@ -627,6 +747,7 @@ document.getElementById("modes").addEventListener("click", (e) => {
   if(!btn) return;
   currentMode = btn.dataset.mode;
   currentTab = "pending";
+  openBooth = null;
   const msg = document.getElementById("manualMsg");
   msg.className = "msg";
   msg.textContent = currentMode === "official"
