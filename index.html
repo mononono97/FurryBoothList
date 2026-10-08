@@ -251,16 +251,18 @@
     color:var(--header-fg);
     padding:18px 20px 14px;
     border-bottom:var(--header-border);
-    /* PC에서는 스크롤해도 상단바가 위에 붙어 있음(모바일은 화면을 많이 가려서 제외) */
+    /* 스크롤해도 상단바가 위에 붙어 있음. 휴대폰은 아래 700px 이하 규칙으로 높이를 줄여서 고정 (2026-10-08) */
     position:sticky;
     top:0;
     z-index:100;
     -webkit-backdrop-filter:blur(14px);
     backdrop-filter:blur(14px);
   }
-  @media (max-width:700px){
-    header.top{ position:static; }
-  }
+  /* 휴대폰(700px 이하) 상단바: 예전에는 화면 절반(360×640에서 324px)을 차지해서 고정을 껐는데,
+     내려 보다가 탭·검색을 쓰려면 맨 위까지 올라가야 했음 (2026-10-08 개선).
+     1줄: 제목(부제 숨김) + 로그인·설정 / 2줄: 전체·A·B·C + 검색칸 / 3줄: 탭(가로로 밀어서 봄)으로 줄이고 고정함.
+     .second-row 를 display:contents 로 풀어 탭·검색칸을 상단바의 직접 칸처럼 order 로 배치함. 이 아래 규칙들은
+     같은 선택자의 기본 규칙보다 뒤(파일 아래쪽 "휴대폰 상단바" 블록)에 있어야 해서 그쪽에 둠. */
   .top-inner{
     max-width:1180px;
     margin:0 auto;
@@ -798,12 +800,6 @@
     background:var(--panel-field);
     color:var(--on-panel);
     cursor:pointer;
-  }
-  .memo-box button.save{
-    background:var(--accent);
-    border-color:var(--accent);
-    color:#fff;
-    font-weight:600;
   }
   .memo-box .memo-status{
     font-size:10.5px;
@@ -1549,6 +1545,60 @@
   /* 모달이 열려 있는 동안 뒤 페이지가 같이 스크롤되지 않게 함 */
   /* (body까지 막으면 body가 스크롤 기준이 되어 PC 상단바 sticky 고정이 풀리고 사라지므로 html에만 적용) */
   html.modal-open{ overflow:hidden; }
+
+  /* ---------- 휴대폰 상단바 (700px 이하, 2026-10-08) ---------- */
+  .login-short{ display:none; }
+  @media (max-width:700px){
+    header.top{
+      padding:10px 12px 8px;
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      gap:8px;
+    }
+    .top-inner{ width:100%; flex-wrap:nowrap; align-items:center; gap:8px; }
+    .brand{ min-width:0; }
+    .brand .sub{ display:none; }
+    .brand .mark{
+      font-size:18px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .brand .mark::before{ width:8px; height:8px; margin-right:7px; }
+    .settings-wrap{ flex-shrink:0; gap:6px; }
+    .login-full{ display:none; }
+    .login-short{ display:inline; }
+    nav.rows{ margin-top:0; order:1; flex-wrap:nowrap; gap:5px; flex-shrink:0; }
+    nav.rows button{ width:34px; height:34px; font-size:14px; }
+    nav.rows button.memo-tab-btn{ padding:0 10px; font-size:12.5px; }
+    .second-row{ display:contents; }
+    .search-box{ order:2; flex:1 1 0; min-width:0; height:34px; box-sizing:border-box; }
+    .search-box input{ width:100%; min-width:0; }
+    .tab-group{
+      order:3;
+      width:100%;
+      flex-wrap:nowrap;
+      gap:5px;
+      overflow-x:auto;
+      scrollbar-width:none;
+      /* 오른쪽 끝을 흐리게 해서 옆으로 밀면 탭이 더 있다는 걸 알 수 있게 함 */
+      -webkit-mask-image:linear-gradient(to right, #000 calc(100% - 28px), transparent);
+      mask-image:linear-gradient(to right, #000 calc(100% - 28px), transparent);
+      padding-right:24px;
+    }
+    .tab-group::-webkit-scrollbar{ display:none; }
+    .tab-group button{ height:34px; padding:0 10px; font-size:12.5px; flex-shrink:0; }
+  }
+
+  /* 아이폰(Safari)은 글자가 16px보다 작은 입력칸을 누르면 화면을 확대함.
+     휴대폰 폭이나 손가락으로 쓰는 기기에서는 검색·메모·예산·선입금 칸을 16px로 (2026-10-08) */
+  @media (max-width:700px), (pointer:coarse){
+    .search-box input,
+    .memo-box textarea,
+    .preorder-box textarea,
+    .budget-input-row input{ font-size:16px; }
+  }
 </style>
 </head>
 <body>
@@ -1675,10 +1725,19 @@ let currentRow = (savedRow && VALID_ROWS.has(savedRow))
   : (ALL_ROWS.find(r => byRow[r].length > 0) || "A");
 
 function goToRow(row){
+  const changed = row !== currentRow;
   currentRow = row;
   try { localStorage.setItem(CURRENT_ROW_KEY, row); } catch {}
   renderNav();
   renderGrid();
+  // 상단바가 고정이라 아래로 내려 본 상태에서도 탭을 바꿀 수 있으므로, 바꾼 탭은 맨 위부터 보여줌
+  if(changed) scrollToListTop();
+}
+
+// 목록 맨 위가 화면 위로 지나가 있으면 페이지 맨 위로 올림(탭 변경·검색 때)
+function scrollToListTop(){
+  const main = document.querySelector("main");
+  if(main && main.getBoundingClientRect().top < 0) window.scrollTo({ top: 0 });
 }
 
 let currentQuery = "";
@@ -1805,8 +1864,12 @@ const I18N = {
     deletedStatus: "삭제됨",
     resetBtn: "🗑️ 데이터 초기화",
     resetConfirm: "메모, 방문 상태, 예산, 우선순위, 선입금 정보 등 저장된 모든 데이터가 삭제됩니다. 이 작업은 되돌릴 수 없습니다. 계속할까요?",
+    resetConfirmCloud: "Google 계정으로 로그인되어 있어서 이 기기뿐 아니라 클라우드에 저장된 데이터(다른 기기에서 보던 메모·방문 상태·예산·우선순위·선입금)도 모두 삭제됩니다. 이 작업은 되돌릴 수 없습니다. 계속할까요?",
+    resetCloudFail: "클라우드 데이터를 지우지 못해서 초기화를 멈췄습니다. 인터넷 연결을 확인한 뒤 다시 시도해주세요.",
     resetDone: "모든 데이터가 삭제되었습니다.",
     loginBtn: "🔑 Google로 로그인",
+    loginBtnShort: "🔑 로그인",
+    searchPlaceholderShort: "🔍 부스 검색",
     logoutBtn: "🔓 로그아웃",
     loggedInAs: "{email} 로 로그인됨",
     loginFail: "로그인에 실패했습니다. 다시 시도해주세요. ({code})",
@@ -1925,8 +1988,12 @@ const I18N = {
     deletedStatus: "Deleted",
     resetBtn: "🗑️ Reset Data",
     resetConfirm: "This will delete all your saved data — notes, visit status, budget, priority, and pre-orders. This cannot be undone. Continue?",
+    resetConfirmCloud: "You're signed in with Google, so this will also delete the data saved in the cloud (notes, visit status, budget, priority, and pre-orders on your other devices). This cannot be undone. Continue?",
+    resetCloudFail: "Couldn't delete the cloud data, so the reset was stopped. Please check your internet connection and try again.",
     resetDone: "All data has been deleted.",
     loginBtn: "🔑 Sign in with Google",
+    loginBtnShort: "🔑 Sign in",
+    searchPlaceholderShort: "🔍 Search",
     logoutBtn: "🔓 Sign out",
     loggedInAs: "Signed in as {email}",
     loginFail: "Sign-in failed. Please try again. ({code})",
@@ -2045,8 +2112,12 @@ const I18N = {
     deletedStatus: "削除済み",
     resetBtn: "🗑️ データを初期化",
     resetConfirm: "メモ・訪問状態・予算・優先度・事前通販情報など保存されたすべてのデータが削除されます。この操作は元に戻せません。続行しますか？",
+    resetConfirmCloud: "Googleでログイン中のため、この端末だけでなくクラウドに保存されたデータ（他の端末で見ていたメモ・訪問状態・予算・優先度・事前通販）もすべて削除されます。この操作は元に戻せません。続行しますか？",
+    resetCloudFail: "クラウドのデータを削除できなかったため、初期化を中止しました。インターネット接続を確認してもう一度お試しください。",
     resetDone: "すべてのデータが削除されました。",
     loginBtn: "🔑 Googleでログイン",
+    loginBtnShort: "🔑 ログイン",
+    searchPlaceholderShort: "🔍 検索",
     logoutBtn: "🔓 ログアウト",
     loggedInAs: "{email} でログイン中",
     loginFail: "ログインに失敗しました。もう一度お試しください。({code})",
@@ -2078,12 +2149,23 @@ function t(key, vars){
   return str;
 }
 
+// 휴대폰 상단바(700px 이하)인지. 검색칸이 좁아 안내 문구를 짧게 바꿈
+const NARROW_HEADER_QUERY = window.matchMedia ? window.matchMedia("(max-width:700px)") : null;
+function isNarrowHeader(){ return !!(NARROW_HEADER_QUERY && NARROW_HEADER_QUERY.matches); }
+if(NARROW_HEADER_QUERY){
+  const onNarrowChange = () => {
+    document.getElementById("searchInput").placeholder = t(isNarrowHeader() ? "searchPlaceholderShort" : "searchPlaceholder");
+  };
+  if(NARROW_HEADER_QUERY.addEventListener) NARROW_HEADER_QUERY.addEventListener("change", onNarrowChange);
+  else if(NARROW_HEADER_QUERY.addListener) NARROW_HEADER_QUERY.addListener(onNarrowChange);
+}
+
 function applyStaticTexts(){
   document.documentElement.lang = currentLang;
   document.title = t("brandMark");
   document.getElementById("brandMark").textContent = t("brandMark");
   document.getElementById("brandSub").textContent = t("brandSub");
-  document.getElementById("searchInput").placeholder = t("searchPlaceholder");
+  document.getElementById("searchInput").placeholder = t(isNarrowHeader() ? "searchPlaceholderShort" : "searchPlaceholder");
   document.getElementById("helpBtn").textContent = t("helpBtn");
   document.getElementById("resetBtn").textContent = t("resetBtn");
   document.querySelector('#visitFilter button[data-filter="all"]').textContent = t("filterAll");
@@ -2523,7 +2605,8 @@ function updateAuthUI(){
   const authStatus = document.getElementById("authStatus");
   const syncNowBtn = document.getElementById("syncNowBtn");
   if(!loginBtn || !logoutBtn || !authStatus || !syncNowBtn) return;
-  loginBtn.textContent = t("loginBtn");
+  // 휴대폰 상단바에서는 짧은 문구("🔑 로그인")만 보임 (CSS .login-full / .login-short)
+  loginBtn.innerHTML = `<span class="login-full">${escapeHtml(t("loginBtn"))}</span><span class="login-short">${escapeHtml(t("loginBtnShort"))}</span>`;
   logoutBtn.textContent = t("logoutBtn");
   if(!syncCooldownUntil || Date.now() >= syncCooldownUntil){
     syncNowBtn.textContent = t("syncNowBtn");
@@ -2721,14 +2804,32 @@ document.getElementById("confirmBackdrop").addEventListener("click", (e) => {
 });
 
 /* ---------- 전체 데이터 초기화 ----------
-   메모/방문상태/예산/우선순위/선입금을 전부 삭제함(로그인 중이면 클라우드에도 반영됨).
+   메모/방문상태/예산/우선순위/선입금을 전부 삭제함.
+   로그인 중이면 클라우드 데이터도 지운다는 경고를 띄우고 클라우드 문서도 비움 (2026-10-08 사용자 요청).
+   예전에는 이 기기만 지워서, 다음에 페이지를 열 때 클라우드 값이 다시 합쳐져 돌아왔음.
+   클라우드를 먼저 비우고, 실패하면(오프라인 등) 이 기기 데이터도 지우지 않고 멈춤
+   (기기만 지워지면 다음 접속 때 클라우드 값이 되살아나 초기화가 된 것처럼 보이지 않으므로).
 ------------------------------------------------- */
 async function resetAllData(){
-  if(!Object.keys(notes).length && !Object.keys(visitStatus).length && !Object.keys(budgets).length && !Object.keys(priority).length && !Object.keys(preorders).length){
-    return;
-  }
-  const confirmed = await showConfirmDialog(t("resetConfirm"), t("delete"));
+  const signedIn = !!(firebaseReady && currentUser);
+  const hasLocal = Object.keys(notes).length || Object.keys(visitStatus).length || Object.keys(budgets).length || Object.keys(priority).length || Object.keys(preorders).length;
+  if(!hasLocal && !signedIn) return;
+  const confirmed = await showConfirmDialog(t(signedIn ? "resetConfirmCloud" : "resetConfirm"), t("delete"));
   if(!confirmed) return;
+
+  if(signedIn){
+    try {
+      await firebase.firestore().collection("users").doc(currentUser.uid).set({
+        [STORAGE_PREFIX]: {
+          notes: {}, visitStatus: {}, budgets: {}, priority: {}, preorders: {},
+          updatedAt: new Date().toISOString(),
+        },
+      });
+    } catch {
+      alert(t("resetCloudFail"));
+      return;
+    }
+  }
 
   notes = {};
   visitStatus = {};
@@ -2809,6 +2910,12 @@ function boothCutUrl(booth){
   return `booth-cuts/${booth.id}.webp`;
 }
 
+// 목록 카드용 작은 부스컷(가로 320px, 평균 약 22KB). tools/make_booth_thumbs.py 로 만듦 (2026-10-08).
+// 원본(평균 약 80KB)은 상세 창·크게 보기에서만 받음
+function boothThumbUrl(booth){
+  return `booth-cuts/thumbs/${booth.id}.webp`;
+}
+
 function closeCutLightbox(){
   document.querySelectorAll(".cut-lightbox").forEach(el => el.remove());
 }
@@ -2835,7 +2942,14 @@ function buildBoothCut(booth){
   img.loading = "lazy";
   img.alt = t("boothCutAlt", { id: booth.id });
   img.src = boothCutUrl(booth);
+  // 원본을 못 받으면(오프라인인데 처음 여는 부스 등) 미리 받아 둔 썸네일로, 그것도 없으면 안내 문구
+  let triedThumb = false;
   img.onerror = () => {
+    if(!triedThumb){
+      triedThumb = true;
+      img.src = boothThumbUrl(booth);
+      return;
+    }
     wrap.innerHTML = `<div class="cut-placeholder">${escapeHtml(t(booth.cut ? "boothCutPending" : "boothCutNotSubmitted"))}</div>`;
   };
   img.addEventListener("click", (e) => {
@@ -2966,6 +3080,25 @@ function renderNav(){
   if(currentRow === "INFO") infoBtn.classList.add("active");
   infoBtn.addEventListener("click", () => goToRow("INFO"));
   tabNav.appendChild(infoBtn);
+
+  // 휴대폰에서는 탭 줄이 옆으로 밀리므로, 고른 탭이 가려져 있으면 보이는 곳으로 밀어 둠
+  const activeTab = tabNav.querySelector("button.active");
+  if(!activeTab) tabNav.scrollLeft = 0;   // 열(A/B/C)·전체를 보는 중이면 탭 줄은 처음(📝 메모)부터
+  else if(tabNav.scrollWidth > tabNav.clientWidth){
+    const left = activeTab.offsetLeft - tabNav.offsetLeft;
+    if(left < tabNav.scrollLeft || left + activeTab.offsetWidth > tabNav.scrollLeft + tabNav.clientWidth - 24){
+      tabNav.scrollLeft = left - 12;
+    }
+  }
+}
+
+// 메모를 입력하는 동안 미뤄 둔 메모 탭 목록 갱신 (칸에서 벗어날 때·창을 닫을 때 부름)
+let notesListStale = false;
+function refreshNotesList(){
+  if(!notesListStale) return;
+  notesListStale = false;
+  renderNav();
+  if(currentRow === "NOTES") renderGrid();
 }
 
 function updateNoteVisuals(boothId){
@@ -3330,14 +3463,22 @@ function renderGrid(){
     }
     card.appendChild(idEl);
 
-    // 대표 이미지: 부스컷이 있으면 부스컷, 없으면(파일 404) 프로필 사진으로 대체
+    // 대표 이미지: 부스컷 썸네일, 썸네일을 아직 안 만들었으면 원본 부스컷, 그것도 없으면(파일 404) 프로필 사진
     const cutThumb = document.createElement("div");
     cutThumb.className = "cut-thumb";
     const cutImg = document.createElement("img");
     cutImg.loading = "lazy";
-    cutImg.src = boothCutUrl(booth);
+    cutImg.src = boothThumbUrl(booth);
     cutImg.alt = t("boothCutAlt", { id: booth.id });
-    cutImg.onerror = () => cutThumb.replaceWith(buildCardAvatar(booth));
+    let triedOriginal = false;
+    cutImg.onerror = () => {
+      if(!triedOriginal){
+        triedOriginal = true;
+        cutImg.src = boothCutUrl(booth);
+        return;
+      }
+      cutThumb.replaceWith(buildCardAvatar(booth));
+    };
     cutThumb.appendChild(cutImg);
     card.appendChild(cutThumb);
 
@@ -3408,6 +3549,8 @@ function closeInlineDetail(){
   inlineDetail.el.remove();
   document.querySelectorAll(".booth.detail-open").forEach(c => c.classList.remove("detail-open"));
   inlineDetail = null;
+  // 메모를 쓰다 바로 닫았으면 메모 탭 목록·개수를 맞춤(닫는 도중이라 다음 차례에)
+  if(notesListStale) setTimeout(refreshNotesList, 0);
 }
 
 function openInlineDetail(boothId, kind){
@@ -3493,6 +3636,7 @@ window.addEventListener("resize", () => placeInlineDetail(false));
 document.getElementById("searchInput").addEventListener("input", (e) => {
   currentQuery = e.target.value.trim();
   renderGrid();
+  scrollToListTop();
 });
 
 /* ---------- 배치도 ----------
@@ -3933,6 +4077,7 @@ function showBoothModal(booth){
   document.getElementById("modalBackdrop").classList.add("open");
   document.documentElement.classList.add("modal-open");
   content.scrollTop = 0;
+  pushModalHistory();
   maybeShowAdultNotice(booth);
 }
 
@@ -4046,29 +4191,39 @@ function fillBoothActions(content, booth){
     <label>${escapeHtml(t("memoLabel"))}</label>
     <textarea maxlength="1000" placeholder="${escapeHtml(t("memoPlaceholder"))}">${escapeHtml(getNote(booth.id))}</textarea>
     <div class="memo-actions">
-      <button type="button" class="save">${escapeHtml(t("save"))}</button>
       <button type="button" class="delete">${escapeHtml(t("delete"))}</button>
       <span class="memo-status"></span>
     </div>
   `;
   const textarea = memoBox.querySelector("textarea");
-  const saveBtn = memoBox.querySelector(".save");
   const deleteBtn = memoBox.querySelector(".delete");
   const status = memoBox.querySelector(".memo-status");
 
-  saveBtn.addEventListener("click", () => {
+  // 메모는 저장 버튼 없이 입력하는 즉시 저장함 (2026-10-08 사용자 요청: 저장을 안 누르고 창을 닫으면 사라졌음).
+  // 글자마다 이 기기(localStorage)에 저장하고 카드의 메모 표시만 바로 바꿈. 탭 버튼의 개수·배치도 색은
+  // 입력이 잠깐 멈췄을 때, 메모 탭 목록은 칸에서 벗어나거나 창을 닫을 때 다시 그림
+  // (입력 중에 목록을 다시 그리면 메모를 다 지운 순간 그 부스가 메모 탭에서 빠져 펼친 상세가 닫힘).
+  let refreshTimer = null;
+  let statusTimer = null;
+  textarea.addEventListener("input", () => {
     setNote(booth.id, textarea.value);
     updateNoteVisuals(booth.id);
-    renderNav();
-    if(currentRow === "MAP") renderMapView();
-    if(currentRow === "NOTES") renderGrid();
+    notesListStale = true;
+    clearTimeout(refreshTimer);
+    refreshTimer = setTimeout(() => {
+      renderNav();
+      if(currentRow === "MAP") renderMapView();
+    }, 400);
     status.textContent = t("savedStatus");
-    setTimeout(() => { status.textContent = ""; }, 1500);
+    clearTimeout(statusTimer);
+    statusTimer = setTimeout(() => { status.textContent = ""; }, 1500);
   });
+  textarea.addEventListener("change", refreshNotesList);
   deleteBtn.addEventListener("click", () => {
     textarea.value = "";
     setNote(booth.id, "");
     updateNoteVisuals(booth.id);
+    notesListStale = false;
     renderNav();
     if(currentRow === "MAP") renderMapView();
     if(currentRow === "NOTES") renderGrid();
@@ -4178,6 +4333,7 @@ function openHelpModal(){
 
   backdrop.classList.add("open");
   document.documentElement.classList.add("modal-open");
+  pushModalHistory();
 }
 
 document.getElementById("helpBtn").addEventListener("click", () => {
@@ -4199,9 +4355,38 @@ document.getElementById("visitFilter").addEventListener("click", (e) => {
 
 document.getElementById("sortPriorityBtn").addEventListener("click", toggleSortByPriority);
 
-function closeModal(){
-  document.getElementById("modalBackdrop").classList.remove("open");
+/* ---------- 뒤로 가기로 창 닫기 ----------
+   휴대폰에서 부스 상세 창(선입금 창·도움말 포함)이 열려 있을 때 뒤로 가기를 누르면 사이트를 떠나지 않고 창만 닫음
+   (2026-10-08 사용자 요청). 창을 열 때 브라우저 기록을 하나 넣어 두고, 뒤로 가기(popstate)가 오면 창을 닫음.
+   ✕·창 밖·Esc로 닫을 때는 넣어 둔 기록을 history.back()으로 빼서, 다음 뒤로 가기가 헛돌지 않게 함.
+------------------------------------------------- */
+let modalHistoryPushed = false;
+function pushModalHistory(){
+  if(modalHistoryPushed) return;
+  try {
+    history.pushState({ furstclassModal: true }, "");
+    modalHistoryPushed = true;
+  } catch {}
+}
+window.addEventListener("popstate", () => {
+  if(!modalHistoryPushed) return;
+  modalHistoryPushed = false;
+  // 창 위에 떠 있는 큰 부스컷·성인 부스 안내도 함께 닫음
+  closeCutLightbox();
+  closeConfirmDialog(false);
+  closeModal(true);
+});
+
+function closeModal(fromHistory){
+  const backdrop = document.getElementById("modalBackdrop");
+  const wasOpen = backdrop.classList.contains("open");
+  backdrop.classList.remove("open");
   document.documentElement.classList.remove("modal-open");
+  if(wasOpen) refreshNotesList();
+  if(modalHistoryPushed && fromHistory !== true){
+    modalHistoryPushed = false;
+    history.back();
+  }
 }
 
 document.getElementById("modalBackdrop").addEventListener("click", (e) => {
@@ -4240,11 +4425,13 @@ if("serviceWorker" in navigator){
 }
 
 // 처음 접속했을 때 보지 않은 부스의 사진도 오프라인에서 보이도록 서비스 워커에 미리 받을 목록을 넘김.
-// 부스컷·프로필 사진 전체(약 13MB). 이미 받아 둔 이미지는 서비스 워커가 건너뜀.
+// 목록용 부스컷 썸네일·프로필 사진(약 7MB). 이미 받아 둔 이미지는 서비스 워커가 건너뜀.
+// 예전에는 원본 부스컷까지 약 13MB를 받아서 행사장에서 처음 여는 사람의 데이터·회선 부담이 컸음 (2026-10-08).
+// 원본은 상세 창에서 연 부스만 받아 두고, 오프라인에서 처음 여는 부스의 상세 창은 썸네일로 대신 보여줌(buildBoothCut).
 function allImageUrls(){
   const paths = new Set();
   BOOTHS.forEach(booth => {
-    paths.add(boothCutUrl(booth));
+    paths.add(boothThumbUrl(booth));
     [booth.avatar || booth.twitter, ...booth.members.map(m => m.avatar || m.twitter)]
       .filter(Boolean)
       .forEach(handle => paths.add(localAvatarUrl(handle)));
