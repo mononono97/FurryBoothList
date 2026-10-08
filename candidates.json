@@ -1,6 +1,44 @@
 {
- "updatedAt": "2026-10-08T01:34:41+00:00",
+ "updatedAt": "2026-10-08T03:32:54+00:00",
  "posts": [
+  {
+   "id": "2108029363543499003",
+   "handle": "Beuu0920",
+   "booths": [
+    "A16"
+   ],
+   "boothNames": [
+    "브 BEUU / FURPPET"
+   ],
+   "created": "2026-10-08T02:59:00+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "인포",
+    "이미지"
+   ],
+   "foundAt": "2026-10-08T03:30:36+00:00"
+  },
+  {
+   "id": "2108029363476410521",
+   "handle": "Beuu0920",
+   "booths": [
+    "A16"
+   ],
+   "boothNames": [
+    "브 BEUU / FURPPET"
+   ],
+   "created": "2026-10-08T02:59:00+00:00",
+   "score": 6,
+   "sensitive": false,
+   "reasons": [
+    "통판·예약",
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-08T03:30:36+00:00"
+  },
   {
    "id": "2107999490473148853",
    "handle": "Beuu0920",
