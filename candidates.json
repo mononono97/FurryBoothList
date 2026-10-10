@@ -1,6 +1,23 @@
 {
- "updatedAt": "2026-10-10T11:29:34+00:00",
+ "updatedAt": "2026-10-10T14:32:36+00:00",
  "posts": [
+  {
+   "id": "2108922534095991077",
+   "handle": "26_suigi",
+   "booths": [
+    "B11"
+   ],
+   "boothNames": [
+    "CandleLight"
+   ],
+   "created": "2026-10-10T14:08:08+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "신간"
+   ],
+   "foundAt": "2026-10-10T14:27:33+00:00"
+  },
   {
    "id": "2108867328008159246",
    "handle": "badpawco",
