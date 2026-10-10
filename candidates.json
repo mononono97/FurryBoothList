@@ -1,6 +1,60 @@
 {
- "updatedAt": "2026-10-10T06:36:36+00:00",
+ "updatedAt": "2026-10-10T10:32:39+00:00",
  "posts": [
+  {
+   "id": "2108865853093716226",
+   "handle": "_K0CH1",
+   "booths": [
+    "A13"
+   ],
+   "boothNames": [
+    "코치문고"
+   ],
+   "created": "2026-10-10T10:22:54+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-10-10T10:27:31+00:00"
+  },
+  {
+   "id": "2108860232147280133",
+   "handle": "pu_couck_",
+   "booths": [
+    "A19"
+   ],
+   "boothNames": [
+    "메이커 연합부스 - 아르모아"
+   ],
+   "created": "2026-10-10T10:00:34+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-10-10T10:31:30+00:00"
+  },
+  {
+   "id": "2108860095144870003",
+   "handle": "kigurumikagetsu",
+   "booths": [
+    "A06"
+   ],
+   "boothNames": [
+    "Kigurumi Kagetsu"
+   ],
+   "created": "2026-10-10T10:00:02+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "통판·예약",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-10T10:29:39+00:00"
+  },
   {
    "id": "2108792070949552241",
    "handle": "ADKT0448",
