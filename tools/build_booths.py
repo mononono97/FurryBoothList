@@ -154,6 +154,12 @@ HANDLE_FILL = {
     ("B18", "くっく"): "kukku_kuu",
 }
 
+# 시트에는 부스원 칸이 2개뿐이라 3번째 이후 부스원은 여기 적음. 부스 번호 → 시트 칸과 같은 형식의 문자열 목록
+EXTRA_MEMBERS = {
+    # 2026-10-06 사용자 요청: 리더 @kigurumikagetsu, 1번 Geppei, 2번 KC, 3번 mikatagura
+    "A06": ["mikatagura"],
+}
+
 # 리더의 일본어 이름이 부스원 칸에 따로 적힌 경우 → 같은 사람으로 보고 리더 이름 옆에 붙임
 # (藤堂雷悟 = Tohdoh Raigo, 逢魔牙ワルト = Oumaga Wald 로 X 아이디와 일치)
 SAME_AS_LEADER = {
@@ -190,7 +196,7 @@ def build():
             members = []
             if leader:
                 members.append(dict(leader, role="leader"))
-            for cell in (row[4], row[5]):
+            for cell in (row[4], row[5], *EXTRA_MEMBERS.get(booth_id, [])):
                 person = person_of(cell)
                 if person and members and (booth_id, person["name"]) in SAME_AS_LEADER:
                     alt = person["name"].replace(f'({members[0]["name"]})', "").strip()
@@ -228,11 +234,13 @@ def build():
 
 def sort_members_by_photo(booths):
     """부스마다 프로필 사진(avatars/아이디.jpg)이 있는 부스원을 위로, 없는 부스원을 아래로 (같은 그룹 안에서는 원래 순서 유지).
-    카드에 보이는 사진·X 링크도 정렬된 첫 부스원 기준으로 다시 고름. 대표 이름(rep)은 리더 그대로."""
+    리더는 사진이 없어도 항상 맨 위. 카드에 보이는 사진은 사진이 있는 첫 부스원, X 링크는 정렬된 첫 부스원 기준으로 다시 고름.
+    대표 이름(rep)은 리더 그대로."""
     existing = {p.stem for p in AVATAR_DIR.glob("*.jpg")}
     for b in booths:
-        b["members"].sort(key=lambda m: m["avatar"] not in existing)
-        b["avatar"] = b["members"][0]["avatar"] if b["members"] else None
+        b["members"].sort(key=lambda m: (m["role"] != "leader", m["avatar"] not in existing))
+        with_photo = next((m["avatar"] for m in b["members"] if m["avatar"] in existing), None)
+        b["avatar"] = with_photo or (b["members"][0]["avatar"] if b["members"] else None)
         b["twitter"] = next((m["twitter"] for m in b["members"] if m["twitter"]), None)
     return booths
 
