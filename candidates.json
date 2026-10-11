@@ -1,6 +1,63 @@
 {
- "updatedAt": "2026-10-11T00:44:07+00:00",
+ "updatedAt": "2026-10-11T01:31:02+00:00",
  "posts": [
+  {
+   "id": "2109093958655898038",
+   "handle": "pu_couck_",
+   "booths": [
+    "A19"
+   ],
+   "boothNames": [
+    "메이커 연합부스 - 아르모아"
+   ],
+   "created": "2026-10-11T01:29:19+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-11T01:30:22+00:00"
+  },
+  {
+   "id": "2109092644601405637",
+   "handle": "chiffonpaw",
+   "booths": [
+    "A31"
+   ],
+   "boothNames": [
+    "치폰의 레모네이드 가게"
+   ],
+   "created": "2026-10-11T01:24:06+00:00",
+   "score": 5,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "가격"
+   ],
+   "foundAt": "2026-10-11T01:28:56+00:00"
+  },
+  {
+   "id": "2109084988457250902",
+   "handle": "badpawco",
+   "booths": [
+    "A18"
+   ],
+   "boothNames": [
+    "BAD PAW Co."
+   ],
+   "created": "2026-10-11T00:53:40+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-11T01:28:42+00:00"
+  },
   {
    "id": "2109082175966740719",
    "handle": "pu_couck_",
