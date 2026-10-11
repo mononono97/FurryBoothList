@@ -1,6 +1,41 @@
 {
- "updatedAt": "2026-10-11T09:31:56+00:00",
+ "updatedAt": "2026-10-11T11:33:06+00:00",
  "posts": [
+  {
+   "id": "2109236498877075587",
+   "handle": "GomTang_P",
+   "booths": [
+    "B22"
+   ],
+   "boothNames": [
+    "BoxBear"
+   ],
+   "created": "2026-10-11T10:55:43+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-10-11T11:29:30+00:00"
+  },
+  {
+   "id": "2109232730399809643",
+   "handle": "Beuu0920",
+   "booths": [
+    "A16"
+   ],
+   "boothNames": [
+    "브 BEUU / FURPPET"
+   ],
+   "created": "2026-10-11T10:40:45+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "인포",
+    "이미지"
+   ],
+   "foundAt": "2026-10-11T11:28:22+00:00"
+  },
   {
    "id": "2109197400497873287",
    "handle": "26_suigi",
