@@ -1,6 +1,43 @@
 {
- "updatedAt": "2026-10-11T01:31:02+00:00",
+ "updatedAt": "2026-10-11T02:31:13+00:00",
  "posts": [
+  {
+   "id": "2109101956488957978",
+   "handle": "chiffonpaw",
+   "booths": [
+    "A31"
+   ],
+   "boothNames": [
+    "치폰의 레모네이드 가게"
+   ],
+   "created": "2026-10-11T02:01:06+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "가격",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-11T02:29:07+00:00"
+  },
+  {
+   "id": "2109097204996796745",
+   "handle": "mofuaki_",
+   "booths": [
+    "A41"
+   ],
+   "boothNames": [
+    "MOFUMOFUYA"
+   ],
+   "created": "2026-10-11T01:42:13+00:00",
+   "score": 2,
+   "sensitive": true,
+   "reasons": [
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-10-11T02:30:05+00:00"
+  },
   {
    "id": "2109093958655898038",
    "handle": "pu_couck_",
