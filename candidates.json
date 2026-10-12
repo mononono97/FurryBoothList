@@ -1,6 +1,24 @@
 {
- "updatedAt": "2026-10-12T00:47:24+00:00",
+ "updatedAt": "2026-10-12T03:39:10+00:00",
  "posts": [
+  {
+   "id": "2109478915010121927",
+   "handle": "Beuu0920",
+   "booths": [
+    "A16"
+   ],
+   "boothNames": [
+    "브 BEUU / FURPPET"
+   ],
+   "created": "2026-10-12T02:59:00+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "인포",
+    "이미지"
+   ],
+   "foundAt": "2026-10-12T03:34:11+00:00"
+  },
   {
    "id": "2109433616430141922",
    "handle": "Beuu0920",
