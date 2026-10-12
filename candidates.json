@@ -1,6 +1,24 @@
 {
- "updatedAt": "2026-10-12T09:37:38+00:00",
+ "updatedAt": "2026-10-12T16:37:32+00:00",
  "posts": [
+  {
+   "id": "2109672909174354121",
+   "handle": "Furriverse",
+   "booths": [
+    "A39"
+   ],
+   "boothNames": [
+    "Furriverse"
+   ],
+   "created": "2026-10-12T15:49:52+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-10-12T16:33:19+00:00"
+  },
   {
    "id": "2109569511829672333",
    "handle": "Beuu0920",
