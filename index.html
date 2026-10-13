@@ -1289,6 +1289,7 @@
     white-space:nowrap;
   }
   /* 행사 안내: 타임테이블(공식 이미지) */
+  .info-view.timetable-view{ max-width:1100px; }
   .timetable-days{ margin-bottom:10px; }
   .timetable-img{
     display:block;
@@ -1753,7 +1754,7 @@ try {
 } catch {}
 
 const CURRENT_ROW_KEY = `${STORAGE_PREFIX}-current-row`;
-const VALID_ROWS = new Set([...ALL_ROWS, "ALL", "NOTES", "PREORDER", "UPDATES", "MAP", "INFO"]);
+const VALID_ROWS = new Set([...ALL_ROWS, "ALL", "NOTES", "PREORDER", "UPDATES", "MAP", "INFO", "TIMETABLE"]);
 let savedRow = null;
 try { savedRow = localStorage.getItem(CURRENT_ROW_KEY); } catch {}
 let currentRow = (savedRow && VALID_ROWS.has(savedRow))
@@ -1886,7 +1887,8 @@ const I18N = {
     infoNewsLoading: "공식 X 계정의 글을 불러오는 중…",
     infoNewsFail: "글을 불러오지 못했어요. 아래 링크에서 X로 바로 확인해 주세요.",
     infoNewsOpenX: "X에서 @{handle} 열기",
-    infoTimetableTitle: "🕒 타임테이블",
+    timetableBtn: "🕒 행사 시간표",
+    timetableHint: "토요일·일요일 타임테이블 (공식 안내 이미지)",
     infoTimetableSat: "토요일 11/28",
     infoTimetableSun: "일요일 11/29",
     infoTimetableAlt: "{day} 타임테이블 (우암홀·직지홀·주성홀·그랜드 볼룸 시간별 일정)",
@@ -2016,7 +2018,8 @@ const I18N = {
     infoNewsLoading: "Loading posts from the official X account…",
     infoNewsFail: "Couldn't load the posts. Please check them on X with the link below.",
     infoNewsOpenX: "Open @{handle} on X",
-    infoTimetableTitle: "🕒 Timetable",
+    timetableBtn: "🕒 Timetable",
+    timetableHint: "Saturday & Sunday timetable (official image)",
     infoTimetableSat: "Sat 11/28",
     infoTimetableSun: "Sun 11/29",
     infoTimetableAlt: "{day} timetable (hourly schedule for each hall)",
@@ -2146,7 +2149,8 @@ const I18N = {
     infoNewsLoading: "公式Xアカウントの投稿を読み込み中…",
     infoNewsFail: "投稿を読み込めませんでした。下のリンクからXで確認してください。",
     infoNewsOpenX: "Xで @{handle} を開く",
-    infoTimetableTitle: "🕒 タイムテーブル",
+    timetableBtn: "🕒 タイムテーブル",
+    timetableHint: "土曜日・日曜日のタイムテーブル（公式画像）",
     infoTimetableSat: "土曜日 11/28",
     infoTimetableSun: "日曜日 11/29",
     infoTimetableAlt: "{day}のタイムテーブル（各ホールの時間別スケジュール）",
@@ -3156,6 +3160,12 @@ function renderNav(){
   infoBtn.addEventListener("click", () => goToRow("INFO"));
   tabNav.appendChild(infoBtn);
 
+  const timetableBtn = document.createElement("button");
+  timetableBtn.textContent = t("timetableBtn");
+  if(currentRow === "TIMETABLE") timetableBtn.classList.add("active");
+  timetableBtn.addEventListener("click", () => goToRow("TIMETABLE"));
+  tabNav.appendChild(timetableBtn);
+
   // 휴대폰에서는 탭 줄이 옆으로 밀리므로, 고른 탭이 가려져 있으면 보이는 곳으로 밀어 둠
   const activeTab = tabNav.querySelector("button.active");
   if(!activeTab) tabNav.scrollLeft = 0;   // 열(A/B/C)·전체를 보는 중이면 탭 줄은 처음(📝 메모)부터
@@ -3409,13 +3419,25 @@ function renderGrid(){
   const emptyState = document.getElementById("emptyState");
 
   const isMapView = currentRow === "MAP";
-  const isInfoView = currentRow === "INFO";
+  // 행사 시간표 탭도 행사 안내와 같은 영역(infoView)에 그림
+  const isTimetableView = currentRow === "TIMETABLE";
+  const isInfoView = currentRow === "INFO" || isTimetableView;
+  infoView.classList.toggle("timetable-view", isTimetableView);
   grid.style.display = (isMapView || isInfoView) ? "none" : "";
   mapGrid.style.display = isMapView ? "block" : "none";
   infoView.style.display = isInfoView ? "block" : "none";
   emptyState.style.display = "none";
 
   if(isMapView || isInfoView) closeInlineDetail();
+
+  if(isTimetableView){
+    document.getElementById("currentLetter").textContent = "🕒";
+    document.getElementById("currentCount").textContent = t("timetableHint");
+    document.getElementById("notesExtra").style.display = "none";
+    document.getElementById("sortPriorityBtn").style.display = "none";
+    renderTimetableView();
+    return;
+  }
 
   if(isInfoView){
     document.getElementById("currentLetter").textContent = "🎪";
@@ -4013,13 +4035,29 @@ function fetchEventWeather(){
   return weatherCache;
 }
 
-// 행사 안내 탭의 타임테이블: 공식 토요일·일요일 타임테이블 이미지(timetable/*.webp, 2026-10-13 받음)
+// 행사 시간표 탭의 타임테이블: 공식 토요일·일요일 타임테이블 이미지(timetable/*.webp, 2026-10-13 받음)
 const TIMETABLE_DAYS = [
   { key: "sat", date: "2026-11-28", label: "infoTimetableSat", src: "timetable/sat.webp" },
   { key: "sun", date: "2026-11-29", label: "infoTimetableSun", src: "timetable/sun.webp" },
 ];
 // 처음 보여줄 요일: 행사 둘째 날(한국 시간 11/29)에는 일요일, 그 외에는 토요일. 고른 요일은 탭을 오가는 동안 유지
 let timetableDay = new Date(Date.now() + 9 * 3600000).toISOString().slice(0, 10) === "2026-11-29" ? "sun" : "sat";
+
+// 행사 시간표 탭(행사 안내 탭 옆): 요일 버튼 + 공식 이미지
+function renderTimetableView(){
+  const el = document.getElementById("infoView");
+  el.innerHTML = `
+    <section class="info-section">
+      <div class="visit-filter timetable-days" id="timetableDays">
+        ${TIMETABLE_DAYS.map((d) => `<button type="button" data-day="${d.key}" class="${d.key === timetableDay ? "active" : ""}">${escapeHtml(t(d.label))}</button>`).join("")}
+      </div>
+      <img class="timetable-img" id="timetableImg" alt="" decoding="async">
+      <div class="timetable-hint">${escapeHtml(t("infoTimetableHint"))}</div>
+      <div class="timetable-note">* ${escapeHtml(t("infoTimetableNote"))}</div>
+    </section>
+  `;
+  setupTimetable();
+}
 
 function setupTimetable(){
   const img = document.getElementById("timetableImg");
@@ -4054,16 +4092,6 @@ function renderInfoView(){
     </section>
 
     <section class="info-section">
-      <h2>${escapeHtml(t("infoTimetableTitle"))}</h2>
-      <div class="visit-filter timetable-days" id="timetableDays">
-        ${TIMETABLE_DAYS.map((d) => `<button type="button" data-day="${d.key}" class="${d.key === timetableDay ? "active" : ""}">${escapeHtml(t(d.label))}</button>`).join("")}
-      </div>
-      <img class="timetable-img" id="timetableImg" alt="" decoding="async">
-      <div class="timetable-hint">${escapeHtml(t("infoTimetableHint"))}</div>
-      <div class="timetable-note">* ${escapeHtml(t("infoTimetableNote"))}</div>
-    </section>
-
-    <section class="info-section">
       <h2>${escapeHtml(t("infoMapTitle"))}</h2>
       <div class="info-map-wrap">
         <iframe src="https://www.google.com/maps?q=${encodeURIComponent(VENUE_MAP_QUERY)}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
@@ -4085,7 +4113,6 @@ function renderInfoView(){
     </section>
   `;
 
-  setupTimetable();
   loadOfficialFeed(document.getElementById("officialFeed"));
 
   const weatherDays = document.getElementById("weatherDays");
