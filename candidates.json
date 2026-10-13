@@ -1,6 +1,23 @@
 {
- "updatedAt": "2026-10-13T10:36:02+00:00",
+ "updatedAt": "2026-10-13T12:43:33+00:00",
  "posts": [
+  {
+   "id": "2109976252811735274",
+   "handle": "GomTang_P",
+   "booths": [
+    "B22"
+   ],
+   "boothNames": [
+    "BoxBear"
+   ],
+   "created": "2026-10-13T11:55:14+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-10-13T12:41:36+00:00"
+  },
   {
    "id": "2109952852022141207",
    "handle": "ideatami",
