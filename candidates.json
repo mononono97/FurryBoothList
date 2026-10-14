@@ -1,6 +1,23 @@
 {
- "updatedAt": "2026-10-14T09:45:21+00:00",
+ "updatedAt": "2026-10-14T11:47:44+00:00",
  "posts": [
+  {
+   "id": "2110333759136673994",
+   "handle": "mucknagabe",
+   "booths": [
+    "A08"
+   ],
+   "boothNames": [
+    "TRIVELER"
+   ],
+   "created": "2026-10-14T11:35:50+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-10-14T11:46:03+00:00"
+  },
   {
    "id": "2110294287707681049",
    "handle": "Beuu0920",
