@@ -1,6 +1,45 @@
 {
- "updatedAt": "2026-10-14T11:47:44+00:00",
+ "updatedAt": "2026-10-14T12:55:08+00:00",
  "posts": [
+  {
+   "id": "2110353213467885703",
+   "handle": "mucknagabe",
+   "booths": [
+    "A08"
+   ],
+   "boothNames": [
+    "TRIVELER"
+   ],
+   "created": "2026-10-14T12:53:09+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-10-14T12:53:11+00:00"
+  },
+  {
+   "id": "2110341104705126554",
+   "handle": "IG1119",
+   "booths": [
+    "B19"
+   ],
+   "boothNames": [
+    "OSURULE"
+   ],
+   "created": "2026-10-14T12:05:02+00:00",
+   "score": 8,
+   "sensitive": false,
+   "reasons": [
+    "인포",
+    "굿즈·판매",
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-14T12:52:35+00:00"
+  },
   {
    "id": "2110333759136673994",
    "handle": "mucknagabe",
