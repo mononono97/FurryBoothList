@@ -1,6 +1,43 @@
 {
- "updatedAt": "2026-10-14T16:48:51+00:00",
+ "updatedAt": "2026-10-15T00:54:36+00:00",
  "posts": [
+  {
+   "id": "2110520780106957299",
+   "handle": "Beuu0920",
+   "booths": [
+    "A16"
+   ],
+   "boothNames": [
+    "브 BEUU / FURPPET"
+   ],
+   "created": "2026-10-14T23:59:00+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "인포",
+    "이미지"
+   ],
+   "foundAt": "2026-10-15T00:51:26+00:00"
+  },
+  {
+   "id": "2110519589386023114",
+   "handle": "COOKEDMOCHI",
+   "booths": [
+    "B33"
+   ],
+   "boothNames": [
+    "염소야, 그만 야해!"
+   ],
+   "created": "2026-10-14T23:54:16+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-10-15T00:51:50+00:00"
+  },
   {
    "id": "2110401749240656233",
    "handle": "Trad_monmon",
