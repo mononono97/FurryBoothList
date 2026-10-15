@@ -1,6 +1,23 @@
 {
- "updatedAt": "2026-10-15T03:45:57+00:00",
+ "updatedAt": "2026-10-15T04:45:10+00:00",
  "posts": [
+  {
+   "id": "2110588587070865725",
+   "handle": "26_suigi",
+   "booths": [
+    "B11"
+   ],
+   "boothNames": [
+    "CandleLight"
+   ],
+   "created": "2026-10-15T04:28:26+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-10-15T04:41:13+00:00"
+  },
   {
    "id": "2110566078539558933",
    "handle": "Beuu0920",
