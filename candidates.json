@@ -1,6 +1,60 @@
 {
- "updatedAt": "2026-10-16T11:27:28+00:00",
+ "updatedAt": "2026-10-16T16:43:23+00:00",
  "posts": [
+  {
+   "id": "2111072983456596475",
+   "handle": "_K0CH1",
+   "booths": [
+    "A13"
+   ],
+   "boothNames": [
+    "코치문고"
+   ],
+   "created": "2026-10-16T12:33:15+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-16T16:38:29+00:00"
+  },
+  {
+   "id": "2111064819151601884",
+   "handle": "mofuaki_",
+   "booths": [
+    "A41"
+   ],
+   "boothNames": [
+    "MOFUMOFUYA"
+   ],
+   "created": "2026-10-16T12:00:49+00:00",
+   "score": 3,
+   "sensitive": true,
+   "reasons": [
+    "굿즈·판매",
+    "이미지"
+   ],
+   "foundAt": "2026-10-16T16:41:20+00:00"
+  },
+  {
+   "id": "2111052604738535698",
+   "handle": "Hijiki_DaiXt",
+   "booths": [
+    "A02"
+   ],
+   "boothNames": [
+    "SEAWEED VILLAGE"
+   ],
+   "created": "2026-10-16T11:12:17+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "신간",
+    "품목"
+   ],
+   "foundAt": "2026-10-16T16:40:22+00:00"
+  },
   {
    "id": "2110985090239263068",
    "handle": "Tos_Tos_F_ski",
