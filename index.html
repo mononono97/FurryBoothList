@@ -42,6 +42,12 @@
     --line:#e7e2e1;
     --card-bg:#ffffff;
     --hover-tint:#f3efee; /* 밝은 버튼 마우스 오버 */
+    --qv-bg:#f6f3f2;      /* 카드 방문 완료 버튼: 안 간 부스 */
+    --qv-line:#e4dedc;
+    --qv-fg:#6b6265;
+    --qv-on:#3f8a34;      /* 다녀온 부스 */
+    --qv-on-text:#2f6f27;
+    --qv-glow:rgba(63,138,52,.28);
     --moss:#c8102e;       /* 주 강조색: Furst Class 로고 크림슨 */
     --clay:#c8102e;       /* 메모 표시 */
     --accent:#c8102e;     /* 저장 버튼 등 */
@@ -129,6 +135,12 @@
     --line:#2e252c;
     --card-bg:#1b161a;
     --hover-tint:#2a2027;
+    --qv-bg:#241d22;
+    --qv-line:#3a3037;
+    --qv-fg:#b3a3aa;
+    --qv-on:#3f8a34;
+    --qv-on-text:#8fd07f;
+    --qv-glow:rgba(63,138,52,.35);
     --moss:#e0344f;
     --clay:#e0344f;
     --accent:#e0344f;
@@ -1115,16 +1127,38 @@
   .booth .money-line.over{ color:var(--accent); }
   .budget-total.over{ border-color:var(--accent); color:var(--accent); }
   /* 메모 탭 카드의 "✓ 방문 완료" / "↩ 방문 예정으로" 버튼 */
+  /* 카드의 방문 완료 토글. 아직 안 갔으면 연한 칩 + 빈 동그라미, 다녀왔으면 초록 칩 + 체크 동그라미
+     (2026-10-18 사용자 요청: 예전엔 안 간 부스 버튼이 초록으로 채워져 이미 체크된 것처럼 보였음) */
   .booth .quick-visit-btn{
-    display:block; width:100%; margin-top:8px; min-height:34px;
-    appearance:none; border:1px solid #3f7a33; border-radius:999px;
-    background:var(--card-bg); color:#3f7a33;
-    font-size:12px; font-weight:700; font-family:inherit; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:7px;
+    width:100%; margin-top:10px; min-height:32px; padding:0 10px; white-space:nowrap;
+    appearance:none; border:1px solid var(--qv-line); border-radius:10px;
+    background:var(--qv-bg); color:var(--qv-fg);
+    font-size:12px; font-weight:700; letter-spacing:-.01em; font-family:inherit; cursor:pointer;
+    transition:background-color .15s, border-color .15s, color .15s, box-shadow .15s, transform .1s;
   }
-  .booth .quick-visit-btn:not(.done){ background:#3f7a33; color:#fff; }
-  .booth .quick-visit-btn:hover{ filter:brightness(1.08); }
-  :root[data-theme="dark"] .booth .quick-visit-btn.done{ color:#8fd07f; border-color:#8fd07f; }
-  /* 동선 보기 구역 머리줄 (그리드 한 줄을 통째로 차지) */
+  @media (hover:hover){
+    .booth .quick-visit-btn:hover{ border-color:var(--qv-on); color:var(--qv-on-text); }
+    .booth .quick-visit-btn:hover .qv-box{ opacity:1; }
+    .booth .quick-visit-btn:not(.done):hover .qv-box svg{ opacity:.35; }
+    .booth .quick-visit-btn.done:hover{ color:#fff; filter:brightness(1.06); }
+  }
+  .booth .quick-visit-btn:active{ transform:scale(.97); }
+  .booth .quick-visit-btn:focus-visible{ outline:2px solid var(--qv-on); outline-offset:2px; }
+  .booth .quick-visit-btn .qv-box{
+    flex:none; width:16px; height:16px; border-radius:50%;
+    border:1.5px solid currentColor; opacity:.55;
+    display:inline-flex; align-items:center; justify-content:center;
+    transition:background-color .15s, border-color .15s, opacity .15s;
+  }
+  .booth .quick-visit-btn .qv-box svg{ width:10px; height:10px; opacity:0; transition:opacity .15s; }
+  .booth .quick-visit-btn.done{
+    background:var(--qv-on); border-color:var(--qv-on); color:#fff;
+    box-shadow:0 2px 8px var(--qv-glow);
+  }
+  .booth .quick-visit-btn.done .qv-box{ background:#fff; border-color:#fff; color:var(--qv-on); opacity:1; }
+  .booth .quick-visit-btn.done .qv-box svg{ opacity:1; }
+  /* 구역별 보기 구역 머리줄 (그리드 한 줄을 통째로 차지) */
   .route-group-head{
     grid-column:1 / -1;
     display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap;
@@ -1848,8 +1882,8 @@ function scrollToListTop(){
 
 let currentQuery = "";
 let widgetsLoaded = false;
-let notesVisitFilter = "all"; // "all" | "planned" | "visited" | "route"(동선 보기) — 메모 탭에서 방문 상태로 필터링
-// 행사장에서 동선 보기를 켜 둔 채 다시 열 수 있게 고른 필터를 기억함 (2026-10-18)
+let notesVisitFilter = "all"; // "all" | "planned" | "visited" | "route"(구역별 보기) — 메모 탭에서 방문 상태로 필터링
+// 행사장에서 구역별 보기를 켜 둔 채 다시 열 수 있게 고른 필터를 기억함 (2026-10-18)
 const NOTES_FILTER_KEY = `${STORAGE_PREFIX}-notes-filter`;
 try {
   const f = localStorage.getItem(NOTES_FILTER_KEY);
@@ -2010,14 +2044,14 @@ const I18N = {
     filterPlanned: "🟡 방문 예정",
     filterVisited: "🟢 방문 완료",
     budgetTotal: "총 예산: {amount}",
-    filterRoute: "🧭 동선 보기",
+    filterRoute: "🧭 구역별 보기",
     routeCount: "방문 완료 {done} / {n}곳 · 남은 곳 {left}",
     routeGroupLeft: "남은 곳 {left} / {n}",
     routeGroupDone: "✅ {n}곳 모두 다녀옴",
     emptyRoute: "방문 예정 부스가 없어요. 부스를 열어 \"🟡 방문 예정\"을 눌러 두면 여기에 구역별로 모여요.",
-    quickVisitDone: "✓ 방문 완료",
-    quickVisitUndo: "↩ 되돌리기",
-    quickVisitUndoLabel: "방문 예정으로 되돌리기",
+    quickVisitCheck: "방문 완료",
+    quickVisitDoneLabel: "방문 완료로 표시",
+    quickVisitUndoLabel: "방문 완료 해제 (방문 예정으로 되돌리기)",
     moneyLineBudgetOnly: "예산 {budget}",
     spentLabel: "쓴 돈 (원)",
     spentTotal: "예산 {budget} · 쓴 돈 {spent} · 남은 예산 {left}",
@@ -2165,14 +2199,14 @@ const I18N = {
     filterPlanned: "🟡 Plan to Visit",
     filterVisited: "🟢 Visited",
     budgetTotal: "Total budget: {amount}",
-    filterRoute: "🧭 Route",
+    filterRoute: "🧭 By zone",
     routeCount: "Visited {done} / {n} · {left} to go",
     routeGroupLeft: "{left} / {n} to go",
     routeGroupDone: "✅ All {n} visited",
     emptyRoute: "No booths planned yet. Open a booth and tap \"🟡 Plan to Visit\" to gather them here by zone.",
-    quickVisitDone: "✓ Visited",
-    quickVisitUndo: "↩ Undo",
-    quickVisitUndoLabel: "Move back to planned",
+    quickVisitCheck: "Visited",
+    quickVisitDoneLabel: "Mark as visited",
+    quickVisitUndoLabel: "Unmark visited (back to planned)",
     moneyLineBudgetOnly: "Budget {budget}",
     spentLabel: "Spent (KRW)",
     spentTotal: "Budget {budget} · Spent {spent} · {left} left",
@@ -2320,14 +2354,14 @@ const I18N = {
     filterPlanned: "🟡 訪問予定",
     filterVisited: "🟢 訪問済み",
     budgetTotal: "総予算：{amount}",
-    filterRoute: "🧭 ルート",
+    filterRoute: "🧭 エリア別",
     routeCount: "訪問済み {done} / {n}か所 · 残り {left}",
     routeGroupLeft: "残り {left} / {n}",
     routeGroupDone: "✅ {n}か所すべて訪問済み",
     emptyRoute: "訪問予定のブースがありません。ブースを開いて「🟡 訪問予定」を押すと、ここにエリア別にまとまります。",
-    quickVisitDone: "✓ 訪問済み",
-    quickVisitUndo: "↩ 戻す",
-    quickVisitUndoLabel: "訪問予定に戻す",
+    quickVisitCheck: "訪問済み",
+    quickVisitDoneLabel: "訪問済みにする",
+    quickVisitUndoLabel: "訪問済みを解除（訪問予定に戻す）",
     moneyLineBudgetOnly: "予算 {budget}",
     spentLabel: "使った金額（ウォン）",
     spentTotal: "予算 {budget} · 使った金額 {spent} · 残り {left}",
@@ -3770,7 +3804,7 @@ function renderGrid(){
     ]);
     list = BOOTHS.filter(b => trackedIds.has(b.id));
     if(isRouteView){
-      // 동선 보기는 그날 돌 곳(방문 예정 + 이미 다녀온 곳)만
+      // 구역별 보기는 그날 돌 곳(방문 예정 + 이미 다녀온 곳)만
       list = list.filter(b => getVisitStatus(b.id));
     } else if(notesVisitFilter !== "all"){
       list = list.filter(b => getVisitStatus(b.id) === notesVisitFilter);
@@ -3789,7 +3823,7 @@ function renderGrid(){
   if(currentQuery) list = list.filter(b => boothMatchesQuery(b, currentQuery));
 
   if(isRouteView){
-    // 동선 보기: 구역(A·B·C)별로 묶고, 구역 안에서는 아직 안 간 부스를 번호 순으로 먼저, 다녀온 부스는 뒤로
+    // 구역별 보기: 구역(A·B·C)별로 묶고, 구역 안에서는 아직 안 간 부스를 번호 순으로 먼저, 다녀온 부스는 뒤로
     list = list.slice().sort((a, b) =>
       ALL_ROWS.indexOf(a.block) - ALL_ROWS.indexOf(b.block) ||
       (getVisitStatus(a.id) === "visited") - (getVisitStatus(b.id) === "visited") ||
@@ -3822,7 +3856,7 @@ function renderGrid(){
 
   let lastGroup = null;
   list.forEach(booth => {
-    // 동선 보기: 구역이 바뀔 때마다 "A구역 · 그랜드볼룸  남은 n곳" 머리줄
+    // 구역별 보기: 구역이 바뀔 때마다 "A구역 · 그랜드볼룸  남은 n곳" 머리줄
     if(isRouteView && booth.block !== lastGroup){
       lastGroup = booth.block;
       const inZone = list.filter(b => b.block === booth.block);
@@ -3914,14 +3948,16 @@ function renderGrid(){
       card.appendChild(moneyEl);
     }
 
-    // 메모 탭: 방문 예정·완료 부스는 카드에서 바로 방문 완료를 켜고 끌 수 있는 ✓ 버튼
+    // 메모 탭: 방문 예정·완료 부스는 카드에서 바로 방문 완료를 켜고 끌 수 있는 체크 버튼
     if(isNotesView && getVisitStatus(booth.id)){
       const visited = getVisitStatus(booth.id) === "visited";
       const checkBtn = document.createElement("button");
       checkBtn.type = "button";
       checkBtn.className = "quick-visit-btn" + (visited ? " done" : "");
-      checkBtn.textContent = t(visited ? "quickVisitUndo" : "quickVisitDone");
-      checkBtn.setAttribute("aria-label", `${booth.id} ${t(visited ? "quickVisitUndoLabel" : "quickVisitDone")}`);
+      // 체크박스처럼: 빈 칸 = 아직 안 감, 초록 칸에 ✓ = 다녀옴. 누를 때마다 바뀜
+      checkBtn.innerHTML = `<span class="qv-box" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.3l2.3 2.3 4.7-5"/></svg></span>${escapeHtml(t("quickVisitCheck"))}`;
+      checkBtn.title = t(visited ? "quickVisitUndoLabel" : "quickVisitDoneLabel");
+      checkBtn.setAttribute("aria-label", `${booth.id} ${t(visited ? "quickVisitUndoLabel" : "quickVisitDoneLabel")}`);
       checkBtn.setAttribute("aria-pressed", visited ? "true" : "false");
       checkBtn.addEventListener("click", (e) => {
         e.stopPropagation();
