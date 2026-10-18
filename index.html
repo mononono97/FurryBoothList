@@ -42,6 +42,12 @@
     --line:#e7e2e1;
     --card-bg:#ffffff;
     --hover-tint:#f3efee; /* 밝은 버튼 마우스 오버 */
+    --qv-bg:#f6f3f2;      /* 카드 방문 완료 버튼: 안 간 부스 */
+    --qv-line:#e4dedc;
+    --qv-fg:#6b6265;
+    --qv-on:#3f8a34;      /* 다녀온 부스 */
+    --qv-on-text:#2f6f27;
+    --qv-glow:rgba(63,138,52,.28);
     --moss:#c8102e;       /* 주 강조색: Furst Class 로고 크림슨 */
     --clay:#c8102e;       /* 메모 표시 */
     --accent:#c8102e;     /* 저장 버튼 등 */
@@ -129,6 +135,12 @@
     --line:#2e252c;
     --card-bg:#1b161a;
     --hover-tint:#2a2027;
+    --qv-bg:#241d22;
+    --qv-line:#3a3037;
+    --qv-fg:#b3a3aa;
+    --qv-on:#3f8a34;
+    --qv-on-text:#8fd07f;
+    --qv-glow:rgba(63,138,52,.35);
     --moss:#e0344f;
     --clay:#e0344f;
     --accent:#e0344f;
@@ -1115,24 +1127,37 @@
   .booth .money-line.over{ color:var(--accent); }
   .budget-total.over{ border-color:var(--accent); color:var(--accent); }
   /* 메모 탭 카드의 "✓ 방문 완료" / "↩ 방문 예정으로" 버튼 */
-  /* 체크박스 모양: 아직 안 갔으면 빈 칸(회색 테두리), 다녀왔으면 초록으로 채운 칸에 ✓ (2026-10-18 사용자 요청:
-     예전에는 아직 안 간 부스의 버튼이 초록으로 채워져 있어 이미 방문 완료로 체크된 것처럼 보였음) */
+  /* 카드의 방문 완료 토글. 아직 안 갔으면 연한 칩 + 빈 동그라미, 다녀왔으면 초록 칩 + 체크 동그라미
+     (2026-10-18 사용자 요청: 예전엔 안 간 부스 버튼이 초록으로 채워져 이미 체크된 것처럼 보였음) */
   .booth .quick-visit-btn{
-    display:flex; align-items:center; justify-content:center; gap:6px;
-    width:100%; margin-top:8px; min-height:34px; white-space:nowrap;
-    appearance:none; border:1px solid var(--line); border-radius:999px;
-    background:var(--card-bg); color:var(--ink);
-    font-size:12px; font-weight:700; font-family:inherit; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:7px;
+    width:100%; margin-top:10px; min-height:32px; padding:0 10px; white-space:nowrap;
+    appearance:none; border:1px solid var(--qv-line); border-radius:10px;
+    background:var(--qv-bg); color:var(--qv-fg);
+    font-size:12px; font-weight:700; letter-spacing:-.01em; font-family:inherit; cursor:pointer;
+    transition:background-color .15s, border-color .15s, color .15s, box-shadow .15s, transform .1s;
   }
-  .booth .quick-visit-btn:hover{ background:var(--hover-tint); }
+  @media (hover:hover){
+    .booth .quick-visit-btn:hover{ border-color:var(--qv-on); color:var(--qv-on-text); }
+    .booth .quick-visit-btn:hover .qv-box{ opacity:1; }
+    .booth .quick-visit-btn:not(.done):hover .qv-box svg{ opacity:.35; }
+    .booth .quick-visit-btn.done:hover{ color:#fff; filter:brightness(1.06); }
+  }
+  .booth .quick-visit-btn:active{ transform:scale(.97); }
+  .booth .quick-visit-btn:focus-visible{ outline:2px solid var(--qv-on); outline-offset:2px; }
   .booth .quick-visit-btn .qv-box{
-    flex:none; width:15px; height:15px; border:2px solid var(--muted); border-radius:4px;
-    display:inline-flex; align-items:center; justify-content:center; font-size:11px; line-height:1; color:#fff;
-    background:var(--card-bg);
+    flex:none; width:16px; height:16px; border-radius:50%;
+    border:1.5px solid currentColor; opacity:.55;
+    display:inline-flex; align-items:center; justify-content:center;
+    transition:background-color .15s, border-color .15s, opacity .15s;
   }
-  .booth .quick-visit-btn.done{ background:#3f7a33; border-color:#3f7a33; color:#fff; }
-  .booth .quick-visit-btn.done .qv-box{ border-color:#fff; background:#fff; color:#3f7a33; }
-  .booth .quick-visit-btn.done:hover{ filter:brightness(1.08); }
+  .booth .quick-visit-btn .qv-box svg{ width:10px; height:10px; opacity:0; transition:opacity .15s; }
+  .booth .quick-visit-btn.done{
+    background:var(--qv-on); border-color:var(--qv-on); color:#fff;
+    box-shadow:0 2px 8px var(--qv-glow);
+  }
+  .booth .quick-visit-btn.done .qv-box{ background:#fff; border-color:#fff; color:var(--qv-on); opacity:1; }
+  .booth .quick-visit-btn.done .qv-box svg{ opacity:1; }
   /* 구역별 보기 구역 머리줄 (그리드 한 줄을 통째로 차지) */
   .route-group-head{
     grid-column:1 / -1;
@@ -3930,7 +3955,7 @@ function renderGrid(){
       checkBtn.type = "button";
       checkBtn.className = "quick-visit-btn" + (visited ? " done" : "");
       // 체크박스처럼: 빈 칸 = 아직 안 감, 초록 칸에 ✓ = 다녀옴. 누를 때마다 바뀜
-      checkBtn.innerHTML = `<span class="qv-box" aria-hidden="true">${visited ? "✓" : ""}</span>${escapeHtml(t("quickVisitCheck"))}`;
+      checkBtn.innerHTML = `<span class="qv-box" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.3l2.3 2.3 4.7-5"/></svg></span>${escapeHtml(t("quickVisitCheck"))}`;
       checkBtn.title = t(visited ? "quickVisitUndoLabel" : "quickVisitDoneLabel");
       checkBtn.setAttribute("aria-label", `${booth.id} ${t(visited ? "quickVisitUndoLabel" : "quickVisitDoneLabel")}`);
       checkBtn.setAttribute("aria-pressed", visited ? "true" : "false");
