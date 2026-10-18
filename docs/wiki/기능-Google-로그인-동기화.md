@@ -24,7 +24,7 @@
   예전처럼 태그로 넣으면 SDK(압축 약 150KB)를 다 받을 때까지 부스 목록을 그리지 못해, 행사장처럼 회선이 붐비면 목록이 한참 안 떴음.
   그래서 로그인 버튼은 SDK를 다 받은 뒤에 나타납니다.
 - 로그인/로그아웃: `signInWithGoogle()`, `signOutUser()`, UI 갱신 `updateAuthUI()`
-- 데이터: Firestore `users/<uid>` 문서의 `furstclass` 필드에 `{ notes, visitStatus, budgets, priority, preorders }`.
+- 데이터: Firestore `users/<uid>` 문서의 `furstclass` 필드에 `{ notes, visitStatus, budgets, spent, priority, preorders }`(`spent`=쓴 돈, 2026-10-18 추가. 예전 버전 사이트는 이 필드를 모르므로, 예전 화면을 연 기기에서 동기화하면 쓴 돈이 빠진 채 올라갈 수 있음).
   동기화할 때 문서 전체를 덮어쓰므로 케모켓 때 문서 최상위에 있던 필드는 첫 동기화에서 지워집니다.
 - 병합: `mergeField(local, cloud)` = `Object.assign({}, cloud, local)`
 - 흐름: `syncFromCloudOnLogin()` → `pullAndMergeFromCloud()` → `pushToCloud()`
