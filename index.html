@@ -1102,7 +1102,49 @@
   .booth-posts{ margin:10px 0 12px; }
   .booth .preorder-line{ font-size:11px; color:var(--text-2); font-weight:600; margin-top:2px; }
   .booth .preorder-line.received{ color:var(--preorder-done); }
-  .booth .updated-on{ font-size:11px; color:var(--accent); font-weight:600; margin-top:2px; }
+  .booth .updated-on{ font-size:11px; color:var(--accent); font-weight:600; margin-top:2px; white-space:nowrap; }
+  .booth .new-badge{
+    display:inline-block; margin-right:4px; padding:0 5px; border-radius:4px;
+    background:var(--accent); color:#fff; font-size:10px; font-weight:800; line-height:16px; vertical-align:1px;
+  }
+  .tab-new-dot{
+    display:inline-block; width:7px; height:7px; margin-left:5px; border-radius:50%;
+    background:var(--accent); vertical-align:middle;
+  }
+  .booth .money-line{ font-size:11px; color:var(--text-2); font-weight:600; margin-top:2px; }
+  .booth .money-line.over{ color:var(--accent); }
+  .budget-total.over{ border-color:var(--accent); color:var(--accent); }
+  /* 메모 탭 카드의 "✓ 방문 완료" / "↩ 방문 예정으로" 버튼 */
+  .booth .quick-visit-btn{
+    display:block; width:100%; margin-top:8px; min-height:34px;
+    appearance:none; border:1px solid #3f7a33; border-radius:999px;
+    background:var(--card-bg); color:#3f7a33;
+    font-size:12px; font-weight:700; font-family:inherit; cursor:pointer;
+  }
+  .booth .quick-visit-btn:not(.done){ background:#3f7a33; color:#fff; }
+  .booth .quick-visit-btn:hover{ filter:brightness(1.08); }
+  :root[data-theme="dark"] .booth .quick-visit-btn.done{ color:#8fd07f; border-color:#8fd07f; }
+  /* 동선 보기 구역 머리줄 (그리드 한 줄을 통째로 차지) */
+  .route-group-head{
+    grid-column:1 / -1;
+    display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    padding:6px 2px 6px; border-bottom:2px solid var(--line);
+    font-size:14px; color:var(--ink);
+  }
+  .route-group-head:not(:first-child){ margin-top:10px; }
+  .route-group-head span{ font-size:12px; font-weight:700; color:var(--text-2); }
+  /* 부스 상세 제목 아래 "📍 배치도에서 보기" */
+  .map-locate-btn{
+    appearance:none; display:inline-flex; align-items:center; gap:4px;
+    margin:-4px 0 12px; padding:6px 14px; border-radius:999px;
+    border:1px solid var(--panel-line); background:var(--panel-field); color:var(--on-panel);
+    font-size:13px; font-weight:700; font-family:inherit; cursor:pointer;
+  }
+  .map-locate-btn:hover{ filter:brightness(1.06); }
+  .booth-inline .map-locate-btn{ margin-top:-6px; }
+  /* 예산 · 쓴 돈 두 칸 */
+  .money-fields{ display:grid; grid-template-columns:minmax(0, 1fr) minmax(0, 1fr); gap:10px; }
+  .money-fields > div{ min-width:0; }
   .booth-posts-title{ font-size:13px; font-weight:700; margin-bottom:2px; }
   .booth-post .twitter-tweet{ margin:6px 0 !important; }
   .booth-post-card{
@@ -1241,6 +1283,26 @@
   .venue-map .map-booth.empty{ cursor:default; }
   .venue-map .map-booth.empty .map-booth-box{ stroke:var(--line); stroke-dasharray:4 3; }
   .venue-map .map-booth.empty .map-booth-text{ fill:var(--muted); }
+  /* 위치 찾기(📍 배치도에서 보기)·검색 강조: 바깥 테두리를 강조색으로 굵게, 위치 찾기는 세 번 깜빡임 */
+  .venue-map .map-booth.search-hit .map-booth-ring,
+  .venue-map .map-booth.locate .map-booth-ring{ stroke:var(--accent); stroke-width:6; }
+  .venue-map .map-booth.locate{ opacity:1; }
+  .venue-map .map-booth.locate .map-booth-ring{ stroke-width:8; animation:map-locate-blink .7s ease-in-out 3; }
+  @keyframes map-locate-blink{ 50%{ stroke-opacity:.15; } }
+  @media (prefers-reduced-motion:reduce){ .venue-map .map-booth.locate .map-booth-ring{ animation:none; } }
+  .map-locate-note, .map-search-note{
+    display:flex; align-items:center; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--ink);
+    background:var(--card-bg); border:1px solid var(--line); border-left:4px solid var(--accent);
+    border-radius:10px; padding:8px 12px; margin-bottom:12px;
+  }
+  .map-locate-note span{ flex:1; min-width:0; word-break:keep-all; overflow-wrap:anywhere; }
+  .map-locate-note button{
+    appearance:none; border:1px solid var(--line); background:var(--card-bg); color:var(--ink);
+    border-radius:999px; padding:5px 12px; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap;
+  }
+  .map-locate-note button:hover{ background:var(--hover-tint); }
+  .map-locate-note .map-locate-clear{ padding:5px 10px; }
 
   /* 행사 안내 */
   .info-view{
@@ -1687,8 +1749,15 @@
       <button type="button" data-filter="all"></button>
       <button type="button" data-filter="planned"></button>
       <button type="button" data-filter="visited"></button>
+      <button type="button" data-filter="route"></button>
     </div>
     <div class="budget-total" id="budgetTotal"></div>
+  </div>
+  <div class="notes-extra" id="updatesExtra" style="display:none;">
+    <div class="visit-filter" id="updatesFilter">
+      <button type="button" data-filter="all"></button>
+      <button type="button" data-filter="mine"></button>
+    </div>
   </div>
   <div class="grid" id="grid"></div>
   <div class="map-grid" id="mapGrid" style="display:none;"></div>
@@ -1779,7 +1848,72 @@ function scrollToListTop(){
 
 let currentQuery = "";
 let widgetsLoaded = false;
-let notesVisitFilter = "all"; // "all" | "planned" | "visited" — 메모 탭에서 방문 상태로 필터링
+let notesVisitFilter = "all"; // "all" | "planned" | "visited" | "route"(동선 보기) — 메모 탭에서 방문 상태로 필터링
+// 행사장에서 동선 보기를 켜 둔 채 다시 열 수 있게 고른 필터를 기억함 (2026-10-18)
+const NOTES_FILTER_KEY = `${STORAGE_PREFIX}-notes-filter`;
+try {
+  const f = localStorage.getItem(NOTES_FILTER_KEY);
+  if(["all", "planned", "visited", "route"].includes(f)) notesVisitFilter = f;
+} catch {}
+
+// 검색: 부스명·부스 번호·부스원 이름·X 아이디에 검색어가 들어 있으면 맞음 (목록과 배치도 강조에 같이 씀)
+function boothMatchesQuery(b, query){
+  const q = query.toLowerCase();
+  return b.name.toLowerCase().includes(q) ||
+    b.id.toLowerCase().includes(q) ||
+    (b.members || []).some(m =>
+      m.name.toLowerCase().includes(q) ||
+      (m.twitter || "").toLowerCase().includes(q)
+    );
+}
+
+// 부스가 있는 홀 이름(문구 키). C구역은 주성홀, A·B구역은 그랜드볼룸
+function boothHallKey(booth){
+  return booth.block === "C" ? "mapHallJusung" : "mapHallGrand";
+}
+
+// "내 부스": 메모·방문 상태·우선순위·예산·쓴 돈·선입금 중 하나라도 적어 둔 부스
+function myBoothIds(){
+  return new Set([notes, visitStatus, priority, budgets, spent, preorders].flatMap(o => Object.keys(o)));
+}
+
+/* ---------- 최근 갱신 탭: 내 부스만 보기 · NEW 표시 ----------
+   마지막으로 최근 갱신 탭에서 본 가장 새 글의 시각을 저장해 두고, 그보다 새 글이 올라온 부스 카드에 NEW,
+   탭 버튼에 점(•)을 붙임. 탭에 들어온 순간의 값(updatesSeenBaseline)을 기준으로 해서, 보는 동안 NEW 가 사라지지 않음.
+   처음 쓰는 사람은 기준 값이 없어서 NEW 없이 시작함.
+--------------------------------------------------------------- */
+const UPDATES_MINE_KEY = `${STORAGE_PREFIX}-updates-mine`;
+const UPDATES_SEEN_KEY = `${STORAGE_PREFIX}-updates-seen-at`;
+let updatesMineOnly = false;
+try { updatesMineOnly = localStorage.getItem(UPDATES_MINE_KEY) === "1"; } catch {}
+let updatesSeenBaseline = null;
+
+function setUpdatesMineOnly(on){
+  updatesMineOnly = on;
+  try { localStorage.setItem(UPDATES_MINE_KEY, on ? "1" : "0"); } catch {}
+  renderGrid();
+}
+function readUpdatesSeenAt(){
+  try { return Number(localStorage.getItem(UPDATES_SEEN_KEY)) || 0; } catch { return 0; }
+}
+function newestApprovedPostTime(){
+  return Object.keys(approvedBoothPosts).reduce((max, id) =>
+    approvedBoothPosts[id] && approvedBoothPosts[id].booth ? Math.max(max, postTime(id)) : max, 0);
+}
+function markUpdatesSeen(){
+  const newest = newestApprovedPostTime();
+  if(newest <= readUpdatesSeenAt()) return;
+  try { localStorage.setItem(UPDATES_SEEN_KEY, String(newest)); } catch {}
+  renderNav();
+}
+// 탭 버튼의 점: 마지막으로 본 뒤 새 글이 올라왔는지 (한 번도 안 봤으면 표시 안 함)
+function hasUnseenUpdates(){
+  const seen = readUpdatesSeenAt();
+  return !!seen && newestApprovedPostTime() > seen;
+}
+
+// 배치도에서 강조할 부스("📍 배치도에서 보기"로 넘어왔을 때)
+let mapLocateId = null;
 
 // 부스 목록을 우선순위(1→2→3→없음) 순으로 정렬할지 여부 (새로고침해도 유지)
 const SORT_PRIORITY_KEY = `${STORAGE_PREFIX}-sort-priority`;
@@ -1876,6 +2010,30 @@ const I18N = {
     filterPlanned: "🟡 방문 예정",
     filterVisited: "🟢 방문 완료",
     budgetTotal: "총 예산: {amount}",
+    filterRoute: "🧭 동선 보기",
+    routeCount: "방문 완료 {done} / {n}곳 · 남은 곳 {left}",
+    routeGroupLeft: "남은 곳 {left} / {n}",
+    routeGroupDone: "✅ {n}곳 모두 다녀옴",
+    emptyRoute: "방문 예정 부스가 없어요. 부스를 열어 \"🟡 방문 예정\"을 눌러 두면 여기에 구역별로 모여요.",
+    quickVisitDone: "✓ 방문 완료",
+    quickVisitUndo: "↩ 되돌리기",
+    quickVisitUndoLabel: "방문 예정으로 되돌리기",
+    moneyLineBudgetOnly: "예산 {budget}",
+    spentLabel: "쓴 돈 (원)",
+    spentTotal: "예산 {budget} · 쓴 돈 {spent} · 남은 예산 {left}",
+    spentTotalOver: "예산 {budget} · 쓴 돈 {spent} · {left} 초과",
+    spentTotalOnly: "쓴 돈 합계: {spent}",
+    moneyLine: "💸 {spent} / 예산 {budget}",
+    moneyLineSpentOnly: "💸 쓴 돈 {spent}",
+    updatesFilterMine: "⭐ 내 부스만",
+    updatesCountMine: "내 부스 중 상품 정보가 올라온 부스 {n}개 (최근 순)",
+    emptyUpdatesMine: "메모·방문 예정·우선순위·예산·선입금을 적어 둔 부스 중에 상품 정보가 올라온 부스가 아직 없어요.",
+    updatesNewDot: "새 글 있음",
+    mapLocateBtn: "📍 배치도에서 보기 ({hall} {zone})",
+    mapLocateOpen: "부스 정보 열기",
+    mapLocateClear: "강조 끄기",
+    mapSearchCount: "검색한 부스 {n}개를 배치도에 굵은 테두리로 표시했어요",
+    mapSearchOutside: "다른 구역에도 검색 결과가 {n}개 있어요. \"전체\"를 누르면 모두 볼 수 있어요.",
     infoBtn: "🎪 행사 안내",
     infoHint: "행사 일정 · 행사장 약도 · 날씨 정보",
     infoTransitTitle: "📍 행사 일정 · 장소",
@@ -1907,8 +2065,8 @@ const I18N = {
     savedStatus: "저장됨",
     deletedStatus: "삭제됨",
     resetBtn: "🗑️ 데이터 초기화",
-    resetConfirm: "메모, 방문 상태, 예산, 우선순위, 선입금 정보 등 저장된 모든 데이터가 삭제됩니다. 이 작업은 되돌릴 수 없습니다. 계속할까요?",
-    resetConfirmCloud: "Google 계정으로 로그인되어 있어서 이 기기뿐 아니라 클라우드에 저장된 데이터(다른 기기에서 보던 메모·방문 상태·예산·우선순위·선입금)도 모두 삭제됩니다. 이 작업은 되돌릴 수 없습니다. 계속할까요?",
+    resetConfirm: "메모, 방문 상태, 예산·쓴 돈, 우선순위, 선입금 정보 등 저장된 모든 데이터가 삭제됩니다. 이 작업은 되돌릴 수 없습니다. 계속할까요?",
+    resetConfirmCloud: "Google 계정으로 로그인되어 있어서 이 기기뿐 아니라 클라우드에 저장된 데이터(다른 기기에서 보던 메모·방문 상태·예산·쓴 돈·우선순위·선입금)도 모두 삭제됩니다. 이 작업은 되돌릴 수 없습니다. 계속할까요?",
     resetCloudFail: "클라우드 데이터를 지우지 못해서 초기화를 멈췄습니다. 인터넷 연결을 확인한 뒤 다시 시도해주세요.",
     resetDone: "모든 데이터가 삭제되었습니다.",
     loginBtn: "🔑 Google로 로그인",
@@ -2007,6 +2165,30 @@ const I18N = {
     filterPlanned: "🟡 Plan to Visit",
     filterVisited: "🟢 Visited",
     budgetTotal: "Total budget: {amount}",
+    filterRoute: "🧭 Route",
+    routeCount: "Visited {done} / {n} · {left} to go",
+    routeGroupLeft: "{left} / {n} to go",
+    routeGroupDone: "✅ All {n} visited",
+    emptyRoute: "No booths planned yet. Open a booth and tap \"🟡 Plan to Visit\" to gather them here by zone.",
+    quickVisitDone: "✓ Visited",
+    quickVisitUndo: "↩ Undo",
+    quickVisitUndoLabel: "Move back to planned",
+    moneyLineBudgetOnly: "Budget {budget}",
+    spentLabel: "Spent (KRW)",
+    spentTotal: "Budget {budget} · Spent {spent} · {left} left",
+    spentTotalOver: "Budget {budget} · Spent {spent} · {left} over",
+    spentTotalOnly: "Total spent: {spent}",
+    moneyLine: "💸 {spent} / budget {budget}",
+    moneyLineSpentOnly: "💸 Spent {spent}",
+    updatesFilterMine: "⭐ My booths",
+    updatesCountMine: "{n} of my booths with product info (newest first)",
+    emptyUpdatesMine: "None of the booths you've marked (note, plan, priority, budget, pre-order) have product info yet.",
+    updatesNewDot: "New posts",
+    mapLocateBtn: "📍 Show on map ({hall} {zone})",
+    mapLocateOpen: "Booth info",
+    mapLocateClear: "Clear highlight",
+    mapSearchCount: "{n} matching booths are outlined on the map",
+    mapSearchOutside: "{n} more results are in other zones. Tap \"All\" to see them.",
     infoBtn: "🎪 Event Info",
     infoHint: "Schedule · Venue map · Weather",
     infoTransitTitle: "📍 Dates & Venue",
@@ -2038,8 +2220,8 @@ const I18N = {
     savedStatus: "Saved",
     deletedStatus: "Deleted",
     resetBtn: "🗑️ Reset Data",
-    resetConfirm: "This will delete all your saved data — notes, visit status, budget, priority, and pre-orders. This cannot be undone. Continue?",
-    resetConfirmCloud: "You're signed in with Google, so this will also delete the data saved in the cloud (notes, visit status, budget, priority, and pre-orders on your other devices). This cannot be undone. Continue?",
+    resetConfirm: "This will delete all your saved data — notes, visit status, budget and spending, priority, and pre-orders. This cannot be undone. Continue?",
+    resetConfirmCloud: "You're signed in with Google, so this will also delete the data saved in the cloud (notes, visit status, budget and spending, priority, and pre-orders on your other devices). This cannot be undone. Continue?",
     resetCloudFail: "Couldn't delete the cloud data, so the reset was stopped. Please check your internet connection and try again.",
     resetDone: "All data has been deleted.",
     loginBtn: "🔑 Sign in with Google",
@@ -2138,6 +2320,30 @@ const I18N = {
     filterPlanned: "🟡 訪問予定",
     filterVisited: "🟢 訪問済み",
     budgetTotal: "総予算：{amount}",
+    filterRoute: "🧭 ルート",
+    routeCount: "訪問済み {done} / {n}か所 · 残り {left}",
+    routeGroupLeft: "残り {left} / {n}",
+    routeGroupDone: "✅ {n}か所すべて訪問済み",
+    emptyRoute: "訪問予定のブースがありません。ブースを開いて「🟡 訪問予定」を押すと、ここにエリア別にまとまります。",
+    quickVisitDone: "✓ 訪問済み",
+    quickVisitUndo: "↩ 戻す",
+    quickVisitUndoLabel: "訪問予定に戻す",
+    moneyLineBudgetOnly: "予算 {budget}",
+    spentLabel: "使った金額（ウォン）",
+    spentTotal: "予算 {budget} · 使った金額 {spent} · 残り {left}",
+    spentTotalOver: "予算 {budget} · 使った金額 {spent} · {left} 超過",
+    spentTotalOnly: "使った金額の合計：{spent}",
+    moneyLine: "💸 {spent} / 予算 {budget}",
+    moneyLineSpentOnly: "💸 使った金額 {spent}",
+    updatesFilterMine: "⭐ 自分のブースのみ",
+    updatesCountMine: "自分のブースのうち商品情報があるブース {n}件（新しい順）",
+    emptyUpdatesMine: "メモ・訪問予定・優先度・予算・事前通販を登録したブースに、まだ商品情報はありません。",
+    updatesNewDot: "新しい投稿あり",
+    mapLocateBtn: "📍 配置図で見る（{hall} {zone}）",
+    mapLocateOpen: "ブース情報",
+    mapLocateClear: "強調を消す",
+    mapSearchCount: "検索したブース {n}件を配置図に太枠で表示しています",
+    mapSearchOutside: "ほかのエリアにも検索結果が {n}件あります。「すべて」で全体を表示できます。",
     infoBtn: "🎪 イベント案内",
     infoHint: "日程・会場地図・天気",
     infoTransitTitle: "📍 日程・会場",
@@ -2169,8 +2375,8 @@ const I18N = {
     savedStatus: "保存済み",
     deletedStatus: "削除済み",
     resetBtn: "🗑️ データを初期化",
-    resetConfirm: "メモ・訪問状態・予算・優先度・事前通販情報など保存されたすべてのデータが削除されます。この操作は元に戻せません。続行しますか？",
-    resetConfirmCloud: "Googleでログイン中のため、この端末だけでなくクラウドに保存されたデータ（他の端末で見ていたメモ・訪問状態・予算・優先度・事前通販）もすべて削除されます。この操作は元に戻せません。続行しますか？",
+    resetConfirm: "メモ・訪問状態・予算・使った金額・優先度・事前通販情報など保存されたすべてのデータが削除されます。この操作は元に戻せません。続行しますか？",
+    resetConfirmCloud: "Googleでログイン中のため、この端末だけでなくクラウドに保存されたデータ（他の端末で見ていたメモ・訪問状態・予算・使った金額・優先度・事前通販）もすべて削除されます。この操作は元に戻せません。続行しますか？",
     resetCloudFail: "クラウドのデータを削除できなかったため、初期化を中止しました。インターネット接続を確認してもう一度お試しください。",
     resetDone: "すべてのデータが削除されました。",
     loginBtn: "🔑 Googleでログイン",
@@ -2229,6 +2435,9 @@ function applyStaticTexts(){
   document.querySelector('#visitFilter button[data-filter="all"]').textContent = t("filterAll");
   document.querySelector('#visitFilter button[data-filter="planned"]').textContent = t("filterPlanned");
   document.querySelector('#visitFilter button[data-filter="visited"]').textContent = t("filterVisited");
+  document.querySelector('#visitFilter button[data-filter="route"]').textContent = t("filterRoute");
+  document.querySelector('#updatesFilter button[data-filter="all"]').textContent = t("filterAll");
+  document.querySelector('#updatesFilter button[data-filter="mine"]').textContent = t("updatesFilterMine");
   document.getElementById("sortPriorityBtn").textContent = t("sortPriorityBtn");
   updateBudgetTotalDisplay();
   updateAuthUI();
@@ -2606,13 +2815,56 @@ function getTotalBudget(){
   return Object.values(budgets).reduce((sum, v) => sum + v, 0);
 }
 
+/* ---------- 부스별 쓴 돈 ----------
+   예산(계획)과 따로, 행사장에서 실제로 쓴 금액. { "A01": 12000, ... } 형태, 단위는 원 (2026-10-18 추가).
+   메모 탭 위에 예산 합계 · 쓴 돈 합계 · 남은 예산을 보여줌. 동기화·초기화에도 포함.
+------------------------------------------------ */
+const SPENT_KEY = `${STORAGE_PREFIX}-spent`;
+function loadSpent(){
+  try {
+    return JSON.parse(localStorage.getItem(SPENT_KEY)) || {};
+  } catch {
+    return {};
+  }
+}
+function saveSpent(){
+  try { localStorage.setItem(SPENT_KEY, JSON.stringify(spent)); } catch {}
+}
+let spent = loadSpent();
+if(migrateMergedBoothIds(spent)) saveSpent();
+
+function getSpent(boothId){
+  return spent[boothId] || 0;
+}
+function setSpent(boothId, amount){
+  const n = Math.max(0, Math.floor(Number(amount) || 0));
+  if(n > 0) spent[boothId] = n;
+  else delete spent[boothId];
+  saveSpent();
+}
+function getTotalSpent(){
+  return Object.values(spent).reduce((sum, v) => sum + v, 0);
+}
+
 function formatWon(amount){
   return `₩${amount.toLocaleString()}`;
 }
 
+// 메모 탭 위 합계: 예산만 적었으면 "총 예산", 쓴 돈도 적었으면 "예산 · 쓴 돈 · 남은 예산(또는 초과)"
 function updateBudgetTotalDisplay(){
   const el = document.getElementById("budgetTotal");
-  if(el) el.textContent = t("budgetTotal", { amount: formatWon(getTotalBudget()) });
+  if(!el) return;
+  const budget = getTotalBudget(), used = getTotalSpent();
+  el.classList.toggle("over", !!budget && used > budget);
+  if(!used){
+    el.textContent = t("budgetTotal", { amount: formatWon(budget) });
+  } else if(!budget){
+    el.textContent = t("spentTotalOnly", { spent: formatWon(used) });
+  } else {
+    el.textContent = t(used > budget ? "spentTotalOver" : "spentTotal", {
+      budget: formatWon(budget), spent: formatWon(used), left: formatWon(Math.abs(budget - used)),
+    });
+  }
 }
 
 /* ---------- 구글 로그인 & 기기 간 동기화 ----------
@@ -2694,7 +2946,7 @@ function mergeField(local, cloud){
 function pushToCloud(uid){
   return firebase.firestore().collection("users").doc(uid).set({
     [STORAGE_PREFIX]: {
-      notes, visitStatus, budgets, priority, preorders,
+      notes, visitStatus, budgets, spent, priority, preorders,
       updatedAt: new Date().toISOString(),
     },
   });
@@ -2706,12 +2958,15 @@ function pullAndMergeFromCloud(uid){
     notes = mergeField(notes, cloud.notes);
     visitStatus = mergeField(visitStatus, cloud.visitStatus);
     budgets = mergeField(budgets, cloud.budgets);
+    spent = mergeField(spent, cloud.spent);
     priority = mergeField(priority, cloud.priority);
     preorders = mergeField(preorders, cloud.preorders);
     migrateAllMergedBoothIds();
+    migrateMergedBoothIds(spent);
     saveNotes();
     saveVisitStatus();
     saveBudgets();
+    saveSpent();
     savePriority();
     savePreorders();
     renderNav();
@@ -2870,7 +3125,7 @@ document.getElementById("confirmBackdrop").addEventListener("click", (e) => {
 ------------------------------------------------- */
 async function resetAllData(){
   const signedIn = !!(firebaseReady && currentUser);
-  const hasLocal = Object.keys(notes).length || Object.keys(visitStatus).length || Object.keys(budgets).length || Object.keys(priority).length || Object.keys(preorders).length;
+  const hasLocal = Object.keys(notes).length || Object.keys(visitStatus).length || Object.keys(budgets).length || Object.keys(spent).length || Object.keys(priority).length || Object.keys(preorders).length;
   if(!hasLocal && !signedIn) return;
   const confirmed = await showConfirmDialog(t(signedIn ? "resetConfirmCloud" : "resetConfirm"), t("delete"));
   if(!confirmed) return;
@@ -2879,7 +3134,7 @@ async function resetAllData(){
     try {
       await firebase.firestore().collection("users").doc(currentUser.uid).set({
         [STORAGE_PREFIX]: {
-          notes: {}, visitStatus: {}, budgets: {}, priority: {}, preorders: {},
+          notes: {}, visitStatus: {}, budgets: {}, spent: {}, priority: {}, preorders: {},
           updatedAt: new Date().toISOString(),
         },
       });
@@ -2892,11 +3147,13 @@ async function resetAllData(){
   notes = {};
   visitStatus = {};
   budgets = {};
+  spent = {};
   priority = {};
   preorders = {};
   saveNotes();
   saveVisitStatus();
   saveBudgets();
+  saveSpent();
   savePriority();
   savePreorders();
   renderNav();
@@ -3144,6 +3401,13 @@ function renderNav(){
 
   const updatesBtn = document.createElement("button");
   updatesBtn.textContent = t("updatesBtn");
+  // 마지막으로 본 뒤 새 상품 글이 올라왔으면 점 표시
+  if(hasUnseenUpdates() && currentRow !== "UPDATES"){
+    const dot = document.createElement("span");
+    dot.className = "tab-new-dot";
+    dot.setAttribute("aria-label", t("updatesNewDot"));
+    updatesBtn.appendChild(dot);
+  }
   if(currentRow === "UPDATES") updatesBtn.classList.add("active");
   updatesBtn.addEventListener("click", () => goToRow("UPDATES"));
   tabNav.appendChild(updatesBtn);
@@ -3262,6 +3526,7 @@ function loadBoothPostsDoc(){
       } catch {}
       approvedBoothPosts = approved;
       if(currentRow === "UPDATES") renderGrid();
+      else renderNav();   // 최근 갱신 탭 버튼의 새 글 점
       return { approved, official };
     })
     .catch(() => {
@@ -3429,6 +3694,11 @@ function renderGrid(){
   emptyState.style.display = "none";
 
   if(isMapView || isInfoView) closeInlineDetail();
+  // 최근 갱신 탭을 떠나면 다음에 들어올 때 다시 "마지막으로 본 시각"을 기준으로 NEW 를 계산
+  if(currentRow !== "UPDATES") updatesSeenBaseline = null;
+  // 배치도 위치 찾기 강조는 배치도 탭을 떠나면 끝냄
+  if(!isMapView) mapLocateId = null;
+  document.getElementById("updatesExtra").style.display = currentRow === "UPDATES" ? "flex" : "none";
 
   if(isTimetableView){
     document.getElementById("currentLetter").textContent = "🕒";
@@ -3450,7 +3720,9 @@ function renderGrid(){
 
   if(isMapView){
     document.getElementById("currentLetter").textContent = "🗺️";
-    document.getElementById("currentCount").textContent = t("mapHint");
+    document.getElementById("currentCount").textContent = currentQuery
+      ? t("mapSearchCount", { n: BOOTHS.filter(b => boothMatchesQuery(b, currentQuery)).length })
+      : t("mapHint");
     document.getElementById("notesExtra").style.display = "none";
     document.getElementById("sortPriorityBtn").style.display = "none";
     renderMapView();
@@ -3465,6 +3737,7 @@ function renderGrid(){
   const isAllView = currentRow === "ALL";
   const isUpdatesView = currentRow === "UPDATES";
   const isPreorderView = currentRow === "PREORDER";
+  const isRouteView = isNotesView && notesVisitFilter === "route";
   // 최근 갱신 탭은 글이 올라온 순서가 중요해서 우선순위 정렬을 쓰지 않음
   if(isUpdatesView) document.getElementById("sortPriorityBtn").style.display = "none";
   document.getElementById("currentLetter").textContent = isNotesView ? "📝" : isPreorderView ? "💳" : isAllView ? "📋" : isUpdatesView ? "🆕" : currentRow;
@@ -3477,15 +3750,29 @@ function renderGrid(){
     // 처음 열 때는 저장해 둔 목록으로 그리고, Firestore 에서 새로 받으면 다시 그림
     loadApprovedBoothPosts();
     list = recentlyUpdatedBooths().map(({ booth, time }) => { updatedAt[booth.id] = time; return booth; });
+    // 처음 들어왔을 때의 "마지막으로 본 글 시각"보다 새 글이 있는 부스에 NEW 를 붙이고, 지금 본 글까지를 본 것으로 저장
+    if(updatesSeenBaseline === null) updatesSeenBaseline = readUpdatesSeenAt();
+    markUpdatesSeen();
+    if(updatesMineOnly){
+      const mine = myBoothIds();
+      list = list.filter(b => mine.has(b.id));
+    }
+    document.querySelectorAll("#updatesFilter button").forEach(btn => {
+      btn.classList.toggle("active", (btn.dataset.filter === "mine") === updatesMineOnly);
+    });
   } else if(isNotesView){
     const trackedIds = new Set([
       ...Object.keys(notes),
       ...Object.keys(visitStatus),
       ...Object.keys(budgets),
+      ...Object.keys(spent),
       ...Object.keys(priority),
     ]);
     list = BOOTHS.filter(b => trackedIds.has(b.id));
-    if(notesVisitFilter !== "all"){
+    if(isRouteView){
+      // 동선 보기는 그날 돌 곳(방문 예정 + 이미 다녀온 곳)만
+      list = list.filter(b => getVisitStatus(b.id));
+    } else if(notesVisitFilter !== "all"){
       list = list.filter(b => getVisitStatus(b.id) === notesVisitFilter);
     }
     document.querySelectorAll("#visitFilter button").forEach(btn => {
@@ -3499,26 +3786,25 @@ function renderGrid(){
     list = byRow[currentRow] || [];
   }
 
-  if(currentQuery){
-    const q = currentQuery.toLowerCase();
-    list = list.filter(b =>
-      b.name.toLowerCase().includes(q) ||
-      b.id.toLowerCase().includes(q) ||
-      (b.members || []).some(m =>
-        m.name.toLowerCase().includes(q) ||
-        (m.twitter || "").toLowerCase().includes(q)
-      )
-    );
-  }
+  if(currentQuery) list = list.filter(b => boothMatchesQuery(b, currentQuery));
 
-  if(sortByPriority && !isUpdatesView){
+  if(isRouteView){
+    // 동선 보기: 구역(A·B·C)별로 묶고, 구역 안에서는 아직 안 간 부스를 번호 순으로 먼저, 다녀온 부스는 뒤로
+    list = list.slice().sort((a, b) =>
+      ALL_ROWS.indexOf(a.block) - ALL_ROWS.indexOf(b.block) ||
+      (getVisitStatus(a.id) === "visited") - (getVisitStatus(b.id) === "visited") ||
+      (sortByPriority ? (getPriority(a.id) || 4) - (getPriority(b.id) || 4) : 0) ||
+      BOOTHS.indexOf(a) - BOOTHS.indexOf(b));
+  } else if(sortByPriority && !isUpdatesView){
     // Array#sort는 안정 정렬이라, 같은 우선순위(혹은 둘 다 없음)끼리는 원래 순서가 유지됨
     list = list.slice().sort((a, b) => (getPriority(a.id) || 4) - (getPriority(b.id) || 4));
   }
 
-  document.getElementById("currentCount").textContent = isNotesView
-    ? t("notesCount", { n: list.length })
-    : isUpdatesView ? t("updatesCount", { n: list.length })
+  const visitedInList = list.filter(b => getVisitStatus(b.id) === "visited").length;
+  document.getElementById("currentCount").textContent = isRouteView
+    ? t("routeCount", { done: visitedInList, n: list.length, left: list.length - visitedInList })
+    : isNotesView ? t("notesCount", { n: list.length })
+    : isUpdatesView ? t(updatesMineOnly ? "updatesCountMine" : "updatesCount", { n: list.length })
     : isPreorderView ? t("preorderCount", {
         n: list.length,
         done: list.filter(b => getPreorder(b.id).received).length,
@@ -3526,13 +3812,27 @@ function renderGrid(){
       })
     : t("circleCount", { n: list.length });
   document.getElementById("emptyState").style.display = list.length ? "none" : "block";
-  document.getElementById("emptyState").textContent = isNotesView
-    ? t("emptyNotes")
+  document.getElementById("emptyState").textContent = isRouteView && !currentQuery
+    ? t("emptyRoute")
+    : isNotesView ? t("emptyNotes")
+    : isUpdatesView && updatesMineOnly && !currentQuery ? t("emptyUpdatesMine")
     : isUpdatesView && !currentQuery ? t("emptyUpdates")
     : isPreorderView && !currentQuery ? t("emptyPreorder")
     : t("emptyDefault");
 
+  let lastGroup = null;
   list.forEach(booth => {
+    // 동선 보기: 구역이 바뀔 때마다 "A구역 · 그랜드볼룸  남은 n곳" 머리줄
+    if(isRouteView && booth.block !== lastGroup){
+      lastGroup = booth.block;
+      const inZone = list.filter(b => b.block === booth.block);
+      const left = inZone.filter(b => getVisitStatus(b.id) !== "visited").length;
+      const head = document.createElement("div");
+      head.className = "route-group-head";
+      head.innerHTML = `<strong>${escapeHtml(t("mapZone" + booth.block))} · ${escapeHtml(t(boothHallKey(booth)))}</strong>` +
+        `<span>${escapeHtml(left ? t("routeGroupLeft", { left, n: inZone.length }) : t("routeGroupDone", { n: inZone.length }))}</span>`;
+      grid.appendChild(head);
+    }
     const card = document.createElement("div");
     const visitCls = getVisitStatus(booth.id) === "planned" ? " visit-planned"
       : getVisitStatus(booth.id) === "visited" ? " visit-visited" : "";
@@ -3594,7 +3894,46 @@ function renderGrid(){
       const updatedEl = document.createElement("div");
       updatedEl.className = "updated-on";
       updatedEl.textContent = t("updatedOn", { date: `${d.getMonth() + 1}/${d.getDate()}` });
+      if(updatesSeenBaseline && updatedAt[booth.id] > updatesSeenBaseline){
+        const newEl = document.createElement("span");
+        newEl.className = "new-badge";
+        newEl.textContent = "NEW";
+        updatedEl.prepend(newEl);
+      }
       card.appendChild(updatedEl);
+    }
+
+    // 메모 탭: "💸 ₩12,000 / 예산 ₩30,000"(쓴 돈이 있을 때) 또는 "예산 ₩30,000"
+    const boothSpent = getSpent(booth.id), boothBudget = getBudget(booth.id);
+    if(isNotesView && (boothSpent || boothBudget)){
+      const moneyEl = document.createElement("div");
+      moneyEl.className = "money-line" + (boothBudget && boothSpent > boothBudget ? " over" : "");
+      moneyEl.textContent = !boothSpent ? t("moneyLineBudgetOnly", { budget: formatWon(boothBudget) })
+        : boothBudget ? t("moneyLine", { spent: formatWon(boothSpent), budget: formatWon(boothBudget) })
+        : t("moneyLineSpentOnly", { spent: formatWon(boothSpent) });
+      card.appendChild(moneyEl);
+    }
+
+    // 메모 탭: 방문 예정·완료 부스는 카드에서 바로 방문 완료를 켜고 끌 수 있는 ✓ 버튼
+    if(isNotesView && getVisitStatus(booth.id)){
+      const visited = getVisitStatus(booth.id) === "visited";
+      const checkBtn = document.createElement("button");
+      checkBtn.type = "button";
+      checkBtn.className = "quick-visit-btn" + (visited ? " done" : "");
+      checkBtn.textContent = t(visited ? "quickVisitUndo" : "quickVisitDone");
+      checkBtn.setAttribute("aria-label", `${booth.id} ${t(visited ? "quickVisitUndoLabel" : "quickVisitDone")}`);
+      checkBtn.setAttribute("aria-pressed", visited ? "true" : "false");
+      checkBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        setVisitStatus(booth.id, visited ? "planned" : "visited");
+        // 같은 부스의 펼친 상세는 방문 버튼 표시가 달라지므로 닫음
+        if(inlineDetail && inlineDetail.boothId === booth.id) closeInlineDetail();
+        renderGrid();
+        // 다시 그린 뒤에도 키보드 포커스가 같은 부스의 버튼에 남도록
+        const again = document.querySelector(`#grid .booth[data-booth-id="${booth.id}"] .quick-visit-btn`);
+        if(again && e.detail === 0) again.focus();
+      });
+      card.appendChild(checkBtn);
     }
 
     if(isPreorderView){
@@ -3671,6 +4010,7 @@ function openInlineDetail(boothId, kind){
   const info = document.createElement("div");
   info.className = "booth-inline-info";
   info.appendChild(buildBoothTitle(booth));
+  info.appendChild(buildMapLocateBtn(booth));
   fillBoothInfo(info, booth, { withHead: false, withMembers: false });
   // 오른쪽 칸 맨 위: 부스원 목록을 가로로 나열(많으면 다음 줄로 넘어감)
   const actions = document.createElement("div");
@@ -3868,8 +4208,13 @@ function buildMapSvg(){
       : (getNote(booth.id) ? " has-note" : "") +
         (status === "planned" ? " visit-planned" : status === "visited" ? " visit-visited" : "") +
         (level ? ` priority-${level}` : ""));
+    // 위치 찾기·검색 강조: 찾는 부스는 굵은 테두리로, 검색 중이면 맞지 않는 부스는 흐리게
+    const located = mapLocateId === booth.id;
+    const hit = currentQuery && boothMatchesQuery(booth, currentQuery);
+    const markCls = (located ? " locate" : "") + (hit ? " search-hit" : "") +
+      (currentQuery && !hit && !located ? " dim" : "");
     const label = `${booth.id} ${booth.name}`;
-    const open = `<g class="${cls}" data-booth-id="${escapeHtml(booth.id)}" tabindex="0" role="button" aria-label="${escapeHtml(label)}"><title>${escapeHtml(label)}</title>`;
+    const open = `<g class="${cls}${markCls}" data-booth-id="${escapeHtml(booth.id)}" tabindex="0" role="button" aria-label="${escapeHtml(label)}"><title>${escapeHtml(label)}</title>`;
 
     // 붙어 있는 칸(위아래·좌우로 4px 이내)이면 한 도형으로 합침
     const touching = (a, b) =>
@@ -3949,6 +4294,37 @@ function renderMapView(){
     `<span><i class="swatch ring p1"></i><i class="swatch ring p2"></i><i class="swatch ring p3"></i>${escapeHtml(t("mapLegendPriority"))}</span>`;
   mapGrid.appendChild(legend);
 
+  // 위치 찾기로 넘어왔으면 "📍 [A03] GYM LIGER · 그랜드볼룸 A구역" 안내 줄(✕로 강조 끄기)
+  const locBooth = mapLocateId && BOOTHS.find(b => b.id === mapLocateId);
+  if(locBooth){
+    const note = document.createElement("div");
+    note.className = "map-locate-note";
+    note.innerHTML = `<span>📍 <strong>[${escapeHtml(locBooth.id)}] ${escapeHtml(locBooth.name)}</strong> · ` +
+      `${escapeHtml(t(boothHallKey(locBooth)))} ${escapeHtml(t("mapZone" + locBooth.block))}</span>`;
+    const openBtn = document.createElement("button");
+    openBtn.type = "button";
+    openBtn.textContent = t("mapLocateOpen");
+    openBtn.addEventListener("click", (e) => { e.stopPropagation(); openMapBooth(locBooth.id); });
+    const clearBtn = document.createElement("button");
+    clearBtn.type = "button";
+    clearBtn.className = "map-locate-clear";
+    clearBtn.textContent = "✕";
+    clearBtn.setAttribute("aria-label", t("mapLocateClear"));
+    clearBtn.addEventListener("click", (e) => { e.stopPropagation(); clearMapLocate(); });
+    note.append(openBtn, clearBtn);
+    mapGrid.appendChild(note);
+  }
+  // 검색 중인데 찾은 부스 일부가 지금 보는 구역 밖에 있으면 알려줌
+  if(currentQuery && mapZone !== "ALL"){
+    const outside = BOOTHS.filter(b => b.block !== mapZone && boothMatchesQuery(b, currentQuery)).length;
+    if(outside){
+      const note = document.createElement("div");
+      note.className = "map-search-note";
+      note.textContent = t("mapSearchOutside", { n: outside });
+      mapGrid.appendChild(note);
+    }
+  }
+
   const scroller = document.createElement("div");
   scroller.className = "venue-map-scroll";
   scroller.innerHTML = buildMapSvg();
@@ -3982,6 +4358,27 @@ function renderMapView(){
 }
 
 // 선입금 보기에서 선입금 부스를 누르면 선입금 창(메모 등), 그 밖에는 일반 부스 상세 창
+// 부스 상세의 "📍 배치도에서 보기": 창을 닫고 배치도 탭으로 가서 그 부스가 있는 구역을 크게 열고 칸을 깜빡여 강조함.
+// 고른 보기 방식(선입금 보기)은 그대로 두고, 구역만 그 부스 구역으로 바꿈(새로고침해도 유지되는 구역 선택과 같음).
+function showBoothOnMap(boothId){
+  const booth = BOOTHS.find(b => b.id === boothId);
+  if(!booth) return;
+  closeModal();
+  closeInlineDetail();
+  mapZone = MAP_ZONE_VIEWBOX[booth.block] ? booth.block : "ALL";
+  try { localStorage.setItem(MAP_ZONE_KEY, mapZone); } catch {}
+  mapLocateId = boothId;
+  goToRow("MAP");
+  const cell = document.querySelector(`#mapGrid .map-booth[data-booth-id="${boothId}"]`);
+  // 휴대폰처럼 배치도가 옆으로 밀리는 화면에서도 칸이 화면 가운데 오게
+  if(cell) setTimeout(() => cell.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" }), 50);
+}
+
+function clearMapLocate(){
+  mapLocateId = null;
+  renderMapView();
+}
+
 function openMapBooth(boothId){
   if(mapMode === "preorder" && getPreorder(boothId)) openPreorderModal(boothId);
   else openBoothModal(boothId);
@@ -4180,8 +4577,22 @@ function openBoothModalShell(booth){
 
   // 부스 번호·이름을 PC 펼침 상세처럼 "[A03] GYM LIGER" 큰 제목으로 (2026-10-05 사용자 요청)
   content.appendChild(buildBoothTitle(booth));
+  content.appendChild(buildMapLocateBtn(booth));
   fillBoothInfo(content, booth, { withHead: false });
   return content;
+}
+
+// "📍 배치도에서 보기 (그랜드볼룸 A구역)": 누르면 배치도 탭에서 그 부스 칸을 강조해서 보여줌
+function buildMapLocateBtn(booth){
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "map-locate-btn";
+  btn.textContent = t("mapLocateBtn", { hall: t(boothHallKey(booth)), zone: t("mapZone" + booth.block) });
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    showBoothOnMap(booth.id);
+  });
+  return btn;
 }
 
 // 부스 상세 큰 제목 "[A15] PPP2" (모달·PC 펼침 상세 공통, 글자 크기는 CSS에서 따로)
@@ -4312,17 +4723,34 @@ function fillBoothActions(content, booth){
 
   const budgetBox = document.createElement("div");
   budgetBox.className = "budget-box";
+  // 예산(계획)과 쓴 돈(행사장에서 실제로 쓴 금액)을 나란히
   budgetBox.innerHTML = `
-    <label>${escapeHtml(t("budgetLabel"))}</label>
-    <div class="budget-input-row">
-      <span class="yen">₩</span>
-      <input type="number" min="0" step="1000" inputmode="numeric" value="${Number(getBudget(booth.id)) || ""}" placeholder="0">
+    <div class="money-fields">
+      <div>
+        <label>${escapeHtml(t("budgetLabel"))}</label>
+        <div class="budget-input-row">
+          <span class="yen">₩</span>
+          <input type="number" data-money="budget" min="0" step="1000" inputmode="numeric" value="${Number(getBudget(booth.id)) || ""}" placeholder="0">
+        </div>
+      </div>
+      <div>
+        <label>${escapeHtml(t("spentLabel"))}</label>
+        <div class="budget-input-row">
+          <span class="yen">₩</span>
+          <input type="number" data-money="spent" min="0" step="1000" inputmode="numeric" value="${Number(getSpent(booth.id)) || ""}" placeholder="0">
+        </div>
+      </div>
     </div>
   `;
-  const budgetInput = budgetBox.querySelector("input");
-  budgetInput.addEventListener("input", () => {
-    setBudget(booth.id, budgetInput.value);
-    updateBudgetTotalDisplay();
+  budgetBox.querySelectorAll("input[data-money]").forEach(input => {
+    input.addEventListener("input", () => {
+      if(input.dataset.money === "spent") setSpent(booth.id, input.value);
+      else setBudget(booth.id, input.value);
+      updateBudgetTotalDisplay();
+      notesListStale = true;
+    });
+    // 칸에서 벗어나면 메모 탭 카드의 금액 줄도 맞춤
+    input.addEventListener("change", refreshNotesList);
   });
   content.appendChild(budgetBox);
 
@@ -4491,7 +4919,12 @@ document.getElementById("visitFilter").addEventListener("click", (e) => {
   const btn = e.target.closest("button[data-filter]");
   if(!btn) return;
   notesVisitFilter = btn.dataset.filter;
+  try { localStorage.setItem(NOTES_FILTER_KEY, notesVisitFilter); } catch {}
   renderGrid();
+});
+document.getElementById("updatesFilter").addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-filter]");
+  if(btn) setUpdatesMineOnly(btn.dataset.filter === "mine");
 });
 
 document.getElementById("sortPriorityBtn").addEventListener("click", toggleSortByPriority);
@@ -4549,6 +4982,10 @@ document.addEventListener("keydown", (e) => {
 applyStaticTexts();
 renderNav();
 renderGrid();
+
+// 최근 갱신 탭을 본 적이 있는 사람만, 탭 버튼에 새 글 점을 띄우려고 잠시 뒤 상품 글 목록을 받아 둠
+// (10분 캐시가 있어 Firestore 읽기는 10분에 한 번 이하. 한 번도 안 본 사람은 점을 쓰지 않으니 읽지 않음)
+if(readUpdatesSeenAt() && currentRow !== "UPDATES") setTimeout(loadBoothPostsDoc, 3000);
 
 // 처음 방문한 사람에게는 도움말 창을 한 번 열어 사이트 소개와 사용법 설명서 링크를 보여줌
 if(isFirstVisit) openHelpModal();
