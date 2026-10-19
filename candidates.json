@@ -1,6 +1,44 @@
 {
- "updatedAt": "2026-10-19T01:20:01+00:00",
+ "updatedAt": "2026-10-19T06:20:10+00:00",
  "posts": [
+  {
+   "id": "2112016412231471203",
+   "handle": "Hijiki_DaiXt",
+   "booths": [
+    "A02"
+   ],
+   "boothNames": [
+    "SEAWEED VILLAGE"
+   ],
+   "created": "2026-10-19T03:02:06+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-19T06:17:24+00:00"
+  },
+  {
+   "id": "2112015630178328597",
+   "handle": "Beuu0920",
+   "booths": [
+    "A16"
+   ],
+   "boothNames": [
+    "브 BEUU / FURPPET"
+   ],
+   "created": "2026-10-19T02:59:00+00:00",
+   "score": 6,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약",
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-19T06:16:23+00:00"
+  },
   {
    "id": "2111970331535761422",
    "handle": "Beuu0920",
