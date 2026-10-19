@@ -1,6 +1,42 @@
 {
- "updatedAt": "2026-10-19T06:20:10+00:00",
+ "updatedAt": "2026-10-19T13:30:22+00:00",
  "posts": [
+  {
+   "id": "2112106227035697456",
+   "handle": "Beuu0920",
+   "booths": [
+    "A16"
+   ],
+   "boothNames": [
+    "브 BEUU / FURPPET"
+   ],
+   "created": "2026-10-19T08:59:00+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-19T13:26:14+00:00"
+  },
+  {
+   "id": "2112104377075057073",
+   "handle": "musou_luf",
+   "booths": [
+    "A01"
+   ],
+   "boothNames": [
+    "BAURWOLF"
+   ],
+   "created": "2026-10-19T08:51:39+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-10-19T13:28:23+00:00"
+  },
   {
    "id": "2112016412231471203",
    "handle": "Hijiki_DaiXt",
