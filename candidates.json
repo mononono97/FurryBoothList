@@ -1,6 +1,24 @@
 {
- "updatedAt": "2026-10-22T18:37:36+00:00",
+ "updatedAt": "2026-10-23T01:34:56+00:00",
  "posts": [
+  {
+   "id": "2113419882939166840",
+   "handle": "Beuu0920",
+   "booths": [
+    "A16"
+   ],
+   "boothNames": [
+    "브 BEUU / FURPPET"
+   ],
+   "created": "2026-10-22T23:59:00+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-23T01:30:43+00:00"
+  },
   {
    "id": "2113272892968652800",
    "handle": "badpawco",
