@@ -1,6 +1,138 @@
 {
- "updatedAt": "2026-10-23T07:35:19+00:00",
+ "updatedAt": "2026-10-23T13:28:28+00:00",
  "posts": [
+  {
+   "id": "2113618595192422664",
+   "handle": "noway_jin",
+   "booths": [
+    "A30"
+   ],
+   "boothNames": [
+    "FURST SNOW"
+   ],
+   "created": "2026-10-23T13:08:36+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-23T13:27:17+00:00"
+  },
+  {
+   "id": "2113605475312996533",
+   "handle": "RiceCakeKain",
+   "booths": [
+    "B25"
+   ],
+   "boothNames": [
+    "도슭 한상전"
+   ],
+   "created": "2026-10-23T12:16:28+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "품목"
+   ],
+   "foundAt": "2026-10-23T13:27:40+00:00"
+  },
+  {
+   "id": "2113601912591560719",
+   "handle": "Hijiki_DaiXt",
+   "booths": [
+    "A02"
+   ],
+   "boothNames": [
+    "SEAWEED VILLAGE"
+   ],
+   "created": "2026-10-23T12:02:19+00:00",
+   "score": 8,
+   "sensitive": false,
+   "reasons": [
+    "인포",
+    "신간",
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-10-23T13:26:28+00:00"
+  },
+  {
+   "id": "2113588899633311754",
+   "handle": "Hijiki_DaiXt",
+   "booths": [
+    "A02"
+   ],
+   "boothNames": [
+    "SEAWEED VILLAGE"
+   ],
+   "created": "2026-10-23T11:10:36+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-10-23T13:26:28+00:00"
+  },
+  {
+   "id": "2113587488207815115",
+   "handle": "Hijiki_DaiXt",
+   "booths": [
+    "A02"
+   ],
+   "boothNames": [
+    "SEAWEED VILLAGE"
+   ],
+   "created": "2026-10-23T11:05:00+00:00",
+   "score": 9,
+   "sensitive": false,
+   "reasons": [
+    "신간",
+    "통판·선입금·예약",
+    "가격",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-23T13:26:28+00:00"
+  },
+  {
+   "id": "2113555778384613829",
+   "handle": "Beuu0920",
+   "booths": [
+    "A16"
+   ],
+   "boothNames": [
+    "브 BEUU / FURPPET"
+   ],
+   "created": "2026-10-23T08:59:00+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-23T13:25:49+00:00"
+  },
+  {
+   "id": "2113545784251777349",
+   "handle": "bigwhite_cat",
+   "booths": [
+    "C26"
+   ],
+   "boothNames": [
+    "뭐든 해봤습니다 털공장"
+   ],
+   "created": "2026-10-23T08:19:17+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-10-23T13:25:52+00:00"
+  },
   {
    "id": "2113504341307035802",
    "handle": "ideatami",
