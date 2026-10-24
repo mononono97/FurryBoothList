@@ -3622,6 +3622,9 @@ function watchPostsListScroll(list){
   update();
 }
 
+// 정상적으로 그려진 X 임베드는 글만 있어도 100px 를 넘음. 이보다 낮으면 빈 칸으로 봄
+const EMBED_MIN_HEIGHT = 60;
+
 function buildBoothPosts(booth, onShown){
   const box = document.createElement("div");
   box.className = "booth-posts";
@@ -3662,11 +3665,21 @@ function buildBoothPosts(booth, onShown){
       if(!box.isConnected) return;
       if(!window.twttr || !window.twttr.widgets){ setTimeout(start, 300); return; }
       embedSlots.forEach(([id, item, fallback]) => {
+        const toCard = () => {
+          clearTimeout(fallback);
+          if(item.isConnected) item.replaceWith(buildBoothPostCard(id, approved[id]));
+        };
         window.twttr.widgets.createTweet(id, item, { theme: currentTheme(), dnt: true, lang: currentLang, conversation: "none" })
           .then(el => {
             clearTimeout(fallback);
-            if(!el && item.isConnected) item.replaceWith(buildBoothPostCard(id, approved[id]));
-          }, () => clearTimeout(fallback));
+            if(!el){ toCard(); return; }
+            // 임베드가 "끝났다"고 해도 내용 없이 빈 칸(높이 0에 가까운 iframe)으로 남는 글이 있음 (2026-10-24 B-08).
+            // 잠시 뒤에도 화면에 그려진 칸이 너무 낮으면 링크 카드로 바꿈. 상세 창이 닫혀 안 그려진 칸은 건드리지 않음
+            setTimeout(() => {
+              if(!item.isConnected || !item.getClientRects().length) return;
+              if(item.getBoundingClientRect().height < EMBED_MIN_HEIGHT) toCard();
+            }, 3000);
+          }, toCard);
       });
     });
   });
