@@ -1,4 +1,4 @@
-"""부스 X 계정의 새 글 중 "상품 글 같아 보이는 글"과 공식 계정(@FURSTCLASS_KR)의 새 글을 모아
+"""부스장·부스원 X 계정의 새 글 중 "상품 글 같아 보이는 글"과 공식 계정(@FURSTCLASS_KR)의 새 글을 모아
 후보 목록(candidates.json)을 만드는 스크립트.
 
 GitHub Actions(.github/workflows/collect-booth-posts.yml)가 1시간마다 실행함.
@@ -13,13 +13,15 @@ X 약관상 X 밖에 글 사본을 두지 않는 편이 안전해서 (2026-10-05
     python3 tools/collect_booth_posts.py <후보 폴더> --dry-run  # 파일은 건드리지 않고 결과만 출력
 
 동작:
-1. index.html 의 BOOTHS 줄에서 부스장 X 아이디를 읽음
+1. index.html 의 BOOTHS 줄에서 부스장·부스원 X 아이디를 읽음
 2. 아이디마다 FxTwitter 공개 JSON(무료·키 없음)으로 최근 글 약 20개를 받음
    (클라우드 개발 환경에서는 FxTwitter 가 막혀 있어 GitHub Actions 에서만 동작함)
 3. 리트윗·답글·POST_SINCE 이전 글은 거르고, judge() 로 점수를 매겨(키워드 + 위치폼·구글폼 링크 + 이미지) MIN_SCORE 이상이면 후보로 추가
 4. 이미 후보에 있는 글은 다시 넣지 않음. 후보는 지우지 않고 계속 쌓임(반영/제외 여부는 Firestore 에 저장됨)
 5. 공식 계정은 키워드 판단 없이 리트윗·답글(번역 글)만 거르고 모두 후보로 넣음(official 목록).
    처음엔 OFFICIAL_SINCE 까지 페이지를 넘겨 가며 받고, 그 뒤로는 이미 아는 글이 나오면 멈춤
+6. 리트윗 전용 계정(@furstclassrt)이 리트윗한 글은 운영 쪽에서 이미 고른 상품 글이라 키워드 판단 없이 모두 후보로 넣음
+   (posts 목록, "via": "furstclassrt"). 글쓴이가 부스장·부스원이면 그 부스로, 아니면 부스 미지정으로 넣고 관리 화면에서 고름
 
 AI 판단을 붙일 때는 judge() 안에서 키워드 점수가 애매한 글만 Claude API 로 다시 물어보도록 바꾸면 됨.
 """
@@ -46,6 +48,11 @@ OFFICIAL_SINCE = datetime(2026, 6, 15, 15, tzinfo=timezone.utc)   # 2026-06-16 0
 OFFICIAL_MAX_PAGES = 8   # 페이지당 약 20개
 # 후보로도 넣지 않을 공식 글 (2026-10-02 사용자 요청: 8/21 게스트 관련 글)
 OFFICIAL_SKIP_IDS = {"2090723233784099271"}
+# 리트윗 전용 계정. 이 계정이 리트윗한 글은 부스 상품 글 후보로 넣음 (2026-10-24 사용자 요청)
+RT_HANDLE = "furstclassrt"
+RT_REASON = "RT 계정"
+RT_FIRST_PAGES = 8   # 처음 실행(이 계정 후보가 하나도 없을 때)에 넘겨 볼 페이지 수
+RT_MAX_PAGES = 3     # 그 뒤로는 새 글이 없는 페이지가 나오거나 이만큼 보면 멈춤
 # 후보 파일에 남기지 않는 값. 예전 후보 파일에 들어 있던 본문·이미지도 다음 실행 때 지움
 DROP_KEYS = ("text", "images", "quote")
 MIN_SCORE = 2
@@ -92,8 +99,10 @@ def handle_map(booths):
     protected = load_protected()
     result = {}
     for booth in booths:
-        # 부스장(booth.twitter) 계정 글만 봄. 부스원 계정까지 보면 후보가 너무 많아져서 뺌 (2026-10-04 사용자 요청)
-        for h in filter(None, [booth.get("twitter")]):
+        # 부스장(booth.twitter)과 부스원(members[].twitter) 계정 글을 모두 봄.
+        # 2026-10-04 에는 후보가 너무 많아 부스장만 봤지만, 빠지는 글이 많아 다시 부스원까지 넓힘 (2026-10-24 사용자 요청)
+        member_handles = [m.get("twitter") for m in booth.get("members") or []]
+        for h in filter(None, [booth.get("twitter"), *member_handles]):
             if h.lower() in protected:
                 continue
             entry = result.setdefault(h.lower(), (h, []))
@@ -161,6 +170,58 @@ def collect_official(known):
     return added
 
 
+def booth_lookup(booths):
+    """소문자 X 아이디 → [부스 id...]. 부스장 아이디를 먼저, 부스원 아이디는 그다음에 찾음."""
+    leaders, members = {}, {}
+    for booth in booths:
+        if booth.get("twitter"):
+            leaders.setdefault(booth["twitter"].lower(), []).append(booth["id"])
+        for m in booth.get("members") or []:
+            if m.get("twitter"):
+                ids = members.setdefault(m["twitter"].lower(), [])
+                if booth["id"] not in ids:
+                    ids.append(booth["id"])
+    return lambda handle: leaders.get(handle.lower()) or members.get(handle.lower()) or []
+
+
+def collect_retweets(known, booths_for, names, first_run):
+    """리트윗 전용 계정이 리트윗한 글 후보 목록과, 이미 후보에 있던 글 id 목록.
+    리트윗 순서(최신 리트윗이 위)로 오므로 원래 글의 작성 시각으로 멈추지 않고, 새 글이 없는 페이지에서 멈춤."""
+    added, already, cursor = [], [], None
+    for _ in range(RT_FIRST_PAGES if first_run else RT_MAX_PAGES):
+        page = fetch_page(RT_HANDLE, cursor)
+        results = page.get("results") or []
+        new_in_page = 0
+        for p in results:
+            pid = str(p.get("id") or "")
+            author = (p.get("author") or {}).get("screen_name") or ""
+            # 이 계정이 직접 쓴 글(공지·인용 글)은 넣지 않고 리트윗한 남의 글만 봄
+            if not pid or not author or author.lower() == RT_HANDLE:
+                continue
+            if pid in known:
+                already.append(pid)
+                continue
+            new_in_page += 1
+            known.add(pid)
+            booth_ids = booths_for(author)
+            added.append({
+                "id": pid,
+                "handle": author,
+                "booths": booth_ids,
+                "boothNames": [names.get(b, b) for b in booth_ids],
+                "created": created_at(p).isoformat(),
+                "via": RT_HANDLE,
+                "sensitive": bool(p.get("possibly_sensitive")),
+                "reasons": [RT_REASON],
+                "foundAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            })
+        cursor = (page.get("cursor") or {}).get("bottom")
+        if not results or not new_in_page or not cursor:
+            break
+        time.sleep(REQUEST_GAP_SECONDS)
+    return added, already
+
+
 def post_text(p):
     return (p.get("raw_text") or {}).get("text") or p.get("text") or ""
 
@@ -221,9 +282,10 @@ def collect(feed_dir, dry_run=False):
             stripped += 1
             for k in DROP_KEYS:
                 c.pop(k, None)
-    # 지금 보는 계정(부스장)이 아닌 글은 후보에서 뺌. 부스원 계정도 모으던 때(2026-10-04) 쌓인 후보 정리용
+    # 지금 보는 계정(부스장·부스원)이 아닌 글은 후보에서 뺌. 부스 명단에서 빠진 계정의 후보 정리용
     before = len(data["posts"])
-    data["posts"] = [p for p in data["posts"] if p.get("handle", "").lower() in handles]
+    # 리트윗 계정에서 온 후보(via)는 부스원·다른 사람 글이어도 남김
+    data["posts"] = [p for p in data["posts"] if p.get("handle", "").lower() in handles or p.get("via") == RT_HANDLE]
     removed = before - len(data["posts"])
     known = {p["id"] for p in data["posts"]}
 
@@ -269,18 +331,35 @@ def collect(feed_dir, dry_run=False):
         failed.append(f"{OFFICIAL_HANDLE}(공식): {e}")
         official_added = []
 
-    print(f"계정 {len(handles)}개 확인, 새 후보 {len(added)}개, 공식 글 새 후보 {len(official_added)}개, 실패 {len(failed)}개")
+    try:
+        first_run = not any(p.get("via") == RT_HANDLE for p in data["posts"])
+        rt_added, rt_already = collect_retweets(known, booth_lookup(booths), names, first_run)
+    except Exception as e:
+        failed.append(f"{RT_HANDLE}(RT): {e}")
+        rt_added, rt_already = [], []
+    # 부스장 글로 이미 후보에 있던 글을 리트윗했으면 그 후보에 "RT 계정" 표시를 붙임
+    rt_marked = 0
+    for c in data["posts"] + added:
+        if c["id"] in rt_already and RT_REASON not in c.get("reasons", []):
+            c["reasons"] = c.get("reasons", []) + [RT_REASON]
+            c["via"] = RT_HANDLE
+            rt_marked += 1
+    added += rt_added
+
+    print(f"계정 {len(handles)}개 확인, 새 후보 {len(added)}개(RT 계정 {len(rt_added)}개), 공식 글 새 후보 {len(official_added)}개, 실패 {len(failed)}개")
     for c in added:
-        print(f"  + {c['booths']} @{c['handle']} 점수 {c['score']} {c['reasons']} https://x.com/{c['handle']}/status/{c['id']}")
+        print(f"  + {c['booths'] or '부스 미지정'} @{c['handle']} 점수 {c.get('score', '-')} {c['reasons']} https://x.com/{c['handle']}/status/{c['id']}")
     for c in official_added:
         print(f"  + 공식 https://x.com/{c['handle']}/status/{c['id']}")
     for f in failed:
         print(f"  ! {f}")
+    if rt_marked:
+        print(f"  이미 후보에 있던 글 {rt_marked}개에 '{RT_REASON}' 표시")
     if removed:
-        print(f"  부스장이 아닌 계정의 후보 {removed}개 정리")
+        print(f"  부스 명단에 없는 계정의 후보 {removed}개 정리")
     if stripped:
         print(f"  후보 {stripped}개에서 본문·이미지 지움")
-    if dry_run or not (added or official_added or removed or stripped):
+    if dry_run or not (added or official_added or removed or stripped or rt_marked):
         return  # 새 후보가 없으면 파일을 그대로 둬서 쓸데없는 커밋이 생기지 않게 함
 
     # 최신 글이 위로 오도록 id(시간순으로 커지는 숫자) 기준 내림차순
