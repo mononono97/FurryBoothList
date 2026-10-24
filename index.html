@@ -2085,7 +2085,7 @@ const I18N = {
     infoTimetableSun: "일요일 11/29",
     infoTimetableAlt: "{day} 타임테이블 (우암홀·직지홀·주성홀·그랜드 볼룸 시간별 일정)",
     infoTimetableHint: "이미지를 누르면 크게 볼 수 있어요. 큰 화면에서 한 번 더 누르면 원래 크기로 확대돼요.",
-    infoTimetableNote: "타임테이블은 행사 준비 과정에서 일부 변동될 수 있습니다 (공식 안내 이미지 기준, 2026-10-13).",
+    infoTimetableNote: "공식 계정에서 확정 발표한 타임테이블입니다 (2026-10-24 확정).",
     infoWeatherLoading: "날씨 정보를 불러오는 중...",
     infoWeatherUnavailable: "{date} 날씨 예보는 아직 제공되지 않습니다 (행사 약 2주 전부터 표시됩니다).",
     infoWeatherError: "날씨 정보를 불러오지 못했습니다.",
@@ -2240,7 +2240,7 @@ const I18N = {
     infoTimetableSun: "Sun 11/29",
     infoTimetableAlt: "{day} timetable (hourly schedule for each hall)",
     infoTimetableHint: "Tap the image to enlarge it. Tap again in the enlarged view to see it at full size.",
-    infoTimetableNote: "The timetable may change as the event is prepared (based on the official image, 2026-10-13).",
+    infoTimetableNote: "This is the final timetable announced by the official account (confirmed 2026-10-24).",
     infoWeatherLoading: "Loading weather...",
     infoWeatherUnavailable: "The forecast for {date} isn't available yet (it appears roughly 2 weeks before the event).",
     infoWeatherError: "Failed to load weather data.",
@@ -2395,7 +2395,7 @@ const I18N = {
     infoTimetableSun: "日曜日 11/29",
     infoTimetableAlt: "{day}のタイムテーブル（各ホールの時間別スケジュール）",
     infoTimetableHint: "画像をタップすると拡大できます。拡大画面でもう一度タップすると原寸で表示します。",
-    infoTimetableNote: "タイムテーブルは準備の都合で一部変更される場合があります（公式画像基準、2026-10-13）。",
+    infoTimetableNote: "公式アカウントで発表された確定版タイムテーブルです（2026-10-24 確定）。",
     infoWeatherLoading: "天気情報を読み込み中...",
     infoWeatherUnavailable: "{date}の天気予報はまだ提供されていません（開催の約2週間前から表示されます）。",
     infoWeatherError: "天気情報を読み込めませんでした。",
@@ -4468,10 +4468,11 @@ function fetchEventWeather(){
   return weatherCache;
 }
 
-// 행사 시간표 탭의 타임테이블: 공식 토요일·일요일 타임테이블 이미지(timetable/*.webp, 2026-10-13 받음)
+// 행사 시간표 탭의 타임테이블: 공식 토요일·일요일 타임테이블 이미지(timetable/*.webp, 2026-10-24 확정본으로 교체)
+// 이미지를 같은 이름으로 바꿀 때는 ?v= 값도 바꿔야 예전 이미지를 기억해 둔 브라우저에도 새 이미지가 보임
 const TIMETABLE_DAYS = [
-  { key: "sat", date: "2026-11-28", label: "infoTimetableSat", src: "timetable/sat.webp" },
-  { key: "sun", date: "2026-11-29", label: "infoTimetableSun", src: "timetable/sun.webp" },
+  { key: "sat", date: "2026-11-28", label: "infoTimetableSat", src: "timetable/sat.webp?v=20261024" },
+  { key: "sun", date: "2026-11-29", label: "infoTimetableSun", src: "timetable/sun.webp?v=20261024" },
 ];
 // 처음 보여줄 요일: 행사 둘째 날(한국 시간 11/29)에는 일요일, 그 외에는 토요일. 고른 요일은 탭을 오가는 동안 유지
 let timetableDay = new Date(Date.now() + 9 * 3600000).toISOString().slice(0, 10) === "2026-11-29" ? "sun" : "sat";
