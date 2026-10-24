@@ -1180,6 +1180,22 @@
   .money-fields{ display:grid; grid-template-columns:minmax(0, 1fr) minmax(0, 1fr); gap:10px; }
   .money-fields > div{ min-width:0; }
   .booth-posts-title{ font-size:13px; font-weight:700; margin-bottom:2px; }
+  .booth-posts-count{ font-weight:600; color:var(--muted); }
+  /* 상품 정보 글 목록: 글이 많아도 상세 창이 끝없이 길어지지 않도록 정해진 높이 안에서 스크롤 (2026-10-24 사용자 요청).
+     height 가 아니라 max-height 라서 글이 1~2개라 넘치지 않으면 빈 공간도 스크롤바도 없음.
+     높이는 부스컷과 비슷하게 화면 높이에 맞춤. 아래에 글이 더 있으면 끝을 흐리게 해서 이어진다는 걸 보여 줌 */
+  .booth-posts-list{
+    max-height:min(640px, 60vh);
+    max-height:min(640px, 60dvh);
+    overflow-y:auto;
+    overscroll-behavior:contain;
+  }
+  .booth-posts-list.is-scrollable{ padding-right:6px; }
+  .booth-posts-list.more-below{
+    -webkit-mask-image:linear-gradient(to bottom, #000 calc(100% - 36px), transparent);
+    mask-image:linear-gradient(to bottom, #000 calc(100% - 36px), transparent);
+  }
+  .booth-inline .booth-posts-list{ max-height:max(320px, calc(100vh - 400px)); max-height:max(320px, calc(100dvh - 400px)); }
   .booth-post .twitter-tweet{ margin:6px 0 !important; }
   .booth-post-card{
     margin:6px 0;
@@ -3588,6 +3604,24 @@ function buildBoothPostCard(id, entry){
   return card;
 }
 
+// 글 목록이 넘쳐 스크롤이 생겼는지(is-scrollable), 아래에 더 남았는지(more-below) 표시.
+// 임베드는 늦게 그려지며 높이가 바뀌므로 크기 변화도 지켜봄
+function watchPostsListScroll(list){
+  const update = () => {
+    const scrollable = list.scrollHeight > list.clientHeight + 1;
+    list.classList.toggle("is-scrollable", scrollable);
+    list.classList.toggle("more-below", scrollable && list.scrollTop + list.clientHeight < list.scrollHeight - 4);
+  };
+  list.addEventListener("scroll", update, { passive: true });
+  if(window.ResizeObserver){
+    const ro = new ResizeObserver(update);
+    ro.observe(list);
+    new MutationObserver(() => list.childNodes.forEach(n => n.nodeType === 1 && ro.observe(n)))
+      .observe(list, { childList: true, subtree: true });
+  }
+  update();
+}
+
 function buildBoothPosts(booth, onShown){
   const box = document.createElement("div");
   box.className = "booth-posts";
@@ -3599,17 +3633,23 @@ function buildBoothPosts(booth, onShown){
     if(!ids.length || !box.isConnected) return;
     box.hidden = false;
     if(onShown) onShown();
-    box.innerHTML = `<div class="booth-posts-title">${escapeHtml(t("boothPostsTitle"))}</div>`;
+    box.innerHTML = `<div class="booth-posts-title">${escapeHtml(t("boothPostsTitle"))}` +
+      (ids.length > 1 ? ` <span class="booth-posts-count">(${ids.length})</span>` : "") + `</div>`;
+    // 글 목록은 정해진 높이 안에서 따로 스크롤 (제목은 밖에 두어 항상 보임)
+    const list = document.createElement("div");
+    list.className = "booth-posts-list";
+    box.appendChild(list);
+    watchPostsListScroll(list);
     // 순서를 지키려고 칸을 먼저 만들어 두고, 칸마다 따로 채움
     const embedSlots = [];
     ids.forEach(id => {
       if(approved[id].sensitive){
-        box.appendChild(buildBoothPostCard(id, approved[id]));
+        list.appendChild(buildBoothPostCard(id, approved[id]));
         return;
       }
       const item = document.createElement("div");
       item.className = "booth-post";
-      box.appendChild(item);
+      list.appendChild(item);
       // 그사이 민감한 글로 바뀌었거나 지워진 글은 X 가 "Not found" 만 보여주고 응답도 없음.
       // X 스크립트가 막힌 경우도 포함해, 12초 안에 임베드가 안 되면 링크 카드로 바꿈
       const fallback = setTimeout(() => {
