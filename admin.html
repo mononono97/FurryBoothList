@@ -173,7 +173,7 @@
 <script>
 /* ---------- 상품 글·행사 안내 글 관리 화면 ----------
    후보: GitHub Actions(tools/collect_booth_posts.py)가 x-post-feed 브랜치에 쌓는 candidates.json
-     posts:    부스장 계정의 상품 글 후보   official: 공식 계정(@FURSTCLASS_KR)의 글 후보
+     posts:    부스장·부스원 계정의 상품 글 후보 + RT 계정(@furstclassrt)이 리트윗한 글   official: 공식 계정(@FURSTCLASS_KR)의 글 후보
    결정: Firestore boothPosts/main 문서
      approved: { 글id: { booth: "A02", handle: "아이디", at: ISO 시각, sensitive } }  ← 사이트가 부스 상세에 표시
      excluded: { 글id: true }                                                      ← 상품 글 대기 목록에서 숨김
@@ -564,7 +564,7 @@ function buildPost(c){
   const url = `https://x.com/${encodeURIComponent(c.handle || "i")}/status/${c.id}`;
   el.innerHTML = `
     <div class="post-head">
-      <span class="booth-tag">${official ? "행사 안내" : escapeHtml((approvedBooth ? [approvedBooth] : boothIds).map(id => `${id} ${boothName(id)}`).join(" · "))}</span>
+      <span class="booth-tag">${official ? "행사 안내" : escapeHtml((approvedBooth ? [approvedBooth] : boothIds).map(id => `${id} ${boothName(id)}`).join(" · ") || "부스 미지정")}</span>
       ${c.handle ? `<span class="meta">@${escapeHtml(c.handle)}</span>` : ""}
       ${c.created ? `<span class="meta">${escapeHtml(fmtDate(c.created))}</span>` : ""}
       <span class="reasons">${(c.reasons || []).map(r => `<span>${escapeHtml(r)}</span>`).join("")}${c.sensitive ? `<span class="sensitive-tag">민감한 글</span>` : ""}</span>
@@ -586,19 +586,28 @@ function buildPost(c){
   };
 
   if(currentTab === "pending"){
-    // 부스원 한 명이 부스 두 곳에 있는 경우 어느 부스에 붙일지 고름
+    // 부스원 한 명이 부스 두 곳에 있는 경우 어느 부스에 붙일지 고름.
+    // RT 계정이 부스 명단에 없는 사람의 글을 리트윗한 경우(부스 미지정)는 전체 부스에서 고름
     let select = null;
-    if(boothIds.length > 1){
+    if(!official && boothIds.length !== 1){
+      const choices = boothIds.length ? booths.filter(b => boothIds.includes(b.id)) : booths;
       select = document.createElement("select");
-      select.innerHTML = boothIds.map(id => `<option value="${escapeHtml(id)}">${escapeHtml(id)} ${escapeHtml(boothName(id))}</option>`).join("");
+      select.innerHTML = (boothIds.length ? "" : `<option value="">부스 선택</option>`) +
+        choices.map(b => `<option value="${escapeHtml(b.id)}">${escapeHtml(b.id)} ${escapeHtml(b.name)}</option>`).join("");
       actions.appendChild(select);
     }
     const ok = document.createElement("button");
     ok.className = "ok";
     ok.textContent = "반영";
-    ok.addEventListener("click", () => run(() => official
-      ? approveOfficial([c.id])
-      : approve(c.id, select ? select.value : boothIds[0], c.handle, c)));
+    ok.addEventListener("click", () => {
+      const booth = select ? select.value : boothIds[0];
+      if(!official && !booth){
+        errBox.textContent = "어느 부스의 글인지 골라 주세요.";
+        errBox.hidden = false;
+        return;
+      }
+      run(() => official ? approveOfficial([c.id]) : approve(c.id, booth, c.handle, c));
+    });
     const no = document.createElement("button");
     no.textContent = "제외";
     no.addEventListener("click", () => run(() => exclude(c.id)));
