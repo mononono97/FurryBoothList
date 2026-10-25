@@ -53,6 +53,9 @@ RT_HANDLE = "furstclassrt"
 RT_REASON = "RT 계정"
 RT_FIRST_PAGES = 8   # 처음 실행(이 계정 후보가 하나도 없을 때)에 넘겨 볼 페이지 수
 RT_MAX_PAGES = 3     # 그 뒤로는 새 글이 없는 페이지가 나오거나 이만큼 보면 멈춤
+# 리트윗 계정 후보도 이 시각 이전 글은 넣지 않고, 이미 후보 파일에 있던 이전 글도 지움.
+# 9월 이전 글은 이전 행사 글이라서 (2026-10-25 사용자 요청: 3~4월 리트윗 글 126개가 대기에 쌓였음)
+RT_SINCE = datetime(2026, 8, 31, 15, tzinfo=timezone.utc)   # 2026-09-01 00:00 KST
 # 후보 파일에 남기지 않는 값. 예전 후보 파일에 들어 있던 본문·이미지도 다음 실행 때 지움
 DROP_KEYS = ("text", "images", "quote")
 MIN_SCORE = 2
@@ -201,6 +204,8 @@ def collect_retweets(known, booths_for, names, first_run):
             if pid in known:
                 already.append(pid)
                 continue
+            if created_at(p) < RT_SINCE:
+                continue
             new_in_page += 1
             known.add(pid)
             booth_ids = booths_for(author)
@@ -287,6 +292,10 @@ def collect(feed_dir, dry_run=False):
     # 리트윗 계정에서 온 후보(via)는 부스원·다른 사람 글이어도 남김
     data["posts"] = [p for p in data["posts"] if p.get("handle", "").lower() in handles or p.get("via") == RT_HANDLE]
     removed = before - len(data["posts"])
+    before = len(data["posts"])
+    data["posts"] = [p for p in data["posts"]
+                     if not p.get("created") or datetime.fromisoformat(p["created"]) >= RT_SINCE]
+    removed_old = before - len(data["posts"])
     known = {p["id"] for p in data["posts"]}
 
     added, failed = [], []
@@ -357,9 +366,11 @@ def collect(feed_dir, dry_run=False):
         print(f"  이미 후보에 있던 글 {rt_marked}개에 '{RT_REASON}' 표시")
     if removed:
         print(f"  부스 명단에 없는 계정의 후보 {removed}개 정리")
+    if removed_old:
+        print(f"  2026-09-01(KST) 이전 글 후보 {removed_old}개 정리")
     if stripped:
         print(f"  후보 {stripped}개에서 본문·이미지 지움")
-    if dry_run or not (added or official_added or removed or stripped or rt_marked):
+    if dry_run or not (added or official_added or removed or removed_old or stripped or rt_marked):
         return  # 새 후보가 없으면 파일을 그대로 둬서 쓸데없는 커밋이 생기지 않게 함
 
     # 최신 글이 위로 오도록 id(시간순으로 커지는 숫자) 기준 내림차순
