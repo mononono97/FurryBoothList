@@ -1,6 +1,96 @@
 {
- "updatedAt": "2026-10-26T06:20:55+00:00",
+ "updatedAt": "2026-10-26T13:10:40+00:00",
  "posts": [
+  {
+   "id": "2114683238887350529",
+   "handle": "Kokutou_bear",
+   "booths": [
+    "C19-20"
+   ],
+   "boothNames": [
+    "작전명: 에이전트 버니"
+   ],
+   "created": "2026-10-26T11:39:07+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-26T13:05:00+00:00"
+  },
+  {
+   "id": "2114637848985112672",
+   "handle": "ToriS6526",
+   "booths": [
+    "A19"
+   ],
+   "boothNames": [
+    "메이커 연합부스 - 아르모아"
+   ],
+   "created": "2026-10-26T08:38:45+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약",
+    "행사·부스"
+   ],
+   "foundAt": "2026-10-26T13:09:45+00:00"
+  },
+  {
+   "id": "2114632785801761273",
+   "handle": "pangpayaaaak",
+   "booths": [
+    "B31-32"
+   ],
+   "boothNames": [
+    "퍼리다이소 ~카지노점~"
+   ],
+   "created": "2026-10-26T08:18:38+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "행사·부스"
+   ],
+   "foundAt": "2026-10-26T13:07:30+00:00"
+  },
+  {
+   "id": "2114624906419990968",
+   "handle": "ToriS6526",
+   "booths": [
+    "A19"
+   ],
+   "boothNames": [
+    "메이커 연합부스 - 아르모아"
+   ],
+   "created": "2026-10-26T07:47:20+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-10-26T13:09:45+00:00"
+  },
+  {
+   "id": "2114619794200863010",
+   "handle": "GTDignified",
+   "booths": [
+    "B17"
+   ],
+   "boothNames": [
+    "STUDIO雄虎凛"
+   ],
+   "created": "2026-10-26T07:27:01+00:00",
+   "score": 2,
+   "sensitive": true,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-26T13:03:49+00:00"
+  },
   {
    "id": "2114567630900310427",
    "handle": "ToriS6526",
