@@ -1,6 +1,24 @@
 {
- "updatedAt": "2026-10-26T19:22:54+00:00",
+ "updatedAt": "2026-10-26T23:56:54+00:00",
  "posts": [
+  {
+   "id": "2114815067699265545",
+   "handle": "milang_313",
+   "booths": [
+    "C22"
+   ],
+   "boothNames": [
+    "늑랑 狼"
+   ],
+   "created": "2026-10-26T20:22:58+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-10-26T23:54:56+00:00"
+  },
   {
    "id": "2114751444926824473",
    "handle": "FurNemB",
@@ -4991,6 +5009,13 @@
   }
  ],
  "official": [
+  {
+   "id": "2114849553694539799",
+   "handle": "FURSTCLASS_KR",
+   "created": "2026-10-26T22:40:00+00:00",
+   "sensitive": false,
+   "foundAt": "2026-10-26T23:56:54+00:00"
+  },
   {
    "id": "2113783781190734316",
    "handle": "FURSTCLASS_KR",
