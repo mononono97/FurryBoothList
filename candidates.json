@@ -1,6 +1,82 @@
 {
- "updatedAt": "2026-10-26T13:10:40+00:00",
+ "updatedAt": "2026-10-26T19:22:54+00:00",
  "posts": [
+  {
+   "id": "2114751444926824473",
+   "handle": "FurNemB",
+   "booths": [
+    "C19-20"
+   ],
+   "boothNames": [
+    "작전명: 에이전트 버니"
+   ],
+   "created": "2026-10-26T16:10:09+00:00",
+   "score": 6,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약",
+    "굿즈·판매",
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-10-26T19:19:35+00:00"
+  },
+  {
+   "id": "2114744126755528750",
+   "handle": "GTDignified",
+   "booths": [
+    "B17"
+   ],
+   "boothNames": [
+    "STUDIO雄虎凛"
+   ],
+   "created": "2026-10-26T15:41:04+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "인포"
+   ],
+   "foundAt": "2026-10-26T19:19:48+00:00"
+  },
+  {
+   "id": "2114739361438969983",
+   "handle": "noway_jin",
+   "booths": [
+    "A30"
+   ],
+   "boothNames": [
+    "FURST SNOW"
+   ],
+   "created": "2026-10-26T15:22:08+00:00",
+   "score": 7,
+   "sensitive": false,
+   "reasons": [
+    "인포",
+    "통판·선입금·예약",
+    "행사·부스",
+    "이미지",
+    "RT 계정"
+   ],
+   "foundAt": "2026-10-26T19:21:25+00:00",
+   "via": "furstclassrt"
+  },
+  {
+   "id": "2114734836846108732",
+   "handle": "GTDignified",
+   "booths": [
+    "B17"
+   ],
+   "boothNames": [
+    "STUDIO雄虎凛"
+   ],
+   "created": "2026-10-26T15:04:09+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "인포"
+   ],
+   "foundAt": "2026-10-26T19:19:48+00:00"
+  },
   {
    "id": "2114683238887350529",
    "handle": "Kokutou_bear",
@@ -57,6 +133,19 @@
    "foundAt": "2026-10-26T13:07:30+00:00"
   },
   {
+   "id": "2114629149134586056",
+   "handle": "sunblazerVT",
+   "booths": [],
+   "boothNames": [],
+   "created": "2026-10-26T08:04:11+00:00",
+   "via": "furstclassrt",
+   "sensitive": false,
+   "reasons": [
+    "RT 계정"
+   ],
+   "foundAt": "2026-10-26T19:22:53+00:00"
+  },
+  {
    "id": "2114624906419990968",
    "handle": "ToriS6526",
    "booths": [
@@ -92,6 +181,23 @@
    "foundAt": "2026-10-26T13:03:49+00:00"
   },
   {
+   "id": "2114595619692335332",
+   "handle": "mofuaki_",
+   "booths": [
+    "A41"
+   ],
+   "boothNames": [
+    "MOFUMOFUYA"
+   ],
+   "created": "2026-10-26T05:50:57+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-10-26T19:21:05+00:00"
+  },
+  {
    "id": "2114567630900310427",
    "handle": "ToriS6526",
    "booths": [
@@ -107,9 +213,11 @@
     "통판·선입금·예약",
     "굿즈·판매",
     "행사·부스",
-    "이미지"
+    "이미지",
+    "RT 계정"
    ],
-   "foundAt": "2026-10-26T06:20:03+00:00"
+   "foundAt": "2026-10-26T06:20:03+00:00",
+   "via": "furstclassrt"
   },
   {
    "id": "2114556723218563489",
@@ -1735,6 +1843,19 @@
     "굿즈·판매"
    ],
    "foundAt": "2026-10-14T11:46:03+00:00"
+  },
+  {
+   "id": "2110328058016354585",
+   "handle": "tlzn01",
+   "booths": [],
+   "boothNames": [],
+   "created": "2026-10-14T11:13:11+00:00",
+   "via": "furstclassrt",
+   "sensitive": false,
+   "reasons": [
+    "RT 계정"
+   ],
+   "foundAt": "2026-10-26T19:22:53+00:00"
   },
   {
    "id": "2110294287707681049",
