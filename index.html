@@ -1179,7 +1179,26 @@
   /* 예산 · 쓴 돈 두 칸 */
   .money-fields{ display:grid; grid-template-columns:minmax(0, 1fr) minmax(0, 1fr); gap:10px; }
   .money-fields > div{ min-width:0; }
-  .booth-posts-title{ font-size:13px; font-weight:700; margin-bottom:2px; }
+  .booth-posts-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:2px; }
+  .booth-posts-title{ font-size:13px; font-weight:700; }
+  /* 숨긴 상품 정보 글: 제목 옆 "모두 보기" 토글, 글마다 위의 "숨기기/다시 보이기" (2026-10-26) */
+  .booth-posts-toggle, .booth-post-hide-btn{
+    appearance:none; border:1px solid var(--line); border-radius:999px;
+    background:transparent; color:var(--text-2);
+    font-size:11.5px; font-weight:700; font-family:inherit; line-height:1; cursor:pointer;
+    padding:5px 10px; white-space:nowrap;
+  }
+  .booth-posts-toggle{ color:var(--accent); border-color:var(--accent); }
+  .booth-posts-toggle:hover, .booth-post-hide-btn:hover{ filter:brightness(1.08); }
+  .booth-posts-toggle:focus-visible, .booth-post-hide-btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .booth-posts-empty{ font-size:12.5px; color:var(--muted); margin:6px 0; }
+  .booth-post-wrap{ margin-top:8px; }
+  .booth-post-bar{ display:flex; align-items:center; justify-content:flex-end; gap:6px; min-height:24px; }
+  .booth-post-hidden-label{ margin-right:auto; font-size:11.5px; font-weight:700; color:var(--muted); }
+  .booth-post-hidden-label:empty{ display:none; }
+  .booth-post-hide-btn{ padding:4px 9px; font-size:11px; }
+  .booth-post-wrap.is-hidden > :not(.booth-post-bar){ opacity:.55; }
+  .booth-post-wrap.is-hidden .booth-post-hide-btn{ color:var(--accent); border-color:var(--accent); }
   .booth-posts-count{ font-weight:600; color:var(--muted); }
   /* 상품 정보 글 목록: 글이 많아도 상세 창이 끝없이 길어지지 않도록 정해진 높이 안에서 스크롤 (2026-10-24 사용자 요청).
      height 가 아니라 max-height 라서 글이 1~2개라 넘치지 않으면 빈 공간도 스크롤바도 없음.
@@ -2046,6 +2065,12 @@ const I18N = {
     noBoothData: "표시할 부스 데이터가 없어요.",
     boothPostsTitle: "상품 정보",
     boothPostOpenX: "X에서 보기",
+    postHide: "숨기기",
+    postUnhide: "다시 보이기",
+    postHiddenLabel: "숨긴 글",
+    postsShowAll: "모두 보기 (숨긴 글 {n}개)",
+    postsHideAgain: "숨긴 글 감추기",
+    postsAllHidden: "이 부스의 상품 정보 글을 모두 숨겼어요.",
     boothPostSensitive: "X가 민감한 내용으로 표시한 글이라 X에서만 볼 수 있어요.",
     openProfile: "X 프로필 열기",
     visitPlanned: "🟡 방문 예정",
@@ -2115,8 +2140,8 @@ const I18N = {
     savedStatus: "저장됨",
     deletedStatus: "삭제됨",
     resetBtn: "🗑️ 데이터 초기화",
-    resetConfirm: "메모, 방문 상태, 예산·쓴 돈, 우선순위, 선입금 정보 등 저장된 모든 데이터가 삭제됩니다. 이 작업은 되돌릴 수 없습니다. 계속할까요?",
-    resetConfirmCloud: "Google 계정으로 로그인되어 있어서 이 기기뿐 아니라 클라우드에 저장된 데이터(다른 기기에서 보던 메모·방문 상태·예산·쓴 돈·우선순위·선입금)도 모두 삭제됩니다. 이 작업은 되돌릴 수 없습니다. 계속할까요?",
+    resetConfirm: "메모, 방문 상태, 예산·쓴 돈, 우선순위, 선입금 정보, 숨긴 상품 정보 글 등 저장된 모든 데이터가 삭제됩니다. 이 작업은 되돌릴 수 없습니다. 계속할까요?",
+    resetConfirmCloud: "Google 계정으로 로그인되어 있어서 이 기기뿐 아니라 클라우드에 저장된 데이터(다른 기기에서 보던 메모·방문 상태·예산·쓴 돈·우선순위·선입금·숨긴 상품 정보 글)도 모두 삭제됩니다. 이 작업은 되돌릴 수 없습니다. 계속할까요?",
     resetCloudFail: "클라우드 데이터를 지우지 못해서 초기화를 멈췄습니다. 인터넷 연결을 확인한 뒤 다시 시도해주세요.",
     resetDone: "모든 데이터가 삭제되었습니다.",
     loginBtn: "🔑 Google로 로그인",
@@ -2201,6 +2226,12 @@ const I18N = {
     noBoothData: "No booth data to display.",
     boothPostsTitle: "Merch info",
     boothPostOpenX: "View on X",
+    postHide: "Hide",
+    postUnhide: "Unhide",
+    postHiddenLabel: "Hidden",
+    postsShowAll: "Show all ({n} hidden)",
+    postsHideAgain: "Collapse hidden",
+    postsAllHidden: "You've hidden every merch post for this booth.",
     boothPostSensitive: "X marked this post as sensitive, so it can only be viewed on X.",
     openProfile: "Open X Profile",
     visitPlanned: "🟡 Plan to Visit",
@@ -2270,8 +2301,8 @@ const I18N = {
     savedStatus: "Saved",
     deletedStatus: "Deleted",
     resetBtn: "🗑️ Reset Data",
-    resetConfirm: "This will delete all your saved data — notes, visit status, budget and spending, priority, and pre-orders. This cannot be undone. Continue?",
-    resetConfirmCloud: "You're signed in with Google, so this will also delete the data saved in the cloud (notes, visit status, budget and spending, priority, and pre-orders on your other devices). This cannot be undone. Continue?",
+    resetConfirm: "This will delete all your saved data — notes, visit status, budget and spending, priority, pre-orders, and hidden merch posts. This cannot be undone. Continue?",
+    resetConfirmCloud: "You're signed in with Google, so this will also delete the data saved in the cloud (notes, visit status, budget and spending, priority, pre-orders, and hidden merch posts on your other devices). This cannot be undone. Continue?",
     resetCloudFail: "Couldn't delete the cloud data, so the reset was stopped. Please check your internet connection and try again.",
     resetDone: "All data has been deleted.",
     loginBtn: "🔑 Sign in with Google",
@@ -2356,6 +2387,12 @@ const I18N = {
     noBoothData: "表示するブースデータがありません。",
     boothPostsTitle: "頒布物情報",
     boothPostOpenX: "Xで見る",
+    postHide: "非表示",
+    postUnhide: "再表示",
+    postHiddenLabel: "非表示中",
+    postsShowAll: "すべて表示（非表示 {n}件）",
+    postsHideAgain: "非表示の投稿をたたむ",
+    postsAllHidden: "このブースの頒布物情報をすべて非表示にしました。",
     boothPostSensitive: "Xでセンシティブな内容として表示された投稿のため、Xでのみ確認できます。",
     openProfile: "Xプロフィールを開く",
     visitPlanned: "🟡 訪問予定",
@@ -2425,8 +2462,8 @@ const I18N = {
     savedStatus: "保存済み",
     deletedStatus: "削除済み",
     resetBtn: "🗑️ データを初期化",
-    resetConfirm: "メモ・訪問状態・予算・使った金額・優先度・事前通販情報など保存されたすべてのデータが削除されます。この操作は元に戻せません。続行しますか？",
-    resetConfirmCloud: "Googleでログイン中のため、この端末だけでなくクラウドに保存されたデータ（他の端末で見ていたメモ・訪問状態・予算・使った金額・優先度・事前通販）もすべて削除されます。この操作は元に戻せません。続行しますか？",
+    resetConfirm: "メモ・訪問状態・予算・使った金額・優先度・事前通販情報・非表示にした頒布物情報など保存されたすべてのデータが削除されます。この操作は元に戻せません。続行しますか？",
+    resetConfirmCloud: "Googleでログイン中のため、この端末だけでなくクラウドに保存されたデータ（他の端末で見ていたメモ・訪問状態・予算・使った金額・優先度・事前通販・非表示にした頒布物情報）もすべて削除されます。この操作は元に戻せません。続行しますか？",
     resetCloudFail: "クラウドのデータを削除できなかったため、初期化を中止しました。インターネット接続を確認してもう一度お試しください。",
     resetDone: "すべてのデータが削除されました。",
     loginBtn: "🔑 Googleでログイン",
@@ -2759,6 +2796,31 @@ function savePreorders(){
 
 let preorders = loadPreorders();
 
+/* ---------- 숨긴 상품 정보 글 ----------
+   부스 상세의 상품 정보 글(X 글) 중 보기 싫은 글을 방문자가 하나씩 숨길 수 있음 (2026-10-26 사용자 요청).
+   { "글id": 1 (숨김) | 0 (다시 보이게 함), ... } 형태로 localStorage 에 저장하고, 로그인하면 동기화에도 포함.
+   다시 보이게 할 때 지우지 않고 0으로 남기는 이유: 동기화는 같은 글이면 이 기기 값을 우선하므로,
+   0이 남아 있어야 클라우드에 남은 "숨김(1)"이 되살아나지 않고 복구가 다른 기기로도 전해짐.
+------------------------------------------------ */
+const HIDDEN_POSTS_KEY = `${STORAGE_PREFIX}-hidden-posts`;
+function loadHiddenPosts(){
+  try {
+    const obj = JSON.parse(localStorage.getItem(HIDDEN_POSTS_KEY)) || {};
+    return (obj && typeof obj === "object") ? obj : {};
+  } catch {
+    return {};
+  }
+}
+function saveHiddenPosts(){
+  try { localStorage.setItem(HIDDEN_POSTS_KEY, JSON.stringify(hiddenPosts)); } catch {}
+}
+let hiddenPosts = loadHiddenPosts();
+function isPostHidden(id){ return hiddenPosts[id] === 1; }
+function setPostHidden(id, hidden){
+  hiddenPosts[id] = hidden ? 1 : 0;
+  saveHiddenPosts();
+}
+
 function getPreorder(boothId){
   const p = preorders[boothId];
   return (p && typeof p === "object") ? p : null;
@@ -2919,7 +2981,7 @@ function updateBudgetTotalDisplay(){
 
 /* ---------- 구글 로그인 & 기기 간 동기화 ----------
    로그인하지 않아도 사이트는 지금까지와 완전히 동일하게(로컬 전용) 동작함.
-   로그인한 경우에만 메모/방문상태/예산/우선순위/선입금을 Firestore에도 저장해서
+   로그인한 경우에만 메모/방문상태/예산/우선순위/선입금/숨긴 상품 글을 Firestore에도 저장해서
    같은 구글 계정으로 다른 기기에서 접속했을 때도 이어서 볼 수 있게 함.
    네트워크가 불안정해도(행사장 등) 저장은 항상 localStorage에 먼저 되고,
    클라우드 동기화는 실패해도 무시되는 best-effort 방식으로만 동작함.
@@ -2996,7 +3058,7 @@ function mergeField(local, cloud){
 function pushToCloud(uid){
   return firebase.firestore().collection("users").doc(uid).set({
     [STORAGE_PREFIX]: {
-      notes, visitStatus, budgets, spent, priority, preorders,
+      notes, visitStatus, budgets, spent, priority, preorders, hiddenPosts,
       updatedAt: new Date().toISOString(),
     },
   });
@@ -3011,6 +3073,7 @@ function pullAndMergeFromCloud(uid){
     spent = mergeField(spent, cloud.spent);
     priority = mergeField(priority, cloud.priority);
     preorders = mergeField(preorders, cloud.preorders);
+    hiddenPosts = mergeField(hiddenPosts, cloud.hiddenPosts);
     migrateAllMergedBoothIds();
     migrateMergedBoothIds(spent);
     saveNotes();
@@ -3019,6 +3082,7 @@ function pullAndMergeFromCloud(uid){
     saveSpent();
     savePriority();
     savePreorders();
+    saveHiddenPosts();
     renderNav();
     renderGrid();
     updateBudgetTotalDisplay();
@@ -3175,7 +3239,7 @@ document.getElementById("confirmBackdrop").addEventListener("click", (e) => {
 ------------------------------------------------- */
 async function resetAllData(){
   const signedIn = !!(firebaseReady && currentUser);
-  const hasLocal = Object.keys(notes).length || Object.keys(visitStatus).length || Object.keys(budgets).length || Object.keys(spent).length || Object.keys(priority).length || Object.keys(preorders).length;
+  const hasLocal = Object.keys(notes).length || Object.keys(visitStatus).length || Object.keys(budgets).length || Object.keys(spent).length || Object.keys(priority).length || Object.keys(preorders).length || Object.keys(hiddenPosts).length;
   if(!hasLocal && !signedIn) return;
   const confirmed = await showConfirmDialog(t(signedIn ? "resetConfirmCloud" : "resetConfirm"), t("delete"));
   if(!confirmed) return;
@@ -3184,7 +3248,7 @@ async function resetAllData(){
     try {
       await firebase.firestore().collection("users").doc(currentUser.uid).set({
         [STORAGE_PREFIX]: {
-          notes: {}, visitStatus: {}, budgets: {}, spent: {}, priority: {}, preorders: {},
+          notes: {}, visitStatus: {}, budgets: {}, spent: {}, priority: {}, preorders: {}, hiddenPosts: {},
           updatedAt: new Date().toISOString(),
         },
       });
@@ -3200,12 +3264,14 @@ async function resetAllData(){
   spent = {};
   priority = {};
   preorders = {};
+  hiddenPosts = {};
   saveNotes();
   saveVisitStatus();
   saveBudgets();
   saveSpent();
   savePriority();
   savePreorders();
+  saveHiddenPosts();
   renderNav();
   renderGrid();
   alert(t("resetDone"));
@@ -3625,6 +3691,9 @@ function watchPostsListScroll(list){
 // 정상적으로 그려진 X 임베드는 글만 있어도 100px 를 넘음. 이보다 낮으면 빈 칸으로 봄
 const EMBED_MIN_HEIGHT = 60;
 
+// 부스 상세의 상품 정보 글 목록. 글마다 위에 "숨기기" 버튼을 달고, 숨긴 글은 목록에서 뺌.
+// 숨긴 글이 있으면 제목 옆 "모두 보기"로 숨긴 글까지 펼쳐 보고, 거기서 "다시 보이기"로 복구함 (2026-10-26).
+// 숨긴 글은 펼칠 때 처음 임베드함(가려진 칸에 X 임베드를 그리면 높이를 못 재서 빈 칸 판정이 틀어짐)
 function buildBoothPosts(booth, onShown){
   const box = document.createElement("div");
   box.className = "booth-posts";
@@ -3636,52 +3705,119 @@ function buildBoothPosts(booth, onShown){
     if(!ids.length || !box.isConnected) return;
     box.hidden = false;
     if(onShown) onShown();
-    box.innerHTML = `<div class="booth-posts-title">${escapeHtml(t("boothPostsTitle"))}` +
-      (ids.length > 1 ? ` <span class="booth-posts-count">(${ids.length})</span>` : "") + `</div>`;
+    let showAll = false;
+
+    const head = document.createElement("div");
+    head.className = "booth-posts-head";
+    const title = document.createElement("div");
+    title.className = "booth-posts-title";
+    const toggleBtn = document.createElement("button");
+    toggleBtn.type = "button";
+    toggleBtn.className = "booth-posts-toggle";
+    head.append(title, toggleBtn);
+    const allHiddenNote = document.createElement("div");
+    allHiddenNote.className = "booth-posts-empty";
+    allHiddenNote.textContent = t("postsAllHidden");
     // 글 목록은 정해진 높이 안에서 따로 스크롤 (제목은 밖에 두어 항상 보임)
     const list = document.createElement("div");
     list.className = "booth-posts-list";
-    box.appendChild(list);
+    box.append(head, allHiddenNote, list);
     watchPostsListScroll(list);
-    // 순서를 지키려고 칸을 먼저 만들어 두고, 칸마다 따로 채움
-    const embedSlots = [];
-    ids.forEach(id => {
+
+    // 순서를 지키려고 글마다 칸(wrap)을 먼저 만들어 두고, 보일 때 칸 안을 채움
+    const wraps = ids.map(id => {
+      const wrap = document.createElement("div");
+      wrap.className = "booth-post-wrap";
+      const bar = document.createElement("div");
+      bar.className = "booth-post-bar";
+      const label = document.createElement("span");
+      label.className = "booth-post-hidden-label";
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "booth-post-hide-btn";
+      btn.addEventListener("click", () => {
+        setPostHidden(id, !isPostHidden(id));
+        if(!ids.some(isPostHidden)) showAll = false;   // 숨긴 글이 다 복구되면 펼침도 끝냄
+        update();
+      });
+      bar.append(label, btn);
+      const slot = document.createElement("div");
+      wrap.append(bar, slot);
+      list.appendChild(wrap);
+      return { id, wrap, label, btn, slot, filled: false };
+    });
+
+    const toEmbed = [];
+    function update(){
+      const hiddenCount = ids.filter(isPostHidden).length;
+      const shownCount = showAll ? ids.length : ids.length - hiddenCount;
+      title.innerHTML = escapeHtml(t("boothPostsTitle")) +
+        (shownCount > 1 ? ` <span class="booth-posts-count">(${shownCount})</span>` : "");
+      toggleBtn.hidden = !hiddenCount;
+      toggleBtn.textContent = showAll ? t("postsHideAgain") : t("postsShowAll", { n: hiddenCount });
+      toggleBtn.setAttribute("aria-expanded", showAll ? "true" : "false");
+      allHiddenNote.hidden = showAll || hiddenCount < ids.length;
+      wraps.forEach(w => {
+        const hidden = isPostHidden(w.id);
+        w.wrap.hidden = hidden && !showAll;
+        w.wrap.classList.toggle("is-hidden", hidden);
+        w.label.textContent = hidden ? t("postHiddenLabel") : "";
+        w.btn.textContent = hidden ? t("postUnhide") : t("postHide");
+        if(!w.wrap.hidden && !w.filled){
+          w.filled = true;
+          fillSlot(w);
+        }
+      });
+      if(toEmbed.length) startEmbeds();
+    }
+    toggleBtn.addEventListener("click", () => {
+      showAll = !showAll;
+      update();
+    });
+
+    function fillSlot(w){
+      const id = w.id;
       if(approved[id].sensitive){
-        list.appendChild(buildBoothPostCard(id, approved[id]));
+        w.slot.appendChild(buildBoothPostCard(id, approved[id]));
         return;
       }
       const item = document.createElement("div");
       item.className = "booth-post";
-      list.appendChild(item);
+      w.slot.appendChild(item);
       // 그사이 민감한 글로 바뀌었거나 지워진 글은 X 가 "Not found" 만 보여주고 응답도 없음.
       // X 스크립트가 막힌 경우도 포함해, 12초 안에 임베드가 안 되면 링크 카드로 바꿈
       const fallback = setTimeout(() => {
         if(item.isConnected) item.replaceWith(buildBoothPostCard(id, approved[id]));
       }, 12000);
-      embedSlots.push([id, item, fallback]);
-    });
-    if(!embedSlots.length) return;
-    ensureTwitterWidgets(function start(){
-      if(!box.isConnected) return;
-      if(!window.twttr || !window.twttr.widgets){ setTimeout(start, 300); return; }
-      embedSlots.forEach(([id, item, fallback]) => {
-        const toCard = () => {
-          clearTimeout(fallback);
-          if(item.isConnected) item.replaceWith(buildBoothPostCard(id, approved[id]));
-        };
-        window.twttr.widgets.createTweet(id, item, { theme: currentTheme(), dnt: true, lang: currentLang, conversation: "none" })
-          .then(el => {
+      toEmbed.push([id, item, fallback]);
+    }
+
+    function startEmbeds(){
+      const batch = toEmbed.splice(0);
+      ensureTwitterWidgets(function start(){
+        if(!box.isConnected) return;
+        if(!window.twttr || !window.twttr.widgets){ setTimeout(start, 300); return; }
+        batch.forEach(([id, item, fallback]) => {
+          const toCard = () => {
             clearTimeout(fallback);
-            if(!el){ toCard(); return; }
-            // 임베드가 "끝났다"고 해도 내용 없이 빈 칸(높이 0에 가까운 iframe)으로 남는 글이 있음 (2026-10-24 B-08).
-            // 잠시 뒤에도 화면에 그려진 칸이 너무 낮으면 링크 카드로 바꿈. 상세 창이 닫혀 안 그려진 칸은 건드리지 않음
-            setTimeout(() => {
-              if(!item.isConnected || !item.getClientRects().length) return;
-              if(item.getBoundingClientRect().height < EMBED_MIN_HEIGHT) toCard();
-            }, 3000);
-          }, toCard);
+            if(item.isConnected) item.replaceWith(buildBoothPostCard(id, approved[id]));
+          };
+          window.twttr.widgets.createTweet(id, item, { theme: currentTheme(), dnt: true, lang: currentLang, conversation: "none" })
+            .then(el => {
+              clearTimeout(fallback);
+              if(!el){ toCard(); return; }
+              // 임베드가 "끝났다"고 해도 내용 없이 빈 칸(높이 0에 가까운 iframe)으로 남는 글이 있음 (2026-10-24 B-08).
+              // 잠시 뒤에도 화면에 그려진 칸이 너무 낮으면 링크 카드로 바꿈. 상세 창이 닫혀 안 그려진 칸은 건드리지 않음
+              setTimeout(() => {
+                if(!item.isConnected || !item.getClientRects().length) return;
+                if(item.getBoundingClientRect().height < EMBED_MIN_HEIGHT) toCard();
+              }, 3000);
+            }, toCard);
+        });
       });
-    });
+    }
+
+    update();
   });
   // 상자 안을 눌러도 부스 카드 클릭(팝오버 닫힘)으로 처리되지 않도록 막음
   box.addEventListener("click", (e) => e.stopPropagation());

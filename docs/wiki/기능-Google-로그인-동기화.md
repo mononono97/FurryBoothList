@@ -1,7 +1,7 @@
 # Google 로그인과 동기화
 
 ## 무엇을 하나
-- 톱니바퀴 옆의 로그인 버튼으로 Google 로그인하면 메모·방문 상태·예산·우선순위를 여러 기기에서 같이 쓸 수 있습니다.
+- 톱니바퀴 옆의 로그인 버튼으로 Google 로그인하면 메모·방문 상태·예산·우선순위·선입금·숨긴 상품 정보 글을 여러 기기에서 같이 쓸 수 있습니다.
 - 로그인 순간 1회 자동으로 클라우드 데이터와 병합합니다.
 - 로그인 중 "데이터 초기화"는 클라우드 데이터도 지웁니다(경고 후). 자세한 내용은 [설정 메뉴와 초기화](기능-설정-메뉴와-초기화.md).
 - 그 뒤에는 설정 메뉴의 **"지금 동기화"** 버튼을 눌러야만 동기화됩니다. 누른 뒤 10초 동안은 다시 누를 수 없습니다.
@@ -24,7 +24,7 @@
   예전처럼 태그로 넣으면 SDK(압축 약 150KB)를 다 받을 때까지 부스 목록을 그리지 못해, 행사장처럼 회선이 붐비면 목록이 한참 안 떴음.
   그래서 로그인 버튼은 SDK를 다 받은 뒤에 나타납니다.
 - 로그인/로그아웃: `signInWithGoogle()`, `signOutUser()`, UI 갱신 `updateAuthUI()`
-- 데이터: Firestore `users/<uid>` 문서의 `furstclass` 필드에 `{ notes, visitStatus, budgets, spent, priority, preorders }`(`spent`=쓴 돈, 2026-10-18 추가. 예전 버전 사이트는 이 필드를 모르므로, 예전 화면을 연 기기에서 동기화하면 쓴 돈이 빠진 채 올라갈 수 있음).
+- 데이터: Firestore `users/<uid>` 문서의 `furstclass` 필드에 `{ notes, visitStatus, budgets, spent, priority, preorders, hiddenPosts }`(`hiddenPosts`=숨긴 상품 정보 글, 2026-10-26 추가. 복구한 글은 지우지 않고 `0`으로 남겨 로컬 우선 병합에서도 복구가 전해지게 함. `spent`=쓴 돈, 2026-10-18 추가. 예전 버전 사이트는 이 필드를 모르므로, 예전 화면을 연 기기에서 동기화하면 쓴 돈이 빠진 채 올라갈 수 있음).
   동기화할 때 문서 전체를 덮어쓰므로 케모켓 때 문서 최상위에 있던 필드는 첫 동기화에서 지워집니다.
 - 병합: `mergeField(local, cloud)` = `Object.assign({}, cloud, local)`
 - 흐름: `syncFromCloudOnLogin()` → `pullAndMergeFromCloud()` → `pushToCloud()`
@@ -45,3 +45,4 @@
 - 2026-10-05 선입금 정보(`preorders`)도 동기화 ([선입금](기능-선입금.md), [#38](https://github.com/mononono97/FurryBoothList/pull/38))
 - 2026-10-05 Firebase SDK를 백그라운드에서 받도록 바꿔 SDK를 받는 동안에도 부스 목록이 먼저 뜨게 함 (이 PR)
 - 2026-10-08 로그인 중 데이터 초기화가 클라우드도 비움 ([설정 메뉴와 초기화](기능-설정-메뉴와-초기화.md), 이 PR)
+- 2026-10-26 숨긴 상품 정보 글(`hiddenPosts`)도 동기화 ([부스 상품 정보](기능-부스-상품-정보.md), 이 PR)
