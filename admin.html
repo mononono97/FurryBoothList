@@ -348,6 +348,13 @@ function exclude(id){
     decisions[excludedKey][id] = true;
   });
 }
+// 반영한 글을 사이트에서 임베드 대신 링크 카드로 보이게 하거나 되돌림.
+// FxTwitter 가 민감한 글이 아니라고 했는데도 X 임베드가 "Not found"로 나오는 글이 있어서(2026-10-27 C-14) 운영자가 직접 고칠 수 있게 함
+function setLinkOnly(id, on){
+  return writeDecision({ approved: { [id]: { sensitive: on } } }).then(() => {
+    decisions.approved[id].sensitive = on;
+  });
+}
 function undo(id){
   const { approvedKey, excludedKey } = modeInfo();
   return writeDecision({
@@ -387,7 +394,7 @@ function drawEmbed(box){
       <a class="meta" href="${escapeHtml(url)}" target="_blank" rel="noopener">X에서 내용 확인하기</a></div>`;
   };
   if(sensitive === "1"){
-    linkOnly("X가 민감한 글로 표시해 임베드할 수 없는 글입니다. 사이트에는 아이디·작성 날짜와 \"X에서 보기\" 링크만 보여요.");
+    linkOnly("X가 민감한 글로 표시했거나 \"링크 카드로 보이기\"를 누른 글입니다. 사이트에는 아이디·작성 날짜와 \"X에서 보기\" 링크만 보여요.");
     return;
   }
   box.innerHTML = `<div class="meta">불러오는 중…</div>`;
@@ -567,7 +574,7 @@ function buildPost(c){
       <span class="booth-tag">${official ? "행사 안내" : escapeHtml((approvedBooth ? [approvedBooth] : boothIds).map(id => `${id} ${boothName(id)}`).join(" · ") || "부스 미지정")}</span>
       ${c.handle ? `<span class="meta">@${escapeHtml(c.handle)}</span>` : ""}
       ${c.created ? `<span class="meta">${escapeHtml(fmtDate(c.created))}</span>` : ""}
-      <span class="reasons">${(c.reasons || []).map(r => `<span>${escapeHtml(r)}</span>`).join("")}${c.sensitive ? `<span class="sensitive-tag">민감한 글</span>` : ""}</span>
+      <span class="reasons">${(c.reasons || []).map(r => `<span>${escapeHtml(r)}</span>`).join("")}${((decisions.approved[c.id] || {}).sensitive ?? c.sensitive) ? `<span class="sensitive-tag">민감한 글 · 링크 카드</span>` : ""}</span>
     </div>
     <div class="embed"></div>
     <div class="actions"></div>
@@ -617,6 +624,16 @@ function buildPost(c){
     back.textContent = "대기로 되돌리기";
     back.addEventListener("click", () => run(() => undo(c.id)));
     actions.appendChild(back);
+    if(!official && currentTab === "approved" && decisions.approved[c.id]){
+      const linkOnly = !!decisions.approved[c.id].sensitive;
+      const toggle = document.createElement("button");
+      toggle.textContent = linkOnly ? "임베드로 되돌리기" : "링크 카드로 보이기";
+      toggle.title = linkOnly
+        ? "사이트에서 다시 X 임베드로 보여 줍니다."
+        : "X 임베드가 \"Not found\" 등으로 나올 때 누르세요. 사이트에는 아이디·작성 날짜와 \"X에서 보기\" 링크만 보여요.";
+      toggle.addEventListener("click", () => run(() => setLinkOnly(c.id, !linkOnly)));
+      actions.appendChild(toggle);
+    }
   }
   const link = document.createElement("a");
   link.href = url;
@@ -628,7 +645,9 @@ function buildPost(c){
 
   const box = el.querySelector(".embed");
   const saved = decisions[modeInfo().approvedKey][c.id] || {};
-  Object.assign(box.dataset, { id: c.id, handle: c.handle || "", sensitive: (c.sensitive || saved.sensitive) ? "1" : "" });
+  // 반영한 글은 저장된 값(링크 카드로 바꿨는지)을 따르고, 아직 반영하지 않은 글은 후보 값을 따름
+  const sensitive = c.id in decisions[modeInfo().approvedKey] ? saved.sensitive : c.sensitive;
+  Object.assign(box.dataset, { id: c.id, handle: c.handle || "", sensitive: sensitive ? "1" : "" });
   if(embedObserver) embedObserver.observe(box); else drawEmbed(box);
   return el;
 }
