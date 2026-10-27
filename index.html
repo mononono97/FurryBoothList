@@ -1458,22 +1458,8 @@
     font-size:12.5px;
     color:var(--moss);
   }
-  /* 행사 안내: 공식 FAQ 글 바로가기 */
-  .info-faq-link{
-    display:flex;
-    flex-direction:column;
-    gap:2px;
-    margin-top:12px;
-    padding:10px 14px;
-    border:1px solid var(--line);
-    border-radius:8px;
-    background:var(--card-bg);
-    color:var(--ink);
-    text-decoration:none;
-  }
-  .info-faq-link:hover{ border-color:var(--moss); }
-  .info-faq-title{ font-weight:700; font-size:14px; }
-  .info-faq-note{ font-size:12px; color:var(--text-2); }
+  /* 행사 안내: 공식 사이트 · FAQ 링크를 한 줄에 나란히 */
+  .info-links{ display:flex; flex-wrap:wrap; column-gap:16px; }
   .weather-cards{
     display:flex;
     gap:12px;
@@ -2129,8 +2115,7 @@ const I18N = {
     infoHint: "행사 일정 · 행사장 약도 · 날씨 정보",
     infoTransitTitle: "📍 행사 일정 · 장소",
     infoOfficialSite: "공식 사이트에서 자세히 보기",
-    infoFaqLink: "❓ 자주 묻는 질문(FAQ) 보기",
-    infoFaqNote: "공식 X 계정의 FAQ 안내 글로 이동해요",
+    infoFaqLink: "자주 묻는 질문(FAQ)",
     infoMapTitle: "🗺️ 행사장 약도",
     infoOpenMap: "지도 크게 보기",
     infoWeatherTitle: "☀️ 행사 기간 날씨 (청주)",
@@ -2292,8 +2277,7 @@ const I18N = {
     infoHint: "Schedule · Venue map · Weather",
     infoTransitTitle: "📍 Dates & Venue",
     infoOfficialSite: "More details on the official site",
-    infoFaqLink: "❓ View the FAQ",
-    infoFaqNote: "Opens the official FAQ post on X",
+    infoFaqLink: "FAQ",
     infoMapTitle: "🗺️ Venue Map",
     infoOpenMap: "Open larger map",
     infoWeatherTitle: "☀️ Weather during the event (Cheongju)",
@@ -2455,8 +2439,7 @@ const I18N = {
     infoHint: "日程・会場地図・天気",
     infoTransitTitle: "📍 日程・会場",
     infoOfficialSite: "公式サイトで詳しく見る",
-    infoFaqLink: "❓ よくある質問（FAQ）を見る",
-    infoFaqNote: "公式Xアカウントの FAQ 投稿を開きます",
+    infoFaqLink: "よくある質問（FAQ）",
     infoMapTitle: "🗺️ 会場地図",
     infoOpenMap: "地図を大きく見る",
     infoWeatherTitle: "☀️ 開催期間の天気（清州）",
@@ -4735,11 +4718,10 @@ function renderInfoView(){
       <div class="venue-name">${escapeHtml(EVENT_PERIOD_TEXT[currentLang] || EVENT_PERIOD_TEXT.ko)}</div>
       <div class="venue-name">${escapeHtml(venueName)}</div>
       <div class="venue-address">${escapeHtml(VENUE_ADDRESS)}</div>
-      <a class="info-map-link" href="${OFFICIAL_SITE_URL}" target="_blank" rel="noopener">${escapeHtml(t("infoOfficialSite"))}</a>
-      <a class="info-faq-link" href="${OFFICIAL_FAQ_URL}" target="_blank" rel="noopener">
-        <span class="info-faq-title">${escapeHtml(t("infoFaqLink"))}</span>
-        <span class="info-faq-note">${escapeHtml(t("infoFaqNote"))} ↗</span>
-      </a>
+      <div class="info-links">
+        <a class="info-map-link" href="${OFFICIAL_SITE_URL}" target="_blank" rel="noopener">${escapeHtml(t("infoOfficialSite"))}</a>
+        <a class="info-map-link" href="${OFFICIAL_FAQ_URL}" target="_blank" rel="noopener">${escapeHtml(t("infoFaqLink"))}</a>
+      </div>
     </section>
 
     <section class="info-section">
