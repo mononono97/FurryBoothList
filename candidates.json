@@ -1,6 +1,60 @@
 {
- "updatedAt": "2026-10-27T10:37:19+00:00",
+ "updatedAt": "2026-10-27T16:46:40+00:00",
  "posts": [
+  {
+   "id": "2115071415254941810",
+   "handle": "GomTang_P",
+   "booths": [
+    "B22"
+   ],
+   "boothNames": [
+    "BoxBear"
+   ],
+   "created": "2026-10-27T13:21:36+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-10-27T16:40:25+00:00"
+  },
+  {
+   "id": "2115046814399529262",
+   "handle": "GTDignified",
+   "booths": [
+    "B17"
+   ],
+   "boothNames": [
+    "STUDIO雄虎凛"
+   ],
+   "created": "2026-10-27T11:43:50+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약"
+   ],
+   "foundAt": "2026-10-27T16:40:28+00:00"
+  },
+  {
+   "id": "2115043791094902801",
+   "handle": "GTDignified",
+   "booths": [
+    "B17"
+   ],
+   "boothNames": [
+    "STUDIO雄虎凛"
+   ],
+   "created": "2026-10-27T11:31:50+00:00",
+   "score": 8,
+   "sensitive": true,
+   "reasons": [
+    "인포",
+    "신간",
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-10-27T16:40:28+00:00"
+  },
   {
    "id": "2115026379880501404",
    "handle": "Hijiki_DaiXt",
