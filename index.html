@@ -1458,6 +1458,22 @@
     font-size:12.5px;
     color:var(--moss);
   }
+  /* 행사 안내: 공식 FAQ 글 바로가기 */
+  .info-faq-link{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    margin-top:12px;
+    padding:10px 14px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--card-bg);
+    color:var(--ink);
+    text-decoration:none;
+  }
+  .info-faq-link:hover{ border-color:var(--moss); }
+  .info-faq-title{ font-weight:700; font-size:14px; }
+  .info-faq-note{ font-size:12px; color:var(--text-2); }
   .weather-cards{
     display:flex;
     gap:12px;
@@ -2113,6 +2129,8 @@ const I18N = {
     infoHint: "행사 일정 · 행사장 약도 · 날씨 정보",
     infoTransitTitle: "📍 행사 일정 · 장소",
     infoOfficialSite: "공식 사이트에서 자세히 보기",
+    infoFaqLink: "❓ 자주 묻는 질문(FAQ) 보기",
+    infoFaqNote: "공식 X 계정의 FAQ 안내 글로 이동해요",
     infoMapTitle: "🗺️ 행사장 약도",
     infoOpenMap: "지도 크게 보기",
     infoWeatherTitle: "☀️ 행사 기간 날씨 (청주)",
@@ -2274,6 +2292,8 @@ const I18N = {
     infoHint: "Schedule · Venue map · Weather",
     infoTransitTitle: "📍 Dates & Venue",
     infoOfficialSite: "More details on the official site",
+    infoFaqLink: "❓ View the FAQ",
+    infoFaqNote: "Opens the official FAQ post on X",
     infoMapTitle: "🗺️ Venue Map",
     infoOpenMap: "Open larger map",
     infoWeatherTitle: "☀️ Weather during the event (Cheongju)",
@@ -2435,6 +2455,8 @@ const I18N = {
     infoHint: "日程・会場地図・天気",
     infoTransitTitle: "📍 日程・会場",
     infoOfficialSite: "公式サイトで詳しく見る",
+    infoFaqLink: "❓ よくある質問（FAQ）を見る",
+    infoFaqNote: "公式Xアカウントの FAQ 投稿を開きます",
     infoMapTitle: "🗺️ 会場地図",
     infoOpenMap: "地図を大きく見る",
     infoWeatherTitle: "☀️ 開催期間の天気（清州）",
@@ -4623,6 +4645,8 @@ const VENUE_ADDRESS = "충청북도 청주시 청원구 충청대로 114";
 const VENUE_MAP_QUERY = "엔포드호텔 청주";
 const OFFICIAL_SITE_URL = "https://furst-class.com/event";
 const OFFICIAL_X_HANDLE = "FURSTCLASS_KR";
+// 공식 계정이 2026-10-27에 올린 FAQ 안내 글. 질문 내용은 옮겨 적지 않고 바로가기만 둠(사용자 요청)
+const OFFICIAL_FAQ_URL = "https://x.com/FURSTCLASS_KR/status/2115000548579815844";
 const EVENT_PERIOD_TEXT = { ko: "2026년 11월 28일(토) ~ 29일(일)", en: "Sat, Nov 28 – Sun, Nov 29, 2026", jp: "2026年11月28日（土）〜29日（日）" };
 const WEATHER_HOURS = [11, 14, 17];
 
@@ -4712,6 +4736,10 @@ function renderInfoView(){
       <div class="venue-name">${escapeHtml(venueName)}</div>
       <div class="venue-address">${escapeHtml(VENUE_ADDRESS)}</div>
       <a class="info-map-link" href="${OFFICIAL_SITE_URL}" target="_blank" rel="noopener">${escapeHtml(t("infoOfficialSite"))}</a>
+      <a class="info-faq-link" href="${OFFICIAL_FAQ_URL}" target="_blank" rel="noopener">
+        <span class="info-faq-title">${escapeHtml(t("infoFaqLink"))}</span>
+        <span class="info-faq-note">${escapeHtml(t("infoFaqNote"))} ↗</span>
+      </a>
     </section>
 
     <section class="info-section">
