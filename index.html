@@ -3693,8 +3693,10 @@ function watchPostsListScroll(list){
   update();
 }
 
-// 정상적으로 그려진 X 임베드는 글만 있어도 100px 를 넘음. 이보다 낮으면 빈 칸으로 봄
-const EMBED_MIN_HEIGHT = 60;
+// 정상적으로 그려진 X 임베드는 글만 있어도 머리(프로필)·본문·날짜·버튼 줄이 있어 200px 가까이 됨.
+// 이보다 낮으면 빈 칸이나 "Not found" 안내만 있는 칸으로 봄.
+// 60px 일 때는 빈 칸(B-08)만 걸러지고 "Not found" 칸은 그대로 남았음 (2026-10-27 C-14)
+const EMBED_MIN_HEIGHT = 150;
 
 // 부스 상세의 상품 정보 글 목록. 글마다 위에 "숨기기" 버튼을 달고, 숨긴 글은 목록에서 뺌.
 // 숨긴 글이 있으면 제목 옆 "모두 보기"로 숨긴 글까지 펼쳐 보고, 거기서 "다시 보이기"로 복구함 (2026-10-26).
@@ -3790,10 +3792,11 @@ function buildBoothPosts(booth, onShown){
       item.className = "booth-post";
       w.slot.appendChild(item);
       // 그사이 민감한 글로 바뀌었거나 지워진 글은 X 가 "Not found" 만 보여주고 응답도 없음.
-      // X 스크립트가 막힌 경우도 포함해, 12초 안에 임베드가 안 되면 링크 카드로 바꿈
+      // X 스크립트가 막힌 경우도 포함해, 8초 안에 임베드가 안 되면 링크 카드로 바꿈
+      // (12초였을 때는 그동안 "Not found"가 보여 고장처럼 보였음, 2026-10-27 C-14)
       const fallback = setTimeout(() => {
         if(item.isConnected) item.replaceWith(buildBoothPostCard(id, approved[id]));
-      }, 12000);
+      }, 8000);
       toEmbed.push([id, item, fallback]);
     }
 
@@ -3811,12 +3814,13 @@ function buildBoothPosts(booth, onShown){
             .then(el => {
               clearTimeout(fallback);
               if(!el){ toCard(); return; }
-              // 임베드가 "끝났다"고 해도 내용 없이 빈 칸(높이 0에 가까운 iframe)으로 남는 글이 있음 (2026-10-24 B-08).
-              // 잠시 뒤에도 화면에 그려진 칸이 너무 낮으면 링크 카드로 바꿈. 상세 창이 닫혀 안 그려진 칸은 건드리지 않음
-              setTimeout(() => {
+              // 임베드가 "끝났다"고 해도 내용 없이 빈 칸(B-08)이나 "Not found"만 있는 칸(C-14)으로 남는 글이 있음.
+              // 잠시 뒤에도 화면에 그려진 칸이 너무 낮으면 링크 카드로 바꿈. 상세 창이 닫혀 안 그려진 칸은 건드리지 않음.
+              // 높이가 늦게 줄어드는 경우도 있어 두 번 봄
+              [2000, 6000].forEach(ms => setTimeout(() => {
                 if(!item.isConnected || !item.getClientRects().length) return;
                 if(item.getBoundingClientRect().height < EMBED_MIN_HEIGHT) toCard();
-              }, 3000);
+              }, ms));
             }, toCard);
         });
       });
