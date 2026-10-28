@@ -1,6 +1,151 @@
 {
- "updatedAt": "2026-10-28T08:37:06+00:00",
+ "updatedAt": "2026-10-28T16:08:50+00:00",
  "posts": [
+  {
+   "id": "2115465263042957569",
+   "handle": "noway_jin",
+   "booths": [
+    "A30"
+   ],
+   "boothNames": [
+    "FURST SNOW"
+   ],
+   "created": "2026-10-28T15:26:36+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "품목"
+   ],
+   "foundAt": "2026-10-28T16:06:27+00:00"
+  },
+  {
+   "id": "2115442216126881910",
+   "handle": "Pteragon",
+   "booths": [
+    "B25"
+   ],
+   "boothNames": [
+    "도슭 한상전"
+   ],
+   "created": "2026-10-28T13:55:01+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약",
+    "품목"
+   ],
+   "foundAt": "2026-10-28T16:07:05+00:00"
+  },
+  {
+   "id": "2115404894039687350",
+   "handle": "PaGom1121_",
+   "booths": [
+    "C19-20"
+   ],
+   "boothNames": [
+    "작전명: 에이전트 버니"
+   ],
+   "created": "2026-10-28T11:26:43+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-28T16:06:49+00:00"
+  },
+  {
+   "id": "2115397859931812189",
+   "handle": "TLJPSi",
+   "booths": [
+    "A29"
+   ],
+   "boothNames": [
+    "해적판 아니고 정발입니다"
+   ],
+   "created": "2026-10-28T10:58:46+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-10-28T16:08:09+00:00"
+  },
+  {
+   "id": "2115397573448179730",
+   "handle": "Hijiki_DaiXt",
+   "booths": [
+    "A02"
+   ],
+   "boothNames": [
+    "SEAWEED VILLAGE"
+   ],
+   "created": "2026-10-28T10:57:38+00:00",
+   "score": 6,
+   "sensitive": false,
+   "reasons": [
+    "신간",
+    "굿즈·판매",
+    "이미지"
+   ],
+   "foundAt": "2026-10-28T16:02:29+00:00"
+  },
+  {
+   "id": "2115393148893671599",
+   "handle": "Hijiki_DaiXt",
+   "booths": [
+    "A02"
+   ],
+   "boothNames": [
+    "SEAWEED VILLAGE"
+   ],
+   "created": "2026-10-28T10:40:03+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "인포",
+    "행사·부스"
+   ],
+   "foundAt": "2026-10-28T16:02:29+00:00"
+  },
+  {
+   "id": "2115370676655931524",
+   "handle": "noway_jin",
+   "booths": [
+    "A30"
+   ],
+   "boothNames": [
+    "FURST SNOW"
+   ],
+   "created": "2026-10-28T09:10:45+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약",
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-10-28T16:06:27+00:00"
+  },
+  {
+   "id": "2115367717800652873",
+   "handle": "Beuu0920",
+   "booths": [
+    "A16"
+   ],
+   "boothNames": [
+    "브 BEUU / FURPPET"
+   ],
+   "created": "2026-10-28T08:59:00+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-28T16:00:58+00:00"
+  },
   {
    "id": "2115319415042625674",
    "handle": "ringo2ALS",
@@ -1866,6 +2011,25 @@
     "이미지"
    ],
    "foundAt": "2026-10-15T10:44:31+00:00"
+  },
+  {
+   "id": "2110668364305863028",
+   "handle": "MELONCOOKIE_24",
+   "booths": [
+    "C21"
+   ],
+   "boothNames": [
+    "데빌카드 쇼다운!"
+   ],
+   "created": "2026-10-15T09:45:27+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-28T16:03:46+00:00"
   },
   {
    "id": "2110656675523027230",
