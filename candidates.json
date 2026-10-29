@@ -1,6 +1,80 @@
 {
- "updatedAt": "2026-10-28T16:08:50+00:00",
+ "updatedAt": "2026-10-29T07:08:19+00:00",
  "posts": [
+  {
+   "id": "2115689426739396613",
+   "handle": "noway_jin",
+   "booths": [
+    "A30"
+   ],
+   "boothNames": [
+    "FURST SNOW"
+   ],
+   "created": "2026-10-29T06:17:21+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-10-29T07:06:49+00:00"
+  },
+  {
+   "id": "2115626178581278888",
+   "handle": "didran9802",
+   "booths": [
+    "A33"
+   ],
+   "boothNames": [
+    "도마뱀의 보물함"
+   ],
+   "created": "2026-10-29T02:06:02+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-29T07:04:34+00:00"
+  },
+  {
+   "id": "2115621693041549501",
+   "handle": "Hijiki_DaiXt",
+   "booths": [
+    "A02"
+   ],
+   "boothNames": [
+    "SEAWEED VILLAGE"
+   ],
+   "created": "2026-10-29T01:48:12+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-10-29T07:05:15+00:00"
+  },
+  {
+   "id": "2115617961897816228",
+   "handle": "mofuaki_",
+   "booths": [
+    "A41"
+   ],
+   "boothNames": [
+    "MOFUMOFUYA"
+   ],
+   "created": "2026-10-29T01:33:23+00:00",
+   "score": 5,
+   "sensitive": true,
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-29T07:06:28+00:00"
+  },
   {
    "id": "2115465263042957569",
    "handle": "noway_jin",
