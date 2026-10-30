@@ -1,6 +1,62 @@
 {
- "updatedAt": "2026-10-30T09:13:45+00:00",
+ "updatedAt": "2026-10-30T09:24:44+00:00",
  "posts": [
+  {
+   "id": "2116092750097690756",
+   "handle": "kigurumikagetsu",
+   "booths": [
+    "A06"
+   ],
+   "boothNames": [
+    "Kigurumi Kagetsu"
+   ],
+   "created": "2026-10-30T09:00:01+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "가격",
+    "이미지"
+   ],
+   "foundAt": "2026-10-30T09:19:46+00:00"
+  },
+  {
+   "id": "2116092493456711777",
+   "handle": "Beuu0920",
+   "booths": [
+    "A16"
+   ],
+   "boothNames": [
+    "브 BEUU / FURPPET"
+   ],
+   "created": "2026-10-30T08:59:00+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-30T09:17:16+00:00"
+  },
+  {
+   "id": "2116091632084992040",
+   "handle": "noway_jin",
+   "booths": [
+    "A30"
+   ],
+   "boothNames": [
+    "FURST SNOW"
+   ],
+   "created": "2026-10-30T08:55:34+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-30T09:22:21+00:00"
+  },
   {
    "id": "2116082756350627911",
    "handle": "Pteragon",
