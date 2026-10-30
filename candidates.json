@@ -1,6 +1,98 @@
 {
- "updatedAt": "2026-10-29T19:52:14+00:00",
+ "updatedAt": "2026-10-30T05:51:12+00:00",
  "posts": [
+  {
+   "id": "2116037958243635472",
+   "handle": "whitefangwolves",
+   "booths": [
+    "A37-38"
+   ],
+   "boothNames": [
+    "Whitefangwolves"
+   ],
+   "created": "2026-10-30T05:22:17+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-30T05:50:58+00:00"
+  },
+  {
+   "id": "2116037346798047384",
+   "handle": "ideatami",
+   "booths": [
+    "A36"
+   ],
+   "boothNames": [
+    "또롱별"
+   ],
+   "created": "2026-10-30T05:19:52+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약",
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-10-30T05:48:18+00:00"
+  },
+  {
+   "id": "2116001896657743996",
+   "handle": "Beuu0920",
+   "booths": [
+    "A16"
+   ],
+   "boothNames": [
+    "브 BEUU / FURPPET"
+   ],
+   "created": "2026-10-30T02:59:00+00:00",
+   "score": 6,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약",
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-30T05:46:58+00:00"
+  },
+  {
+   "id": "2115961366435774748",
+   "handle": "Yell0whale",
+   "booths": [
+    "A20"
+   ],
+   "boothNames": [
+    "내가 쓰려고 만든 굿즈"
+   ],
+   "created": "2026-10-30T00:17:57+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-10-30T05:51:05+00:00"
+  },
+  {
+   "id": "2115956598124298281",
+   "handle": "Beuu0920",
+   "booths": [
+    "A16"
+   ],
+   "boothNames": [
+    "브 BEUU / FURPPET"
+   ],
+   "created": "2026-10-29T23:59:00+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-30T05:46:58+00:00"
+  },
   {
    "id": "2115815063105991083",
    "handle": "noway_jin",
@@ -5710,6 +5802,13 @@
   }
  ],
  "official": [
+  {
+   "id": "2115996108522733853",
+   "handle": "FURSTCLASS_KR",
+   "created": "2026-10-30T02:36:00+00:00",
+   "sensitive": false,
+   "foundAt": "2026-10-30T05:51:11+00:00"
+  },
   {
    "id": "2115262277092012401",
    "handle": "FURSTCLASS_KR",
