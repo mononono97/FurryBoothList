@@ -2172,7 +2172,7 @@ const I18N = {
     themeLight: "☀️ Light",
     themeDark: "🌙 Dark",
     helpTitle: "Help",
-    helpGuideBtn: "📖 User guide (Google Drive, Korean)",
+    helpGuideBtn: "📖 User guide (Google Drive)",
     helpBody: [
       "This site was made to make it easy to browse the Furst Class booth list.\nAI was used for automatic translation and development, so there may be errors in the content.\nFor more details, please refer to {link}",
       "Made by: X @Chung_Hwani",
@@ -2334,7 +2334,7 @@ const I18N = {
     themeLight: "☀️ ライト",
     themeDark: "🌙 ダーク",
     helpTitle: "ヘルプ",
-    helpGuideBtn: "📖 使い方ガイド (Google ドライブ・韓国語)",
+    helpGuideBtn: "📖 使い方ガイド (Google ドライブ)",
     helpBody: [
       "このサイトは、Furst Classのブース一覧を簡単に見られるように作られたサイトです。\n自動翻訳および開発にAIを使用しているため、内容に誤りがある場合があります。\n詳細は {link} をご参照ください。",
       "制作：X @Chung_Hwani",
@@ -5101,8 +5101,12 @@ function fillPreorderActions(content, booth){
   content.appendChild(box);
 }
 
-// 사용법 설명서(PDF) 구글 드라이브 링크
-const HELP_GUIDE_URL = "https://drive.google.com/file/d/1unDx84F7E-Pqt-jlvf9hWLFRSCs-Z4x0/view?usp=drive_link";
+// 사용법 설명서(PDF) 구글 드라이브 링크. 사이트 언어에 맞는 판을 엶 (영어·일본어판 2026-10-27)
+const HELP_GUIDE_URL = {
+  ko: "https://drive.google.com/file/d/1unDx84F7E-Pqt-jlvf9hWLFRSCs-Z4x0/view?usp=drive_link",
+  en: "https://drive.google.com/file/d/1g0-zYcJ_6Up54DSJA8LSQsUO2e_6LI2E/view?usp=sharing",
+  jp: "https://drive.google.com/file/d/1c32HHo9OxsIyauUzoaxYRtNfxmujqCFT/view?usp=sharing",
+};
 
 function openHelpModal(){
   const backdrop = document.getElementById("modalBackdrop");
@@ -5125,7 +5129,7 @@ function openHelpModal(){
 
   const guideBtn = document.createElement("a");
   guideBtn.className = "help-guide-btn";
-  guideBtn.href = HELP_GUIDE_URL;
+  guideBtn.href = HELP_GUIDE_URL[currentLang] || HELP_GUIDE_URL.ko;
   guideBtn.target = "_blank";
   guideBtn.rel = "noopener";
   guideBtn.textContent = t("helpGuideBtn");
