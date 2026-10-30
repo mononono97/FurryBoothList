@@ -1,7 +1,7 @@
 """부스장·부스원 X 계정의 새 글 중 "상품 글 같아 보이는 글"과 공식 계정(@FURSTCLASS_KR)의 새 글을 모아
 후보 목록(candidates.json)을 만드는 스크립트.
 
-GitHub Actions(.github/workflows/collect-booth-posts.yml)가 1시간마다 실행함.
+GitHub Actions(.github/workflows/collect-booth-posts.yml)가 1시간마다 전체를, 15분마다 공식·RT 계정만(--quick) 실행함.
 후보는 사이트에 바로 나가지 않고, 관리 화면(admin.html)에서 운영자가 "반영"을 눌러야
 부스 상세(상품 글) 또는 행사 안내 탭(공식 글)에 보임.
 
@@ -11,6 +11,7 @@ X 약관상 X 밖에 글 사본을 두지 않는 편이 안전해서 (2026-10-05
 사용법 (저장소 루트에서):
     python3 tools/collect_booth_posts.py <후보 폴더>            # <후보 폴더>/candidates.json 갱신
     python3 tools/collect_booth_posts.py <후보 폴더> --dry-run  # 파일은 건드리지 않고 결과만 출력
+    python3 tools/collect_booth_posts.py <후보 폴더> --quick    # 부스 계정은 건너뛰고 공식·RT 계정만 (몇 초면 끝남)
 
 동작:
 1. index.html 의 BOOTHS 줄에서 부스장·부스원 X 아이디를 읽음
@@ -144,9 +145,17 @@ def created_at(p):
 def collect_official(known):
     """공식 계정의 새 글 후보 목록. known 은 이미 후보에 있는 글 id 집합."""
     added, cursor = [], None
-    for _ in range(OFFICIAL_MAX_PAGES):
+    for page_no in range(OFFICIAL_MAX_PAGES):
         page = fetch_page(OFFICIAL_HANDLE, cursor)
         results = page.get("results") or []
+        if page_no == 0 and not results:
+            # 공식 계정 첫 페이지가 비어 있을 리는 없으니 FxTwitter 쪽 일시 오류로 보고 한 번 더 받음.
+            # 그래도 비면 "새 글 없음"으로 넘어가지 않고 실패로 기록해 로그에서 보이게 함
+            time.sleep(5)
+            page = fetch_page(OFFICIAL_HANDLE, cursor)
+            results = page.get("results") or []
+            if not results:
+                raise RuntimeError("첫 페이지가 비어 있음(FxTwitter 일시 오류로 보임)")
         stop = not results
         for p in results:
             pid = str(p.get("id") or "")
@@ -273,7 +282,7 @@ def judge(text, images, links=""):
     return score, reasons
 
 
-def collect(feed_dir, dry_run=False):
+def collect(feed_dir, dry_run=False, quick=False):
     booths = load_booths()
     names = {b["id"]: b["name"] for b in booths}
     handles = handle_map(booths)
@@ -299,7 +308,9 @@ def collect(feed_dir, dry_run=False):
     known = {p["id"] for p in data["posts"]}
 
     added, failed = [], []
-    for key, (handle, booth_ids) in sorted(handles.items()):
+    # quick: 공식·RT 계정만 봄. 부스 계정 160여 개를 도는 전체 실행은 10분쯤 걸리고
+    # GitHub 예약 실행이 몇 시간씩 밀려서, 공식 글이 늦게 들어오던 문제(2026-10-30) 때문에 따로 자주 돌림
+    for key, (handle, booth_ids) in ([] if quick else sorted(handles.items())):
         try:
             results = fetch_statuses(handle)
         except Exception as e:  # 계정 하나가 실패해도 나머지는 계속 모음
@@ -355,7 +366,7 @@ def collect(feed_dir, dry_run=False):
             rt_marked += 1
     added += rt_added
 
-    print(f"계정 {len(handles)}개 확인, 새 후보 {len(added)}개(RT 계정 {len(rt_added)}개), 공식 글 새 후보 {len(official_added)}개, 실패 {len(failed)}개")
+    print(f"{'공식·RT 계정만 확인' if quick else f'계정 {len(handles)}개 확인'}, 새 후보 {len(added)}개(RT 계정 {len(rt_added)}개), 공식 글 새 후보 {len(official_added)}개, 실패 {len(failed)}개")
     for c in added:
         print(f"  + {c['booths'] or '부스 미지정'} @{c['handle']} 점수 {c.get('score', '-')} {c['reasons']} https://x.com/{c['handle']}/status/{c['id']}")
     for c in official_added:
@@ -388,4 +399,4 @@ if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     if len(args) != 1:
         sys.exit(__doc__)
-    collect(args[0], dry_run="--dry-run" in sys.argv)
+    collect(args[0], dry_run="--dry-run" in sys.argv, quick="--quick" in sys.argv)
