@@ -1,6 +1,44 @@
 {
- "updatedAt": "2026-10-31T07:21:56+00:00",
+ "updatedAt": "2026-10-31T08:27:23+00:00",
  "posts": [
+  {
+   "id": "2116433224067084676",
+   "handle": "Runk102030",
+   "booths": [
+    "A26"
+   ],
+   "boothNames": [
+    "히잉 형아 꼬리 상점"
+   ],
+   "created": "2026-10-31T07:32:56+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-10-31T08:25:30+00:00"
+  },
+  {
+   "id": "2116431719012385011",
+   "handle": "Hijiki_DaiXt",
+   "booths": [
+    "A02"
+   ],
+   "boothNames": [
+    "SEAWEED VILLAGE"
+   ],
+   "created": "2026-10-31T07:26:57+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약",
+    "품목",
+    "행사·부스"
+   ],
+   "foundAt": "2026-10-31T08:20:32+00:00"
+  },
   {
    "id": "2116429184637780197",
    "handle": "noway_jin",
