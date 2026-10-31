@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
-  script-src 'self' 'unsafe-inline' https://platform.twitter.com https://cdn.syndication.twimg.com https://www.gstatic.com https://apis.google.com;
+  script-src 'self' 'unsafe-inline' https://platform.twitter.com https://cdn.syndication.twimg.com https://www.gstatic.com https://apis.google.com https://static.cloudflareinsights.com;
   worker-src 'self';
   style-src 'self' 'unsafe-inline';
   img-src 'self' data: https://abs.twimg.com https://ton.twimg.com;
   font-src 'self' data:;
-  connect-src 'self' https://cdn.syndication.twimg.com https://syndication.twitter.com https://twitter.com https://x.com https://api.open-meteo.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com;
+  connect-src 'self' https://cdn.syndication.twimg.com https://syndication.twitter.com https://twitter.com https://x.com https://api.open-meteo.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://cloudflareinsights.com;
   frame-src https://platform.twitter.com https://syndication.twitter.com https://www.google.com https://accounts.google.com https://boothlist-4589c.firebaseapp.com;
   object-src 'none';
   base-uri 'self';
@@ -5257,5 +5257,10 @@ function allImageUrls(){
   return [...paths].map(path => new URL(path, location.href).href);
 }
 </script>
+<!-- Cloudflare Web Analytics (2026-10-31): 쿠키 없이 일별 방문자·페이지뷰만 집계.
+     workers.dev 주소는 Cloudflare 자동 연결이 안 돼서 JS 스니펫 방식으로 넣음.
+     defer 라서 목록 그리기를 늦추지 않고, 막히거나 오프라인이어도 사이트 동작에는 영향 없음.
+     관리 화면(admin.html)은 운영자만 쓰므로 넣지 않음. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "0794de4895e24d36b58de7daa9a36e69"}'></script>
 </body>
 </html>
