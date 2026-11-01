@@ -1,6 +1,43 @@
 {
- "updatedAt": "2026-11-01T13:22:10+00:00",
+ "updatedAt": "2026-11-01T14:27:45+00:00",
  "posts": [
+  {
+   "id": "2116895336589676733",
+   "handle": "Meta_NONE",
+   "booths": [
+    "C08"
+   ],
+   "boothNames": [
+    "High-Fur"
+   ],
+   "created": "2026-11-01T14:09:12+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-01T14:23:02+00:00"
+  },
+  {
+   "id": "2116893380076826912",
+   "handle": "largo_furry",
+   "booths": [
+    "A18"
+   ],
+   "boothNames": [
+    "BAD PAW Co."
+   ],
+   "created": "2026-11-01T14:01:26+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스"
+   ],
+   "foundAt": "2026-11-01T14:22:23+00:00"
+  },
   {
    "id": "2116869006699458865",
    "handle": "connecting_Y",
