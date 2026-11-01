@@ -1,6 +1,41 @@
 {
- "updatedAt": "2026-11-01T10:22:03+00:00",
+ "updatedAt": "2026-11-01T11:26:23+00:00",
  "posts": [
+  {
+   "id": "2116849674657349732",
+   "handle": "Hijiki_DaiXt",
+   "booths": [
+    "A02"
+   ],
+   "boothNames": [
+    "SEAWEED VILLAGE"
+   ],
+   "created": "2026-11-01T11:07:46+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "신간"
+   ],
+   "foundAt": "2026-11-01T11:20:45+00:00"
+  },
+  {
+   "id": "2116844651663798781",
+   "handle": "minongminong",
+   "booths": [
+    "A29"
+   ],
+   "boothNames": [
+    "해적판 아니고 정발입니다"
+   ],
+   "created": "2026-11-01T10:47:48+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-01T11:22:46+00:00"
+  },
   {
    "id": "2116830104550867140",
    "handle": "PMaker_owo",
