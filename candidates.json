@@ -1,6 +1,23 @@
 {
- "updatedAt": "2026-11-01T22:29:29+00:00",
+ "updatedAt": "2026-11-02T03:22:14+00:00",
  "posts": [
+  {
+   "id": "2117091624971034836",
+   "handle": "largo_furry",
+   "booths": [
+    "A18"
+   ],
+   "boothNames": [
+    "BAD PAW Co."
+   ],
+   "created": "2026-11-02T03:09:11+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약"
+   ],
+   "foundAt": "2026-11-02T03:19:40+00:00"
+  },
   {
    "id": "2117013542000103867",
    "handle": "noway_jin",
