@@ -1,6 +1,79 @@
 {
- "updatedAt": "2026-11-02T12:28:04+00:00",
+ "updatedAt": "2026-11-02T13:26:53+00:00",
  "posts": [
+  {
+   "id": "2117242231014981836",
+   "handle": "noway_jin",
+   "booths": [
+    "A30"
+   ],
+   "boothNames": [
+    "FURST SNOW"
+   ],
+   "created": "2026-11-02T13:07:38+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약"
+   ],
+   "foundAt": "2026-11-02T13:23:46+00:00"
+  },
+  {
+   "id": "2117238069728530747",
+   "handle": "Kokutou_bear",
+   "booths": [
+    "C19-20"
+   ],
+   "boothNames": [
+    "작전명: 에이전트 버니"
+   ],
+   "created": "2026-11-02T12:51:06+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-02T13:22:22+00:00"
+  },
+  {
+   "id": "2117232077167010303",
+   "handle": "rikose",
+   "booths": [
+    "B13"
+   ],
+   "boothNames": [
+    "RIKOSE"
+   ],
+   "created": "2026-11-02T12:27:18+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-02T13:25:13+00:00"
+  },
+  {
+   "id": "2117223875612434843",
+   "handle": "ideatami",
+   "booths": [
+    "A36"
+   ],
+   "boothNames": [
+    "또롱별"
+   ],
+   "created": "2026-11-02T11:54:42+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "인포",
+    "이미지"
+   ],
+   "foundAt": "2026-11-02T13:21:33+00:00"
+  },
   {
    "id": "2117214078955557007",
    "handle": "Hijiki_DaiXt",
