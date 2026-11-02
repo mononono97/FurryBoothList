@@ -1039,6 +1039,55 @@
     border-color:#4a8f3c;
     color:#eafce6;
   }
+  /* 선입금 항목(한 부스에 여러 건): 항목마다 번호·삭제 버튼, 항목 사이 구분선 */
+  .preorder-summary{
+    font-size:12px;
+    font-weight:700;
+    color:var(--on-panel);
+    margin-bottom:8px;
+  }
+  .preorder-item + .preorder-item{
+    margin-top:14px;
+    padding-top:12px;
+    border-top:1px dashed var(--panel-line);
+  }
+  .preorder-item-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    margin-bottom:6px;
+    min-height:26px;
+  }
+  .preorder-item-title{
+    font-size:12px;
+    font-weight:700;
+    color:var(--moss-light);
+  }
+  .preorder-item-remove{
+    font-size:11.5px;
+    padding:4px 10px;
+    border-radius:6px;
+    border:1px solid var(--panel-line);
+    background:transparent;
+    color:var(--on-panel);
+    cursor:pointer;
+  }
+  .preorder-item-remove:hover{ border-color:#c0504d; color:#c0504d; }
+  .preorder-add-btn{
+    width:100%;
+    margin-top:14px;
+    font-size:13px;
+    font-weight:700;
+    padding:10px 8px;
+    border-radius:8px;
+    border:1px dashed var(--panel-line);
+    background:transparent;
+    color:var(--on-panel);
+    cursor:pointer;
+  }
+  .preorder-add-btn:hover:not(:disabled){ background:var(--panel-field); }
+  .preorder-add-btn:disabled{ opacity:.5; cursor:default; }
 
   /* 우선순위 선택 버튼 */
   .priority-box{
@@ -2041,6 +2090,12 @@ const I18N = {
     preorderMemoPlaceholder: "예: 아크릴 스탠드 1, 엽서 세트 2, 현장 수령",
     preorderOffConfirm: "선입금 표시를 끄면 이 부스에 적은 선입금 정보(날짜·플랫폼·금액·입금자명·메모·수령 여부)도 함께 지워집니다. 계속할까요?",
     preorderOff: "끄기",
+    preorderItemTitle: "선입금 {n}",
+    preorderItemAdd: "＋ 선입금 항목 추가",
+    preorderItemRemove: "삭제",
+    preorderItemRemoveConfirm: "선입금 {n}에 적은 정보(날짜·플랫폼·금액·입금자명·메모·수령 여부)를 지울까요?",
+    preorderItemsSummary: "선입금 {n}건 · 수령 완료 {done}건 · 합계 {amount}",
+    preorderItemsProgress: "{done}/{n}건",
     mapBtn: "🗺️ 배치도",
     mapHint: "부스를 눌러서 메모/부스 정보를 확인하세요 (공식 일요일 부스 안내 기준)",
     mapTitle: "Furst Class 부스 배치도",
@@ -2203,6 +2258,12 @@ const I18N = {
     preorderMemoPlaceholder: "e.g. 1 acrylic stand, 2 postcard sets, pick up on site",
     preorderOffConfirm: "Turning off pre-order also deletes the pre-order details for this booth (date, platform, amount, payer name, notes, received). Continue?",
     preorderOff: "Turn off",
+    preorderItemTitle: "Pre-order {n}",
+    preorderItemAdd: "＋ Add pre-order",
+    preorderItemRemove: "Delete",
+    preorderItemRemoveConfirm: "Delete the details of pre-order {n} (date, platform, amount, payer name, notes, received)?",
+    preorderItemsSummary: "{n} pre-orders · {done} received · Total {amount}",
+    preorderItemsProgress: "{done}/{n}",
     mapBtn: "🗺️ Map",
     mapHint: "Click a booth to see notes/booth info (based on the official Sunday booth guide)",
     mapTitle: "Furst Class booth map",
@@ -2365,6 +2426,12 @@ const I18N = {
     preorderMemoPlaceholder: "例：アクリルスタンド1、ポストカードセット2、現地受取",
     preorderOffConfirm: "事前通販をオフにすると、このブースに記入した事前通販の情報（入金日・プラットフォーム・金額・入金者名・メモ・受取状態）も削除されます。続行しますか？",
     preorderOff: "オフにする",
+    preorderItemTitle: "事前通販 {n}",
+    preorderItemAdd: "＋ 事前通販を追加",
+    preorderItemRemove: "削除",
+    preorderItemRemoveConfirm: "事前通販 {n} の情報（入金日・プラットフォーム・金額・入金者名・メモ・受取状態）を削除しますか？",
+    preorderItemsSummary: "事前通販 {n}件 · 受取済み {done}件 · 合計 {amount}",
+    preorderItemsProgress: "{done}/{n}件",
     mapBtn: "🗺️ 配置図",
     mapHint: "ブースを押してメモ・ブース情報を確認してください（公式の日曜日ブース案内に基づく）",
     mapTitle: "Furst Class ブース配置図",
@@ -2792,6 +2859,14 @@ function loadPreorders(){
 }
 
 function savePreorders(){
+  // 예전 화면(새로고침 전 다른 기기 등)도 카드의 수령 여부·금액은 맞게 보이도록 합계를 위에도 적어 둠.
+  // 읽을 때는 items만 씀.
+  Object.values(preorders).forEach(p => {
+    if(!p || !Array.isArray(p.items)) return;
+    p.received = p.items.length > 0 && p.items.every(i => i.received);
+    const total = p.items.reduce((sum, i) => sum + (i.amount || 0), 0);
+    if(total > 0) p.amount = total; else delete p.amount;
+  });
   try {
     localStorage.setItem(PREORDER_KEY, JSON.stringify(preorders));
   } catch {
@@ -2826,23 +2901,94 @@ function setPostHidden(id, hidden){
   saveHiddenPosts();
 }
 
+// 한 부스에서 선입금을 여러 번 할 수 있어서(2026-11-02 사용자 요청) 부스마다 항목 목록(items)으로 저장함.
+// 예전 모양({ received, date, platform, amount, payer, memo })은 항목 하나짜리로 바꿔 읽음.
+const PREORDER_FIELDS = ["date", "platform", "amount", "payer", "memo"];
+const MAX_PREORDER_ITEMS = 30;
+
+function normalizePreorderItem(raw){
+  const item = { received: !!(raw && raw.received) };
+  if(!raw || typeof raw !== "object") return item;
+  PREORDER_FIELDS.forEach(f => {
+    if(f === "amount"){
+      const n = Math.max(0, Math.floor(Number(raw.amount) || 0));
+      if(n > 0) item.amount = n;
+    } else if(typeof raw[f] === "string" && raw[f]){
+      item[f] = raw[f];
+    }
+  });
+  return item;
+}
+
+// 저장값 하나를 { items: [...] } 모양으로 바꿈. 선입금이 꺼진 값(없음·잘못된 값)이면 null.
+function normalizePreorder(p){
+  if(!p || typeof p !== "object") return null;
+  const items = Array.isArray(p.items)
+    ? p.items.slice(0, MAX_PREORDER_ITEMS).map(normalizePreorderItem)
+    : [normalizePreorderItem(p)];
+  if(!items.length) items.push({ received: false });
+  return { items };
+}
+
+// 저장된 선입금 전체를 새 모양으로 바꿈 (불러올 때·클라우드와 합친 뒤). 바뀐 게 있으면 true.
+function migratePreorderShape(){
+  let changed = false;
+  Object.keys(preorders).forEach(id => {
+    const p = preorders[id];
+    const n = normalizePreorder(p);
+    if(!n){ delete preorders[id]; changed = true; return; }
+    if(!p || !Array.isArray(p.items)) changed = true;
+    preorders[id] = n;
+  });
+  return changed;
+}
+
 function getPreorder(boothId){
   const p = preorders[boothId];
-  return (p && typeof p === "object") ? p : null;
+  if(!p || typeof p !== "object") return null;
+  if(!Array.isArray(p.items)) preorders[boothId] = normalizePreorder(p);
+  return preorders[boothId];
+}
+
+function getPreorderItems(boothId){
+  const p = getPreorder(boothId);
+  return p ? p.items : [];
 }
 
 function setPreorderOn(boothId, on){
   if(on){
-    if(!getPreorder(boothId)) preorders[boothId] = { received: false };
+    if(!getPreorder(boothId)) preorders[boothId] = { items: [{ received: false }] };
   } else {
     delete preorders[boothId];
   }
   savePreorders();
 }
 
-// 날짜·플랫폼·금액·입금자명·메모·수령 여부 중 하나를 바꿈. 선입금이 꺼져 있으면 켜면서 저장함.
-function setPreorderField(boothId, field, value){
-  const p = getPreorder(boothId) || { received: false };
+// 선입금 항목 추가. 선입금이 꺼져 있으면 켜면서 빈 항목 하나를 만듦. 새 항목의 번호(0부터)를 돌려줌.
+function addPreorderItem(boothId){
+  const p = getPreorder(boothId);
+  if(!p){ setPreorderOn(boothId, true); return 0; }
+  if(p.items.length >= MAX_PREORDER_ITEMS) return p.items.length - 1;
+  p.items.push({ received: false });
+  savePreorders();
+  return p.items.length - 1;
+}
+
+// 선입금 항목 하나 삭제. 마지막 하나를 지우면 선입금은 켠 채로 빈 항목만 남김(끄기는 💳 버튼).
+function removePreorderItem(boothId, index){
+  const p = getPreorder(boothId);
+  if(!p || !p.items[index]) return;
+  p.items.splice(index, 1);
+  if(!p.items.length) p.items.push({ received: false });
+  savePreorders();
+}
+
+// index번째 항목의 날짜·플랫폼·금액·입금자명·메모·수령 여부 중 하나를 바꿈. 선입금이 꺼져 있으면 켜면서 저장함.
+function setPreorderField(boothId, index, field, value){
+  if(!getPreorder(boothId)) setPreorderOn(boothId, true);
+  const items = getPreorder(boothId).items;
+  const p = items[index];
+  if(!p) return;
   if(field === "amount"){
     const n = Math.max(0, Math.floor(Number(value) || 0));
     if(n > 0) p.amount = n; else delete p.amount;
@@ -2852,18 +2998,31 @@ function setPreorderField(boothId, field, value){
     const v = String(value || "").trim().slice(0, field === "memo" ? MAX_NOTE_LENGTH : MAX_PREORDER_TEXT);
     if(v) p[field] = v; else delete p[field];
   }
-  preorders[boothId] = p;
   savePreorders();
 }
 
-// 수령 여부 말고 적어 둔 정보가 있는지 (선입금을 끌 때 확인 창을 띄울지 판단)
+function preorderItemHasDetails(item){
+  return !!(item && (item.received || PREORDER_FIELDS.some(f => item[f])));
+}
+
+// 수령 여부 말고도 적어 둔 정보가 있는지 (선입금을 끌 때 확인 창을 띄울지 판단). 항목이 둘 이상이어도 확인함.
 function preorderHasDetails(boothId){
-  const p = getPreorder(boothId);
-  return !!(p && (p.received || p.date || p.platform || p.amount || p.payer || p.memo));
+  const items = getPreorderItems(boothId);
+  return items.length > 1 || items.some(preorderItemHasDetails);
+}
+
+// 부스의 모든 선입금 항목을 받았는지
+function isPreorderReceived(boothId){
+  const items = getPreorderItems(boothId);
+  return items.length > 0 && items.every(i => i.received);
+}
+
+function getPreorderAmount(boothId){
+  return getPreorderItems(boothId).reduce((sum, i) => sum + (i.amount || 0), 0);
 }
 
 function getPreorderTotal(ids){
-  return ids.reduce((sum, id) => sum + ((getPreorder(id) || {}).amount || 0), 0);
+  return ids.reduce((sum, id) => sum + getPreorderAmount(id), 0);
 }
 
 /* ---------- 부스별 예산 ----------
@@ -2913,6 +3072,7 @@ function migrateAllMergedBoothIds(){
   if(migrateMergedBoothIds(preorders)) savePreorders();
 }
 migrateAllMergedBoothIds();
+if(migratePreorderShape()) savePreorders();
 
 function getBudget(boothId){
   return budgets[boothId] || 0;
@@ -3081,6 +3241,7 @@ function pullAndMergeFromCloud(uid){
     hiddenPosts = mergeField(hiddenPosts, cloud.hiddenPosts);
     migrateAllMergedBoothIds();
     migrateMergedBoothIds(spent);
+    migratePreorderShape();
     saveNotes();
     saveVisitStatus();
     saveBudgets();
@@ -4039,7 +4200,7 @@ function renderGrid(){
     : isUpdatesView ? t(updatesMineOnly ? "updatesCountMine" : "updatesCount", { n: list.length })
     : isPreorderView ? t("preorderCount", {
         n: list.length,
-        done: list.filter(b => getPreorder(b.id).received).length,
+        done: list.filter(b => isPreorderReceived(b.id)).length,
         amount: formatWon(getPreorderTotal(list.map(b => b.id))),
       })
     : t("circleCount", { n: list.length });
@@ -4171,11 +4332,15 @@ function renderGrid(){
     }
 
     if(isPreorderView){
-      const p = getPreorder(booth.id);
+      const items = getPreorderItems(booth.id);
+      const done = isPreorderReceived(booth.id);
+      const amount = getPreorderAmount(booth.id);
       const preEl = document.createElement("div");
-      preEl.className = "preorder-line" + (p.received ? " received" : "");
-      preEl.textContent = (p.received ? t("preorderDoneShort") : t("preorderPending")) +
-        (p.amount ? ` · ${formatWon(p.amount)}` : "");
+      preEl.className = "preorder-line" + (done ? " received" : "");
+      // 항목이 둘 이상이면 몇 건 중 몇 건을 받았는지도 보여 줌 (예: "⏳ 수령 전 1/3건 · ₩50,000")
+      preEl.textContent = (done ? t("preorderDoneShort") : t("preorderPending")) +
+        (items.length > 1 ? ` ${t("preorderItemsProgress", { done: items.filter(i => i.received).length, n: items.length })}` : "") +
+        (amount ? ` · ${formatWon(amount)}` : "");
       card.appendChild(preEl);
     }
 
@@ -4438,7 +4603,7 @@ function buildMapSvg(){
     const pre = getPreorder(booth.id);
     // 선입금 보기에서는 방문 예정/완료와 같은 노랑·초록을 선입금 수령 전/완료에 쓰고, 선입금이 없는 부스는 흐리게
     const cls = "map-booth zone-" + booth.block.toLowerCase() + (mapMode === "preorder"
-      ? (pre ? (pre.received ? " visit-visited" : " visit-planned") : " dim")
+      ? (pre ? (isPreorderReceived(booth.id) ? " visit-visited" : " visit-planned") : " dim")
       : (getNote(booth.id) ? " has-note" : "") +
         (status === "planned" ? " visit-planned" : status === "visited" ? " visit-visited" : "") +
         (level ? ` priority-${level}` : ""));
@@ -5055,9 +5220,9 @@ function openPreorderModal(boothId){
   showBoothModal(booth);
 }
 
-// 수령 완료 버튼과 선입금 정보 칸. 모달에서는 부스 정보 아래, PC 펼침 상세에서는 오른쪽 칸.
+// 선입금 항목별 수령 완료 버튼과 선입금 정보 칸, 그 아래 "＋ 선입금 항목 추가" 버튼.
+// 모달에서는 부스 정보 아래, PC 펼침 상세에서는 오른쪽 칸.
 function fillPreorderActions(content, booth){
-  const p = getPreorder(booth.id) || {};
   const refreshPreorderTab = () => {
     if(currentRow === "PREORDER") renderGrid();
     if(currentRow === "MAP") renderMapView();
@@ -5065,40 +5230,115 @@ function fillPreorderActions(content, booth){
 
   const box = document.createElement("div");
   box.className = "preorder-box";
-  box.innerHTML = `
-    <button type="button" class="preorder-received-btn"></button>
-    <label>${escapeHtml(t("preorderDate"))}</label>
-    <div class="budget-input-row"><input type="date" data-field="date" value="${escapeHtml(p.date || "")}"></div>
-    <label>${escapeHtml(t("preorderPlatform"))}</label>
-    <div class="budget-input-row"><input type="text" data-field="platform" maxlength="${MAX_PREORDER_TEXT}" value="${escapeHtml(p.platform || "")}" placeholder="${escapeHtml(t("preorderPlatformPlaceholder"))}"></div>
-    <label>${escapeHtml(t("preorderAmount"))}</label>
-    <div class="budget-input-row">
-      <span class="yen">₩</span>
-      <input type="number" data-field="amount" min="0" step="1000" inputmode="numeric" value="${Number(p.amount) || ""}" placeholder="0">
-    </div>
-    <label>${escapeHtml(t("preorderPayer"))}</label>
-    <div class="budget-input-row"><input type="text" data-field="payer" maxlength="${MAX_PREORDER_TEXT}" value="${escapeHtml(p.payer || "")}" placeholder="${escapeHtml(t("preorderPayerPlaceholder"))}"></div>
-    <label>${escapeHtml(t("preorderMemo"))}</label>
-    <textarea data-field="memo" maxlength="${MAX_NOTE_LENGTH}" placeholder="${escapeHtml(t("preorderMemoPlaceholder"))}">${escapeHtml(p.memo || "")}</textarea>
-  `;
-  const receivedBtn = box.querySelector(".preorder-received-btn");
-  const syncReceivedButton = () => {
-    const received = !!(getPreorder(booth.id) || {}).received;
-    receivedBtn.classList.toggle("active", received);
-    receivedBtn.textContent = received ? t("preorderReceived") : t("preorderNotReceived");
-  };
-  syncReceivedButton();
-  receivedBtn.addEventListener("click", () => {
-    setPreorderField(booth.id, "received", !(getPreorder(booth.id) || {}).received);
-    syncReceivedButton();
-    renderNav();
-    refreshPreorderTab();
-  });
-  box.querySelectorAll("[data-field]").forEach(input => {
-    input.addEventListener("input", () => setPreorderField(booth.id, input.dataset.field, input.value));
-    input.addEventListener("change", () => { renderNav(); refreshPreorderTab(); });
-  });
   content.appendChild(box);
+
+  // 항목을 추가·삭제하면 칸 전체를 다시 그림. focusIndex 항목의 첫 칸에 포커스.
+  const render = (focusIndex) => {
+    const items = getPreorderItems(booth.id);
+    const list = items.length ? items : [{ received: false }];
+    box.innerHTML = "";
+
+    if(list.length > 1){
+      const summary = document.createElement("div");
+      summary.className = "preorder-summary";
+      box.appendChild(summary);
+    }
+
+    list.forEach((p, index) => {
+      const item = document.createElement("div");
+      item.className = "preorder-item";
+      item.innerHTML = `
+        <div class="preorder-item-head">
+          <span class="preorder-item-title">${escapeHtml(t("preorderItemTitle", { n: index + 1 }))}</span>
+          ${list.length > 1 ? `<button type="button" class="preorder-item-remove">${escapeHtml(t("preorderItemRemove"))}</button>` : ""}
+        </div>
+        <button type="button" class="preorder-received-btn"></button>
+        <label>${escapeHtml(t("preorderDate"))}</label>
+        <div class="budget-input-row"><input type="date" data-field="date" value="${escapeHtml(p.date || "")}"></div>
+        <label>${escapeHtml(t("preorderPlatform"))}</label>
+        <div class="budget-input-row"><input type="text" data-field="platform" maxlength="${MAX_PREORDER_TEXT}" value="${escapeHtml(p.platform || "")}" placeholder="${escapeHtml(t("preorderPlatformPlaceholder"))}"></div>
+        <label>${escapeHtml(t("preorderAmount"))}</label>
+        <div class="budget-input-row">
+          <span class="yen">₩</span>
+          <input type="number" data-field="amount" min="0" step="1000" inputmode="numeric" value="${Number(p.amount) || ""}" placeholder="0">
+        </div>
+        <label>${escapeHtml(t("preorderPayer"))}</label>
+        <div class="budget-input-row"><input type="text" data-field="payer" maxlength="${MAX_PREORDER_TEXT}" value="${escapeHtml(p.payer || "")}" placeholder="${escapeHtml(t("preorderPayerPlaceholder"))}"></div>
+        <label>${escapeHtml(t("preorderMemo"))}</label>
+        <textarea data-field="memo" maxlength="${MAX_NOTE_LENGTH}" placeholder="${escapeHtml(t("preorderMemoPlaceholder"))}">${escapeHtml(p.memo || "")}</textarea>
+      `;
+      const currentItem = () => getPreorderItems(booth.id)[index] || {};
+      const receivedBtn = item.querySelector(".preorder-received-btn");
+      const syncReceivedButton = () => {
+        const received = !!currentItem().received;
+        receivedBtn.classList.toggle("active", received);
+        receivedBtn.textContent = received ? t("preorderReceived") : t("preorderNotReceived");
+      };
+      syncReceivedButton();
+      receivedBtn.addEventListener("click", () => {
+        setPreorderField(booth.id, index, "received", !currentItem().received);
+        syncReceivedButton();
+        syncSummary();
+        renderNav();
+        refreshPreorderTab();
+      });
+      item.querySelectorAll("[data-field]").forEach(input => {
+        input.addEventListener("input", () => {
+          setPreorderField(booth.id, index, input.dataset.field, input.value);
+          if(input.dataset.field === "amount") syncSummary();
+        });
+        input.addEventListener("change", () => { renderNav(); refreshPreorderTab(); });
+      });
+      const removeBtn = item.querySelector(".preorder-item-remove");
+      if(removeBtn) removeBtn.addEventListener("click", async () => {
+        // 적어 둔 내용이 있는 항목은 실수로 지우지 않게 한 번 물어봄
+        if(preorderItemHasDetails(currentItem()) &&
+          !(await showConfirmDialog(t("preorderItemRemoveConfirm", { n: index + 1 }), t("preorderItemRemove")))) return;
+        removePreorderItem(booth.id, index);
+        render(Math.min(index, getPreorderItems(booth.id).length - 1));
+        renderNav();
+        refreshPreorderTab();
+      });
+      box.appendChild(item);
+    });
+
+    const addBtn = document.createElement("button");
+    addBtn.type = "button";
+    addBtn.className = "preorder-add-btn";
+    addBtn.textContent = t("preorderItemAdd");
+    addBtn.disabled = list.length >= MAX_PREORDER_ITEMS;
+    addBtn.addEventListener("click", () => {
+      const newIndex = addPreorderItem(booth.id);
+      render(newIndex);
+      renderNav();
+      refreshPreorderTab();
+    });
+    box.appendChild(addBtn);
+
+    syncSummary();
+    if(focusIndex != null){
+      const target = box.querySelectorAll(".preorder-item")[focusIndex];
+      if(target){
+        target.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        const first = target.querySelector(".preorder-received-btn");
+        if(first) first.focus({ preventScroll: true });
+      }
+    }
+  };
+
+  // 항목이 둘 이상일 때 맨 위에 "선입금 n건 · 수령 완료 m건 · 합계 ₩금액"
+  function syncSummary(){
+    const summary = box.querySelector(".preorder-summary");
+    if(!summary) return;
+    const items = getPreorderItems(booth.id);
+    summary.textContent = t("preorderItemsSummary", {
+      n: items.length,
+      done: items.filter(i => i.received).length,
+      amount: formatWon(getPreorderAmount(booth.id)),
+    });
+  }
+
+  render(null);
 }
 
 // 사용법 설명서(PDF) 구글 드라이브 링크
