@@ -21,6 +21,7 @@ GitHub Actions(.github/workflows/site-healthcheck.yml)가 1시간마다 돌리�
                    할당량을 읽으려면 이 서비스 계정에 "Monitoring 뷰어" 역할이 있어야 함
   CF_API_TOKEN     Cloudflare API 토큰(Account Analytics 읽기). 5(Cloudflare) 점검에 씀
   CF_ACCOUNT_ID    Cloudflare 계정 ID
+  NTFY_TOPIC       휴대폰 푸시 알림(ntfy 앱)의 구독 주제 이름. 있으면 이슈를 열 때·내용이 바뀔 때·복구될 때 휴대폰으로도 알림
   비밀값이 없으면 그 점검만 "건너뜀"으로 표시하고 알림은 보내지 않음.
 설정 방법: docs/wiki/기능-사이트-헬스체크.md
 
@@ -393,6 +394,29 @@ def signature(problems):
     return ",".join(sorted(f"{p['group']}/{p['key']}/{p['status']}" for p in problems))
 
 
+def push_phone(title, problems, issue_url, recovered=False):
+    """휴대폰 푸시 알림(ntfy 앱). 비밀값 NTFY_TOPIC 이 있을 때만 보냄. 실패해도 이슈 알림은 그대로."""
+    topic = os.environ.get("NTFY_TOPIC", "").strip()
+    if not topic:
+        return
+    if recovered:
+        message = "모든 점검이 정상으로 돌아왔습니다."
+    else:
+        message = "\n".join(f"{'❌' if p['status'] == 'fail' else '⚠️'} {p['key']}: {p['detail']}"[:300]
+                            for p in problems[:5])
+    payload = {"topic": topic, "title": title, "message": message,
+               "priority": 3 if recovered else 5,   # 5 = 긴급(무음 모드가 아니면 소리·진동)
+               "tags": ["white_check_mark"] if recovered else ["rotating_light"]}
+    if issue_url:
+        payload["click"] = issue_url
+        payload["actions"] = [{"action": "view", "label": "이슈 열기", "url": issue_url}]
+    try:
+        r = requests.post(os.environ.get("NTFY_SERVER", "https://ntfy.sh").rstrip("/") + "/", json=payload, timeout=20)
+        print(f"휴대폰 알림 보냄: HTTP {r.status_code}")
+    except requests.RequestException as e:
+        print(f"휴대폰 알림 실패: {e}")
+
+
 def sync_issue(problems):
     repo, token = os.environ["GITHUB_REPOSITORY"], os.environ["GITHUB_TOKEN"]
     api = f"https://api.github.com/repos/{repo}"
@@ -411,6 +435,7 @@ def sync_issue(problems):
             requests.patch(f"{api}/issues/{issue['number']}", headers=h, timeout=20,
                            json={"state": "closed", "state_reason": "completed"})
             print(f"정상으로 돌아옴 → 이슈 #{issue['number']} 닫음")
+            push_phone("✅ 사이트 헬스체크 정상 복구", [], issue["html_url"], recovered=True)
         else:
             print("이상 없음 → 알림 없음")
         return
@@ -425,6 +450,7 @@ def sync_issue(problems):
                                 "labels": [LABEL]})
         r.raise_for_status()
         print(f"새 이상 → 이슈 #{r.json()['number']} 엶")
+        push_phone(title, problems, r.json().get("html_url"))
         return
 
     old = re.search(r"<!-- hc-sig: (.*?) -->", issue.get("body") or "")
@@ -435,6 +461,7 @@ def sync_issue(problems):
         requests.post(f"{api}/issues/{issue['number']}/comments", headers=h, timeout=20,
                       json={"body": "이상 내용이 바뀌었습니다.\n\n" + report_markdown(problems)})
         print(f"이상 내용 바뀜 → 이슈 #{issue['number']} 에 댓글")
+        push_phone(title, problems, issue["html_url"])
     else:
         print(f"같은 이상 계속 → 이슈 #{issue['number']} 본문만 갱신(알림 없음)")
 
