@@ -458,6 +458,11 @@ def check_posts(feed_dir, refs):
         print(f"  작성 {created_at(p).isoformat()}, 답글 대상: {reply_target(p) or '없음'}, 인용 글: {bool(p.get('quote'))}, "
               f"민감한 글 표시: {bool(p.get('possibly_sensitive'))}")
         print(f"  키워드 점수 {score} (기준 {MIN_SCORE}) {reasons}, 이미지 {len(post_images(p))}장")
+        q = p.get("quote") or {}
+        if q:
+            # 인용한 글은 임베드 안에 따로 그려짐. 그 글이 민감한 글이면 X 가 로그인 안 한 방문자에게 빼고 보여줌 (2026-11-03 C-11)
+            print(f"  인용한 글: @{(q.get('author') or {}).get('screen_name') or '?'} {q.get('id')}, "
+                  f"민감한 글 표시: {bool(q.get('possibly_sensitive'))}, 이미지 {len(post_images(q))}장")
         if handle:
             try:
                 page = fetch_page(handle)
