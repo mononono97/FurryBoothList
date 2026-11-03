@@ -19,7 +19,7 @@ on:
         type: string
         default: ""
       audit:
-        description: "이 부스들의 지난 글을 끝까지 훑어 빠진 상품 글 찾기 (부스 번호, 여러 개는 쉼표로. ALL 은 전체). 후보 파일은 바꾸지 않음"
+        description: "이 부스들의 지난 글을 끝까지 훑어 빠진 상품 글 찾기 (부스 번호, 여러 개는 쉼표로. ALL 은 전체). main 에서 실행하면 찾은 글을 대기 탭 후보에 넣음"
         type: string
         default: ""
 
@@ -57,12 +57,12 @@ jobs:
         if: inputs.audit
         env:
           AUDIT: ${{ inputs.audit }}
-        run: python3 tools/collect_booth_posts.py feed "--audit=$AUDIT"
+        run: python3 tools/collect_booth_posts.py feed "--audit=$AUDIT" ${{ github.ref_name == 'main' && '--write' || '' }}
       - name: 후보 모으기
         if: ${{ !inputs.check && !inputs.audit }}
         run: python3 tools/collect_booth_posts.py feed ${{ github.ref_name != 'main' && '--dry-run' || '' }} ${{ ((github.event_name == 'schedule' && github.event.schedule != '17 * * * *') || inputs.quick) && '--quick' || '' }}
       - name: 후보 저장
-        if: github.ref_name == 'main' && !inputs.check && !inputs.audit
+        if: github.ref_name == 'main' && !inputs.check
         run: |
           cd feed
           git add -A
