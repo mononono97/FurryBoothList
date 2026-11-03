@@ -83,7 +83,9 @@
         try { localStorage.setItem(AKEY, JSON.stringify(actions)); } catch (e) {}
       }, 300);
     }
+    var muteUntil = 0;
     function act(msg){
+      if(Date.now() < muteUntil) return;
       msg = String(msg || "").replace(/\s+/g, " ").slice(0, 160);
       var last = actions[actions.length - 1];
       if(last && last.m === msg && Date.now() - last.t < 5000){ last.n = (last.n || 1) + 1; last.t = Date.now(); }
@@ -113,7 +115,15 @@
       }
       return d;
     }
+    // 버그 제보 버튼과 제보 창 안에서 한 동작은 제보 내용에 도움이 안 되므로 남기지 않음(2026-11-03 사용자 요청)
+    function isBugReportUi(el){
+      if(!el || !el.closest) el = document.body;
+      if(el.closest("#bugReportBtn")) return true;
+      // 버그 제보 창이 떠 있는 동안의 동작(창 안 클릭, Esc 등)은 모두 뺌
+      return !!document.querySelector("#modalBackdrop.open #modalContent .bug-form");
+    }
     document.addEventListener("click", function(ev){
+      if(isBugReportUi(ev.target)) return;
       var el = ev.target && ev.target.closest
         ? ev.target.closest("button, a, summary, label, input, select, textarea, [data-booth-id], [role=button], [onclick]")
         : null;
@@ -121,7 +131,7 @@
     }, true);
     document.addEventListener("change", function(ev){
       var el = ev.target;
-      if(!el || !el.tagName) return;
+      if(!el || !el.tagName || isBugReportUi(el)) return;
       var v;
       if(el.type === "checkbox" || el.type === "radio") v = el.checked ? "on" : "off";
       else if(el.tagName === "SELECT") v = "value=" + String(el.value).slice(0, 20);
@@ -129,7 +139,7 @@
       act("change " + describe(el) + " → " + v);
     }, true);
     document.addEventListener("keydown", function(ev){
-      if(ev.key === "Escape" || ev.key === "Enter") act("key " + ev.key + " on " + describe(ev.target));
+      if((ev.key === "Escape" || ev.key === "Enter") && !isBugReportUi(ev.target)) act("key " + ev.key + " on " + describe(ev.target));
     }, true);
     document.addEventListener("visibilitychange", function(){ act("page " + document.visibilityState); });
     window.addEventListener("pagehide", function(){
@@ -142,7 +152,7 @@
     document.addEventListener("input", function(ev){
       var el = ev.target;
       if(!el || (el.tagName !== "INPUT" && el.tagName !== "TEXTAREA")) return;
-      if(el.type === "checkbox" || el.type === "radio") return;
+      if(el.type === "checkbox" || el.type === "radio" || isBugReportUi(el)) return;
       var k = el.id || el.name || el.className || el.tagName;
       clearTimeout(typingTimers[k]);
       typingTimers[k] = setTimeout(function(){
@@ -170,6 +180,9 @@
       // 최근 ms 안의 동작(오래된 것이 위)
       actions: function(ms){ var c = Date.now() - ms; return actions.filter(function(e){ return e.t > c; }); },
       clear: function(){ log = []; actions = []; save(); saveActions(); },
+      // 버그 제보 창을 열 때 그 직전의 톱니바퀴 클릭을 지우고, 닫을 때 생기는 뒤로 가기 기록을 잠시 막는 데 씀
+      dropTrailing: function(re){ while(actions.length && re.test(actions[actions.length - 1].m)) actions.pop(); saveActions(); },
+      mute: function(ms){ muteUntil = Date.now() + ms; },
     };
     add("load", location.pathname + location.search);
     window.addEventListener("error", function(ev){
@@ -6066,7 +6079,8 @@ function copyTextToClipboard(text){
 }
 
 function openBugReportModal(){
-  bugTrace("action", "open bug report");
+  // 제보하려고 톱니바퀴를 연 클릭은 지움(제보 버튼·제보 창 안 동작은 <head> 쪽에서 처음부터 기록하지 않음)
+  try { if(window.fcBugLog && window.fcBugLog.dropTrailing) window.fcBugLog.dropTrailing(/^click button#settingsBtn\b/); } catch {}
   const backdrop = document.getElementById("modalBackdrop");
   const content = document.getElementById("modalContent");
   content.innerHTML = "";
@@ -6229,6 +6243,8 @@ function closeModal(fromHistory){
   backdrop.classList.remove("open");
   document.documentElement.classList.remove("modal-open");
   if(wasOpen) refreshNotesList();
+  // 버그 제보 창을 닫을 때 생기는 뒤로 가기(popstate)는 동작 기록에 남기지 않음
+  if(wasOpen && document.querySelector("#modalContent .bug-form") && window.fcBugLog && window.fcBugLog.mute) window.fcBugLog.mute(800);
   if(modalHistoryPushed && fromHistory !== true){
     modalHistoryPushed = false;
     history.back();
