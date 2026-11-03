@@ -41,6 +41,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 HTML_PATH = ROOT / "index.html"
 PROTECTED_PATH = ROOT / "data" / "x-protected-handles.txt"
+# 부스 명단에는 없지만 수집만 하는 계정(부계정 등). "아이디 부스번호[,부스번호]" (2026-11-03 C-11 @Goyangeg)
+EXTRA_HANDLES_PATH = ROOT / "data" / "x-extra-handles.txt"
 
 # 이 시각 이전 글은 후보로 보지 않음. 부스 작가 상당수가 2026-09-20 케모켓에도 나가서,
 # 그 행사 인포 글이 섞이지 않도록 케모켓 다음 날부터 봄 (2026-10-04 첫 시험 결과)
@@ -119,6 +121,16 @@ def handle_map(booths):
             entry = result.setdefault(h.lower(), (h, []))
             if booth["id"] not in entry[1]:
                 entry[1].append(booth["id"])
+    if EXTRA_HANDLES_PATH.exists():
+        for line in EXTRA_HANDLES_PATH.read_text(encoding="utf-8").splitlines():
+            parts = line.split("#", 1)[0].split()
+            if len(parts) < 2 or parts[0].lstrip("@").lower() in protected:
+                continue
+            h = parts[0].lstrip("@")
+            entry = result.setdefault(h.lower(), (h, []))
+            for b in parts[1].split(","):
+                if b and b not in entry[1]:
+                    entry[1].append(b)
     return result
 
 
