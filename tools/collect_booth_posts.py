@@ -463,6 +463,21 @@ def check_posts(feed_dir, refs):
                     print(f"  다음 페이지 {len(more)}개 중에 있음: {pid in more}")
             except Exception as e:
                 print(f"  프로필 글 목록 받기 실패: {e}")
+            for kind in ("statuses?with_replies=true", "media", "with_replies"):
+                try:
+                    req = urllib.request.Request(f"https://api.fxtwitter.com/2/profile/{handle.lower()}/{kind}", headers={"User-Agent": USER_AGENT})
+                    with urllib.request.urlopen(req, timeout=20) as res:
+                        alt = [str(x.get("id")) for x in json.load(res).get("results") or []]
+                    print(f"  /{kind} {len(alt)}개 중에 있음: {pid in alt}")
+                except Exception as e:
+                    print(f"  /{kind} 받기 실패: {e}")
+            try:
+                req = urllib.request.Request(f"https://api.fxtwitter.com/2/search?q={urllib.parse.quote('from:' + handle)}", headers={"User-Agent": USER_AGENT})
+                with urllib.request.urlopen(req, timeout=20) as res:
+                    found = [str(x.get("id")) for x in json.load(res).get("results") or []]
+                print(f"  검색(from:{handle}) {len(found)}개 중에 있음: {pid in found}")
+            except Exception as e:
+                print(f"  검색 받기 실패: {e}")
             try:
                 req = urllib.request.Request(f"https://api.fxtwitter.com/2/profile/{handle.lower()}", headers={"User-Agent": USER_AGENT})
                 with urllib.request.urlopen(req, timeout=20) as res:
