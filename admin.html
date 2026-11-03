@@ -257,7 +257,7 @@ function loadDecisions(){
       official: d.official || {}, officialExcluded: d.officialExcluded || {},
     };
     decisionsReadable = true;
-    return cleanupStoredContent();
+    return cleanupStoredContent().then(() => { backfillQuoted(); });
   }).catch(err => {
     // 규칙을 아직 넣지 않았으면 읽기도 막힘. 후보 목록은 그래도 보여줌
     if(!err || err.code !== "permission-denied") throw err;
@@ -274,13 +274,40 @@ function cleanupStoredContent(){
     patch[id] = { text: FieldValue.delete(), images: FieldValue.delete(), quote: FieldValue.delete() };
   });
   const ids = Object.keys(patch);
-  if(!ids.length || !currentUser) return;
+  if(!ids.length || !currentUser) return Promise.resolve();
   return decisionsRef.set({ approved: patch }, { merge: true }).then(() => {
     ids.forEach(id => {
       const entry = decisions.approved[id];
       delete entry.text; delete entry.images; delete entry.quote;
     });
   }).catch(() => {});   // 실패해도 다음에 열 때 다시 시도함
+}
+
+/* 인용한 글 정보(quoted)가 생기기 전(2026-11-03)에 반영한 글은 이 값이 없음.
+   운영자가 이 화면을 열면 뒤에서 FxTwitter 로 한 글씩(1초 간격) 확인해 채움. 인용 글이 아니면 quoted: null 로 둬서 다시 보지 않음.
+   FxTwitter 를 못 읽은 글은 건너뛰고 다음에 열 때 다시 봄 */
+let backfillRunning = false;
+function backfillQuoted(){
+  if(backfillRunning || !currentUser) return;
+  const ids = Object.keys(decisions.approved).filter(id => decisions.approved[id] && !("quoted" in decisions.approved[id]));
+  if(!ids.length) return;
+  backfillRunning = true;
+  let patch = {};
+  const flush = () => {
+    const done = patch; patch = {};
+    if(!Object.keys(done).length) return Promise.resolve();
+    return writeDecision({ approved: done }).catch(() => {});
+  };
+  ids.reduce((prev, id, i) => prev.then(() => fetchPostInfo(id, null).then(info => {
+    if(info.fresh && decisions.approved[id]){
+      patch[id] = { quoted: info.quoted || null };
+      decisions.approved[id].quoted = info.quoted || null;
+    }
+    // 10개마다 한 번에 저장
+    return (Object.keys(patch).length >= 10 ? flush() : null);
+  }).then(() => i < ids.length - 1 && new Promise(r => setTimeout(r, 1000)))), Promise.resolve())
+    .then(flush)
+    .finally(() => { backfillRunning = false; });
 }
 
 function boothsForHandle(handle){
@@ -300,20 +327,30 @@ function writeDecision(data){
 }
 /* 반영할 때 민감한 글 여부와 아이디만 확인해 저장함(본문·이미지는 저장하지 않음).
    X 는 민감한 글로 표시된 글을 임베드해 주지 않아서("Not found"), 사이트는 이런 글을 "X에서 보기" 링크로 보여줌.
-   FxTwitter 에서 최신 정보를 받고, 실패하면 후보 파일의 값을 씀 */
+   FxTwitter 에서 최신 정보를 받고, 실패하면 후보 파일의 값을 씀
+   인용 글이면 인용한 글의 id·아이디(quoted)도 저장함. X 임베드가 인용한 글을 빼고 그릴 때가 있어서
+   (2026-11-03 C-11: 본문만 보이고 링크·이미지가 안 보임) 사이트가 "인용한 글 보기"를 따로 담.
+   예전 quote(본문 사본)와 헷갈리지 않게 이름을 quoted 로 함 */
+function quotedFrom(st){
+  const q = st && st.quote;
+  return q && q.id ? { id: String(q.id), handle: (q.author && q.author.screen_name) || "" } : null;
+}
 function fetchPostInfo(id, candidate){
-  const fromCandidate = () => ({ sensitive: !!(candidate && candidate.sensitive) });
+  const fromCandidate = () => ({
+    sensitive: !!(candidate && candidate.sensitive),
+    quoted: (candidate && candidate.quoted) || null,
+  });
   return fetch(`https://api.fxtwitter.com/2/status/${id}`)
     .then(r => r.ok ? r.json() : Promise.reject(r.status))
     .then(data => {
       const st = data.status || {};
-      return { sensitive: !!st.possibly_sensitive, handle: st.author && st.author.screen_name };
+      return { sensitive: !!st.possibly_sensitive, handle: st.author && st.author.screen_name, quoted: quotedFrom(st), fresh: true };
     })
     .catch(fromCandidate);
 }
 function approve(id, booth, handle, candidate){
   return fetchPostInfo(id, candidate).then(info => {
-    const entry = { booth, handle: info.handle || handle, at: new Date().toISOString(), sensitive: info.sensitive };
+    const entry = { booth, handle: info.handle || handle, at: new Date().toISOString(), sensitive: info.sensitive, quoted: info.quoted || null };
     return writeDecision({
       approved: { [id]: entry },
       excluded: { [id]: FieldValue.delete() },

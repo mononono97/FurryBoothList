@@ -41,6 +41,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 HTML_PATH = ROOT / "index.html"
 PROTECTED_PATH = ROOT / "data" / "x-protected-handles.txt"
+# 부스 명단에는 없지만 수집만 하는 계정(부계정 등). "아이디 부스번호[,부스번호]" (2026-11-03 C-11 @Goyangeg)
+EXTRA_HANDLES_PATH = ROOT / "data" / "x-extra-handles.txt"
 
 # 이 시각 이전 글은 후보로 보지 않음. 부스 작가 상당수가 2026-09-20 케모켓에도 나가서,
 # 그 행사 인포 글이 섞이지 않도록 케모켓 다음 날부터 봄 (2026-10-04 첫 시험 결과)
@@ -119,6 +121,16 @@ def handle_map(booths):
             entry = result.setdefault(h.lower(), (h, []))
             if booth["id"] not in entry[1]:
                 entry[1].append(booth["id"])
+    if EXTRA_HANDLES_PATH.exists():
+        for line in EXTRA_HANDLES_PATH.read_text(encoding="utf-8").splitlines():
+            parts = line.split("#", 1)[0].split()
+            if len(parts) < 2 or parts[0].lstrip("@").lower() in protected:
+                continue
+            h = parts[0].lstrip("@")
+            entry = result.setdefault(h.lower(), (h, []))
+            for b in parts[1].split(","):
+                if b and b not in entry[1]:
+                    entry[1].append(b)
     return result
 
 
@@ -233,6 +245,7 @@ def collect_retweets(known, booths_for, names, first_run):
                 "created": created_at(p).isoformat(),
                 "via": RT_HANDLE,
                 "sensitive": bool(p.get("possibly_sensitive")),
+                **quoted_ref(p),
                 "reasons": [RT_REASON],
                 "foundAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             })
@@ -265,6 +278,17 @@ def post_links(p):
     # facets 가 없을 때를 대비해 펼친 주소가 들어 있는 text 의 링크도 봄
     urls += re.findall(r"\S*(?:\.com|\.gle)/\S*", p.get("text") or "")
     return " ".join(u for u in urls if u)
+
+
+def quoted_ref(p):
+    """인용 글이면 인용한 글의 id·아이디만 {"quoted": {...}} 로 돌려줌(본문·이미지는 넣지 않음).
+    X 임베드가 인용한 글을 빼고 그리는 경우가 있어서(2026-11-03 C-11: 본문만 보이고 링크·이미지가 안 보임)
+    사이트가 "인용한 글 보기"를 따로 달 수 있게 함. 관리 화면이 FxTwitter 를 못 읽을 때도 이 값을 씀"""
+    q = p.get("quote") or {}
+    qid = str(q.get("id") or "")
+    if not qid:
+        return {}
+    return {"quoted": {"id": qid, "handle": (q.get("author") or {}).get("screen_name") or ""}}
 
 
 def post_images(p):
@@ -371,6 +395,7 @@ def collect(feed_dir, dry_run=False, quick=False):
                 # X 는 민감한 글로 표시된 글을 로그인하지 않은 방문자에게 임베드해 주지 않음("Not found").
                 # 이런 글은 사이트에서 임베드 대신 아이디와 "X에서 보기" 링크만 보여줌
                 "sensitive": bool(p.get("possibly_sensitive")),
+                **quoted_ref(p),
                 "reasons": reasons,
                 "foundAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             })
@@ -458,6 +483,11 @@ def check_posts(feed_dir, refs):
         print(f"  작성 {created_at(p).isoformat()}, 답글 대상: {reply_target(p) or '없음'}, 인용 글: {bool(p.get('quote'))}, "
               f"민감한 글 표시: {bool(p.get('possibly_sensitive'))}")
         print(f"  키워드 점수 {score} (기준 {MIN_SCORE}) {reasons}, 이미지 {len(post_images(p))}장")
+        q = p.get("quote") or {}
+        if q:
+            # 인용한 글은 임베드 안에 따로 그려짐. 그 글이 민감한 글이면 X 가 로그인 안 한 방문자에게 빼고 보여줌 (2026-11-03 C-11)
+            print(f"  인용한 글: @{(q.get('author') or {}).get('screen_name') or '?'} {q.get('id')}, "
+                  f"민감한 글 표시: {bool(q.get('possibly_sensitive'))}, 이미지 {len(post_images(q))}장")
         if handle:
             try:
                 page = fetch_page(handle)
@@ -565,6 +595,7 @@ def audit_booths(feed_dir, booth_refs, write=False):
                         "created": created_at(p).isoformat(),
                         "score": score,
                         "sensitive": bool(p.get("possibly_sensitive")),
+                        **quoted_ref(p),
                         "reasons": reasons + [AUDIT_REASON],
                         "foundAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                     })
