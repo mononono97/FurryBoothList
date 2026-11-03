@@ -14,6 +14,10 @@ on:
         description: "공식·RT 계정만 빠르게 (공식 글을 바로 받고 싶을 때)"
         type: boolean
         default: false
+      check:
+        description: "이 글이 왜 후보에 없는지만 확인 (글 주소나 id, 여러 개는 쉼표로). 후보 파일은 바꾸지 않음"
+        type: string
+        default: ""
 
 permissions:
   contents: write
@@ -40,10 +44,16 @@ jobs:
             git -C feed rm -rfq .
             printf '# 부스 상품 글 후보\n\nGitHub Actions 가 자동으로 갱신하는 브랜치입니다. 직접 수정하지 마세요.\n' > feed/README.md
           fi
+      - name: 글 확인
+        if: inputs.check
+        env:
+          CHECK: ${{ inputs.check }}
+        run: python3 tools/collect_booth_posts.py feed "--check=$CHECK"
       - name: 후보 모으기
+        if: ${{ !inputs.check }}
         run: python3 tools/collect_booth_posts.py feed ${{ github.ref_name != 'main' && '--dry-run' || '' }} ${{ ((github.event_name == 'schedule' && github.event.schedule != '17 * * * *') || inputs.quick) && '--quick' || '' }}
       - name: 후보 저장
-        if: github.ref_name == 'main'
+        if: github.ref_name == 'main' && !inputs.check
         run: |
           cd feed
           git add -A

@@ -12,6 +12,7 @@ X 약관상 X 밖에 글 사본을 두지 않는 편이 안전해서 (2026-10-05
     python3 tools/collect_booth_posts.py <후보 폴더>            # <후보 폴더>/candidates.json 갱신
     python3 tools/collect_booth_posts.py <후보 폴더> --dry-run  # 파일은 건드리지 않고 결과만 출력
     python3 tools/collect_booth_posts.py <후보 폴더> --quick    # 부스 계정은 건너뛰고 공식·RT 계정만 (몇 초면 끝남)
+    python3 tools/collect_booth_posts.py <후보 폴더> --check=<글 주소나 id,...>  # 그 글이 왜 후보에 없는지만 확인
 
 동작:
 1. index.html 의 BOOTHS 줄에서 부스장·부스원 X 아이디를 읽음
@@ -421,8 +422,49 @@ def collect(feed_dir, dry_run=False, quick=False):
     path.write_text(json.dumps(out, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 
 
+def check_posts(feed_dir, refs):
+    """글 주소·id 마다 수집기가 그 글을 어떻게 보는지 출력. "이 글이 왜 안 들어왔나" 제보 확인용 (2026-11-03).
+    글 본문은 공개 로그에 남기지 않고 판단에 쓰인 값만 보여줌."""
+    handles = handle_map(load_booths())
+    path = Path(feed_dir) / "candidates.json"
+    data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    known = {c["id"] for c in (data.get("posts") or []) + (data.get("official") or [])}
+    for ref in filter(None, (r.strip() for r in refs.split(","))):
+        m = re.search(r"(\d{10,})", ref)
+        if not m:
+            print(f"? {ref}: 글 id 를 찾지 못함")
+            continue
+        pid = m.group(1)
+        print(f"=== {pid}")
+        print(f"  후보 파일에 있음: {pid in known}")
+        try:
+            req = urllib.request.Request(f"https://api.fxtwitter.com/2/status/{pid}", headers={"User-Agent": USER_AGENT})
+            with urllib.request.urlopen(req, timeout=20) as res:
+                p = json.load(res).get("status") or {}
+        except Exception as e:
+            print(f"  글 받기 실패: {e}")
+            continue
+        handle = (p.get("author") or {}).get("screen_name") or ""
+        score, reasons = judge(post_text(p), post_images(p), post_links(p))
+        print(f"  글쓴이 @{handle} (수집 대상 계정: {handle.lower() in handles}, 부스 {handles.get(handle.lower(), ('', []))[1]})")
+        print(f"  작성 {created_at(p).isoformat()}, 답글 대상: {reply_target(p) or '없음'}, 인용 글: {bool(p.get('quote'))}, "
+              f"민감한 글 표시: {bool(p.get('possibly_sensitive'))}")
+        print(f"  키워드 점수 {score} (기준 {MIN_SCORE}) {reasons}, 이미지 {len(post_images(p))}장")
+        if handle:
+            try:
+                ids = [str(x.get("id")) for x in fetch_statuses(handle)]
+                print(f"  @{handle} 프로필 최근 글 {len(ids)}개 중에 있음: {pid in ids}"
+                      + (f" (가장 최근 {ids[0]}, 가장 오래된 {ids[-1]})" if ids else ""))
+            except Exception as e:
+                print(f"  프로필 글 목록 받기 실패: {e}")
+
+
 if __name__ == "__main__":
+    check = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--check=")), "")
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     if len(args) != 1:
         sys.exit(__doc__)
+    if check:
+        check_posts(args[0], check)
+        sys.exit(0)
     collect(args[0], dry_run="--dry-run" in sys.argv, quick="--quick" in sys.argv)
