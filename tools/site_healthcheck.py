@@ -220,7 +220,11 @@ def check_sync(sa):
         t0 = time.monotonic()
         w = requests.patch(doc_url, json=body, headers=auth, timeout=20)
         if not w.ok:
-            add(g, "Firestore 쓰기", "fail", f"HTTP {w.status_code} {w.text[:200]}")
+            if w.status_code == 429 or "RESOURCE_EXHAUSTED" in w.text:
+                add(g, "Firestore 쓰기", "fail",
+                    "Firestore 무료 할당량 소진(429) → 한국 17:00 초기화 전까지 로그인 동기화·상품 정보 글 불러오기가 안 됨")
+            else:
+                add(g, "Firestore 쓰기", "fail", f"HTTP {w.status_code} {w.text[:200]}")
             return
         rd = requests.get(doc_url, headers=auth, timeout=20)
         sec = time.monotonic() - t0
@@ -308,6 +312,13 @@ def check_firestore_quota(sa):
                 why = r.json().get("error", {}).get("message", "")[:300]
             except ValueError:
                 why = ""
+            if "requires billing" in why:
+                # Spark(무료) 플랜은 결제 계정이 없어 Cloud Monitoring 으로 사용량을 읽을 수 없음.
+                # 이 경우 알림 대상이 아님: 한도를 다 쓰면 위 동기화 점검이 429(할당량 소진)로 실패해 그쪽으로 알림이 감.
+                add(g, "Firestore 오늘 사용량", "skip",
+                    "Spark(무료) 플랜이라 사용량을 읽을 수 없음(Cloud Monitoring 은 결제 계정 필요). "
+                    "한도를 다 쓰면 동기화 점검이 '할당량 소진'으로 실패해 알림이 감")
+                return
             if "has not been used" in why or "is disabled" in why or "SERVICE_DISABLED" in r.text:
                 hint = "Cloud Monitoring API 가 꺼져 있음 → Google Cloud 콘솔에서 Cloud Monitoring API 사용 설정"
             else:
