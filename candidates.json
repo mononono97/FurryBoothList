@@ -1,6 +1,42 @@
 {
- "updatedAt": "2026-11-03T18:01:18+00:00",
+ "updatedAt": "2026-11-03T18:30:03+00:00",
  "posts": [
+  {
+   "id": "2117679468496228558",
+   "handle": "GomTang_P",
+   "booths": [
+    "B22"
+   ],
+   "boothNames": [
+    "BoxBear"
+   ],
+   "created": "2026-11-03T18:05:04+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-11-03T18:22:50+00:00"
+  },
+  {
+   "id": "2117678741682028591",
+   "handle": "GomTang_P",
+   "booths": [
+    "B22"
+   ],
+   "boothNames": [
+    "BoxBear"
+   ],
+   "created": "2026-11-03T18:02:11+00:00",
+   "score": 4,
+   "sensitive": true,
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-11-03T18:22:50+00:00"
+  },
   {
    "id": "2117635170266386622",
    "handle": "GTDignified",
