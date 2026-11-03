@@ -64,7 +64,113 @@
       if(log.length > MAX) log.splice(0, log.length - MAX);
       save();
     }
-    window.fcBugLog = { add: add, all: function(){ return log.slice(); }, clear: function(){ log = []; save(); } };
+    // 최근 동작 기록(2026-11-03 사용자 요청): 무엇을 눌렀는지·어떤 칸을 바꿨는지·화면 전환 등을
+    // localStorage "fcbug-actions"에 최대 200건 남기고, 제보할 때 최근 5분 것만 넣음(새로고침 전 동작도 이어서 보임).
+    // 입력한 글자(메모·금액·검색어 등)는 넣지 않고 "몇 글자"만 남김. 체크박스·선택 상자는 고른 값만.
+    var AKEY = "fcbug-actions", AMAX = 200, AKEEP_MS = 10 * 60 * 1000;
+    var actions = [];
+    try {
+      actions = JSON.parse(localStorage.getItem(AKEY) || "[]");
+      if(!Array.isArray(actions)) actions = [];
+      var acutoff = Date.now() - AKEEP_MS;
+      actions = actions.filter(function(e){ return e && e.t > acutoff; });
+    } catch (e) { actions = []; }
+    var asaveTimer = null;
+    function saveActions(){
+      if(asaveTimer) return;
+      asaveTimer = setTimeout(function(){
+        asaveTimer = null;
+        try { localStorage.setItem(AKEY, JSON.stringify(actions)); } catch (e) {}
+      }, 300);
+    }
+    function act(msg){
+      msg = String(msg || "").replace(/\s+/g, " ").slice(0, 160);
+      var last = actions[actions.length - 1];
+      if(last && last.m === msg && Date.now() - last.t < 5000){ last.n = (last.n || 1) + 1; last.t = Date.now(); }
+      else actions.push({ t: Date.now(), m: msg });
+      if(actions.length > AMAX) actions.splice(0, actions.length - AMAX);
+      saveActions();
+    }
+    // 눌린 요소를 "button#id.class [data] "글자"" 꼴로 짧게 적음. 입력칸의 내용은 적지 않음
+    function describe(el){
+      if(!el || !el.tagName) return "?";
+      if(el === document.body || el === document.documentElement) return el.tagName.toLowerCase();
+      var d = el.tagName.toLowerCase();
+      if(el.id) d += "#" + el.id;
+      var cls = typeof el.className === "string" ? el.className.trim().split(/\s+/).filter(Boolean).slice(0, 2) : [];
+      if(cls.length) d += "." + cls.join(".");
+      var attrs = ["boothId", "filter", "lang", "themeChoice", "row", "zone", "mode", "kind", "status", "priority", "tab"];
+      for(var i = 0; i < attrs.length; i++){
+        var v = el.dataset && el.dataset[attrs[i]];
+        if(v) d += " [" + attrs[i] + "=" + String(v).slice(0, 20) + "]";
+      }
+      var tag = el.tagName;
+      if(tag !== "INPUT" && tag !== "TEXTAREA" && tag !== "SELECT"){
+        var label = (el.getAttribute("aria-label") || el.textContent || "").replace(/\s+/g, " ").trim();
+        if(label) d += ' "' + label.slice(0, 30) + (label.length > 30 ? "…" : "") + '"';
+      } else if(el.placeholder){
+        d += ' (' + String(el.placeholder).slice(0, 20) + ')';
+      }
+      return d;
+    }
+    document.addEventListener("click", function(ev){
+      var el = ev.target && ev.target.closest
+        ? ev.target.closest("button, a, summary, label, input, select, textarea, [data-booth-id], [role=button], [onclick]")
+        : null;
+      act("click " + describe(el || ev.target));
+    }, true);
+    document.addEventListener("change", function(ev){
+      var el = ev.target;
+      if(!el || !el.tagName) return;
+      var v;
+      if(el.type === "checkbox" || el.type === "radio") v = el.checked ? "on" : "off";
+      else if(el.tagName === "SELECT") v = "value=" + String(el.value).slice(0, 20);
+      else v = (el.type || "text") + ", " + String(el.value || "").length + " chars";
+      act("change " + describe(el) + " → " + v);
+    }, true);
+    document.addEventListener("keydown", function(ev){
+      if(ev.key === "Escape" || ev.key === "Enter") act("key " + ev.key + " on " + describe(ev.target));
+    }, true);
+    document.addEventListener("visibilitychange", function(){ act("page " + document.visibilityState); });
+    window.addEventListener("pagehide", function(){
+      act("page leave/reload");
+      // 떠나는 순간에는 예약 저장이 돌지 않으므로 바로 저장
+      try { localStorage.setItem(AKEY, JSON.stringify(actions)); localStorage.setItem(KEY, JSON.stringify(log)); } catch (e) {}
+    });
+    // 글자 입력은 칸마다 1초 동안 멈췄을 때 한 번만 "몇 글자"로 남김(내용은 남기지 않음)
+    var typingTimers = {};
+    document.addEventListener("input", function(ev){
+      var el = ev.target;
+      if(!el || (el.tagName !== "INPUT" && el.tagName !== "TEXTAREA")) return;
+      if(el.type === "checkbox" || el.type === "radio") return;
+      var k = el.id || el.name || el.className || el.tagName;
+      clearTimeout(typingTimers[k]);
+      typingTimers[k] = setTimeout(function(){
+        act("type in " + describe(el) + " → " + String(el.value || "").length + " chars");
+      }, 1000);
+    }, true);
+    window.addEventListener("popstate", function(){ act("browser back"); });
+    window.addEventListener("online", function(){ act("network online"); });
+    window.addEventListener("offline", function(){ act("network offline"); });
+    var resizeTimer = null, scrollTimer = null;
+    window.addEventListener("resize", function(){
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function(){ act("resize " + window.innerWidth + "x" + window.innerHeight); }, 600);
+    });
+    window.addEventListener("scroll", function(){
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(function(){ act("scroll y=" + Math.round(window.scrollY)); }, 800);
+    }, { passive: true });
+    act("page open " + location.pathname);
+
+    window.fcBugLog = {
+      add: add,
+      act: act,
+      all: function(){ return log.slice(); },
+      // 최근 ms 안의 동작(오래된 것이 위)
+      actions: function(ms){ var c = Date.now() - ms; return actions.filter(function(e){ return e.t > c; }); },
+      clear: function(){ log = []; actions = []; save(); saveActions(); },
+    };
     add("load", location.pathname + location.search);
     window.addEventListener("error", function(ev){
       if(ev.target && ev.target !== window){
@@ -5849,14 +5955,22 @@ function bugDataSummary(){
   ].join(", ");
 }
 
-// 기록 본문. maxLog: 최근 기록을 몇 줄까지 넣을지, withRaw: 데이터 원본 포함 여부
+// 기록 본문. maxLog: 최근 오류·흔적을 몇 줄까지, maxAct: 최근 5분 동작을 몇 줄까지(최근 것부터 남김), withRaw: 데이터 원본 포함 여부
+const BUG_ACTIONS_WINDOW_MS = 5 * 60 * 1000;
+function bugRecentActions(){
+  return window.fcBugLog && window.fcBugLog.actions ? window.fcBugLog.actions(BUG_ACTIONS_WINDOW_MS) : [];
+}
 function buildBugLog(opts){
   const all = window.fcBugLog ? window.fcBugLog.all() : [];
   const entries = all.slice(-opts.maxLog).reverse();   // 최신이 위
+  const acts = bugRecentActions();
+  const shownActs = opts.maxAct >= acts.length ? acts : acts.slice(acts.length - opts.maxAct);   // 오래된 것이 위
   const lines = [
     "[env]", ...bugEnvLines(),
     "", "[data]", bugDataSummary(),
-    "", `[log] newest first, ${entries.length}/${all.length}`,
+    "", `[actions] last 5 min, oldest first, ${shownActs.length}/${acts.length}`,
+    ...(shownActs.length ? shownActs.map(e => `${bugFmtTime(e.t)} ${e.m}${e.n > 1 ? ` x${e.n}` : ""}`) : ["(none)"]),
+    "", `[log] errors & events, newest first, ${entries.length}/${all.length}`,
     ...(entries.length ? entries.map(e => `${bugFmtTime(e.t)} ${e.k}${e.n > 1 ? ` x${e.n}` : ""}: ${e.m}`) : ["(none)"]),
   ];
   if(opts.withRaw){
@@ -5866,6 +5980,7 @@ function buildBugLog(opts){
   }
   return lines.join("\n");
 }
+const BUG_FULL = { maxLog: 40, maxAct: Infinity };
 
 function buildBugMailBody(log, trimmed){
   return [
@@ -5882,22 +5997,25 @@ function buildBugMailBody(log, trimmed){
   ].join("\n");
 }
 
-// 길이 제한(encodeURIComponent 후 글자 수) 안에 들어가는 메일 본문을 만듦. 넘치면 원본 → 오래된 기록 순서로 줄임
+// 길이 제한(encodeURIComponent 후 글자 수) 안에 들어가는 메일 본문을 만듦.
+// 넘치면 데이터 원본 → 오래된 동작·기록 순서로 줄임
 function fitBugMailBody(limit, withRaw){
-  const total = window.fcBugLog ? window.fcBugLog.all().length : 0;
+  const totalLog = window.fcBugLog ? window.fcBugLog.all().length : 0;
+  const totalAct = bugRecentActions().length;
   const tries = [];
-  if(withRaw) tries.push({ maxLog: 40, withRaw: true });
-  [40, 20, 10, 5, 2, 0].forEach(n => tries.push({ maxLog: n, withRaw: false }));
+  if(withRaw) tries.push({ maxLog: 40, maxAct: Infinity, withRaw: true });
+  [[40, Infinity], [40, 60], [20, 40], [10, 25], [5, 15], [3, 8], [2, 4], [0, 0]]
+    .forEach(([maxLog, maxAct]) => tries.push({ maxLog, maxAct, withRaw: false }));
   for(const opts of tries){
-    const trimmed = (withRaw && !opts.withRaw) || opts.maxLog < total;
+    const trimmed = (withRaw && !opts.withRaw) || opts.maxLog < totalLog || opts.maxAct < totalAct;
     const body = buildBugMailBody(buildBugLog(opts), trimmed);
     if(encodeURIComponent(body).length <= limit) return body;
   }
   // 그래도 넘치면(PC 메일 앱 한도에 한국어 안내문까지 들어가 빠듯한 경우) 기록을 뒤쪽 줄부터 뺌.
-  // 최근 오류 몇 줄은 남기려고 [data] 다음에 [log] 를 앞으로 당겨 둔 순서로 다시 만듦
-  const lines = buildBugLog({ maxLog: 5, withRaw: false }).split("\n");
-  const logAt = lines.findIndex(l => l.startsWith("[log]"));
-  const ordered = logAt > 0 ? [...lines.slice(logAt), "", ...lines.slice(0, logAt)] : lines;
+  // 최근 동작·오류 몇 줄은 남기려고 [actions]·[log] 를 [env] 앞으로 당겨 둔 순서로 다시 만듦
+  const lines = buildBugLog({ maxLog: 4, maxAct: 8, withRaw: false }).split("\n");
+  const actAt = lines.findIndex(l => l.startsWith("[actions]"));
+  const ordered = actAt > 0 ? [...lines.slice(actAt), "", ...lines.slice(0, actAt)] : lines;
   let n = ordered.length;
   let body = buildBugMailBody(ordered.join("\n"), true);
   while(n > 0 && encodeURIComponent(body).length > limit){
@@ -6007,7 +6125,7 @@ function openBugReportModal(){
     status.textContent = msg;
     status.classList.toggle("error", !!isError);
   };
-  const fullLog = () => buildBugLog({ maxLog: 40, withRaw: rawBox.checked });
+  const fullLog = () => buildBugLog({ ...BUG_FULL, withRaw: rawBox.checked });
   // 미리보기와 링크는 창을 연 순간 기준. 체크를 바꾸면 다시 만듦
   const refresh = () => {
     preview.textContent = fullLog();
