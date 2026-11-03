@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
-  script-src 'self' 'unsafe-inline' https://platform.twitter.com https://cdn.syndication.twimg.com https://www.gstatic.com https://apis.google.com;
+  script-src 'self' 'unsafe-inline' https://platform.twitter.com https://cdn.syndication.twimg.com https://www.gstatic.com https://apis.google.com https://static.cloudflareinsights.com;
   worker-src 'self';
   style-src 'self' 'unsafe-inline';
   img-src 'self' data: https://abs.twimg.com https://ton.twimg.com;
   font-src 'self' data:;
-  connect-src 'self' https://cdn.syndication.twimg.com https://syndication.twitter.com https://twitter.com https://x.com https://api.open-meteo.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com;
+  connect-src 'self' https://cdn.syndication.twimg.com https://syndication.twitter.com https://twitter.com https://x.com https://api.open-meteo.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://cloudflareinsights.com;
   frame-src https://platform.twitter.com https://syndication.twitter.com https://www.google.com https://accounts.google.com https://boothlist-4589c.firebaseapp.com;
   object-src 'none';
   base-uri 'self';
@@ -1039,6 +1039,55 @@
     border-color:#4a8f3c;
     color:#eafce6;
   }
+  /* 선입금 항목(한 부스에 여러 건): 항목마다 번호·삭제 버튼, 항목 사이 구분선 */
+  .preorder-summary{
+    font-size:12px;
+    font-weight:700;
+    color:var(--on-panel);
+    margin-bottom:8px;
+  }
+  .preorder-item + .preorder-item{
+    margin-top:14px;
+    padding-top:12px;
+    border-top:1px dashed var(--panel-line);
+  }
+  .preorder-item-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    margin-bottom:6px;
+    min-height:26px;
+  }
+  .preorder-item-title{
+    font-size:12px;
+    font-weight:700;
+    color:var(--moss-light);
+  }
+  .preorder-item-remove{
+    font-size:11.5px;
+    padding:4px 10px;
+    border-radius:6px;
+    border:1px solid var(--panel-line);
+    background:transparent;
+    color:var(--on-panel);
+    cursor:pointer;
+  }
+  .preorder-item-remove:hover{ border-color:#c0504d; color:#c0504d; }
+  .preorder-add-btn{
+    width:100%;
+    margin-top:14px;
+    font-size:13px;
+    font-weight:700;
+    padding:10px 8px;
+    border-radius:8px;
+    border:1px dashed var(--panel-line);
+    background:transparent;
+    color:var(--on-panel);
+    cursor:pointer;
+  }
+  .preorder-add-btn:hover:not(:disabled){ background:var(--panel-field); }
+  .preorder-add-btn:disabled{ opacity:.5; cursor:default; }
 
   /* 우선순위 선택 버튼 */
   .priority-box{
@@ -1862,7 +1911,7 @@
    팝오버는 twitter 핸들로 X 공식 타임라인 위젯(createTimeline)을 1개만 불러와서
    보여줍니다. 계정에 고정 트윗이 있으면 그게, 없으면 가장 최근 트윗이 뜹니다.
 ------------------------------- */
-const BOOTHS = [{"id": "A01", "block": "A", "num": "01", "adult": false, "name": "BAURWOLF", "rep": "Luf", "twitter": "musou_luf", "avatar": "musou_luf", "members": [{"name": "Luf", "twitter": "musou_luf", "role": "leader", "avatar": "musou_luf"}], "cut": true, "nums": ["01"]}, {"id": "A02", "block": "A", "num": "02", "adult": false, "name": "SEAWEED VILLAGE", "rep": "DAI-XT.", "twitter": "Hijiki_DaiXt", "avatar": "Hijiki_DaiXt", "members": [{"name": "DAI-XT.", "twitter": "Hijiki_DaiXt", "role": "leader", "avatar": "Hijiki_DaiXt"}], "cut": true, "nums": ["02"]}, {"id": "A03", "block": "A", "num": "03", "adult": false, "name": "GYM LIGER", "rep": "Raigo / 藤堂雷悟", "twitter": "RaigoTohdoh", "avatar": "RaigoTohdoh", "members": [{"name": "Raigo / 藤堂雷悟", "twitter": "RaigoTohdoh", "role": "leader", "avatar": "RaigoTohdoh"}], "cut": true, "nums": ["03"]}, {"id": "A04", "block": "A", "num": "04", "adult": false, "name": "OUMAGA WALD", "rep": "Wald / 逢魔牙ワルト", "twitter": "OumagaWald", "avatar": "OumagaWald", "members": [{"name": "Wald / 逢魔牙ワルト", "twitter": "OumagaWald", "role": "leader", "avatar": "OumagaWald"}], "cut": true, "nums": ["04"]}, {"id": "A05", "block": "A", "num": "05", "adult": false, "name": "TRAD MONMON 虎渡悶々", "rep": "Trad Monmon / 虎渡悶々", "twitter": "Trad_monmon", "avatar": "Trad_monmon", "members": [{"name": "Trad Monmon / 虎渡悶々", "twitter": "Trad_monmon", "role": "leader", "avatar": "Trad_monmon"}], "cut": true, "nums": ["05"]}, {"id": "A06", "block": "A", "num": "06", "adult": false, "name": "Kigurumi Kagetsu", "rep": "Kigurumi Kagetsu", "twitter": "kigurumikagetsu", "avatar": "kigurumikagetsu", "members": [{"name": "Kigurumi Kagetsu", "twitter": "kigurumikagetsu", "role": "leader", "avatar": "kigurumikagetsu"}, {"name": "Geppei(GP)", "twitter": "GeppeiFursuit", "role": "member", "avatar": "GeppeiFursuit"}, {"name": "Keishi(KC)", "twitter": "beatmenesisu", "role": "member", "avatar": "beatmenesisu"}, {"name": "mikatagura", "twitter": "mikatagura", "role": "member", "avatar": "mikatagura"}], "cut": true, "nums": ["06"]}, {"id": "A07", "block": "A", "num": "07", "adult": false, "name": "wolf's works", "rep": "ware", "twitter": "wolfroof", "avatar": "wolfroof", "members": [{"name": "ware", "twitter": "wolfroof", "role": "leader", "avatar": "wolfroof"}, {"name": "Sekki-Kyowe", "twitter": "sekkinkyowe", "role": "member", "avatar": "sekkinkyowe"}], "cut": true, "nums": ["07"]}, {"id": "A08", "block": "A", "num": "08", "adult": false, "name": "TRIVELER", "rep": "Nagabe", "twitter": "mucknagabe", "avatar": "mucknagabe", "members": [{"name": "Nagabe", "twitter": "mucknagabe", "role": "leader", "avatar": "mucknagabe"}], "cut": true, "nums": ["08"]}, {"id": "A09", "block": "A", "num": "09", "adult": false, "name": "GINTAN STUDIO", "rep": "Gintan", "twitter": "FurryGintan", "avatar": "FurryGintan", "members": [{"name": "Gintan", "twitter": "FurryGintan", "role": "leader", "avatar": "FurryGintan"}], "cut": true, "nums": ["09"]}, {"id": "A10", "block": "A", "num": "10", "adult": false, "name": "푸딩파르페", "rep": "syukapong", "twitter": "syukapong", "avatar": "syukapong", "members": [{"name": "syukapong", "twitter": "syukapong", "role": "leader", "avatar": "syukapong"}, {"name": "막스", "twitter": "M_A_K_X_", "role": "member", "avatar": "M_A_K_X_"}, {"name": "하호", "twitter": "KKULLOOK", "role": "member", "avatar": "KKULLOOK"}], "cut": true, "nums": ["10"]}, {"id": "A11-12", "block": "A", "num": "11-12", "adult": false, "name": "콩자반 김자반", "rep": "Kimroco", "twitter": "_Kimroco", "avatar": "_Kimroco", "members": [{"name": "Kimroco", "twitter": "_Kimroco", "role": "leader", "avatar": "_Kimroco"}, {"name": "콩조림", "twitter": "kongzorim", "role": "member", "avatar": "kongzorim"}, {"name": "퍼지", "twitter": null, "role": "member", "avatar": null}, {"name": "찰리", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["11", "12"]}, {"id": "A13", "block": "A", "num": "13", "adult": false, "name": "코치문고", "rep": "코치", "twitter": "_K0CH1", "avatar": "_K0CH1", "members": [{"name": "코치", "twitter": "_K0CH1", "role": "leader", "avatar": "_K0CH1"}, {"name": "테이릿", "twitter": "Teirit_", "role": "member", "avatar": "Teirit_"}, {"name": "림", "twitter": "Melonfur_Rim", "role": "member", "avatar": "Melonfur_Rim"}], "cut": true, "nums": ["13"]}, {"id": "A14", "block": "A", "num": "14", "adult": false, "name": "초건전회지연구회", "rep": "하치", "twitter": "Hachi_duchi", "avatar": "Hachi_duchi", "members": [{"name": "하치", "twitter": "Hachi_duchi", "role": "leader", "avatar": "Hachi_duchi"}, {"name": "쏘당", "twitter": "ss0dan6", "role": "member", "avatar": "ss0dan6"}], "cut": false, "nums": ["14"]}, {"id": "A15", "block": "A", "num": "15", "adult": false, "name": "PPP2", "rep": "ITTO", "twitter": "nanimonaitto", "avatar": "nanimonaitto", "members": [{"name": "ITTO", "twitter": "nanimonaitto", "role": "leader", "avatar": "nanimonaitto"}, {"name": "공간", "twitter": "kkugaoo", "role": "member", "avatar": "kkugaoo"}], "cut": false, "nums": ["15"]}, {"id": "A16", "block": "A", "num": "16", "adult": false, "name": "브 BEUU / FURPPET", "rep": "브 BEUU", "twitter": "Beuu0920", "avatar": "Beuu0920", "members": [{"name": "브 BEUU", "twitter": "Beuu0920", "role": "leader", "avatar": "Beuu0920"}, {"name": "헤피 Hephi", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["16"]}, {"id": "A17", "block": "A", "num": "17", "adult": false, "name": "시디과 늑대교수님", "rep": "SBST", "twitter": "SIRBST", "avatar": "SIRBST", "members": [{"name": "SBST", "twitter": "SIRBST", "role": "leader", "avatar": "SIRBST"}, {"name": "서베스천", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["17"]}, {"id": "A18", "block": "A", "num": "18", "adult": false, "name": "BAD PAW Co.", "rep": "badpawco", "twitter": "badpawco", "avatar": "badpawco", "members": [{"name": "badpawco", "twitter": "badpawco", "role": "leader", "avatar": "badpawco"}, {"name": "해견", "twitter": "seadogwal", "role": "member", "avatar": "seadogwal"}, {"name": "Largo", "twitter": "largo_furry", "role": "member", "avatar": "largo_furry"}], "cut": true, "nums": ["18"]}, {"id": "A19", "block": "A", "num": "19", "adult": false, "name": "메이커 연합부스 - 아르모아", "rep": "뻐꾹", "twitter": "pu_couck_", "avatar": "pu_couck_", "members": [{"name": "뻐꾹", "twitter": "pu_couck_", "role": "leader", "avatar": "pu_couck_"}, {"name": "김루미", "twitter": "ToriS6526", "role": "member", "avatar": "ToriS6526"}, {"name": "블루레이", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["19"]}, {"id": "A20", "block": "A", "num": "20", "adult": false, "name": "내가 쓰려고 만든 굿즈", "rep": "PHINY", "twitter": "Yell0whale", "avatar": "Yell0whale", "members": [{"name": "PHINY", "twitter": "Yell0whale", "role": "leader", "avatar": "Yell0whale"}, {"name": "BLAEDIC", "twitter": "blaedic", "role": "member", "avatar": "blaedic"}], "cut": true, "nums": ["20"]}, {"id": "A21", "block": "A", "num": "21", "adult": false, "name": "Kemostar", "rep": "Frosty", "twitter": "Seres_frosty", "avatar": "Seres_frosty", "members": [{"name": "Frosty", "twitter": "Seres_frosty", "role": "leader", "avatar": "Seres_frosty"}, {"name": "Habol", "twitter": "Habol_", "role": "member", "avatar": "Habol_"}], "cut": true, "nums": ["21"]}, {"id": "A22", "block": "A", "num": "22", "adult": false, "name": "모노마사 나이스 트라이", "rep": "백야", "twitter": "White_Night06", "avatar": "White_Night06", "members": [{"name": "백야", "twitter": "White_Night06", "role": "leader", "avatar": "White_Night06"}, {"name": "Solidus", "twitter": "liq_soli", "role": "member", "avatar": "liq_soli"}], "cut": true, "nums": ["22"]}, {"id": "A23", "block": "A", "num": "23", "adult": false, "name": "엘븐스토어 1", "rep": "엘븐", "twitter": "elvendays", "avatar": "elvendays", "members": [{"name": "엘븐", "twitter": "elvendays", "role": "leader", "avatar": "elvendays"}, {"name": "카카오", "twitter": "Caca_o999", "role": "member", "avatar": "Caca_o999"}], "cut": true, "nums": ["23"]}, {"id": "A24", "block": "A", "num": "24", "adult": false, "name": "어몽어스샌즈파피루스", "rep": "파닉", "twitter": "Panic_exc", "avatar": "Panic_exc", "members": [{"name": "파닉", "twitter": "Panic_exc", "role": "leader", "avatar": "Panic_exc"}, {"name": "별귤", "twitter": "ByeolGyule", "role": "member", "avatar": "ByeolGyule"}, {"name": "잔디", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["24"]}, {"id": "A25", "block": "A", "num": "25", "adult": false, "name": "숲속의 범", "rep": "쑥갓", "twitter": "nrimbotree", "avatar": "nrimbotree", "members": [{"name": "쑥갓", "twitter": "nrimbotree", "role": "leader", "avatar": "nrimbotree"}, {"name": "soL", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["25"]}, {"id": "A26", "block": "A", "num": "26", "adult": false, "name": "히잉 형아 꼬리 상점", "rep": "런크", "twitter": "Runk102030", "avatar": "Runk102030", "members": [{"name": "런크", "twitter": "Runk102030", "role": "leader", "avatar": "Runk102030"}, {"name": "파라엘", "twitter": "perel_fur", "role": "member", "avatar": "perel_fur"}, {"name": "콜리", "twitter": "Colibri_1825", "role": "member", "avatar": "Colibri_1825"}], "cut": true, "nums": ["26"]}, {"id": "A27", "block": "A", "num": "27", "adult": false, "name": "전속 메이드 세바스찬의 비밀 주문!", "rep": "영원양", "twitter": "youngwonyang", "avatar": "youngwonyang", "members": [{"name": "영원양", "twitter": "youngwonyang", "role": "leader", "avatar": "youngwonyang"}, {"name": "루덴", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["27"]}, {"id": "A28", "block": "A", "num": "28", "adult": false, "name": "OCHALOBSTER", "rep": "おちゃづけ(OCHAZUKE)", "twitter": "OCHALOBSTER", "avatar": "OCHALOBSTER", "members": [{"name": "おちゃづけ(OCHAZUKE)", "twitter": "OCHALOBSTER", "role": "leader", "avatar": "OCHALOBSTER"}, {"name": "えびまよ(EBIMAYO)", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["28"]}, {"id": "A29", "block": "A", "num": "29", "adult": false, "name": "해적판 아니고 정발입니다", "rep": "Minong", "twitter": "minongminong", "avatar": "minongminong", "members": [{"name": "Minong", "twitter": "minongminong", "role": "leader", "avatar": "minongminong"}, {"name": "썽으리", "twitter": "TLJPSi", "role": "member", "avatar": "TLJPSi"}], "cut": true, "nums": ["29"]}, {"id": "A30", "block": "A", "num": "30", "adult": false, "name": "FURST SNOW", "rep": "JIN", "twitter": "noway_JIN", "avatar": "noway_JIN", "members": [{"name": "JIN", "twitter": "noway_JIN", "role": "leader", "avatar": "noway_JIN"}, {"name": "Flash", "twitter": "DXFFlash", "role": "member", "avatar": "DXFFlash"}, {"name": "Eerie", "twitter": "Neoul_the_sea", "role": "member", "avatar": "Neoul_the_sea"}], "cut": true, "nums": ["30"]}, {"id": "A31", "block": "A", "num": "31", "adult": false, "name": "치폰의 레모네이드 가게", "rep": "치폰", "twitter": "chiffonpaw", "avatar": "chiffonpaw", "members": [{"name": "치폰", "twitter": "chiffonpaw", "role": "leader", "avatar": "chiffonpaw"}], "cut": true, "nums": ["31"]}, {"id": "A32", "block": "A", "num": "32", "adult": false, "name": "고소한 빵냄새가 솔솔", "rep": "빵용", "twitter": "breadragon", "avatar": "breadragon", "members": [{"name": "빵용", "twitter": "breadragon", "role": "leader", "avatar": "breadragon"}], "cut": true, "nums": ["32"]}, {"id": "A33", "block": "A", "num": "33", "adult": false, "name": "도마뱀의 보물함", "rep": "드란", "twitter": "didran9802", "avatar": "didran9802", "members": [{"name": "드란", "twitter": "didran9802", "role": "leader", "avatar": "didran9802"}, {"name": "애오우", "twitter": "dodh5172", "role": "member", "avatar": "dodh5172"}], "cut": true, "nums": ["33"]}, {"id": "A34", "block": "A", "num": "34", "adult": false, "name": "포도당", "rep": "한라봉", "twitter": "hanlabong03", "avatar": "hanlabong03", "members": [{"name": "한라봉", "twitter": "hanlabong03", "role": "leader", "avatar": "hanlabong03"}, {"name": "두부", "twitter": null, "role": "member", "avatar": null}, {"name": "제제", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["34"]}, {"id": "A35", "block": "A", "num": "35", "adult": false, "name": "빙다리 햍바지", "rep": "해태", "twitter": "ringo2ALS", "avatar": "ringo2ALS", "members": [{"name": "해태", "twitter": "ringo2ALS", "role": "leader", "avatar": "ringo2ALS"}], "cut": true, "nums": ["35"]}, {"id": "A36", "block": "A", "num": "36", "adult": false, "name": "또롱별", "rep": "이데아", "twitter": "ideatami", "avatar": "ideatami", "members": [{"name": "이데아", "twitter": "ideatami", "role": "leader", "avatar": "ideatami"}, {"name": "스란", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["36"]}, {"id": "A37-38", "block": "A", "num": "37-38", "adult": false, "name": "Whitefangwolves", "rep": "Whitefangwolves", "twitter": "Whitefangwolves", "avatar": "Whitefangwolves", "members": [{"name": "Whitefangwolves", "twitter": "Whitefangwolves", "role": "leader", "avatar": "Whitefangwolves"}], "cut": true, "nums": ["37", "38"]}, {"id": "A39", "block": "A", "num": "39", "adult": false, "name": "Furriverse", "rep": "드펜", "twitter": "Furriverse", "avatar": "Furriverse", "members": [{"name": "드펜", "twitter": "Furriverse", "role": "leader", "avatar": "Furriverse"}, {"name": "폴라", "twitter": null, "role": "member", "avatar": null}, {"name": "쿠코상", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["39"]}, {"id": "A40", "block": "A", "num": "40", "adult": false, "name": "FUR PLUS", "rep": "Dodari", "twitter": "FurPlus_Studio", "avatar": "FurPlus_Studio", "members": [{"name": "Dodari", "twitter": "FurPlus_Studio", "role": "leader", "avatar": "FurPlus_Studio"}, {"name": "타쟈도르(떡장갑)", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["40"]}, {"id": "A41", "block": "A", "num": "41", "adult": false, "name": "MOFUMOFUYA", "rep": "mofuaki", "twitter": "mofuaki_", "avatar": "mofuaki_", "members": [{"name": "mofuaki", "twitter": "mofuaki_", "role": "leader", "avatar": "mofuaki_"}, {"name": "おおくも", "twitter": null, "role": "member", "avatar": null}, {"name": "薄田", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["41"]}, {"id": "B01", "block": "B", "num": "01", "adult": true, "name": "CheetahPaws", "rep": "CheetahPaws", "twitter": "cheetah_paws", "avatar": "cheetah_paws", "members": [{"name": "CheetahPaws", "twitter": "cheetah_paws", "role": "leader", "avatar": "cheetah_paws"}], "cut": true, "nums": ["01"]}, {"id": "B02", "block": "B", "num": "02", "adult": true, "name": "Agi's Garage", "rep": "agitype01", "twitter": "agitype01", "avatar": "agitype01", "members": [{"name": "agitype01", "twitter": "agitype01", "role": "leader", "avatar": "agitype01"}, {"name": "Kutto", "twitter": "Kuttoyaki", "role": "member", "avatar": "Kuttoyaki"}], "cut": true, "nums": ["02"]}, {"id": "B03", "block": "B", "num": "03", "adult": true, "name": "Omyurice", "rep": "Omyurice", "twitter": "omyuriceart", "avatar": "omyuriceart", "members": [{"name": "Omyurice", "twitter": "omyuriceart", "role": "leader", "avatar": "omyuriceart"}], "cut": true, "nums": ["03"]}, {"id": "B04", "block": "B", "num": "04", "adult": true, "name": "뀨", "rep": "Qp", "twitter": "qyesp", "avatar": "qyesp", "members": [{"name": "Qp", "twitter": "qyesp", "role": "leader", "avatar": "qyesp"}, {"name": "QOOZ", "twitter": "Qooz90", "role": "member", "avatar": "Qooz90"}], "cut": true, "nums": ["04"]}, {"id": "B05", "block": "B", "num": "05", "adult": true, "name": "탑 부쉬 접근금지령", "rep": "mindal3118", "twitter": "mindal3118", "avatar": "mindal3118", "members": [{"name": "mindal3118", "twitter": "mindal3118", "role": "leader", "avatar": "mindal3118"}, {"name": "김민달", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["05"]}, {"id": "B06", "block": "B", "num": "06", "adult": true, "name": "Black's Den", "rep": "Malcha soda", "twitter": "Malcha_Soda", "avatar": "Malcha_Soda", "members": [{"name": "Malcha soda", "twitter": "Malcha_Soda", "role": "leader", "avatar": "Malcha_Soda"}], "cut": true, "nums": ["06"]}, {"id": "B07", "block": "B", "num": "07", "adult": true, "name": "호다다다닷!", "rep": "Horung", "twitter": "horung0226", "avatar": "horung0226", "members": [{"name": "Horung", "twitter": "horung0226", "role": "leader", "avatar": "horung0226"}, {"name": "DAT", "twitter": "Dat_Del_luna", "role": "member", "avatar": "Dat_Del_luna"}, {"name": "JUN", "twitter": null, "role": "member", "avatar": "jj9904", "locked": true}], "cut": true, "nums": ["07"]}, {"id": "B08", "block": "B", "num": "08", "adult": true, "name": "호랑말콤멍멍퍼디", "rep": "말콤", "twitter": "Malcom508", "avatar": "Malcom508", "members": [{"name": "말콤", "twitter": "Malcom508", "role": "leader", "avatar": "Malcom508"}, {"name": "퍼디", "twitter": "Fuddyblog", "role": "member", "avatar": "Fuddyblog"}, {"name": "제트", "twitter": "dj28sj", "role": "member", "avatar": "dj28sj"}], "cut": true, "nums": ["08"]}, {"id": "B09", "block": "B", "num": "09", "adult": true, "name": "청록용", "rep": "현록", "twitter": "Tighnari_55", "avatar": "Tighnari_55", "members": [{"name": "현록", "twitter": "Tighnari_55", "role": "leader", "avatar": "Tighnari_55"}, {"name": "용박이", "twitter": "yongback00", "role": "member", "avatar": "yongback00"}, {"name": "청교", "twitter": "connecting_Y", "role": "member", "avatar": "connecting_Y"}], "cut": true, "nums": ["09"]}, {"id": "B10", "block": "B", "num": "10", "adult": true, "name": "ニコサンド", "rep": "NICO", "twitter": "Nico26b", "avatar": "Nico26b", "members": [{"name": "NICO", "twitter": "Nico26b", "role": "leader", "avatar": "Nico26b"}, {"name": "sobatya", "twitter": null, "role": "member", "avatar": null}, {"name": "늠늠", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["10"]}, {"id": "B11", "block": "B", "num": "11", "adult": true, "name": "CandleLight", "rep": "Suigi", "twitter": "26_suigi", "avatar": "26_suigi", "members": [{"name": "Suigi", "twitter": "26_suigi", "role": "leader", "avatar": "26_suigi"}], "cut": true, "nums": ["11"]}, {"id": "B12", "block": "B", "num": "12", "adult": true, "name": "Horns&Tails", "rep": "TITANIA", "twitter": "Warningblackdog", "avatar": "Warningblackdog", "members": [{"name": "TITANIA", "twitter": "Warningblackdog", "role": "leader", "avatar": "Warningblackdog"}, {"name": "BUTA", "twitter": null, "role": "member", "avatar": null}, {"name": "커피새", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["12"]}, {"id": "B13", "block": "B", "num": "13", "adult": true, "name": "RIKOSE", "rep": "リコセ", "twitter": "rikose", "avatar": "rikose", "members": [{"name": "リコセ", "twitter": "rikose", "role": "leader", "avatar": "rikose"}, {"name": "kishibe", "twitter": null, "role": "member", "avatar": null}, {"name": "kame", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["13"]}, {"id": "B14", "block": "B", "num": "14", "adult": true, "name": "버츄얼 렌탈 남편", "rep": "무드리", "twitter": "Neilos0526", "avatar": "Neilos0526", "members": [{"name": "무드리", "twitter": "Neilos0526", "role": "leader", "avatar": "Neilos0526"}, {"name": "쿠루테", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["14"]}, {"id": "B15", "block": "B", "num": "15", "adult": true, "name": "아쿠파라", "rep": "아차쿠라", "twitter": "ACHAKOORA", "avatar": "ACHAKOORA", "members": [{"name": "아차쿠라", "twitter": "ACHAKOORA", "role": "leader", "avatar": "ACHAKOORA"}, {"name": "うろ", "twitter": "uro0000", "role": "member", "avatar": "uro0000"}], "cut": true, "nums": ["15"]}, {"id": "B16", "block": "B", "num": "16", "adult": true, "name": "NANKAARU", "rep": "CGu", "twitter": "CGu0906", "avatar": "CGu0906", "members": [{"name": "CGu", "twitter": "CGu0906", "role": "leader", "avatar": "CGu0906"}], "cut": true, "nums": ["16"]}, {"id": "B17", "block": "B", "num": "17", "adult": true, "name": "STUDIO雄虎凛", "rep": "凛＠STUDIO雄虎凛", "twitter": "GTDignified", "avatar": "GTDignified", "members": [{"name": "凛＠STUDIO雄虎凛", "twitter": "GTDignified", "role": "leader", "avatar": "GTDignified"}, {"name": "號ゆうごう", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["17"]}, {"id": "B18", "block": "B", "num": "18", "adult": true, "name": "天神大砂丘", "rep": "Neumokun", "twitter": "Neumokun", "avatar": "Neumokun", "members": [{"name": "Neumokun", "twitter": "Neumokun", "role": "leader", "avatar": "Neumokun"}, {"name": "くっく", "twitter": "kukku_kuu", "role": "member", "avatar": "kukku_kuu"}], "cut": true, "nums": ["18"]}, {"id": "B19", "block": "B", "num": "19", "adult": true, "name": "OSURULE", "rep": "IG", "twitter": "IG1119", "avatar": "IG1119", "members": [{"name": "IG", "twitter": "IG1119", "role": "leader", "avatar": "IG1119"}, {"name": "Beep", "twitter": "AlphsBeep", "role": "member", "avatar": "AlphsBeep"}], "cut": true, "nums": ["19"]}, {"id": "B20", "block": "B", "num": "20", "adult": true, "name": "HARD DROP", "rep": "まだーと", "twitter": "madar_to", "avatar": "madar_to", "members": [{"name": "まだーと", "twitter": "madar_to", "role": "leader", "avatar": "madar_to"}], "cut": true, "nums": ["20"]}, {"id": "B21", "block": "B", "num": "21", "adult": true, "name": "Taishokukan Noirowze", "rep": "TostosFski", "twitter": "Tos_Tos_F_ski", "avatar": "Tos_Tos_F_ski", "members": [{"name": "TostosFski", "twitter": "Tos_Tos_F_ski", "role": "leader", "avatar": "Tos_Tos_F_ski"}], "cut": true, "nums": ["21"]}, {"id": "B22", "block": "B", "num": "22", "adult": true, "name": "BoxBear", "rep": "Gomtang", "twitter": "GomTang_P", "avatar": "GomTang_P", "members": [{"name": "Gomtang", "twitter": "GomTang_P", "role": "leader", "avatar": "GomTang_P"}], "cut": true, "nums": ["22"]}, {"id": "B23", "block": "B", "num": "23", "adult": true, "name": "Ash-Land", "rep": "AshenDawger", "twitter": "AshenDawger", "avatar": "AshenDawger", "members": [{"name": "AshenDawger", "twitter": "AshenDawger", "role": "leader", "avatar": "AshenDawger"}, {"name": "shoutlesstranse", "twitter": "shoutlesstranse", "role": "member", "avatar": "shoutlesstranse"}], "cut": true, "nums": ["23"]}, {"id": "B24", "block": "B", "num": "24", "adult": true, "name": "WILD STYLE", "rep": "Takemoto", "twitter": "arashi_takemoto", "avatar": "arashi_takemoto", "members": [{"name": "Takemoto", "twitter": "arashi_takemoto", "role": "leader", "avatar": "arashi_takemoto"}, {"name": "LamIan", "twitter": "LamIan7044", "role": "member", "avatar": "LamIan7044"}], "cut": true, "nums": ["24"]}, {"id": "B25", "block": "B", "num": "25", "adult": true, "name": "도슭 한상전", "rep": "찰떡", "twitter": "RiceCakeKain", "avatar": "RiceCakeKain", "members": [{"name": "찰떡", "twitter": "RiceCakeKain", "role": "leader", "avatar": "RiceCakeKain"}, {"name": "프라", "twitter": "Pteragon", "role": "member", "avatar": "Pteragon"}], "cut": true, "nums": ["25"]}, {"id": "B26", "block": "B", "num": "26", "adult": true, "name": "Fur-펙트 게임", "rep": "개잉여", "twitter": "J_ip721", "avatar": "J_ip721", "members": [{"name": "개잉여", "twitter": "J_ip721", "role": "leader", "avatar": "J_ip721"}, {"name": "검댕", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["26"]}, {"id": "B27", "block": "B", "num": "27", "adult": true, "name": "풀하우스", "rep": "MIKKYxx01", "twitter": "MIKKYxx01", "avatar": "MIKKYxx01", "members": [{"name": "MIKKYxx01", "twitter": "MIKKYxx01", "role": "leader", "avatar": "MIKKYxx01"}, {"name": "LEO", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["27"]}, {"id": "B28", "block": "B", "num": "28", "adult": true, "name": "멍달멍달", "rep": "BUTO", "twitter": "BUTOBU", "avatar": "BUTOBU", "members": [{"name": "BUTO", "twitter": "BUTOBU", "role": "leader", "avatar": "BUTOBU"}, {"name": "유진", "twitter": "wnsgh2466", "role": "member", "avatar": "wnsgh2466"}, {"name": "쵸이", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["28"]}, {"id": "B29", "block": "B", "num": "29", "adult": true, "name": "두더지빵집", "rep": "Warr!", "twitter": "youdil1004", "avatar": "youdil1004", "members": [{"name": "Warr!", "twitter": "youdil1004", "role": "leader", "avatar": "youdil1004"}, {"name": "모닝빵", "twitter": "morningbread16", "role": "member", "avatar": "morningbread16"}], "cut": true, "nums": ["29"]}, {"id": "B30", "block": "B", "num": "30", "adult": true, "name": "마운자로 결사반대 위원회", "rep": "타패", "twitter": "tappe124", "avatar": "tappe124", "members": [{"name": "타패", "twitter": "tappe124", "role": "leader", "avatar": "tappe124"}, {"name": "Pazzy / 파찌", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["30"]}, {"id": "B31-32", "block": "B", "num": "31-32", "adult": true, "name": "퍼리다이소 ~카지노점~", "rep": "PM", "twitter": "pmaker_owo", "avatar": "pmaker_owo", "members": [{"name": "PM", "twitter": "pmaker_owo", "role": "leader", "avatar": "pmaker_owo"}, {"name": "쏘셰", "twitter": "pangpayaaaak", "role": "member", "avatar": "pangpayaaaak"}, {"name": "부들", "twitter": "suinduckhu", "role": "member", "avatar": "suinduckhu"}, {"name": "로로디", "twitter": null, "role": "member", "avatar": null}, {"name": "테드", "twitter": null, "role": "member", "avatar": null}, {"name": "고리", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["31", "32"]}, {"id": "B33", "block": "B", "num": "33", "adult": true, "name": "염소야, 그만 야해!", "rep": "날랜돌이", "twitter": "COOKEDMOCHI", "avatar": "COOKEDMOCHI", "members": [{"name": "날랜돌이", "twitter": "COOKEDMOCHI", "role": "leader", "avatar": "COOKEDMOCHI"}, {"name": "도로롱", "twitter": "__Dororong__", "role": "member", "avatar": "__Dororong__"}], "cut": true, "nums": ["33"]}, {"id": "B34", "block": "B", "num": "34", "adult": true, "name": "엘븐스토어2", "rep": "Bernado", "twitter": "Bernado_Alte_A", "avatar": "Bernado_Alte_A", "members": [{"name": "Bernado", "twitter": "Bernado_Alte_A", "role": "leader", "avatar": "Bernado_Alte_A"}, {"name": "베르나도", "twitter": null, "role": "member", "avatar": null}, {"name": "엘븐", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["34"]}, {"id": "C01", "block": "C", "num": "01", "adult": true, "name": "노란딱지", "rep": "sum", "twitter": "ssums12", "avatar": "ssums12", "members": [{"name": "sum", "twitter": "ssums12", "role": "leader", "avatar": "ssums12"}, {"name": "HANUVO", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["01"]}, {"id": "C02", "block": "C", "num": "02", "adult": true, "name": "어서오세요, 두바이 쫀득 김메이에!", "rep": "듀크", "twitter": "Wolf__Duke", "avatar": "Wolf__Duke", "members": [{"name": "듀크", "twitter": "Wolf__Duke", "role": "leader", "avatar": "Wolf__Duke"}], "cut": true, "nums": ["02"]}, {"id": "C03", "block": "C", "num": "03", "adult": true, "name": "Furscord : 카지노 털쟁이", "rep": "페러_소치", "twitter": "vpfj423423", "avatar": "vpfj423423", "members": [{"name": "페러_소치", "twitter": "vpfj423423", "role": "leader", "avatar": "vpfj423423"}, {"name": "냉이", "twitter": "Nang2_the_Fox", "role": "member", "avatar": "Nang2_the_Fox"}], "cut": true, "nums": ["03"]}, {"id": "C04", "block": "C", "num": "04", "adult": true, "name": "슈퍼래빗프로덕션", "rep": "spirit_kimm", "twitter": "spirit_kimm", "avatar": "spirit_kimm", "members": [{"name": "spirit_kimm", "twitter": "spirit_kimm", "role": "leader", "avatar": "spirit_kimm"}, {"name": "HolySpirit", "twitter": null, "role": "member", "avatar": null}, {"name": "베오", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["04"]}, {"id": "C05", "block": "C", "num": "05", "adult": true, "name": "Ezhno / エズノ", "rep": "Ezhno", "twitter": "KalonEzhno", "avatar": "KalonEzhno", "members": [{"name": "Ezhno", "twitter": "KalonEzhno", "role": "leader", "avatar": "KalonEzhno"}], "cut": true, "nums": ["05"]}, {"id": "C06", "block": "C", "num": "06", "adult": true, "name": "스튜디오 엘레지", "rep": "큰뿔양", "twitter": "bighornsheeppic", "avatar": "bighornsheeppic", "members": [{"name": "큰뿔양", "twitter": "bighornsheeppic", "role": "leader", "avatar": "bighornsheeppic"}, {"name": "도우미", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["06"]}, {"id": "C07", "block": "C", "num": "07", "adult": true, "name": "GGG: GO GET 'EM, GOAT!", "rep": "냥글", "twitter": "nekogaki0324", "avatar": "nekogaki0324", "members": [{"name": "냥글", "twitter": "nekogaki0324", "role": "leader", "avatar": "nekogaki0324"}, {"name": "자구", "twitter": "cap1541", "role": "member", "avatar": "cap1541"}], "cut": true, "nums": ["07"]}, {"id": "C08", "block": "C", "num": "08", "adult": true, "name": "High-Fur", "rep": "메타볼", "twitter": "Meta_NONE", "avatar": "Meta_NONE", "members": [{"name": "메타볼", "twitter": "Meta_NONE", "role": "leader", "avatar": "Meta_NONE"}, {"name": "마뉴", "twitter": "manyu_art", "role": "member", "avatar": "manyu_art"}, {"name": "스탠", "twitter": "kemoistani", "role": "member", "avatar": "kemoistani"}], "cut": true, "nums": ["08"]}, {"id": "C09", "block": "C", "num": "09", "adult": true, "name": "퍼리중독신고는7811", "rep": "올뺨", "twitter": "orpiamman", "avatar": "orpiamman", "members": [{"name": "올뺨", "twitter": "orpiamman", "role": "leader", "avatar": "orpiamman"}, {"name": "HUKA", "twitter": "HUKA8989", "role": "member", "avatar": "HUKA8989"}, {"name": "노출불안 고씨", "twitter": "goshee248", "role": "member", "avatar": "goshee248"}], "cut": true, "nums": ["09"]}, {"id": "C10", "block": "C", "num": "10", "adult": true, "name": "지금이 절호의 찬스잖아", "rep": "마갱즈(Magangz)", "twitter": "makidogang", "avatar": "makidogang", "members": [{"name": "마갱즈(Magangz)", "twitter": "makidogang", "role": "leader", "avatar": "makidogang"}, {"name": "카뮤엘(Kamyuel)", "twitter": "Kamyuelo", "role": "member", "avatar": "Kamyuelo"}, {"name": "컴버스트(combust)", "twitter": "ivXair3p", "role": "member", "avatar": "ivXair3p"}], "cut": true, "nums": ["10"]}, {"id": "C11", "block": "C", "num": "11", "adult": true, "name": "퍼리의연인", "rep": "Chung", "twitter": "chung0u0", "avatar": "chung0u0", "members": [{"name": "Chung", "twitter": "chung0u0", "role": "leader", "avatar": "chung0u0"}, {"name": "Rang", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["11"]}, {"id": "C12", "block": "C", "num": "12", "adult": true, "name": "누도브즈", "rep": "누도기", "twitter": "noodogi", "avatar": "noodogi", "members": [{"name": "누도기", "twitter": "noodogi", "role": "leader", "avatar": "noodogi"}, {"name": "d0ve", "twitter": "d0ve_XD", "role": "member", "avatar": "d0ve_XD"}, {"name": "여우반찬", "twitter": "fox_banchan", "role": "member", "avatar": "fox_banchan"}], "cut": true, "nums": ["12"]}, {"id": "C13", "block": "C", "num": "13", "adult": true, "name": "간장계란밥", "rep": "UZA", "twitter": "art_uza", "avatar": "art_uza", "members": [{"name": "UZA", "twitter": "art_uza", "role": "leader", "avatar": "art_uza"}], "cut": true, "nums": ["13"]}, {"id": "C14", "block": "C", "num": "14", "adult": true, "name": "파놉티콘", "rep": "호끼퐁", "twitter": "HOKIpong", "avatar": "HOKIpong", "members": [{"name": "호끼퐁", "twitter": "HOKIpong", "role": "leader", "avatar": "HOKIpong"}, {"name": "노루", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["14"]}, {"id": "C15", "block": "C", "num": "15", "adult": true, "name": "HONEYCOMB", "rep": "wasp", "twitter": "anthyutena", "avatar": "anthyutena", "members": [{"name": "wasp", "twitter": "anthyutena", "role": "leader", "avatar": "anthyutena"}, {"name": "TTN", "twitter": "239_239", "role": "member", "avatar": "239_239"}], "cut": true, "nums": ["15"]}, {"id": "C16", "block": "C", "num": "16", "adult": true, "name": "D!TALE", "rep": "뎡 (Dyeong)", "twitter": "DYEONG_2", "avatar": "DYEONG_2", "members": [{"name": "뎡 (Dyeong)", "twitter": "DYEONG_2", "role": "leader", "avatar": "DYEONG_2"}], "cut": true, "nums": ["16"]}, {"id": "C17", "block": "C", "num": "17", "adult": true, "name": "데니가 필요해!!", "rep": "Jerry", "twitter": "Jerry_5779", "avatar": "Jerry_5779", "members": [{"name": "Jerry", "twitter": "Jerry_5779", "role": "leader", "avatar": "Jerry_5779"}], "cut": true, "nums": ["17"]}, {"id": "C18", "block": "C", "num": "18", "adult": true, "name": "자폭버튼", "rep": "만두", "twitter": "mdfurr", "avatar": "mdfurr", "members": [{"name": "만두", "twitter": "mdfurr", "role": "leader", "avatar": "mdfurr"}, {"name": "COBALT", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["18"]}, {"id": "C19-20", "block": "C", "num": "19-20", "adult": true, "name": "작전명: 에이전트 버니", "rep": "Doro-nyong", "twitter": "doro_nyong_art", "avatar": "doro_nyong_art", "members": [{"name": "Doro-nyong", "twitter": "doro_nyong_art", "role": "leader", "avatar": "doro_nyong_art"}, {"name": "이노무", "twitter": "inomu_shiki", "role": "member", "avatar": "inomu_shiki"}, {"name": "오백비", "twitter": "FurNemB", "role": "member", "avatar": "FurNemB"}, {"name": "흑당버블곰", "twitter": "Kokutou_bear", "role": "member", "avatar": "Kokutou_bear"}, {"name": "초코곰탱이", "twitter": "Choko_Gom", "role": "member", "avatar": "Choko_Gom"}, {"name": "파곰", "twitter": "PaGom1121_", "role": "member", "avatar": "PaGom1121_"}], "cut": true, "nums": ["19", "20"]}, {"id": "C21", "block": "C", "num": "21", "adult": true, "name": "데빌카드 쇼다운!", "rep": "멜쿠(MelKu)", "twitter": "MELONCOOKIE_24", "avatar": "MELONCOOKIE_24", "members": [{"name": "멜쿠(MelKu)", "twitter": "MELONCOOKIE_24", "role": "leader", "avatar": "MELONCOOKIE_24"}, {"name": "푸우", "twitter": "fu_o4884", "role": "member", "avatar": "fu_o4884"}, {"name": "첫도", "twitter": "cheotdo", "role": "member", "avatar": "cheotdo"}], "cut": true, "nums": ["21"]}, {"id": "C22", "block": "C", "num": "22", "adult": true, "name": "늑랑 狼", "rep": "미랑", "twitter": "milang_313", "avatar": "milang_313", "members": [{"name": "미랑", "twitter": "milang_313", "role": "leader", "avatar": "milang_313"}, {"name": "머바", "twitter": "skymeatball", "role": "member", "avatar": "skymeatball"}], "cut": true, "nums": ["22"]}, {"id": "C23", "block": "C", "num": "23", "adult": true, "name": "tag : tiger boy", "rep": "아도케타", "twitter": "ADKT0448", "avatar": "ADKT0448", "members": [{"name": "아도케타", "twitter": "ADKT0448", "role": "leader", "avatar": "ADKT0448"}, {"name": "하벨", "twitter": "havelXP", "role": "member", "avatar": "havelXP"}], "cut": true, "nums": ["23"]}, {"id": "C24", "block": "C", "num": "24", "adult": true, "name": "보즈야 연구소", "rep": "너울바다", "twitter": "ED_in_FF14", "avatar": "ED_in_FF14", "members": [{"name": "너울바다", "twitter": "ED_in_FF14", "role": "leader", "avatar": "ED_in_FF14"}, {"name": "온별", "twitter": "ONST4R", "role": "member", "avatar": "ONST4R"}], "cut": true, "nums": ["24"]}, {"id": "C25", "block": "C", "num": "25", "adult": true, "name": "거기,게임 좋아하세요?", "rep": "PagYaing4167", "twitter": "PagYaing4167", "avatar": "PagYaing4167", "members": [{"name": "PagYaing4167", "twitter": "PagYaing4167", "role": "leader", "avatar": "PagYaing4167"}, {"name": "Doyayam", "twitter": "DoyayamArt", "role": "member", "avatar": "DoyayamArt"}], "cut": true, "nums": ["25"]}, {"id": "C26", "block": "C", "num": "26", "adult": true, "name": "뭐든 해봤습니다 털공장", "rep": "언제쯤", "twitter": "bigwhite_cat", "avatar": "bigwhite_cat", "members": [{"name": "언제쯤", "twitter": "bigwhite_cat", "role": "leader", "avatar": "bigwhite_cat"}, {"name": "장장대대훈훈", "twitter": "jangdaehun31310", "role": "member", "avatar": "jangdaehun31310"}], "cut": true, "nums": ["26"]}, {"id": "C27", "block": "C", "num": "27", "adult": true, "name": "Mr. furshowtime", "rep": "100심볼", "twitter": "100symbol", "avatar": "100symbol", "members": [{"name": "100심볼", "twitter": "100symbol", "role": "leader", "avatar": "100symbol"}, {"name": "아기염소", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["27"]}, {"id": "C28", "block": "C", "num": "28", "adult": true, "name": "S.O.C", "rep": "벅벅", "twitter": "furrybuckbuck", "avatar": "furrybuckbuck", "members": [{"name": "벅벅", "twitter": "furrybuckbuck", "role": "leader", "avatar": "furrybuckbuck"}, {"name": "NB", "twitter": "thee1621", "role": "member", "avatar": "thee1621"}, {"name": "오뎅국", "twitter": "ramee_C", "role": "member", "avatar": "ramee_C"}], "cut": true, "nums": ["28"]}];
+const BOOTHS = [{"id": "A01", "block": "A", "num": "01", "adult": false, "name": "BAURWOLF", "rep": "Luf", "twitter": "musou_luf", "avatar": "musou_luf", "members": [{"name": "Luf", "twitter": "musou_luf", "role": "leader", "avatar": "musou_luf"}], "cut": true, "nums": ["01"]}, {"id": "A02", "block": "A", "num": "02", "adult": false, "name": "SEAWEED VILLAGE", "rep": "DAI-XT.", "twitter": "Hijiki_DaiXt", "avatar": "Hijiki_DaiXt", "members": [{"name": "DAI-XT.", "twitter": "Hijiki_DaiXt", "role": "leader", "avatar": "Hijiki_DaiXt"}], "cut": true, "nums": ["02"]}, {"id": "A03", "block": "A", "num": "03", "adult": false, "name": "GYM LIGER", "rep": "Raigo / 藤堂雷悟", "twitter": "RaigoTohdoh", "avatar": "RaigoTohdoh", "members": [{"name": "Raigo / 藤堂雷悟", "twitter": "RaigoTohdoh", "role": "leader", "avatar": "RaigoTohdoh"}], "cut": true, "nums": ["03"]}, {"id": "A04", "block": "A", "num": "04", "adult": false, "name": "OUMAGA WALD", "rep": "Wald / 逢魔牙ワルト", "twitter": "OumagaWald", "avatar": "OumagaWald", "members": [{"name": "Wald / 逢魔牙ワルト", "twitter": "OumagaWald", "role": "leader", "avatar": "OumagaWald"}], "cut": true, "nums": ["04"]}, {"id": "A05", "block": "A", "num": "05", "adult": false, "name": "TRAD MONMON 虎渡悶々", "rep": "Trad Monmon / 虎渡悶々", "twitter": "Trad_monmon", "avatar": "Trad_monmon", "members": [{"name": "Trad Monmon / 虎渡悶々", "twitter": "Trad_monmon", "role": "leader", "avatar": "Trad_monmon"}], "cut": true, "nums": ["05"]}, {"id": "A06", "block": "A", "num": "06", "adult": false, "name": "Kigurumi Kagetsu", "rep": "Kigurumi Kagetsu", "twitter": "kigurumikagetsu", "avatar": "kigurumikagetsu", "members": [{"name": "Kigurumi Kagetsu", "twitter": "kigurumikagetsu", "role": "leader", "avatar": "kigurumikagetsu"}, {"name": "Geppei(GP)", "twitter": "GeppeiFursuit", "role": "member", "avatar": "GeppeiFursuit"}, {"name": "Keishi(KC)", "twitter": "beatmenesisu", "role": "member", "avatar": "beatmenesisu"}, {"name": "mikatagura", "twitter": "mikatagura", "role": "member", "avatar": "mikatagura"}], "cut": true, "nums": ["06"]}, {"id": "A07", "block": "A", "num": "07", "adult": false, "name": "wolf's works", "rep": "ware", "twitter": "wolfroof", "avatar": "wolfroof", "members": [{"name": "ware", "twitter": "wolfroof", "role": "leader", "avatar": "wolfroof"}, {"name": "Sekki-Kyowe", "twitter": "sekkinkyowe", "role": "member", "avatar": "sekkinkyowe"}], "cut": true, "nums": ["07"]}, {"id": "A08", "block": "A", "num": "08", "adult": false, "name": "TRIVELER", "rep": "Nagabe", "twitter": "mucknagabe", "avatar": "mucknagabe", "members": [{"name": "Nagabe", "twitter": "mucknagabe", "role": "leader", "avatar": "mucknagabe"}], "cut": true, "nums": ["08"]}, {"id": "A09", "block": "A", "num": "09", "adult": false, "name": "GINTAN STUDIO", "rep": "Gintan", "twitter": "FurryGintan", "avatar": "FurryGintan", "members": [{"name": "Gintan", "twitter": "FurryGintan", "role": "leader", "avatar": "FurryGintan"}], "cut": true, "nums": ["09"]}, {"id": "A10", "block": "A", "num": "10", "adult": false, "name": "푸딩파르페", "rep": "syukapong", "twitter": "syukapong", "avatar": "syukapong", "members": [{"name": "syukapong", "twitter": "syukapong", "role": "leader", "avatar": "syukapong"}, {"name": "막스", "twitter": "M_A_K_X_", "role": "member", "avatar": "M_A_K_X_"}, {"name": "하호", "twitter": "KKULLOOK", "role": "member", "avatar": "KKULLOOK"}], "cut": true, "nums": ["10"]}, {"id": "A11-12", "block": "A", "num": "11-12", "adult": false, "name": "콩자반 김자반", "rep": "Kimroco", "twitter": "_Kimroco", "avatar": "_Kimroco", "members": [{"name": "Kimroco", "twitter": "_Kimroco", "role": "leader", "avatar": "_Kimroco"}, {"name": "콩조림", "twitter": "kongzorim", "role": "member", "avatar": "kongzorim"}, {"name": "퍼지", "twitter": null, "role": "member", "avatar": null}, {"name": "찰리", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["11", "12"]}, {"id": "A13", "block": "A", "num": "13", "adult": false, "name": "코치문고", "rep": "코치", "twitter": "_K0CH1", "avatar": "_K0CH1", "members": [{"name": "코치", "twitter": "_K0CH1", "role": "leader", "avatar": "_K0CH1"}, {"name": "테이릿", "twitter": "Teirit_", "role": "member", "avatar": "Teirit_"}, {"name": "림", "twitter": "Melonfur_Rim", "role": "member", "avatar": "Melonfur_Rim"}], "cut": true, "nums": ["13"]}, {"id": "A14", "block": "A", "num": "14", "adult": false, "name": "초건전회지연구회", "rep": "하치", "twitter": "Hachi_duchi", "avatar": "Hachi_duchi", "members": [{"name": "하치", "twitter": "Hachi_duchi", "role": "leader", "avatar": "Hachi_duchi"}, {"name": "쏘당", "twitter": "ss0dan6", "role": "member", "avatar": "ss0dan6"}], "cut": false, "nums": ["14"]}, {"id": "A15", "block": "A", "num": "15", "adult": false, "name": "PPP2", "rep": "ITTO", "twitter": "nanimonaitto", "avatar": "nanimonaitto", "members": [{"name": "ITTO", "twitter": "nanimonaitto", "role": "leader", "avatar": "nanimonaitto"}, {"name": "공간", "twitter": "kkugaoo", "role": "member", "avatar": "kkugaoo"}], "cut": false, "nums": ["15"]}, {"id": "A16", "block": "A", "num": "16", "adult": false, "name": "브 BEUU / FURPPET", "rep": "브 BEUU", "twitter": "Beuu0920", "avatar": "Beuu0920", "members": [{"name": "브 BEUU", "twitter": "Beuu0920", "role": "leader", "avatar": "Beuu0920"}, {"name": "헤피 Hephi", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["16"]}, {"id": "A17", "block": "A", "num": "17", "adult": false, "name": "시디과 늑대교수님", "rep": "SBST", "twitter": "SIRBST", "avatar": "SIRBST", "members": [{"name": "SBST", "twitter": "SIRBST", "role": "leader", "avatar": "SIRBST"}, {"name": "서베스천", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["17"]}, {"id": "A18", "block": "A", "num": "18", "adult": false, "name": "BAD PAW Co.", "rep": "badpawco", "twitter": "badpawco", "avatar": "badpawco", "members": [{"name": "badpawco", "twitter": "badpawco", "role": "leader", "avatar": "badpawco"}, {"name": "해견", "twitter": "seadogwal", "role": "member", "avatar": "seadogwal"}, {"name": "Largo", "twitter": "largo_furry", "role": "member", "avatar": "largo_furry"}], "cut": true, "nums": ["18"]}, {"id": "A19", "block": "A", "num": "19", "adult": false, "name": "메이커 연합부스 - 아르모아", "rep": "뻐꾹", "twitter": "pu_couck_", "avatar": "pu_couck_", "members": [{"name": "뻐꾹", "twitter": "pu_couck_", "role": "leader", "avatar": "pu_couck_"}, {"name": "김루미", "twitter": "ToriS6526", "role": "member", "avatar": "ToriS6526"}, {"name": "블루레이", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["19"]}, {"id": "A20", "block": "A", "num": "20", "adult": false, "name": "내가 쓰려고 만든 굿즈", "rep": "PHINY", "twitter": "Yell0whale", "avatar": "Yell0whale", "members": [{"name": "PHINY", "twitter": "Yell0whale", "role": "leader", "avatar": "Yell0whale"}, {"name": "BLAEDIC", "twitter": "blaedic", "role": "member", "avatar": "blaedic"}], "cut": true, "nums": ["20"]}, {"id": "A21", "block": "A", "num": "21", "adult": false, "name": "Kemostar", "rep": "Frosty", "twitter": "Seres_frosty", "avatar": "Seres_frosty", "members": [{"name": "Frosty", "twitter": "Seres_frosty", "role": "leader", "avatar": "Seres_frosty"}, {"name": "Habol", "twitter": "Habol_", "role": "member", "avatar": "Habol_"}], "cut": true, "nums": ["21"]}, {"id": "A22", "block": "A", "num": "22", "adult": false, "name": "모노마사 나이스 트라이", "rep": "백야", "twitter": "White_Night06", "avatar": "White_Night06", "members": [{"name": "백야", "twitter": "White_Night06", "role": "leader", "avatar": "White_Night06"}, {"name": "Solidus", "twitter": "liq_soli", "role": "member", "avatar": "liq_soli"}], "cut": true, "nums": ["22"]}, {"id": "A23", "block": "A", "num": "23", "adult": false, "name": "엘븐스토어 1", "rep": "엘븐", "twitter": "elvendays", "avatar": "elvendays", "members": [{"name": "엘븐", "twitter": "elvendays", "role": "leader", "avatar": "elvendays"}, {"name": "카카오", "twitter": "Caca_o999", "role": "member", "avatar": "Caca_o999"}], "cut": true, "nums": ["23"]}, {"id": "A24", "block": "A", "num": "24", "adult": false, "name": "어몽어스샌즈파피루스", "rep": "파닉", "twitter": "Panic_exc", "avatar": "Panic_exc", "members": [{"name": "파닉", "twitter": "Panic_exc", "role": "leader", "avatar": "Panic_exc"}, {"name": "별귤", "twitter": "ByeolGyule", "role": "member", "avatar": "ByeolGyule"}, {"name": "잔디", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["24"]}, {"id": "A25", "block": "A", "num": "25", "adult": false, "name": "숲속의 범", "rep": "쑥갓", "twitter": "nrimbotree", "avatar": "nrimbotree", "members": [{"name": "쑥갓", "twitter": "nrimbotree", "role": "leader", "avatar": "nrimbotree"}, {"name": "soL", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["25"]}, {"id": "A26", "block": "A", "num": "26", "adult": false, "name": "히잉 형아 꼬리 상점", "rep": "런크", "twitter": "Runk102030", "avatar": "Runk102030", "members": [{"name": "런크", "twitter": "Runk102030", "role": "leader", "avatar": "Runk102030"}, {"name": "파라엘", "twitter": "perel_fur", "role": "member", "avatar": "perel_fur"}, {"name": "콜리", "twitter": "Colibri_1825", "role": "member", "avatar": "Colibri_1825"}], "cut": true, "nums": ["26"]}, {"id": "A27", "block": "A", "num": "27", "adult": false, "name": "전속 메이드 세바스찬의 비밀 주문!", "rep": "영원양", "twitter": "youngwonyang", "avatar": "youngwonyang", "members": [{"name": "영원양", "twitter": "youngwonyang", "role": "leader", "avatar": "youngwonyang"}, {"name": "루덴", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["27"]}, {"id": "A28", "block": "A", "num": "28", "adult": false, "name": "OCHALOBSTER", "rep": "おちゃづけ(OCHAZUKE)", "twitter": "OCHALOBSTER", "avatar": "OCHALOBSTER", "members": [{"name": "おちゃづけ(OCHAZUKE)", "twitter": "OCHALOBSTER", "role": "leader", "avatar": "OCHALOBSTER"}, {"name": "えびまよ(EBIMAYO)", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["28"]}, {"id": "A29", "block": "A", "num": "29", "adult": false, "name": "해적판 아니고 정발입니다", "rep": "Minong", "twitter": "minongminong", "avatar": "minongminong", "members": [{"name": "Minong", "twitter": "minongminong", "role": "leader", "avatar": "minongminong"}, {"name": "썽으리", "twitter": "TLJPSi", "role": "member", "avatar": "TLJPSi"}], "cut": true, "nums": ["29"]}, {"id": "A30", "block": "A", "num": "30", "adult": false, "name": "FURST SNOW", "rep": "JIN", "twitter": "noway_JIN", "avatar": "noway_JIN", "members": [{"name": "JIN", "twitter": "noway_JIN", "role": "leader", "avatar": "noway_JIN"}, {"name": "Flash", "twitter": "DXFFlash", "role": "member", "avatar": "DXFFlash"}, {"name": "Eerie", "twitter": "Neoul_the_sea", "role": "member", "avatar": "Neoul_the_sea"}], "cut": true, "nums": ["30"]}, {"id": "A31", "block": "A", "num": "31", "adult": false, "name": "치폰의 레모네이드 가게", "rep": "치폰", "twitter": "chiffonpaw", "avatar": "chiffonpaw", "members": [{"name": "치폰", "twitter": "chiffonpaw", "role": "leader", "avatar": "chiffonpaw"}], "cut": true, "nums": ["31"]}, {"id": "A32", "block": "A", "num": "32", "adult": false, "name": "고소한 빵냄새가 솔솔", "rep": "빵용", "twitter": "breadragon", "avatar": "breadragon", "members": [{"name": "빵용", "twitter": "breadragon", "role": "leader", "avatar": "breadragon"}], "cut": true, "nums": ["32"]}, {"id": "A33", "block": "A", "num": "33", "adult": false, "name": "도마뱀의 보물함", "rep": "드란", "twitter": "didran9802", "avatar": "didran9802", "members": [{"name": "드란", "twitter": "didran9802", "role": "leader", "avatar": "didran9802"}, {"name": "애오우", "twitter": "dodh5172", "role": "member", "avatar": "dodh5172"}], "cut": true, "nums": ["33"]}, {"id": "A34", "block": "A", "num": "34", "adult": false, "name": "포도당", "rep": "한라봉", "twitter": "hanlabong03", "avatar": "hanlabong03", "members": [{"name": "한라봉", "twitter": "hanlabong03", "role": "leader", "avatar": "hanlabong03"}, {"name": "두부", "twitter": null, "role": "member", "avatar": null}, {"name": "제제", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["34"]}, {"id": "A35", "block": "A", "num": "35", "adult": false, "name": "빙다리 햍바지", "rep": "해태", "twitter": "ringo2ALS", "avatar": "ringo2ALS", "members": [{"name": "해태", "twitter": "ringo2ALS", "role": "leader", "avatar": "ringo2ALS"}], "cut": true, "nums": ["35"]}, {"id": "A36", "block": "A", "num": "36", "adult": false, "name": "또롱별", "rep": "이데아", "twitter": "ideatami", "avatar": "ideatami", "members": [{"name": "이데아", "twitter": "ideatami", "role": "leader", "avatar": "ideatami"}, {"name": "스란", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["36"]}, {"id": "A37-38", "block": "A", "num": "37-38", "adult": false, "name": "Whitefangwolves", "rep": "Whitefangwolves", "twitter": "Whitefangwolves", "avatar": "Whitefangwolves", "members": [{"name": "Whitefangwolves", "twitter": "Whitefangwolves", "role": "leader", "avatar": "Whitefangwolves"}], "cut": true, "nums": ["37", "38"]}, {"id": "A39", "block": "A", "num": "39", "adult": false, "name": "Furriverse", "rep": "드펜", "twitter": "Furriverse", "avatar": "Furriverse", "members": [{"name": "드펜", "twitter": "Furriverse", "role": "leader", "avatar": "Furriverse"}, {"name": "폴라", "twitter": null, "role": "member", "avatar": null}, {"name": "쿠코상", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["39"]}, {"id": "A40", "block": "A", "num": "40", "adult": false, "name": "FUR PLUS", "rep": "Dodari", "twitter": "FurPlus_Studio", "avatar": "FurPlus_Studio", "members": [{"name": "Dodari", "twitter": "FurPlus_Studio", "role": "leader", "avatar": "FurPlus_Studio"}, {"name": "타쟈도르(떡장갑)", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["40"]}, {"id": "A41", "block": "A", "num": "41", "adult": false, "name": "MOFUMOFUYA", "rep": "mofuaki", "twitter": "mofuaki_", "avatar": "mofuaki_", "members": [{"name": "mofuaki", "twitter": "mofuaki_", "role": "leader", "avatar": "mofuaki_"}, {"name": "おおくも", "twitter": null, "role": "member", "avatar": null}, {"name": "薄田", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["41"]}, {"id": "B01", "block": "B", "num": "01", "adult": true, "name": "CheetahPaws", "rep": "CheetahPaws", "twitter": "cheetah_paws", "avatar": "cheetah_paws", "members": [{"name": "CheetahPaws", "twitter": "cheetah_paws", "role": "leader", "avatar": "cheetah_paws"}], "cut": true, "nums": ["01"]}, {"id": "B02", "block": "B", "num": "02", "adult": true, "name": "Agi's Garage", "rep": "agitype01", "twitter": "agitype01", "avatar": "agitype01", "members": [{"name": "agitype01", "twitter": "agitype01", "role": "leader", "avatar": "agitype01"}, {"name": "Kutto", "twitter": "Kuttoyaki", "role": "member", "avatar": "Kuttoyaki"}], "cut": true, "nums": ["02"]}, {"id": "B03", "block": "B", "num": "03", "adult": true, "name": "Omyurice", "rep": "Omyurice", "twitter": "omyuriceart", "avatar": "omyuriceart", "members": [{"name": "Omyurice", "twitter": "omyuriceart", "role": "leader", "avatar": "omyuriceart"}], "cut": true, "nums": ["03"]}, {"id": "B04", "block": "B", "num": "04", "adult": true, "name": "뀨", "rep": "Qp", "twitter": "qyesp", "avatar": "qyesp", "members": [{"name": "Qp", "twitter": "qyesp", "role": "leader", "avatar": "qyesp"}, {"name": "QOOZ", "twitter": "Qooz90", "role": "member", "avatar": "Qooz90"}], "cut": true, "nums": ["04"]}, {"id": "B05", "block": "B", "num": "05", "adult": true, "name": "탑 부쉬 접근금지령", "rep": "mindal3118", "twitter": "mindal3118", "avatar": "mindal3118", "members": [{"name": "mindal3118", "twitter": "mindal3118", "role": "leader", "avatar": "mindal3118"}, {"name": "김민달", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["05"]}, {"id": "B06", "block": "B", "num": "06", "adult": true, "name": "Black's Den", "rep": "Malcha soda", "twitter": "Malcha_Soda", "avatar": "Malcha_Soda", "members": [{"name": "Malcha soda", "twitter": "Malcha_Soda", "role": "leader", "avatar": "Malcha_Soda"}], "cut": true, "nums": ["06"]}, {"id": "B07", "block": "B", "num": "07", "adult": true, "name": "호다다다닷!", "rep": "Horung", "twitter": "horung0226", "avatar": "horung0226", "members": [{"name": "Horung", "twitter": "horung0226", "role": "leader", "avatar": "horung0226"}, {"name": "DAT", "twitter": "Dat_Del_luna", "role": "member", "avatar": "Dat_Del_luna"}, {"name": "JUN", "twitter": null, "role": "member", "avatar": "jj9904", "locked": true}], "cut": true, "nums": ["07"]}, {"id": "B08", "block": "B", "num": "08", "adult": true, "name": "호랑말콤멍멍퍼디", "rep": "말콤", "twitter": "Malcom508", "avatar": "Malcom508", "members": [{"name": "말콤", "twitter": "Malcom508", "role": "leader", "avatar": "Malcom508"}, {"name": "퍼디", "twitter": "Fuddyblog", "role": "member", "avatar": "Fuddyblog"}, {"name": "제트", "twitter": "dj28sj", "role": "member", "avatar": "dj28sj"}], "cut": true, "nums": ["08"]}, {"id": "B09", "block": "B", "num": "09", "adult": true, "name": "청록용", "rep": "현록", "twitter": "Tighnari_55", "avatar": "Tighnari_55", "members": [{"name": "현록", "twitter": "Tighnari_55", "role": "leader", "avatar": "Tighnari_55"}, {"name": "용박이", "twitter": "yongback00", "role": "member", "avatar": "yongback00"}, {"name": "청교", "twitter": "connecting_Y", "role": "member", "avatar": "connecting_Y"}], "cut": true, "nums": ["09"]}, {"id": "B10", "block": "B", "num": "10", "adult": true, "name": "ニコサンド", "rep": "NICO", "twitter": "Nico26b", "avatar": "Nico26b", "members": [{"name": "NICO", "twitter": "Nico26b", "role": "leader", "avatar": "Nico26b"}, {"name": "sobatya", "twitter": null, "role": "member", "avatar": null}, {"name": "늠늠", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["10"]}, {"id": "B11", "block": "B", "num": "11", "adult": true, "name": "CandleLight", "rep": "Suigi", "twitter": "26_suigi", "avatar": "26_suigi", "members": [{"name": "Suigi", "twitter": "26_suigi", "role": "leader", "avatar": "26_suigi"}], "cut": true, "nums": ["11"]}, {"id": "B12", "block": "B", "num": "12", "adult": true, "name": "Horns&Tails", "rep": "TITANIA", "twitter": "Warningblackdog", "avatar": "Warningblackdog", "members": [{"name": "TITANIA", "twitter": "Warningblackdog", "role": "leader", "avatar": "Warningblackdog"}, {"name": "BUTA", "twitter": null, "role": "member", "avatar": null}, {"name": "커피새", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["12"]}, {"id": "B13", "block": "B", "num": "13", "adult": true, "name": "RIKOSE", "rep": "リコセ", "twitter": "rikose", "avatar": "rikose", "members": [{"name": "リコセ", "twitter": "rikose", "role": "leader", "avatar": "rikose"}, {"name": "kishibe", "twitter": null, "role": "member", "avatar": null}, {"name": "kame", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["13"]}, {"id": "B14", "block": "B", "num": "14", "adult": true, "name": "버츄얼 렌탈 남편", "rep": "무드리", "twitter": "Neilos0526", "avatar": "Neilos0526", "members": [{"name": "무드리", "twitter": "Neilos0526", "role": "leader", "avatar": "Neilos0526"}, {"name": "쿠루테", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["14"]}, {"id": "B15", "block": "B", "num": "15", "adult": true, "name": "아쿠파라", "rep": "아차쿠라", "twitter": "ACHAKOORA", "avatar": "ACHAKOORA", "members": [{"name": "아차쿠라", "twitter": "ACHAKOORA", "role": "leader", "avatar": "ACHAKOORA"}, {"name": "うろ", "twitter": "uro0000", "role": "member", "avatar": "uro0000"}], "cut": true, "nums": ["15"]}, {"id": "B16", "block": "B", "num": "16", "adult": true, "name": "NANKAARU", "rep": "CGu", "twitter": "CGu0906", "avatar": "CGu0906", "members": [{"name": "CGu", "twitter": "CGu0906", "role": "leader", "avatar": "CGu0906"}], "cut": true, "nums": ["16"]}, {"id": "B17", "block": "B", "num": "17", "adult": true, "name": "STUDIO雄虎凛", "rep": "凛＠STUDIO雄虎凛", "twitter": "GTDignified", "avatar": "GTDignified", "members": [{"name": "凛＠STUDIO雄虎凛", "twitter": "GTDignified", "role": "leader", "avatar": "GTDignified"}, {"name": "號ゆうごう", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["17"]}, {"id": "B18", "block": "B", "num": "18", "adult": true, "name": "天神大砂丘", "rep": "Neumokun", "twitter": "Neumokun", "avatar": "Neumokun", "members": [{"name": "Neumokun", "twitter": "Neumokun", "role": "leader", "avatar": "Neumokun"}, {"name": "くっく", "twitter": "kukku_kuu", "role": "member", "avatar": "kukku_kuu"}], "cut": true, "nums": ["18"]}, {"id": "B19", "block": "B", "num": "19", "adult": true, "name": "OSURULE", "rep": "IG", "twitter": "IG1119", "avatar": "IG1119", "members": [{"name": "IG", "twitter": "IG1119", "role": "leader", "avatar": "IG1119"}, {"name": "Beep", "twitter": "AlphsBeep", "role": "member", "avatar": "AlphsBeep"}], "cut": true, "nums": ["19"]}, {"id": "B20", "block": "B", "num": "20", "adult": true, "name": "HARD DROP", "rep": "まだーと", "twitter": "madar_to", "avatar": "madar_to", "members": [{"name": "まだーと", "twitter": "madar_to", "role": "leader", "avatar": "madar_to"}], "cut": true, "nums": ["20"]}, {"id": "B21", "block": "B", "num": "21", "adult": true, "name": "Taishokukan Noirowze", "rep": "TostosFski", "twitter": "Tos_Tos_F_ski", "avatar": "Tos_Tos_F_ski", "members": [{"name": "TostosFski", "twitter": "Tos_Tos_F_ski", "role": "leader", "avatar": "Tos_Tos_F_ski"}], "cut": true, "nums": ["21"]}, {"id": "B22", "block": "B", "num": "22", "adult": true, "name": "BoxBear", "rep": "Gomtang", "twitter": "GomTang_P", "avatar": "GomTang_P", "members": [{"name": "Gomtang", "twitter": "GomTang_P", "role": "leader", "avatar": "GomTang_P"}], "cut": true, "nums": ["22"]}, {"id": "B23", "block": "B", "num": "23", "adult": true, "name": "Ash-Land", "rep": "AshenDawger", "twitter": "AshenDawger", "avatar": "AshenDawger", "members": [{"name": "AshenDawger", "twitter": "AshenDawger", "role": "leader", "avatar": "AshenDawger"}, {"name": "shoutlesstranse", "twitter": "shoutlesstranse", "role": "member", "avatar": "shoutlesstranse"}], "cut": true, "nums": ["23"]}, {"id": "B24", "block": "B", "num": "24", "adult": true, "name": "WILD STYLE", "rep": "Takemoto", "twitter": "arashi_takemoto", "avatar": "arashi_takemoto", "members": [{"name": "Takemoto", "twitter": "arashi_takemoto", "role": "leader", "avatar": "arashi_takemoto"}, {"name": "LamIan", "twitter": "LamIan7044", "role": "member", "avatar": "LamIan7044"}], "cut": true, "nums": ["24"]}, {"id": "B25", "block": "B", "num": "25", "adult": true, "name": "도슭 한상전", "rep": "찰떡", "twitter": "RiceCakeKain", "avatar": "RiceCakeKain", "members": [{"name": "찰떡", "twitter": "RiceCakeKain", "role": "leader", "avatar": "RiceCakeKain"}, {"name": "프라", "twitter": "Pteragon", "role": "member", "avatar": "Pteragon"}], "cut": true, "nums": ["25"]}, {"id": "B26", "block": "B", "num": "26", "adult": true, "name": "Fur-펙트 게임", "rep": "개잉여", "twitter": "J_ip721", "avatar": "J_ip721", "members": [{"name": "개잉여", "twitter": "J_ip721", "role": "leader", "avatar": "J_ip721"}, {"name": "검댕", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["26"]}, {"id": "B27", "block": "B", "num": "27", "adult": true, "name": "풀하우스", "rep": "MIKKYxx01", "twitter": "MIKKYxx01", "avatar": "MIKKYxx01", "members": [{"name": "MIKKYxx01", "twitter": "MIKKYxx01", "role": "leader", "avatar": "MIKKYxx01"}, {"name": "LEO", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["27"]}, {"id": "B28", "block": "B", "num": "28", "adult": true, "name": "멍달멍달", "rep": "BUTO", "twitter": "BUTOBU", "avatar": "BUTOBU", "members": [{"name": "BUTO", "twitter": "BUTOBU", "role": "leader", "avatar": "BUTOBU"}, {"name": "유진", "twitter": "wnsgh2466", "role": "member", "avatar": "wnsgh2466"}, {"name": "쵸이", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["28"]}, {"id": "B29", "block": "B", "num": "29", "adult": true, "name": "두더지빵집", "rep": "Warr!", "twitter": "youdil1004", "avatar": "youdil1004", "members": [{"name": "Warr!", "twitter": "youdil1004", "role": "leader", "avatar": "youdil1004"}, {"name": "모닝빵", "twitter": "morningbread16", "role": "member", "avatar": "morningbread16"}], "cut": true, "nums": ["29"]}, {"id": "B30", "block": "B", "num": "30", "adult": true, "name": "마운자로 결사반대 위원회", "rep": "타패", "twitter": "tappe124", "avatar": "tappe124", "members": [{"name": "타패", "twitter": "tappe124", "role": "leader", "avatar": "tappe124"}, {"name": "Pazzy / 파찌", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["30"]}, {"id": "B31-32", "block": "B", "num": "31-32", "adult": true, "name": "퍼리다이소 ~카지노점~", "rep": "PM", "twitter": "pmaker_owo", "avatar": "pmaker_owo", "members": [{"name": "PM", "twitter": "pmaker_owo", "role": "leader", "avatar": "pmaker_owo"}, {"name": "쏘셰", "twitter": "pangpayaaaak", "role": "member", "avatar": "pangpayaaaak"}, {"name": "부들", "twitter": "suinduckhu", "role": "member", "avatar": "suinduckhu"}, {"name": "로로디", "twitter": null, "role": "member", "avatar": null}, {"name": "테드", "twitter": null, "role": "member", "avatar": null}, {"name": "고리", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["31", "32"]}, {"id": "B33", "block": "B", "num": "33", "adult": true, "name": "염소야, 그만 야해!", "rep": "날랜돌이", "twitter": "COOKEDMOCHI", "avatar": "COOKEDMOCHI", "members": [{"name": "날랜돌이", "twitter": "COOKEDMOCHI", "role": "leader", "avatar": "COOKEDMOCHI"}, {"name": "도로롱", "twitter": "__Dororong__", "role": "member", "avatar": "__Dororong__"}], "cut": true, "nums": ["33"]}, {"id": "B34", "block": "B", "num": "34", "adult": true, "name": "엘븐스토어2", "rep": "Bernado", "twitter": "Bernado_Alte_A", "avatar": "Bernado_Alte_A", "members": [{"name": "Bernado", "twitter": "Bernado_Alte_A", "role": "leader", "avatar": "Bernado_Alte_A"}, {"name": "베르나도", "twitter": null, "role": "member", "avatar": null}, {"name": "엘븐", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["34"]}, {"id": "C01", "block": "C", "num": "01", "adult": true, "name": "노란딱지", "rep": "sum", "twitter": "ssums12", "avatar": "ssums12", "members": [{"name": "sum", "twitter": "ssums12", "role": "leader", "avatar": "ssums12"}, {"name": "HANUVO", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["01"]}, {"id": "C02", "block": "C", "num": "02", "adult": true, "name": "어서오세요, 두바이 쫀득 김메이에!", "rep": "듀크", "twitter": "Wolf__Duke", "avatar": "Wolf__Duke", "members": [{"name": "듀크", "twitter": "Wolf__Duke", "role": "leader", "avatar": "Wolf__Duke"}], "cut": true, "nums": ["02"]}, {"id": "C03", "block": "C", "num": "03", "adult": true, "name": "Furscord : 카지노 털쟁이", "rep": "페러_소치", "twitter": "vpfj423423", "avatar": "vpfj423423", "members": [{"name": "페러_소치", "twitter": "vpfj423423", "role": "leader", "avatar": "vpfj423423"}, {"name": "냉이", "twitter": "Nang2_the_Fox", "role": "member", "avatar": "Nang2_the_Fox"}], "cut": true, "nums": ["03"]}, {"id": "C04", "block": "C", "num": "04", "adult": true, "name": "슈퍼래빗프로덕션", "rep": "spirit_kimm", "twitter": "spirit_kimm", "avatar": "spirit_kimm", "members": [{"name": "spirit_kimm", "twitter": "spirit_kimm", "role": "leader", "avatar": "spirit_kimm"}, {"name": "HolySpirit", "twitter": null, "role": "member", "avatar": null}, {"name": "베오", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["04"]}, {"id": "C05", "block": "C", "num": "05", "adult": true, "name": "Ezhno / エズノ", "rep": "Ezhno", "twitter": "KalonEzhno", "avatar": "KalonEzhno", "members": [{"name": "Ezhno", "twitter": "KalonEzhno", "role": "leader", "avatar": "KalonEzhno"}], "cut": true, "nums": ["05"]}, {"id": "C06", "block": "C", "num": "06", "adult": true, "name": "스튜디오 엘레지", "rep": "큰뿔양", "twitter": "bighornsheeppic", "avatar": "bighornsheeppic", "members": [{"name": "큰뿔양", "twitter": "bighornsheeppic", "role": "leader", "avatar": "bighornsheeppic"}, {"name": "도우미", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["06"]}, {"id": "C07", "block": "C", "num": "07", "adult": true, "name": "GGG: GO GET 'EM, GOAT!", "rep": "냥글", "twitter": "nekogaki0324", "avatar": "nekogaki0324", "members": [{"name": "냥글", "twitter": "nekogaki0324", "role": "leader", "avatar": "nekogaki0324"}, {"name": "자구", "twitter": "cap1541", "role": "member", "avatar": "cap1541"}], "cut": true, "nums": ["07"]}, {"id": "C08", "block": "C", "num": "08", "adult": true, "name": "High-Fur", "rep": "메타볼", "twitter": "Meta_NONE", "avatar": "Meta_NONE", "members": [{"name": "메타볼", "twitter": "Meta_NONE", "role": "leader", "avatar": "Meta_NONE"}, {"name": "마뉴", "twitter": "manyu_art", "role": "member", "avatar": "manyu_art"}, {"name": "스탠", "twitter": "kemoistani", "role": "member", "avatar": "kemoistani"}], "cut": true, "nums": ["08"]}, {"id": "C09", "block": "C", "num": "09", "adult": true, "name": "퍼리중독신고는7811", "rep": "올뺨", "twitter": "orpiamman", "avatar": "orpiamman", "members": [{"name": "올뺨", "twitter": "orpiamman", "role": "leader", "avatar": "orpiamman"}, {"name": "HUKA", "twitter": "HUKA8989", "role": "member", "avatar": "HUKA8989"}, {"name": "노출불안 고씨", "twitter": "goshee248", "role": "member", "avatar": "goshee248"}], "cut": true, "nums": ["09"]}, {"id": "C10", "block": "C", "num": "10", "adult": true, "name": "지금이 절호의 찬스잖아", "rep": "마갱즈(Magangz)", "twitter": "makidogang", "avatar": "makidogang", "members": [{"name": "마갱즈(Magangz)", "twitter": "makidogang", "role": "leader", "avatar": "makidogang"}, {"name": "카뮤엘(Kamyuel)", "twitter": "Kamyuelo", "role": "member", "avatar": "Kamyuelo"}, {"name": "컴버스트(combust)", "twitter": "ivXair3p", "role": "member", "avatar": "ivXair3p"}], "cut": true, "nums": ["10"]}, {"id": "C11", "block": "C", "num": "11", "adult": true, "name": "퍼리의연인", "rep": "Chung", "twitter": "chung0u0", "avatar": "chung0u0", "members": [{"name": "Chung", "twitter": "chung0u0", "role": "leader", "avatar": "chung0u0"}, {"name": "Rang", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["11"]}, {"id": "C12", "block": "C", "num": "12", "adult": true, "name": "누도브즈", "rep": "누도기", "twitter": "noodogi", "avatar": "noodogi", "members": [{"name": "누도기", "twitter": "noodogi", "role": "leader", "avatar": "noodogi"}, {"name": "d0ve", "twitter": "d0ve_XD", "role": "member", "avatar": "d0ve_XD"}, {"name": "여우반찬", "twitter": "fox_banchan", "role": "member", "avatar": "fox_banchan"}], "cut": true, "nums": ["12"]}, {"id": "C13", "block": "C", "num": "13", "adult": true, "name": "간장계란밥", "rep": "UZA", "twitter": "art_uza", "avatar": "art_uza", "members": [{"name": "UZA", "twitter": "art_uza", "role": "leader", "avatar": "art_uza"}], "cut": true, "nums": ["13"]}, {"id": "C14", "block": "C", "num": "14", "adult": true, "name": "파놉티콘", "rep": "호끼퐁", "twitter": "HOKIpong", "avatar": "HOKIpong", "members": [{"name": "호끼퐁", "twitter": "HOKIpong", "role": "leader", "avatar": "HOKIpong"}, {"name": "노루", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["14"]}, {"id": "C15", "block": "C", "num": "15", "adult": true, "name": "HONEYCOMB", "rep": "wasp", "twitter": "anthyutena", "avatar": "anthyutena", "members": [{"name": "wasp", "twitter": "anthyutena", "role": "leader", "avatar": "anthyutena"}, {"name": "TTN", "twitter": "239_239", "role": "member", "avatar": "239_239"}], "cut": true, "nums": ["15"]}, {"id": "C16", "block": "C", "num": "16", "adult": true, "name": "D!TALE", "rep": "뎡 (Dyeong)", "twitter": "DYEONG_2", "avatar": "DYEONG_2", "members": [{"name": "뎡 (Dyeong)", "twitter": "DYEONG_2", "role": "leader", "avatar": "DYEONG_2"}], "cut": true, "nums": ["16"]}, {"id": "C17", "block": "C", "num": "17", "adult": true, "name": "데니가 필요해!!", "rep": "Jerry", "twitter": "Jerry_5779", "avatar": "Jerry_5779", "members": [{"name": "Jerry", "twitter": "Jerry_5779", "role": "leader", "avatar": "Jerry_5779"}], "cut": true, "nums": ["17"]}, {"id": "C18", "block": "C", "num": "18", "adult": true, "name": "자폭버튼", "rep": "만두", "twitter": "mdfurr", "avatar": "mdfurr", "members": [{"name": "만두", "twitter": "mdfurr", "role": "leader", "avatar": "mdfurr"}, {"name": "COBALT", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["18"]}, {"id": "C19-20", "block": "C", "num": "19-20", "adult": true, "name": "작전명: 에이전트 버니", "rep": "Doro-nyong", "twitter": "doro_nyong_art", "avatar": "doro_nyong_art", "members": [{"name": "Doro-nyong", "twitter": "doro_nyong_art", "role": "leader", "avatar": "doro_nyong_art"}, {"name": "이노무", "twitter": "inomu_shiki", "role": "member", "avatar": "inomu_shiki"}, {"name": "오백비", "twitter": "FurNemB", "role": "member", "avatar": "FurNemB"}, {"name": "흑당버블곰", "twitter": "Kokutou_bear", "role": "member", "avatar": "Kokutou_bear"}, {"name": "초코곰탱이", "twitter": "Choko_Gom", "role": "member", "avatar": "Choko_Gom"}, {"name": "파곰", "twitter": "PaGom1121_", "role": "member", "avatar": "PaGom1121_"}], "cut": true, "nums": ["19", "20"]}, {"id": "C21", "block": "C", "num": "21", "adult": true, "name": "데빌카드 쇼다운!", "rep": "멜쿠(MelKu)", "twitter": "MELONCOOKIE_24", "avatar": "MELONCOOKIE_24", "members": [{"name": "멜쿠(MelKu)", "twitter": "MELONCOOKIE_24", "role": "leader", "avatar": "MELONCOOKIE_24"}, {"name": "푸우", "twitter": "fu_o4884", "role": "member", "avatar": "fu_o4884"}, {"name": "첫도", "twitter": "cheotdo", "role": "member", "avatar": "cheotdo"}], "cut": true, "nums": ["21"]}, {"id": "C22", "block": "C", "num": "22", "adult": true, "name": "늑랑 狼", "rep": "미랑", "twitter": "milang_313", "avatar": "milang_313", "members": [{"name": "미랑", "twitter": "milang_313", "role": "leader", "avatar": "milang_313"}, {"name": "머바", "twitter": "skymeatball", "role": "member", "avatar": "skymeatball"}], "cut": true, "nums": ["22"]}, {"id": "C23", "block": "C", "num": "23", "adult": true, "name": "tag : tiger boy", "rep": "아도케타", "twitter": "ADKT0448", "avatar": "ADKT0448", "members": [{"name": "아도케타", "twitter": "ADKT0448", "role": "leader", "avatar": "ADKT0448"}, {"name": "하벨", "twitter": "havelXP", "role": "member", "avatar": "havelXP"}], "cut": true, "nums": ["23"]}, {"id": "C24", "block": "C", "num": "24", "adult": true, "name": "보즈야 연구소", "rep": "너울바다", "twitter": "ED_in_FF14", "avatar": "ED_in_FF14", "members": [{"name": "너울바다", "twitter": "ED_in_FF14", "role": "leader", "avatar": "ED_in_FF14"}, {"name": "온별", "twitter": "ONST4R", "role": "member", "avatar": "ONST4R"}], "cut": true, "nums": ["24"]}, {"id": "C25", "block": "C", "num": "25", "adult": true, "name": "거기,게임 좋아하세요?", "rep": "PagYaing4167", "twitter": "PagYaing4167", "avatar": "PagYaing4167", "members": [{"name": "PagYaing4167", "twitter": "PagYaing4167", "role": "leader", "avatar": "PagYaing4167"}, {"name": "Doyayam", "twitter": "DoyayamArt", "role": "member", "avatar": "DoyayamArt"}, {"name": "검은여우제냐", "twitter": "blackfoxjennya", "role": "member", "avatar": "blackfoxjennya"}], "cut": true, "nums": ["25"]}, {"id": "C26", "block": "C", "num": "26", "adult": true, "name": "뭐든 해봤습니다 털공장", "rep": "언제쯤", "twitter": "bigwhite_cat", "avatar": "bigwhite_cat", "members": [{"name": "언제쯤", "twitter": "bigwhite_cat", "role": "leader", "avatar": "bigwhite_cat"}, {"name": "장장대대훈훈", "twitter": "jangdaehun31310", "role": "member", "avatar": "jangdaehun31310"}], "cut": true, "nums": ["26"]}, {"id": "C27", "block": "C", "num": "27", "adult": true, "name": "Mr. furshowtime", "rep": "100심볼", "twitter": "100symbol", "avatar": "100symbol", "members": [{"name": "100심볼", "twitter": "100symbol", "role": "leader", "avatar": "100symbol"}, {"name": "아기염소", "twitter": null, "role": "member", "avatar": null}], "cut": true, "nums": ["27"]}, {"id": "C28", "block": "C", "num": "28", "adult": true, "name": "S.O.C", "rep": "벅벅", "twitter": "furrybuckbuck", "avatar": "furrybuckbuck", "members": [{"name": "벅벅", "twitter": "furrybuckbuck", "role": "leader", "avatar": "furrybuckbuck"}, {"name": "NB", "twitter": "thee1621", "role": "member", "avatar": "thee1621"}, {"name": "오뎅국", "twitter": "ramee_C", "role": "member", "avatar": "ramee_C"}], "cut": true, "nums": ["28"]}];
 
 // 부스 번호 앞 글자(A, B, C ...)로 열을 나눔. 데이터에 있는 열만 탭으로 보여줌
 const ALL_ROWS = [...new Set(BOOTHS.map(b => b.block))].sort();
@@ -2041,6 +2090,12 @@ const I18N = {
     preorderMemoPlaceholder: "예: 아크릴 스탠드 1, 엽서 세트 2, 현장 수령",
     preorderOffConfirm: "선입금 표시를 끄면 이 부스에 적은 선입금 정보(날짜·플랫폼·금액·입금자명·메모·수령 여부)도 함께 지워집니다. 계속할까요?",
     preorderOff: "끄기",
+    preorderItemTitle: "선입금 {n}",
+    preorderItemAdd: "＋ 선입금 항목 추가",
+    preorderItemRemove: "삭제",
+    preorderItemRemoveConfirm: "선입금 {n}에 적은 정보(날짜·플랫폼·금액·입금자명·메모·수령 여부)를 지울까요?",
+    preorderItemsSummary: "선입금 {n}건 · 수령 완료 {done}건 · 합계 {amount}",
+    preorderItemsProgress: "{done}/{n}건",
     mapBtn: "🗺️ 배치도",
     mapHint: "부스를 눌러서 메모/부스 정보를 확인하세요 (공식 일요일 부스 안내 기준)",
     mapTitle: "Furst Class 부스 배치도",
@@ -2203,6 +2258,12 @@ const I18N = {
     preorderMemoPlaceholder: "e.g. 1 acrylic stand, 2 postcard sets, pick up on site",
     preorderOffConfirm: "Turning off pre-order also deletes the pre-order details for this booth (date, platform, amount, payer name, notes, received). Continue?",
     preorderOff: "Turn off",
+    preorderItemTitle: "Pre-order {n}",
+    preorderItemAdd: "＋ Add pre-order",
+    preorderItemRemove: "Delete",
+    preorderItemRemoveConfirm: "Delete the details of pre-order {n} (date, platform, amount, payer name, notes, received)?",
+    preorderItemsSummary: "{n} pre-orders · {done} received · Total {amount}",
+    preorderItemsProgress: "{done}/{n}",
     mapBtn: "🗺️ Map",
     mapHint: "Click a booth to see notes/booth info (based on the official Sunday booth guide)",
     mapTitle: "Furst Class booth map",
@@ -2365,6 +2426,12 @@ const I18N = {
     preorderMemoPlaceholder: "例：アクリルスタンド1、ポストカードセット2、現地受取",
     preorderOffConfirm: "事前通販をオフにすると、このブースに記入した事前通販の情報（入金日・プラットフォーム・金額・入金者名・メモ・受取状態）も削除されます。続行しますか？",
     preorderOff: "オフにする",
+    preorderItemTitle: "事前通販 {n}",
+    preorderItemAdd: "＋ 事前通販を追加",
+    preorderItemRemove: "削除",
+    preorderItemRemoveConfirm: "事前通販 {n} の情報（入金日・プラットフォーム・金額・入金者名・メモ・受取状態）を削除しますか？",
+    preorderItemsSummary: "事前通販 {n}件 · 受取済み {done}件 · 合計 {amount}",
+    preorderItemsProgress: "{done}/{n}件",
     mapBtn: "🗺️ 配置図",
     mapHint: "ブースを押してメモ・ブース情報を確認してください（公式の日曜日ブース案内に基づく）",
     mapTitle: "Furst Class ブース配置図",
@@ -2792,6 +2859,14 @@ function loadPreorders(){
 }
 
 function savePreorders(){
+  // 예전 화면(새로고침 전 다른 기기 등)도 카드의 수령 여부·금액은 맞게 보이도록 합계를 위에도 적어 둠.
+  // 읽을 때는 items만 씀.
+  Object.values(preorders).forEach(p => {
+    if(!p || !Array.isArray(p.items)) return;
+    p.received = p.items.length > 0 && p.items.every(i => i.received);
+    const total = p.items.reduce((sum, i) => sum + (i.amount || 0), 0);
+    if(total > 0) p.amount = total; else delete p.amount;
+  });
   try {
     localStorage.setItem(PREORDER_KEY, JSON.stringify(preorders));
   } catch {
@@ -2826,23 +2901,94 @@ function setPostHidden(id, hidden){
   saveHiddenPosts();
 }
 
+// 한 부스에서 선입금을 여러 번 할 수 있어서(2026-11-02 사용자 요청) 부스마다 항목 목록(items)으로 저장함.
+// 예전 모양({ received, date, platform, amount, payer, memo })은 항목 하나짜리로 바꿔 읽음.
+const PREORDER_FIELDS = ["date", "platform", "amount", "payer", "memo"];
+const MAX_PREORDER_ITEMS = 30;
+
+function normalizePreorderItem(raw){
+  const item = { received: !!(raw && raw.received) };
+  if(!raw || typeof raw !== "object") return item;
+  PREORDER_FIELDS.forEach(f => {
+    if(f === "amount"){
+      const n = Math.max(0, Math.floor(Number(raw.amount) || 0));
+      if(n > 0) item.amount = n;
+    } else if(typeof raw[f] === "string" && raw[f]){
+      item[f] = raw[f];
+    }
+  });
+  return item;
+}
+
+// 저장값 하나를 { items: [...] } 모양으로 바꿈. 선입금이 꺼진 값(없음·잘못된 값)이면 null.
+function normalizePreorder(p){
+  if(!p || typeof p !== "object") return null;
+  const items = Array.isArray(p.items)
+    ? p.items.slice(0, MAX_PREORDER_ITEMS).map(normalizePreorderItem)
+    : [normalizePreorderItem(p)];
+  if(!items.length) items.push({ received: false });
+  return { items };
+}
+
+// 저장된 선입금 전체를 새 모양으로 바꿈 (불러올 때·클라우드와 합친 뒤). 바뀐 게 있으면 true.
+function migratePreorderShape(){
+  let changed = false;
+  Object.keys(preorders).forEach(id => {
+    const p = preorders[id];
+    const n = normalizePreorder(p);
+    if(!n){ delete preorders[id]; changed = true; return; }
+    if(!p || !Array.isArray(p.items)) changed = true;
+    preorders[id] = n;
+  });
+  return changed;
+}
+
 function getPreorder(boothId){
   const p = preorders[boothId];
-  return (p && typeof p === "object") ? p : null;
+  if(!p || typeof p !== "object") return null;
+  if(!Array.isArray(p.items)) preorders[boothId] = normalizePreorder(p);
+  return preorders[boothId];
+}
+
+function getPreorderItems(boothId){
+  const p = getPreorder(boothId);
+  return p ? p.items : [];
 }
 
 function setPreorderOn(boothId, on){
   if(on){
-    if(!getPreorder(boothId)) preorders[boothId] = { received: false };
+    if(!getPreorder(boothId)) preorders[boothId] = { items: [{ received: false }] };
   } else {
     delete preorders[boothId];
   }
   savePreorders();
 }
 
-// 날짜·플랫폼·금액·입금자명·메모·수령 여부 중 하나를 바꿈. 선입금이 꺼져 있으면 켜면서 저장함.
-function setPreorderField(boothId, field, value){
-  const p = getPreorder(boothId) || { received: false };
+// 선입금 항목 추가. 선입금이 꺼져 있으면 켜면서 빈 항목 하나를 만듦. 새 항목의 번호(0부터)를 돌려줌.
+function addPreorderItem(boothId){
+  const p = getPreorder(boothId);
+  if(!p){ setPreorderOn(boothId, true); return 0; }
+  if(p.items.length >= MAX_PREORDER_ITEMS) return p.items.length - 1;
+  p.items.push({ received: false });
+  savePreorders();
+  return p.items.length - 1;
+}
+
+// 선입금 항목 하나 삭제. 마지막 하나를 지우면 선입금은 켠 채로 빈 항목만 남김(끄기는 💳 버튼).
+function removePreorderItem(boothId, index){
+  const p = getPreorder(boothId);
+  if(!p || !p.items[index]) return;
+  p.items.splice(index, 1);
+  if(!p.items.length) p.items.push({ received: false });
+  savePreorders();
+}
+
+// index번째 항목의 날짜·플랫폼·금액·입금자명·메모·수령 여부 중 하나를 바꿈. 선입금이 꺼져 있으면 켜면서 저장함.
+function setPreorderField(boothId, index, field, value){
+  if(!getPreorder(boothId)) setPreorderOn(boothId, true);
+  const items = getPreorder(boothId).items;
+  const p = items[index];
+  if(!p) return;
   if(field === "amount"){
     const n = Math.max(0, Math.floor(Number(value) || 0));
     if(n > 0) p.amount = n; else delete p.amount;
@@ -2852,18 +2998,31 @@ function setPreorderField(boothId, field, value){
     const v = String(value || "").trim().slice(0, field === "memo" ? MAX_NOTE_LENGTH : MAX_PREORDER_TEXT);
     if(v) p[field] = v; else delete p[field];
   }
-  preorders[boothId] = p;
   savePreorders();
 }
 
-// 수령 여부 말고 적어 둔 정보가 있는지 (선입금을 끌 때 확인 창을 띄울지 판단)
+function preorderItemHasDetails(item){
+  return !!(item && (item.received || PREORDER_FIELDS.some(f => item[f])));
+}
+
+// 수령 여부 말고도 적어 둔 정보가 있는지 (선입금을 끌 때 확인 창을 띄울지 판단). 항목이 둘 이상이어도 확인함.
 function preorderHasDetails(boothId){
-  const p = getPreorder(boothId);
-  return !!(p && (p.received || p.date || p.platform || p.amount || p.payer || p.memo));
+  const items = getPreorderItems(boothId);
+  return items.length > 1 || items.some(preorderItemHasDetails);
+}
+
+// 부스의 모든 선입금 항목을 받았는지
+function isPreorderReceived(boothId){
+  const items = getPreorderItems(boothId);
+  return items.length > 0 && items.every(i => i.received);
+}
+
+function getPreorderAmount(boothId){
+  return getPreorderItems(boothId).reduce((sum, i) => sum + (i.amount || 0), 0);
 }
 
 function getPreorderTotal(ids){
-  return ids.reduce((sum, id) => sum + ((getPreorder(id) || {}).amount || 0), 0);
+  return ids.reduce((sum, id) => sum + getPreorderAmount(id), 0);
 }
 
 /* ---------- 부스별 예산 ----------
@@ -2913,6 +3072,7 @@ function migrateAllMergedBoothIds(){
   if(migrateMergedBoothIds(preorders)) savePreorders();
 }
 migrateAllMergedBoothIds();
+if(migratePreorderShape()) savePreorders();
 
 function getBudget(boothId){
   return budgets[boothId] || 0;
@@ -3081,6 +3241,7 @@ function pullAndMergeFromCloud(uid){
     hiddenPosts = mergeField(hiddenPosts, cloud.hiddenPosts);
     migrateAllMergedBoothIds();
     migrateMergedBoothIds(spent);
+    migratePreorderShape();
     saveNotes();
     saveVisitStatus();
     saveBudgets();
@@ -4039,7 +4200,7 @@ function renderGrid(){
     : isUpdatesView ? t(updatesMineOnly ? "updatesCountMine" : "updatesCount", { n: list.length })
     : isPreorderView ? t("preorderCount", {
         n: list.length,
-        done: list.filter(b => getPreorder(b.id).received).length,
+        done: list.filter(b => isPreorderReceived(b.id)).length,
         amount: formatWon(getPreorderTotal(list.map(b => b.id))),
       })
     : t("circleCount", { n: list.length });
@@ -4171,11 +4332,15 @@ function renderGrid(){
     }
 
     if(isPreorderView){
-      const p = getPreorder(booth.id);
+      const items = getPreorderItems(booth.id);
+      const done = isPreorderReceived(booth.id);
+      const amount = getPreorderAmount(booth.id);
       const preEl = document.createElement("div");
-      preEl.className = "preorder-line" + (p.received ? " received" : "");
-      preEl.textContent = (p.received ? t("preorderDoneShort") : t("preorderPending")) +
-        (p.amount ? ` · ${formatWon(p.amount)}` : "");
+      preEl.className = "preorder-line" + (done ? " received" : "");
+      // 항목이 둘 이상이면 몇 건 중 몇 건을 받았는지도 보여 줌 (예: "⏳ 수령 전 1/3건 · ₩50,000")
+      preEl.textContent = (done ? t("preorderDoneShort") : t("preorderPending")) +
+        (items.length > 1 ? ` ${t("preorderItemsProgress", { done: items.filter(i => i.received).length, n: items.length })}` : "") +
+        (amount ? ` · ${formatWon(amount)}` : "");
       card.appendChild(preEl);
     }
 
@@ -4438,7 +4603,7 @@ function buildMapSvg(){
     const pre = getPreorder(booth.id);
     // 선입금 보기에서는 방문 예정/완료와 같은 노랑·초록을 선입금 수령 전/완료에 쓰고, 선입금이 없는 부스는 흐리게
     const cls = "map-booth zone-" + booth.block.toLowerCase() + (mapMode === "preorder"
-      ? (pre ? (pre.received ? " visit-visited" : " visit-planned") : " dim")
+      ? (pre ? (isPreorderReceived(booth.id) ? " visit-visited" : " visit-planned") : " dim")
       : (getNote(booth.id) ? " has-note" : "") +
         (status === "planned" ? " visit-planned" : status === "visited" ? " visit-visited" : "") +
         (level ? ` priority-${level}` : ""));
@@ -5055,9 +5220,9 @@ function openPreorderModal(boothId){
   showBoothModal(booth);
 }
 
-// 수령 완료 버튼과 선입금 정보 칸. 모달에서는 부스 정보 아래, PC 펼침 상세에서는 오른쪽 칸.
+// 선입금 항목별 수령 완료 버튼과 선입금 정보 칸, 그 아래 "＋ 선입금 항목 추가" 버튼.
+// 모달에서는 부스 정보 아래, PC 펼침 상세에서는 오른쪽 칸.
 function fillPreorderActions(content, booth){
-  const p = getPreorder(booth.id) || {};
   const refreshPreorderTab = () => {
     if(currentRow === "PREORDER") renderGrid();
     if(currentRow === "MAP") renderMapView();
@@ -5065,40 +5230,115 @@ function fillPreorderActions(content, booth){
 
   const box = document.createElement("div");
   box.className = "preorder-box";
-  box.innerHTML = `
-    <button type="button" class="preorder-received-btn"></button>
-    <label>${escapeHtml(t("preorderDate"))}</label>
-    <div class="budget-input-row"><input type="date" data-field="date" value="${escapeHtml(p.date || "")}"></div>
-    <label>${escapeHtml(t("preorderPlatform"))}</label>
-    <div class="budget-input-row"><input type="text" data-field="platform" maxlength="${MAX_PREORDER_TEXT}" value="${escapeHtml(p.platform || "")}" placeholder="${escapeHtml(t("preorderPlatformPlaceholder"))}"></div>
-    <label>${escapeHtml(t("preorderAmount"))}</label>
-    <div class="budget-input-row">
-      <span class="yen">₩</span>
-      <input type="number" data-field="amount" min="0" step="1000" inputmode="numeric" value="${Number(p.amount) || ""}" placeholder="0">
-    </div>
-    <label>${escapeHtml(t("preorderPayer"))}</label>
-    <div class="budget-input-row"><input type="text" data-field="payer" maxlength="${MAX_PREORDER_TEXT}" value="${escapeHtml(p.payer || "")}" placeholder="${escapeHtml(t("preorderPayerPlaceholder"))}"></div>
-    <label>${escapeHtml(t("preorderMemo"))}</label>
-    <textarea data-field="memo" maxlength="${MAX_NOTE_LENGTH}" placeholder="${escapeHtml(t("preorderMemoPlaceholder"))}">${escapeHtml(p.memo || "")}</textarea>
-  `;
-  const receivedBtn = box.querySelector(".preorder-received-btn");
-  const syncReceivedButton = () => {
-    const received = !!(getPreorder(booth.id) || {}).received;
-    receivedBtn.classList.toggle("active", received);
-    receivedBtn.textContent = received ? t("preorderReceived") : t("preorderNotReceived");
-  };
-  syncReceivedButton();
-  receivedBtn.addEventListener("click", () => {
-    setPreorderField(booth.id, "received", !(getPreorder(booth.id) || {}).received);
-    syncReceivedButton();
-    renderNav();
-    refreshPreorderTab();
-  });
-  box.querySelectorAll("[data-field]").forEach(input => {
-    input.addEventListener("input", () => setPreorderField(booth.id, input.dataset.field, input.value));
-    input.addEventListener("change", () => { renderNav(); refreshPreorderTab(); });
-  });
   content.appendChild(box);
+
+  // 항목을 추가·삭제하면 칸 전체를 다시 그림. focusIndex 항목의 첫 칸에 포커스.
+  const render = (focusIndex) => {
+    const items = getPreorderItems(booth.id);
+    const list = items.length ? items : [{ received: false }];
+    box.innerHTML = "";
+
+    if(list.length > 1){
+      const summary = document.createElement("div");
+      summary.className = "preorder-summary";
+      box.appendChild(summary);
+    }
+
+    list.forEach((p, index) => {
+      const item = document.createElement("div");
+      item.className = "preorder-item";
+      item.innerHTML = `
+        <div class="preorder-item-head">
+          <span class="preorder-item-title">${escapeHtml(t("preorderItemTitle", { n: index + 1 }))}</span>
+          ${list.length > 1 ? `<button type="button" class="preorder-item-remove">${escapeHtml(t("preorderItemRemove"))}</button>` : ""}
+        </div>
+        <button type="button" class="preorder-received-btn"></button>
+        <label>${escapeHtml(t("preorderDate"))}</label>
+        <div class="budget-input-row"><input type="date" data-field="date" value="${escapeHtml(p.date || "")}"></div>
+        <label>${escapeHtml(t("preorderPlatform"))}</label>
+        <div class="budget-input-row"><input type="text" data-field="platform" maxlength="${MAX_PREORDER_TEXT}" value="${escapeHtml(p.platform || "")}" placeholder="${escapeHtml(t("preorderPlatformPlaceholder"))}"></div>
+        <label>${escapeHtml(t("preorderAmount"))}</label>
+        <div class="budget-input-row">
+          <span class="yen">₩</span>
+          <input type="number" data-field="amount" min="0" step="1000" inputmode="numeric" value="${Number(p.amount) || ""}" placeholder="0">
+        </div>
+        <label>${escapeHtml(t("preorderPayer"))}</label>
+        <div class="budget-input-row"><input type="text" data-field="payer" maxlength="${MAX_PREORDER_TEXT}" value="${escapeHtml(p.payer || "")}" placeholder="${escapeHtml(t("preorderPayerPlaceholder"))}"></div>
+        <label>${escapeHtml(t("preorderMemo"))}</label>
+        <textarea data-field="memo" maxlength="${MAX_NOTE_LENGTH}" placeholder="${escapeHtml(t("preorderMemoPlaceholder"))}">${escapeHtml(p.memo || "")}</textarea>
+      `;
+      const currentItem = () => getPreorderItems(booth.id)[index] || {};
+      const receivedBtn = item.querySelector(".preorder-received-btn");
+      const syncReceivedButton = () => {
+        const received = !!currentItem().received;
+        receivedBtn.classList.toggle("active", received);
+        receivedBtn.textContent = received ? t("preorderReceived") : t("preorderNotReceived");
+      };
+      syncReceivedButton();
+      receivedBtn.addEventListener("click", () => {
+        setPreorderField(booth.id, index, "received", !currentItem().received);
+        syncReceivedButton();
+        syncSummary();
+        renderNav();
+        refreshPreorderTab();
+      });
+      item.querySelectorAll("[data-field]").forEach(input => {
+        input.addEventListener("input", () => {
+          setPreorderField(booth.id, index, input.dataset.field, input.value);
+          if(input.dataset.field === "amount") syncSummary();
+        });
+        input.addEventListener("change", () => { renderNav(); refreshPreorderTab(); });
+      });
+      const removeBtn = item.querySelector(".preorder-item-remove");
+      if(removeBtn) removeBtn.addEventListener("click", async () => {
+        // 적어 둔 내용이 있는 항목은 실수로 지우지 않게 한 번 물어봄
+        if(preorderItemHasDetails(currentItem()) &&
+          !(await showConfirmDialog(t("preorderItemRemoveConfirm", { n: index + 1 }), t("preorderItemRemove")))) return;
+        removePreorderItem(booth.id, index);
+        render(Math.min(index, getPreorderItems(booth.id).length - 1));
+        renderNav();
+        refreshPreorderTab();
+      });
+      box.appendChild(item);
+    });
+
+    const addBtn = document.createElement("button");
+    addBtn.type = "button";
+    addBtn.className = "preorder-add-btn";
+    addBtn.textContent = t("preorderItemAdd");
+    addBtn.disabled = list.length >= MAX_PREORDER_ITEMS;
+    addBtn.addEventListener("click", () => {
+      const newIndex = addPreorderItem(booth.id);
+      render(newIndex);
+      renderNav();
+      refreshPreorderTab();
+    });
+    box.appendChild(addBtn);
+
+    syncSummary();
+    if(focusIndex != null){
+      const target = box.querySelectorAll(".preorder-item")[focusIndex];
+      if(target){
+        target.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        const first = target.querySelector(".preorder-received-btn");
+        if(first) first.focus({ preventScroll: true });
+      }
+    }
+  };
+
+  // 항목이 둘 이상일 때 맨 위에 "선입금 n건 · 수령 완료 m건 · 합계 ₩금액"
+  function syncSummary(){
+    const summary = box.querySelector(".preorder-summary");
+    if(!summary) return;
+    const items = getPreorderItems(booth.id);
+    summary.textContent = t("preorderItemsSummary", {
+      n: items.length,
+      done: items.filter(i => i.received).length,
+      amount: formatWon(getPreorderAmount(booth.id)),
+    });
+  }
+
+  render(null);
 }
 
 // 사용법 설명서(PDF) 구글 드라이브 링크. 사이트 언어에 맞는 판을 엶 (영어·일본어판 2026-10-27)
@@ -5261,5 +5501,10 @@ function allImageUrls(){
   return [...paths].map(path => new URL(path, location.href).href);
 }
 </script>
+<!-- Cloudflare Web Analytics (2026-10-31): 쿠키 없이 일별 방문자·페이지뷰만 집계.
+     workers.dev 주소는 Cloudflare 자동 연결이 안 돼서 JS 스니펫 방식으로 넣음.
+     defer 라서 목록 그리기를 늦추지 않고, 막히거나 오프라인이어도 사이트 동작에는 영향 없음.
+     관리 화면(admin.html)은 운영자만 쓰므로 넣지 않음. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "0794de4895e24d36b58de7daa9a36e69"}'></script>
 </body>
 </html>
