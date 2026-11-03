@@ -304,8 +304,16 @@ def check_firestore_quota(sa):
             add(g, name, "fail", f"Cloud Monitoring 응답 없음 ({e})")
             continue
         if r.status_code == 403:
-            add(g, name, "fail", "사용량을 읽을 권한이 없음 → 서비스 계정에 'Monitoring 뷰어' 역할 추가 "
-                                 "(또는 Cloud Monitoring API 사용 설정)")
+            try:
+                why = r.json().get("error", {}).get("message", "")[:300]
+            except ValueError:
+                why = ""
+            if "has not been used" in why or "is disabled" in why or "SERVICE_DISABLED" in r.text:
+                hint = "Cloud Monitoring API 가 꺼져 있음 → Google Cloud 콘솔에서 Cloud Monitoring API 사용 설정"
+            else:
+                hint = (f"사용량을 읽을 권한이 없음 → 서비스 계정 {sa.get('client_email')} 에 "
+                        "'Monitoring 뷰어' 역할 추가 (바꾼 뒤 적용까지 몇 분 걸릴 수 있음)")
+            add(g, name, "fail", f"{hint}. Google 응답: {why}")
             return
         if not r.ok:
             add(g, name, "fail", f"Cloud Monitoring HTTP {r.status_code} {r.text[:200]}")
@@ -323,6 +331,16 @@ def check_cloudflare_quota():
     token, account = os.environ.get("CF_API_TOKEN", "").strip(), os.environ.get("CF_ACCOUNT_ID", "").strip()
     if not token or not account:
         add(g, "Cloudflare Workers 오늘 요청", "skip", "비밀값 CF_API_TOKEN / CF_ACCOUNT_ID 없음")
+        return
+    if any(c.isspace() for c in token) or not re.fullmatch(r"[\w-]+", token):
+        # 토큰 값이 로그에 찍히지 않게 내용은 보여 주지 않음
+        add(g, "Cloudflare Workers 오늘 요청", "fail",
+            f"비밀값 CF_API_TOKEN 이 토큰 하나가 아님(줄바꿈·공백·기호 포함, 길이 {len(token)}자). "
+            "curl 명령이나 확인 결과(JSON) 전체가 아니라 토큰 값(영문·숫자 약 40자)만 넣어야 함")
+        return
+    if not re.fullmatch(r"[0-9a-f]{32}", account):
+        add(g, "Cloudflare Workers 오늘 요청", "fail",
+            f"비밀값 CF_ACCOUNT_ID 가 계정 ID 모양(영문 소문자·숫자 32자)이 아님(길이 {len(account)}자)")
         return
     now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0)
     start = now.replace(hour=0, minute=0, second=0)
@@ -342,7 +360,7 @@ def check_cloudflare_quota():
                           json={"query": query, "variables": variables}, timeout=30)
         data = r.json()
     except (requests.RequestException, ValueError) as e:
-        add(g, "Cloudflare Workers 오늘 요청", "fail", f"Cloudflare API 응답 없음 ({e})")
+        add(g, "Cloudflare Workers 오늘 요청", "fail", f"Cloudflare API 응답 없음 ({type(e).__name__})")
         return
     if data.get("errors") or not r.ok:
         msg = "; ".join(e.get("message", "") for e in (data.get("errors") or []))[:200]
