@@ -33,7 +33,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -61,6 +61,9 @@ RT_SINCE = datetime(2026, 8, 31, 15, tzinfo=timezone.utc)   # 2026-09-01 00:00 K
 DROP_KEYS = ("text", "images", "quote")
 MIN_SCORE = 2
 REQUEST_GAP_SECONDS = 1.0
+# 최근 이 시간 안에 올라온 글인데 후보에서 빠진 글은 실행 로그에 이유를 남김.
+# "글이 수집 안 됐다"는 제보가 오면 Actions 로그만 보고 답글이라 빠졌는지, 키워드 점수가 모자랐는지 알 수 있게 (2026-11-03)
+SKIP_LOG_HOURS = 24
 USER_AGENT = "FurryBoothList booth post collector (+https://github.com/mononono97/FurryBoothList)"
 
 # (정규식, 점수, 설명). 한국어·일본어·영어 작가가 섞여 있어서 세 언어를 다 봄.
@@ -236,6 +239,14 @@ def collect_retweets(known, booths_for, names, first_run):
     return added, already
 
 
+def reply_target(p):
+    """답글이 가리키는 계정 아이디. FxTwitter 는 문자열 또는 {screen_name} 객체로 줌."""
+    target = p.get("replying_to")
+    if isinstance(target, dict):
+        return target.get("screen_name") or ""
+    return target if isinstance(target, str) else ""
+
+
 def post_text(p):
     return (p.get("raw_text") or {}).get("text") or p.get("text") or ""
 
@@ -307,7 +318,8 @@ def collect(feed_dir, dry_run=False, quick=False):
     removed_old = before - len(data["posts"])
     known = {p["id"] for p in data["posts"]}
 
-    added, failed = [], []
+    added, failed, skipped = [], [], []
+    now = datetime.now(timezone.utc)
     # quick: 공식·RT 계정만 봄. 부스 계정 160여 개를 도는 전체 실행은 10분쯤 걸리고
     # GitHub 예약 실행이 몇 시간씩 밀려서, 공식 글이 늦게 들어오던 문제(2026-10-30) 때문에 따로 자주 돌림
     for key, (handle, booth_ids) in ([] if quick else sorted(handles.items())):
@@ -319,15 +331,25 @@ def collect(feed_dir, dry_run=False, quick=False):
         for p in results:
             pid = str(p.get("id") or "")
             author = ((p.get("author") or {}).get("screen_name") or "").lower()
-            if not pid or pid in known or p.get("reposted_by") or p.get("replying_to") or author != key:
+            if not pid or pid in known:
                 continue
             created = created_at(p)
+            recent = created >= now - timedelta(hours=SKIP_LOG_HOURS)
+            link = f"https://x.com/{handle}/status/{pid}"
+            if p.get("reposted_by") or author != key:
+                continue   # 리트윗·다른 사람 글은 부스 글이 아니라서 로그에도 남기지 않음
+            if p.get("replying_to"):
+                if recent:
+                    skipped.append(f"{booth_ids} @{handle} 답글이라 뺌(답글 대상 {reply_target(p) or '?'}) {link}")
+                continue
             if created < POST_SINCE:
                 continue
             text = post_text(p)
             images = post_images(p)
             score, reasons = judge(text, images, post_links(p))
             if score < MIN_SCORE:
+                if recent:
+                    skipped.append(f"{booth_ids} @{handle} 점수 {score} 미달 {reasons} {link}")
                 continue
             known.add(pid)
             added.append({
@@ -373,6 +395,10 @@ def collect(feed_dir, dry_run=False, quick=False):
         print(f"  + 공식 https://x.com/{c['handle']}/status/{c['id']}")
     for f in failed:
         print(f"  ! {f}")
+    if skipped:
+        print(f"최근 {SKIP_LOG_HOURS}시간 글 중 후보에서 뺀 글 {len(skipped)}개")
+        for line in skipped:
+            print(f"  - {line}")
     if rt_marked:
         print(f"  이미 후보에 있던 글 {rt_marked}개에 '{RT_REASON}' 표시")
     if removed:
