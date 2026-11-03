@@ -18,6 +18,10 @@ on:
         description: "이 글이 왜 후보에 없는지만 확인 (글 주소나 id, 여러 개는 쉼표로). 후보 파일은 바꾸지 않음"
         type: string
         default: ""
+      audit:
+        description: "이 부스들의 지난 글을 끝까지 훑어 빠진 상품 글 찾기 (부스 번호, 여러 개는 쉼표로. ALL 은 전체). 후보 파일은 바꾸지 않음"
+        type: string
+        default: ""
 
 permissions:
   contents: write
@@ -49,11 +53,16 @@ jobs:
         env:
           CHECK: ${{ inputs.check }}
         run: python3 tools/collect_booth_posts.py feed "--check=$CHECK"
+      - name: 빠진 글 점검
+        if: inputs.audit
+        env:
+          AUDIT: ${{ inputs.audit }}
+        run: python3 tools/collect_booth_posts.py feed "--audit=$AUDIT"
       - name: 후보 모으기
-        if: ${{ !inputs.check }}
+        if: ${{ !inputs.check && !inputs.audit }}
         run: python3 tools/collect_booth_posts.py feed ${{ github.ref_name != 'main' && '--dry-run' || '' }} ${{ ((github.event_name == 'schedule' && github.event.schedule != '17 * * * *') || inputs.quick) && '--quick' || '' }}
       - name: 후보 저장
-        if: github.ref_name == 'main' && !inputs.check
+        if: github.ref_name == 'main' && !inputs.check && !inputs.audit
         run: |
           cd feed
           git add -A

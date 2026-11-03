@@ -13,6 +13,7 @@ X 약관상 X 밖에 글 사본을 두지 않는 편이 안전해서 (2026-10-05
     python3 tools/collect_booth_posts.py <후보 폴더> --dry-run  # 파일은 건드리지 않고 결과만 출력
     python3 tools/collect_booth_posts.py <후보 폴더> --quick    # 부스 계정은 건너뛰고 공식·RT 계정만 (몇 초면 끝남)
     python3 tools/collect_booth_posts.py <후보 폴더> --check=<글 주소나 id,...>  # 그 글이 왜 후보에 없는지만 확인
+    python3 tools/collect_booth_posts.py <후보 폴더> --audit=<부스 번호,...>     # 그 부스 계정의 지난 글을 끝까지 훑어 빠진 글 찾기
 
 동작:
 1. index.html 의 BOOTHS 줄에서 부스장·부스원 X 아이디를 읽음
@@ -464,7 +465,97 @@ def check_posts(feed_dir, refs):
                 print(f"  프로필 글 목록 받기 실패: {e}")
 
 
+AUDIT_MAX_PAGES = 10   # 계정마다 넘겨 볼 최대 페이지(약 200개). 그 전에 POST_SINCE 이전 글이 나오면 멈춤
+
+
+def audit_booths(feed_dir, booth_refs):
+    """부스 번호마다 부스장·부스원 계정의 POST_SINCE 이후 글을 페이지를 넘겨 가며 모두 보고,
+    후보 파일에 없는 글 중 상품 글일 수 있는 글을 이유와 함께 출력 (2026-11-03 사용자 요청: 상품 글이 0건인 부스 점검).
+    평소 수집은 계정마다 첫 페이지(약 20개)만 보고 답글은 빼서, 부스원 계정이 수집 대상이 되기(2026-10-24) 전 글이나
+    자기 글에 답글로 이어 쓴 인포(타래)는 한 번도 후보가 되지 못함. 후보 파일은 바꾸지 않고 로그만 남김(본문은 남기지 않음)."""
+    booths = load_booths()
+    wanted = {r.strip().upper() for r in booth_refs.split(",") if r.strip()}
+    protected = load_protected()
+    path = Path(feed_dir) / "candidates.json"
+    data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    known = {c["id"] for c in (data.get("posts") or []) + (data.get("official") or [])}
+    seen_handles = {}
+    for booth in booths:
+        if wanted and booth["id"].upper() not in wanted and "ALL" not in wanted:
+            continue
+        handles = list(dict.fromkeys(h for h in [booth.get("twitter"), *[m.get("twitter") for m in booth.get("members") or []]] if h))
+        print(f"=== {booth['id']} {booth['name']}")
+        if not handles:
+            print("  X 계정 없음")
+        for handle in handles:
+            key = handle.lower()
+            if key in protected:
+                print(f"  @{handle}: 비공개 계정이라 볼 수 없음")
+                continue
+            if key in seen_handles:
+                print(f"  @{handle}: {seen_handles[key]} 에서 이미 봄")
+                continue
+            seen_handles[key] = booth["id"]
+            posts, cursor, pages, error, reached = [], None, 0, None, False
+            try:
+                while pages < AUDIT_MAX_PAGES:
+                    page = fetch_page(handle, cursor)
+                    pages += 1
+                    results = page.get("results") or []
+                    posts += results
+                    own = [p for p in results if not p.get("reposted_by")]
+                    if any(created_at(p) < POST_SINCE for p in own):
+                        reached = True
+                        break
+                    cursor = (page.get("cursor") or {}).get("bottom")
+                    if not results or not cursor:
+                        reached = True
+                        break
+                    time.sleep(REQUEST_GAP_SECONDS)
+            except Exception as e:
+                error = e
+            found, counts = [], {"own": 0, "known": 0}
+            for p in posts:
+                pid = str(p.get("id") or "")
+                author = ((p.get("author") or {}).get("screen_name") or "").lower()
+                if not pid or p.get("reposted_by") or author != key or created_at(p) < POST_SINCE:
+                    continue
+                counts["own"] += 1
+                if pid in known:
+                    counts["known"] += 1
+                    continue
+                score, reasons = judge(post_text(p), post_images(p), post_links(p))
+                target = reply_target(p)
+                imgs = len(post_images(p))
+                if target and target.lower() == key:
+                    why = "자기 글에 이어 쓴 답글(타래)이라 평소 수집에서 뺌"
+                    show = score >= 1 or imgs
+                elif target:
+                    why = f"다른 사람(@{target})에게 단 답글"
+                    show = score >= MIN_SCORE + 1
+                elif score >= MIN_SCORE:
+                    why = "기준 점수를 넘는데 후보에 없음(첫 페이지에 잡힌 적이 없거나 X가 목록에서 뺐던 글)"
+                    show = True
+                else:
+                    why = "키워드 점수 미달"
+                    show = imgs > 0 and score >= 1
+                if show:
+                    found.append(f"    - {created_at(p).astimezone(timezone(timedelta(hours=9))):%m/%d} 점수 {score} {reasons} 이미지 {imgs}장, "
+                                 f"{why}{', 민감한 글' if p.get('possibly_sensitive') else ''} https://x.com/{handle}/status/{pid}")
+            oldest = min((created_at(p) for p in posts if not p.get("reposted_by")), default=None)
+            print(f"  @{handle}: {pages}페이지, {POST_SINCE:%m/%d} 이후 본인 글 {counts['own']}개(이미 후보 {counts['known']}개)"
+                  + ("" if reached else f", 끝까지 못 봄(가장 오래된 글 {oldest:%m/%d})" if oldest else ", 글을 못 받음")
+                  + (f", 오류: {error}" if error else ""))
+            print("\n".join(found) if found else "    (빠진 상품 글 후보 없음)")
+            time.sleep(REQUEST_GAP_SECONDS)
+
+
 if __name__ == "__main__":
+    audit = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--audit=")), "")
+    if audit:
+        args = [a for a in sys.argv[1:] if not a.startswith("--")]
+        audit_booths(args[0], audit)
+        sys.exit(0)
     check = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--check=")), "")
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     if len(args) != 1:
