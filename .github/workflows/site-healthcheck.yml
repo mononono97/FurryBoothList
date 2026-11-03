@@ -10,8 +10,6 @@ on:
   schedule:
     - cron: "41 * * * *"
   workflow_dispatch:
-  push:
-    branches: [claude/project-thread-iv1a9w]   # TEMP 시험용
 
 permissions:
   contents: read
