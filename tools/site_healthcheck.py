@@ -436,7 +436,9 @@ def push_phone(title, problems, issue_url, recovered=False, message=None):
         message = "\n".join(f"{'❌' if p['status'] == 'fail' else '⚠️'} {p['key']}: {p['detail']}"[:300]
                             for p in problems[:5])
     payload = {"topic": topic, "title": title, "message": message,
-               "priority": 3 if recovered else 5,   # 5 = 긴급(무음 모드가 아니면 소리·진동)
+               # 5 = 긴급(소리·진동), 4 = 높음. 3(보통) 이하는 안드로이드 절전(Doze) 중이면 FCM 이 묶어 두었다가
+               # 수십 분 뒤에 전달해서(2026-11-03 복구 알림이 38분 늦게 옴) 복구·시험 알림도 4 로 보냄.
+               "priority": 4 if recovered else 5,
                "tags": ["white_check_mark"] if recovered else ["rotating_light"]}
     if issue_url:
         payload["click"] = issue_url
