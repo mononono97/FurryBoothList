@@ -2206,7 +2206,7 @@ const I18N = {
     loginBtnShort: "🔑 로그인",
     searchPlaceholderShort: "🔍 부스 검색",
     logoutBtn: "🔓 로그아웃",
-    loggedInAs: "{email} 로 로그인됨",
+    loggedInAs: "{email} 로 로그인됨 · 편집하면 자동 동기화",
     loginFail: "로그인에 실패했습니다. 다시 시도해주세요. ({code})",
     syncNowBtn: "☁️ 지금 동기화",
     syncNowCooldown: "☁️ {s}초 후 가능",
@@ -2374,7 +2374,7 @@ const I18N = {
     loginBtnShort: "🔑 Sign in",
     searchPlaceholderShort: "🔍 Search",
     logoutBtn: "🔓 Sign out",
-    loggedInAs: "Signed in as {email}",
+    loggedInAs: "Signed in as {email} · changes sync automatically",
     loginFail: "Sign-in failed. Please try again. ({code})",
     syncNowBtn: "☁️ Sync Now",
     syncNowCooldown: "☁️ Available in {s}s",
@@ -2542,7 +2542,7 @@ const I18N = {
     loginBtnShort: "🔑 ログイン",
     searchPlaceholderShort: "🔍 検索",
     logoutBtn: "🔓 ログアウト",
-    loggedInAs: "{email} でログイン中",
+    loggedInAs: "{email} でログイン中 · 編集すると自動で同期",
     loginFail: "ログインに失敗しました。もう一度お試しください。({code})",
     syncNowBtn: "☁️ 今すぐ同期",
     syncNowCooldown: "☁️ {s}秒後に可能",
@@ -2731,6 +2731,7 @@ function saveNotes(){
   } catch {
     // 저장 실패(용량 초과 등)해도 사이트 동작에는 지장 없도록 무시
   }
+  scheduleCloudSave();
 }
 
 let notes = loadNotes();
@@ -2770,6 +2771,7 @@ function saveVisitStatus(){
   } catch {
     // 저장 실패(용량 초과 등)해도 사이트 동작에는 지장 없도록 무시
   }
+  scheduleCloudSave();
 }
 
 let visitStatus = loadVisitStatus();
@@ -2815,6 +2817,7 @@ function savePriority(){
   } catch {
     // 저장 실패(용량 초과 등)해도 사이트 동작에는 지장 없도록 무시
   }
+  scheduleCloudSave();
 }
 
 let priority = loadPriority();
@@ -2872,6 +2875,7 @@ function savePreorders(){
   } catch {
     // 저장 실패(용량 초과 등)해도 사이트 동작에는 지장 없도록 무시
   }
+  scheduleCloudSave();
 }
 
 let preorders = loadPreorders();
@@ -2893,6 +2897,7 @@ function loadHiddenPosts(){
 }
 function saveHiddenPosts(){
   try { localStorage.setItem(HIDDEN_POSTS_KEY, JSON.stringify(hiddenPosts)); } catch {}
+  scheduleCloudSave();
 }
 let hiddenPosts = loadHiddenPosts();
 function isPostHidden(id){ return hiddenPosts[id] === 1; }
@@ -3044,6 +3049,7 @@ function saveBudgets(){
   } catch {
     // 저장 실패(용량 초과 등)해도 사이트 동작에는 지장 없도록 무시
   }
+  scheduleCloudSave();
 }
 
 let budgets = loadBudgets();
@@ -3106,6 +3112,7 @@ function loadSpent(){
 }
 function saveSpent(){
   try { localStorage.setItem(SPENT_KEY, JSON.stringify(spent)); } catch {}
+  scheduleCloudSave();
 }
 let spent = loadSpent();
 if(migrateMergedBoothIds(spent)) saveSpent();
@@ -3220,15 +3227,24 @@ function mergeField(local, cloud){
 // users/{uid} 문서 안의 행사별 필드(furstclass)에 저장함.
 // merge 없이 문서 전체를 덮어쓰므로, 지난 행사(케모켓) 때 문서 최상위에 저장했던
 // notes/visitStatus/budgets/priority 필드는 처음 동기화할 때 함께 지워짐.
+// (문서 전체 덮어쓰기는 로그인·"지금 동기화"처럼 방금 클라우드 값을 받아 병합한 직후에만 씀.
+//  평소 편집은 아래 자동 저장이 바뀐 부스 항목만 골라 씀)
+const CLOUD_FIELDS = ["notes", "visitStatus", "budgets", "spent", "priority", "preorders", "hiddenPosts"];
+function currentCloudData(){
+  return { notes, visitStatus, budgets, spent, priority, preorders, hiddenPosts };
+}
+
 function pushToCloud(uid){
   return firebase.firestore().collection("users").doc(uid).set({
     [STORAGE_PREFIX]: {
-      notes, visitStatus, budgets, spent, priority, preorders, hiddenPosts,
+      ...currentCloudData(),
       updatedAt: new Date().toISOString(),
     },
   });
 }
 
+// 클라우드 값을 받아 이 기기 값과 병합함. 병합 결과가 클라우드와 같으면(올릴 게 없으면) false,
+// 다르면 true 를 돌려줌 → 다를 때만 다시 올려서 페이지를 열 때마다 쓰기가 생기지 않게 함.
 function pullAndMergeFromCloud(uid){
   return firebase.firestore().collection("users").doc(uid).get().then((doc) => {
     const cloud = (doc.exists && doc.data()[STORAGE_PREFIX]) || {};
@@ -3252,19 +3268,168 @@ function pullAndMergeFromCloud(uid){
     renderNav();
     renderGrid();
     updateBudgetTotalDisplay();
+    const cloudData = {};
+    CLOUD_FIELDS.forEach(f => { cloudData[f] = cloud[f] || {}; });
+    // 예전 형식(케모켓 최상위 필드 등)이 남아 있으면 한 번은 통째로 덮어써서 정리함
+    const hasLegacyTopLevel = doc.exists && Object.keys(doc.data()).some(k => k !== STORAGE_PREFIX);
+    return hasLegacyTopLevel || !doc.exists || snapshotOf(currentCloudData()) !== snapshotOf(cloudData);
   });
+}
+
+// 받아서 병합 → 바뀐 게 있을 때만 통째로 올림 → 기준점(클라우드에 있는 값) 갱신
+function pullMergePush(uid){
+  autoSync.busy = true;
+  let snap = null;
+  return pullAndMergeFromCloud(uid)
+    .then((changed) => {
+      snap = snapshotOf(currentCloudData());   // 이 순간 값이 클라우드에 올라감
+      return changed ? pushToCloud(uid) : null;
+    })
+    .then(() => {
+      markCloudSynced();
+      autoSync.snapshot = snap;
+      // 올리는 사이에 또 편집했다면 그 부분은 자동 저장으로 이어서 올림
+      if(snapshotOf(currentCloudData()) !== snap) scheduleCloudSave();
+    })
+    .finally(() => { autoSync.busy = false; });
 }
 
 function syncFromCloudOnLogin(uid){
-  // 로그인 시 1회만 자동으로 병합 + 재업로드함(그 외에는 "지금 동기화" 버튼을 눌러야만 동기화됨.
-  // Firestore 무료 플랜의 일일 읽기/쓰기 쿼터를 아끼기 위해 편집할 때마다 자동으로 올리지 않음).
-  pullAndMergeFromCloud(uid).then(() => pushToCloud(uid)).catch(() => {
-    // 오프라인 등으로 실패해도 로컬 데이터로 계속 사용 가능
+  // 로그인(페이지를 열 때 포함) 시 클라우드와 병합하고, 그 뒤로는 편집할 때마다 자동 저장함.
+  pullMergePush(uid).catch(() => {
+    // 오프라인 등으로 실패해도 로컬 데이터로 계속 사용 가능. 다음 편집 때 다시 시도함.
   });
 }
 
+/* ---------- 편집 후 자동 동기화 (2026-11-03 사용자 요청) ----------
+   예전(2026-09-27~)에는 Firestore 무료 플랜 쿼터를 아끼려고 "지금 동기화" 버튼을 눌러야만 올렸지만,
+   실제 로그인 사용자가 많아야 수백 명이라 아래처럼 쓰기를 줄이면 한도(하루 쓰기 2만)에 한참 못 미쳐
+   편집을 마치면 자동으로 올리도록 되돌림.
+   - 마지막 편집 후 AUTO_SYNC_IDLE_MS 동안 더 편집이 없으면 저장(글자를 칠 때마다 쓰지 않음).
+     계속 편집 중이어도 AUTO_SYNC_MAX_WAIT_MS 가 지나면 한 번 저장.
+   - 한 기기에서 AUTO_SYNC_MIN_INTERVAL_MS 에 최대 1번만 씀(쓰기 횟수 상한).
+   - 클라우드에 올린 뒤의 값(기준점)과 비교해 바뀐 부스 항목만 골라 update 함.
+     문서 전체를 덮어쓰지 않으므로 다른 기기에서 고친 다른 부스 항목을 지우지 않음.
+   - 바뀐 게 없으면 쓰지 않음. 탭을 닫거나 다른 앱으로 넘어가면 기다리지 않고 바로 저장.
+   - 실패하면(오프라인 등) 잠시 뒤 다시 시도. 로컬 저장은 항상 먼저 되어 있으므로 데이터는 사라지지 않음.
+   "지금 동기화" 버튼은 다른 기기에서 고친 내용을 바로 받아오고 싶을 때 쓰도록 그대로 둠.
+------------------------------------------------------------------ */
+const AUTO_SYNC_IDLE_MS = 3000;
+const AUTO_SYNC_MAX_WAIT_MS = 15000;
+const AUTO_SYNC_MIN_INTERVAL_MS = 10000;
+const AUTO_SYNC_RETRY_MS = 30000;
+// var: saveX() 가 이 줄보다 먼저(페이지 로드 중 데이터 정리) 불릴 수 있어서, 그때는 undefined 로 보고 건너뜀
+var autoSync = {
+  snapshot: null,     // 마지막으로 클라우드와 맞춘 값(JSON 문자열 묶음). null 이면 아직 병합 전
+  pendingSince: 0,    // 아직 안 올린 편집이 처음 생긴 시각
+  lastWriteAt: 0,
+  timer: null,
+  busy: false,
+};
+
+function snapshotOf(data){
+  const out = {};
+  CLOUD_FIELDS.forEach(f => {
+    out[f] = {};
+    Object.keys(data[f] || {}).forEach(k => { out[f][k] = JSON.stringify(data[f][k]); });
+  });
+  return JSON.stringify(out);
+}
+
+function markCloudSynced(){
+  autoSync.snapshot = snapshotOf(currentCloudData());
+  autoSync.pendingSince = 0;
+  clearTimeout(autoSync.timer);
+  autoSync.timer = null;
+}
+
+function scheduleCloudSave(){
+  if(!autoSync) return;   // 아직 이 코드가 준비되기 전(페이지 로드 중)
+  if(!firebaseReady || !currentUser) return;
+  const now = Date.now();
+  if(!autoSync.pendingSince) autoSync.pendingSince = now;
+  const due = Math.max(
+    Math.min(now + AUTO_SYNC_IDLE_MS, autoSync.pendingSince + AUTO_SYNC_MAX_WAIT_MS),
+    autoSync.lastWriteAt + AUTO_SYNC_MIN_INTERVAL_MS
+  );
+  clearTimeout(autoSync.timer);
+  autoSync.timer = setTimeout(flushCloudSave, Math.max(0, due - now));
+}
+
+// 기준점과 비교해 바뀐 항목만 [FieldPath, 값, FieldPath, 값, ...] 로 만듦
+function buildCloudUpdates(){
+  const before = JSON.parse(autoSync.snapshot);
+  const data = currentCloudData();
+  const args = [];
+  CLOUD_FIELDS.forEach(f => {
+    const cur = data[f] || {};
+    const prev = before[f] || {};
+    const keys = new Set([...Object.keys(cur), ...Object.keys(prev)]);
+    keys.forEach(k => {
+      const curJson = cur[k] === undefined ? undefined : JSON.stringify(cur[k]);
+      if(curJson === prev[k]) return;
+      args.push(new firebase.firestore.FieldPath(STORAGE_PREFIX, f, k));
+      // undefined 값은 Firestore 가 받지 않으므로 JSON 으로 한 번 걸러서 보냄
+      args.push(curJson === undefined ? firebase.firestore.FieldValue.delete() : JSON.parse(curJson));
+    });
+  });
+  return args;
+}
+
+function flushCloudSave(){
+  if(!autoSync || !firebaseReady || !currentUser || !autoSync.pendingSince) return;
+  clearTimeout(autoSync.timer);
+  autoSync.timer = null;
+  if(autoSync.busy){ autoSync.timer = setTimeout(flushCloudSave, 1000); return; }
+  const uid = currentUser.uid;
+
+  // 로그인 직후 병합이 (오프라인 등으로) 아직 안 됐으면 병합부터 다시 함
+  if(autoSync.snapshot === null){
+    autoSync.lastWriteAt = Date.now();
+    pullMergePush(uid).catch(() => { autoSync.timer = setTimeout(flushCloudSave, AUTO_SYNC_RETRY_MS); });
+    return;
+  }
+
+  const updates = buildCloudUpdates();
+  if(updates.length === 0){ autoSync.pendingSince = 0; return; }   // 바뀐 게 없으면 쓰지 않음
+  const sentSnapshot = snapshotOf(currentCloudData());
+  updates.push(new firebase.firestore.FieldPath(STORAGE_PREFIX, "updatedAt"), new Date().toISOString());
+
+  autoSync.busy = true;
+  autoSync.lastWriteAt = Date.now();
+  const startedPending = autoSync.pendingSince;
+  autoSync.pendingSince = 0;
+  const ref = firebase.firestore().collection("users").doc(uid);
+  ref.update(...updates)
+    .catch((err) => {
+      // 문서가 아직 없으면(처음 로그인 직후 병합이 실패한 경우 등) 통째로 만들어 둠
+      if(err && err.code === "not-found") return pushToCloud(uid);
+      throw err;
+    })
+    .then(() => {
+      autoSync.snapshot = sentSnapshot;
+    })
+    .catch(() => {
+      // 실패하면 기준점은 그대로 두고 잠시 뒤 다시 시도(그 사이 편집이 더 있으면 함께 올라감)
+      if(!autoSync.pendingSince) autoSync.pendingSince = startedPending || Date.now();
+      clearTimeout(autoSync.timer);
+      autoSync.timer = setTimeout(flushCloudSave, AUTO_SYNC_RETRY_MS);
+    })
+    .finally(() => { autoSync.busy = false; });
+}
+
+// 탭을 닫거나 다른 앱으로 넘어갈 때는 기다리지 않고 바로 올림(쓰기 상한은 무시)
+function flushCloudSaveNow(){
+  if(!autoSync || !autoSync.pendingSince) return;
+  flushCloudSave();
+}
+document.addEventListener("visibilitychange", () => {
+  if(document.visibilityState === "hidden") flushCloudSaveNow();
+});
+window.addEventListener("pagehide", flushCloudSaveNow);
+
 /* ---------- "지금 동기화" 버튼 ----------
-   자동 동기화 대신 사용자가 직접 누를 때만 클라우드와 주고받도록 함.
+   평소에는 편집 후 자동으로 올라가지만, 다른 기기에서 고친 내용을 바로 받아오고 싶을 때 누름.
    연타로 무료 플랜 일일 쿼터를 낭비하지 않도록 클릭 후 일정 시간 버튼을 잠금.
 ------------------------------------------------ */
 const SYNC_COOLDOWN_SECONDS = 10;
@@ -3295,8 +3460,7 @@ function syncNow(){
   if(!firebaseReady || !currentUser) return;
   if(Date.now() < syncCooldownUntil) return;
   startSyncCooldown();
-  pullAndMergeFromCloud(currentUser.uid)
-    .then(() => pushToCloud(currentUser.uid))
+  pullMergePush(currentUser.uid)
     .then(() => alert(t("syncSuccess")))
     .catch(() => alert(t("syncFail")));
 }
@@ -3321,6 +3485,11 @@ firebaseLoaded.then((ok) => {
   updateAuthUI();   // SDK 를 받은 뒤에야 로그인 버튼을 보여줌
   firebase.auth().onAuthStateChanged((user) => {
     currentUser = user;
+    // 계정이 바뀌거나 로그아웃하면 이전 계정 기준점·예약된 저장은 버림
+    clearTimeout(autoSync.timer);
+    autoSync.timer = null;
+    autoSync.snapshot = null;
+    autoSync.pendingSince = 0;
     updateAuthUI();
     if(user) syncFromCloudOnLogin(user.uid);
   });
@@ -3418,6 +3587,10 @@ async function resetAllData(){
           updatedAt: new Date().toISOString(),
         },
       });
+      // 클라우드가 빈 상태가 기준점이 됨 → 아래에서 로컬을 비울 때 자동 저장이 따로 쓰지 않음
+      autoSync.snapshot = snapshotOf({});
+      autoSync.pendingSince = 0;
+      clearTimeout(autoSync.timer);
     } catch {
       alert(t("resetCloudFail"));
       return;
