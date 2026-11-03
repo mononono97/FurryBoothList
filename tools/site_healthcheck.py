@@ -394,12 +394,14 @@ def signature(problems):
     return ",".join(sorted(f"{p['group']}/{p['key']}/{p['status']}" for p in problems))
 
 
-def push_phone(title, problems, issue_url, recovered=False):
+def push_phone(title, problems, issue_url, recovered=False, message=None):
     """휴대폰 푸시 알림(ntfy 앱). 비밀값 NTFY_TOPIC 이 있을 때만 보냄. 실패해도 이슈 알림은 그대로."""
     topic = os.environ.get("NTFY_TOPIC", "").strip()
     if not topic:
         return
-    if recovered:
+    if message:
+        pass
+    elif recovered:
         message = "모든 점검이 정상으로 돌아왔습니다."
     else:
         message = "\n".join(f"{'❌' if p['status'] == 'fail' else '⚠️'} {p['key']}: {p['detail']}"[:300]
@@ -469,9 +471,16 @@ def sync_issue(problems):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--issue", action="store_true", help="결과로 GitHub 이슈 열기·갱신·닫기")
+    ap.add_argument("--push-test", action="store_true", help="휴대폰 알림(ntfy) 시험 알림 보내기")
     ap.add_argument("--skip-site", action="store_true", help="접속·배포 점검 건너뛰기(사이트에 못 닿는 곳에서 시험할 때)")
     args = ap.parse_args()
 
+    if args.push_test:
+        if os.environ.get("NTFY_TOPIC", "").strip():
+            push_phone("🔔 사이트 헬스체크 알림 시험", [], None, recovered=True,
+                       message="이 알림이 보이면 휴대폰 알림 설정이 끝난 것입니다.")
+        else:
+            print("휴대폰 알림 시험: 비밀값 NTFY_TOPIC 이 없어 보내지 않음")
     if not args.skip_site:
         check_site()
     check_login_config()
