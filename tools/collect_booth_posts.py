@@ -233,6 +233,7 @@ def collect_retweets(known, booths_for, names, first_run):
                 "created": created_at(p).isoformat(),
                 "via": RT_HANDLE,
                 "sensitive": bool(p.get("possibly_sensitive")),
+                **quoted_ref(p),
                 "reasons": [RT_REASON],
                 "foundAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             })
@@ -265,6 +266,17 @@ def post_links(p):
     # facets 가 없을 때를 대비해 펼친 주소가 들어 있는 text 의 링크도 봄
     urls += re.findall(r"\S*(?:\.com|\.gle)/\S*", p.get("text") or "")
     return " ".join(u for u in urls if u)
+
+
+def quoted_ref(p):
+    """인용 글이면 인용한 글의 id·아이디만 {"quoted": {...}} 로 돌려줌(본문·이미지는 넣지 않음).
+    X 임베드가 인용한 글을 빼고 그리는 경우가 있어서(2026-11-03 C-11: 본문만 보이고 링크·이미지가 안 보임)
+    사이트가 "인용한 글 보기"를 따로 달 수 있게 함. 관리 화면이 FxTwitter 를 못 읽을 때도 이 값을 씀"""
+    q = p.get("quote") or {}
+    qid = str(q.get("id") or "")
+    if not qid:
+        return {}
+    return {"quoted": {"id": qid, "handle": (q.get("author") or {}).get("screen_name") or ""}}
 
 
 def post_images(p):
@@ -371,6 +383,7 @@ def collect(feed_dir, dry_run=False, quick=False):
                 # X 는 민감한 글로 표시된 글을 로그인하지 않은 방문자에게 임베드해 주지 않음("Not found").
                 # 이런 글은 사이트에서 임베드 대신 아이디와 "X에서 보기" 링크만 보여줌
                 "sensitive": bool(p.get("possibly_sensitive")),
+                **quoted_ref(p),
                 "reasons": reasons,
                 "foundAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             })
@@ -570,6 +583,7 @@ def audit_booths(feed_dir, booth_refs, write=False):
                         "created": created_at(p).isoformat(),
                         "score": score,
                         "sensitive": bool(p.get("possibly_sensitive")),
+                        **quoted_ref(p),
                         "reasons": reasons + [AUDIT_REASON],
                         "foundAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                     })

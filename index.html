@@ -1515,6 +1515,17 @@
   .booth-post-date{ font-weight:400; color:var(--muted); }
   .booth-post-note{ font-size:11.5px; color:var(--muted); margin:6px 0 4px; }
   .booth-post-card a{ font-size:12.5px; color:var(--accent); }
+  /* 인용 글 아래 "인용한 글 보기" (2026-11-03 C-11) */
+  .booth-post-quoted{ margin:2px 0 6px; }
+  .booth-post-quoted-btn{
+    appearance:none; border:1px dashed var(--accent); border-radius:10px;
+    background:transparent; color:var(--accent);
+    font-size:12px; font-weight:700; font-family:inherit; line-height:1.3; cursor:pointer;
+    padding:7px 10px; width:100%; text-align:left;
+  }
+  .booth-post-quoted-btn:hover{ filter:brightness(1.08); }
+  .booth-post-quoted-btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .booth-post-quoted-label{ font-size:11.5px; font-weight:700; color:var(--muted); margin:4px 0 0; }
   .official-feed{
     height:520px;
     overflow-y:auto;
@@ -2382,6 +2393,8 @@ const I18N = {
     noBoothData: "표시할 부스 데이터가 없어요.",
     boothPostsTitle: "상품 정보",
     boothPostOpenX: "X에서 보기",
+    boothPostQuotedShow: "인용한 글 보기 (@{handle}) · 이미지·링크가 안 보이면 눌러 보세요",
+    boothPostQuotedLabel: "인용한 글",
     postHide: "숨기기",
     postUnhide: "다시 보이기",
     postHiddenLabel: "숨긴 글",
@@ -2572,6 +2585,8 @@ const I18N = {
     noBoothData: "No booth data to display.",
     boothPostsTitle: "Merch info",
     boothPostOpenX: "View on X",
+    boothPostQuotedShow: "Show quoted post (@{handle}) · tap if images or links are missing",
+    boothPostQuotedLabel: "Quoted post",
     postHide: "Hide",
     postUnhide: "Unhide",
     postHiddenLabel: "Hidden",
@@ -2762,6 +2777,8 @@ const I18N = {
     noBoothData: "表示するブースデータがありません。",
     boothPostsTitle: "頒布物情報",
     boothPostOpenX: "Xで見る",
+    boothPostQuotedShow: "引用元の投稿を見る (@{handle})・画像やリンクが見えない場合はこちら",
+    boothPostQuotedLabel: "引用元の投稿",
     postHide: "非表示",
     postUnhide: "再表示",
     postHiddenLabel: "非表示中",
@@ -4341,6 +4358,45 @@ function watchPostsListScroll(list){
 // 60px 일 때는 빈 칸(B-08)만 걸러지고 "Not found" 칸은 그대로 남았음 (2026-10-27 C-14)
 const EMBED_MIN_HEIGHT = 150;
 
+// 인용 글 아래에 "인용한 글 보기" 버튼을 담. X 임베드가 인용한 글(이미지·링크가 거기 있음)을 빼고
+// 본문만 그리는 경우가 있어서(2026-11-03 C-11: @chung0u0 글이 @Goyangeg 글을 인용, 인용한 글 이미지 2장이 안 보임).
+// X 가 인용한 글을 잘 그려 주는 경우도 있어 중복되지 않게 처음엔 버튼만 두고, 누르면 인용한 글을 따로 임베드함.
+// 임베드가 안 되면(민감한 글·지워진 글·X 스크립트 막힘) 링크 카드로 바꿈
+function appendQuotedPost(slot, quoted){
+  if(!quoted || !quoted.id) return;
+  const box = document.createElement("div");
+  box.className = "booth-post-quoted";
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "booth-post-quoted-btn";
+  btn.textContent = t("boothPostQuotedShow", { handle: quoted.handle || "?" });
+  btn.addEventListener("click", () => {
+    const label = document.createElement("div");
+    label.className = "booth-post-quoted-label";
+    label.textContent = t("boothPostQuotedLabel");
+    const item = document.createElement("div");
+    item.className = "booth-post";
+    btn.replaceWith(label, item);
+    const toCard = () => { if(item.isConnected) item.replaceWith(buildBoothPostCard(quoted.id, quoted)); };
+    const fallback = setTimeout(toCard, 8000);
+    ensureTwitterWidgets(function start(){
+      if(!item.isConnected) return;
+      if(!window.twttr || !window.twttr.widgets){ setTimeout(start, 300); return; }
+      window.twttr.widgets.createTweet(quoted.id, item, { theme: currentTheme(), dnt: true, lang: currentLang, conversation: "none" })
+        .then(el => {
+          clearTimeout(fallback);
+          if(!el){ toCard(); return; }
+          [2000, 6000].forEach(ms => setTimeout(() => {
+            if(!item.isConnected || !item.getClientRects().length) return;
+            if(item.getBoundingClientRect().height < EMBED_MIN_HEIGHT) toCard();
+          }, ms));
+        }, () => { clearTimeout(fallback); toCard(); });
+    });
+  });
+  box.appendChild(btn);
+  slot.appendChild(box);
+}
+
 // 부스 상세의 상품 정보 글 목록. 글마다 위에 "숨기기" 버튼을 달고, 숨긴 글은 목록에서 뺌.
 // 숨긴 글이 있으면 제목 옆 "모두 보기"로 숨긴 글까지 펼쳐 보고, 거기서 "다시 보이기"로 복구함 (2026-10-26).
 // 숨긴 글은 펼칠 때 처음 임베드함(가려진 칸에 X 임베드를 그리면 높이를 못 재서 빈 칸 판정이 틀어짐)
@@ -4429,11 +4485,13 @@ function buildBoothPosts(booth, onShown){
       const id = w.id;
       if(approved[id].sensitive){
         w.slot.appendChild(buildBoothPostCard(id, approved[id]));
+        appendQuotedPost(w.slot, approved[id].quoted);
         return;
       }
       const item = document.createElement("div");
       item.className = "booth-post";
       w.slot.appendChild(item);
+      appendQuotedPost(w.slot, approved[id].quoted);
       // 그사이 민감한 글로 바뀌었거나 지워진 글은 X 가 "Not found" 만 보여주고 응답도 없음.
       // X 스크립트가 막힌 경우도 포함해, 8초 안에 임베드가 안 되면 링크 카드로 바꿈
       // (12초였을 때는 그동안 "Not found"가 보여 고장처럼 보였음, 2026-10-27 C-14)
