@@ -109,15 +109,21 @@ def main():
         if lang not in LOCAL_FILES:
             sys.exit(f"알 수 없는 언어: {lang}")
         path = os.path.join(GUIDE_DIR, LOCAL_FILES[lang])
-        if not os.path.exists(path):
-            print(f"[{lang}] {os.path.relpath(path, ROOT)} 없음 → 건너뜀")
-            continue
-        plan.append((lang, path, ids[lang], md5(path)))
+        plan.append((lang, path, ids[lang], md5(path) if os.path.exists(path) else None))
 
     s = None if a.dry_run else session()
     uploaded = 0
     for lang, path, fid, local_md5 in plan:
         rel = os.path.relpath(path, ROOT)
+        if local_md5 is None:
+            # 올릴 PDF가 없어도 드라이브 접근·편집 권한은 확인해 둠(처음 설정 확인용)
+            if a.dry_run:
+                print(f"[{lang}] {rel} 없음 → 건너뜀")
+            else:
+                meta = get_meta(s, fid)
+                ok = "편집 가능" if meta.get("capabilities", {}).get("canEdit") else "편집 권한 없음(편집자로 공유 필요)"
+                print(f"[{lang}] {rel} 없음 → 업로드 안 함. 드라이브 '{meta.get('name')}' 접근 확인: {ok}")
+            continue
         size_mb = os.path.getsize(path) / 1e6
         if a.dry_run:
             print(f"[{lang}] {rel} ({size_mb:.1f}MB, md5 {local_md5}) → 드라이브 {fid}")
@@ -135,7 +141,7 @@ def main():
         print(f"[{lang}] '{new['name']}' 새 버전 업로드 완료 ({size_mb:.1f}MB, 버전 {new.get('headRevisionId')}, "
               f"{new.get('modifiedTime')}) https://drive.google.com/file/d/{fid}/view")
     if not a.dry_run:
-        print(f"업로드 {uploaded}개, 건너뜀 {len(plan) - uploaded}개")
+        print(f"업로드 {uploaded}개, 업로드 안 함 {len(plan) - uploaded}개")
 
 
 if __name__ == "__main__":
