@@ -452,11 +452,27 @@ def check_posts(feed_dir, refs):
         print(f"  키워드 점수 {score} (기준 {MIN_SCORE}) {reasons}, 이미지 {len(post_images(p))}장")
         if handle:
             try:
-                ids = [str(x.get("id")) for x in fetch_statuses(handle)]
+                page = fetch_page(handle)
+                ids = [str(x.get("id")) for x in page.get("results") or []]
                 print(f"  @{handle} 프로필 최근 글 {len(ids)}개 중에 있음: {pid in ids}"
                       + (f" (가장 최근 {ids[0]}, 가장 오래된 {ids[-1]})" if ids else ""))
+                print(f"  프로필 글 목록 응답 키: {sorted(page.keys())}")
+                cursor = (page.get("cursor") or {}).get("bottom")
+                if cursor and pid not in ids:
+                    more = [str(x.get("id")) for x in fetch_page(handle, cursor).get("results") or []]
+                    print(f"  다음 페이지 {len(more)}개 중에 있음: {pid in more}")
             except Exception as e:
                 print(f"  프로필 글 목록 받기 실패: {e}")
+            try:
+                req = urllib.request.Request(f"https://api.fxtwitter.com/2/profile/{handle.lower()}", headers={"User-Agent": USER_AGENT})
+                with urllib.request.urlopen(req, timeout=20) as res:
+                    prof = json.load(res)
+                user = prof.get("user") or prof
+                print(f"  프로필 응답 키: {sorted(prof.keys())}, user 키: {sorted(user.keys()) if isinstance(user, dict) else '-'}")
+                pinned = json.dumps({k: v for k, v in user.items() if "pin" in k.lower()}, ensure_ascii=False)[:300] if isinstance(user, dict) else ""
+                print(f"  고정 글 관련 값: {pinned or '없음'}")
+            except Exception as e:
+                print(f"  프로필 받기 실패: {e}")
 
 
 if __name__ == "__main__":
