@@ -11,6 +11,8 @@ on:
   schedule:
     - cron: "41 * * * *"
   workflow_dispatch:
+  push:
+    branches: [claude/project-thread-iv1a9w]
 
 permissions:
   contents: read
@@ -41,3 +43,14 @@ jobs:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python tools/site_healthcheck.py ${{ github.ref_name == 'main' && '--issue' || '' }}
+      - name: TEMP ntfy 시험
+        run: |
+          python - <<'PY'
+          import os, sys, uuid, requests
+          sys.path.insert(0, "tools")
+          os.environ["NTFY_TOPIC"] = "hc-selftest-" + uuid.uuid4().hex
+          import site_healthcheck as h
+          h.push_phone("🚨 사이트 헬스체크 이상: 첫 화면", [{"key": "첫 화면", "status": "fail", "detail": "HTTP 503"}], "https://github.com/mononono97/FurryBoothList/issues")
+          r = requests.get(f"https://ntfy.sh/{os.environ['NTFY_TOPIC']}/json?poll=1", timeout=20)
+          print(r.status_code, r.text[:600])
+          PY
