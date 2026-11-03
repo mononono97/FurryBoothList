@@ -1,0 +1,46 @@
+# 사용법 설명서 PDF(docs/guide/*.pdf)가 main 에 들어오면 구글 드라이브의 기존 파일에 "새 버전"으로 올림.
+# 같은 파일 ID를 갱신하므로 드라이브 공유 링크(사이트 도움말 버튼)는 그대로이고, 이전 판은 드라이브 "버전 관리"에 남음.
+# 설명서 PR을 병합하는 것이 곧 업로드 승인. 수동으로 다시 올리려면 Actions 탭에서 Run workflow.
+# 필요한 비밀값: GDRIVE_SA_KEY (서비스 계정 JSON 키). 설정 방법은 docs/wiki/기능-설명서-드라이브-업로드.md
+name: 사용법 설명서 드라이브 업로드
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/guide/*.pdf"
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "일부 언어만 (ko,en,jp 중 쉼표로). 비우면 전부. 드라이브와 내용이 같으면 건너뜀"
+        type: string
+        default: ""
+      dry_run:
+        description: "올리지 않고 무엇을 올릴지만 보기"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: upload-guide-to-drive
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet google-auth requests
+      - name: 드라이브에 새 버전 올리기
+        env:
+          GDRIVE_SA_KEY: ${{ secrets.GDRIVE_SA_KEY }}
+          ONLY: ${{ inputs.only }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          args=(--only "$ONLY")
+          if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
+          python tools/upload_guide_to_drive.py "${args[@]}"
