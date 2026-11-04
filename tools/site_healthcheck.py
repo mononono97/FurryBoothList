@@ -407,6 +407,122 @@ def check_cloudflare_quota():
     add(g, "Cloudflare Workers 오늘 요청", status, f"{text}{extra}, 한국 {reset_kst}에 초기화")
 
 
+# ---------------------------------------------------------------- 사용량 (관리 화면 표시용, 알림 없음)
+usage = {}   # 관리 화면 "사이트 상태"에 보여 줄 숫자들
+
+
+def sa_session(sa, scope):
+    from google.oauth2 import service_account
+    from google.auth.transport.requests import AuthorizedSession
+    creds = service_account.Credentials.from_service_account_info(sa, scopes=[scope])
+    return AuthorizedSession(creds)
+
+
+def collect_auth_usage(sa):
+    """Firebase 로그인 사용자 수: 전체, 최근 24시간에 사이트를 쓴 사람(토큰 갱신·로그인), 최근 24시간 신규."""
+    if sa is None:
+        return
+    try:
+        s = sa_session(sa, "https://www.googleapis.com/auth/cloud-platform")
+        users, offset = [], 0
+        while True:
+            r = s.post(f"https://identitytoolkit.googleapis.com/v1/projects/{PROJECT_ID}/accounts:query",
+                       json={"returnUserInfo": True, "limit": "500", "offset": str(offset)}, timeout=30)
+            if not r.ok:
+                usage["auth_error"] = f"HTTP {r.status_code}"
+                return
+            page = r.json().get("userInfo", [])
+            users += page
+            if len(page) < 500:
+                break
+            offset += 500
+    except Exception as e:
+        usage["auth_error"] = type(e).__name__
+        return
+    now = time.time()
+    users = [u for u in users if u.get("localId") != TEST_UID]
+
+    def last_active(u):
+        t = 0
+        if u.get("lastLoginAt"):
+            t = int(u["lastLoginAt"]) / 1000
+        if u.get("lastRefreshAt"):
+            try:
+                t = max(t, dt.datetime.fromisoformat(u["lastRefreshAt"].replace("Z", "+00:00")).timestamp())
+            except ValueError:
+                pass
+        return t
+    usage["auth_total"] = len(users)
+    usage["auth_active_24h"] = sum(1 for u in users if now - last_active(u) < 86400)
+    usage["auth_new_24h"] = sum(1 for u in users if u.get("createdAt") and now - int(u["createdAt"]) / 1000 < 86400)
+
+
+def collect_cf_usage():
+    """Cloudflare Web Analytics(사이트 index.html 의 스니펫) 오늘·어제(한국 날짜) 방문·페이지뷰."""
+    token, account = os.environ.get("CF_API_TOKEN", "").strip(), os.environ.get("CF_ACCOUNT_ID", "").strip()
+    if not token or not account or not re.fullmatch(r"[\w-]+", token):
+        return
+    now = dt.datetime.now(KST).replace(microsecond=0)
+    t0 = now.replace(hour=0, minute=0, second=0)
+    y0 = t0 - dt.timedelta(days=1)
+    z = lambda d: d.astimezone(dt.timezone.utc).isoformat().replace("+00:00", "Z")
+    query = """query($acc: string!, $t0: Time!, $t1: Time!, $y0: Time!) {
+      viewer { accounts(filter: {accountTag: $acc}) {
+        today: rumPageloadEventsAdaptiveGroups(limit: 1, filter: {datetime_geq: $t0, datetime_leq: $t1}) { count sum { visits } }
+        yesterday: rumPageloadEventsAdaptiveGroups(limit: 1, filter: {datetime_geq: $y0, datetime_lt: $t0}) { count sum { visits } }
+      } }
+    }"""
+    try:
+        r = requests.post("https://api.cloudflare.com/client/v4/graphql",
+                          headers={"Authorization": f"Bearer {token}"},
+                          json={"query": query, "variables": {"acc": account, "t0": z(t0), "t1": z(now), "y0": z(y0)}},
+                          timeout=30)
+        data = r.json()
+    except (requests.RequestException, ValueError) as e:
+        usage["web_error"] = type(e).__name__
+        return
+    if data.get("errors"):
+        usage["web_error"] = "; ".join(e.get("message", "") for e in data["errors"])[:200]
+        return
+    accs = (data.get("data") or {}).get("viewer", {}).get("accounts", [])
+    if not accs:
+        usage["web_error"] = "계정 데이터 없음"
+        return
+    for name in ("today", "yesterday"):
+        rows = accs[0].get(name) or []
+        usage[f"web_{name}_pageviews"] = sum(x.get("count", 0) for x in rows)
+        usage[f"web_{name}_visits"] = sum((x.get("sum") or {}).get("visits", 0) for x in rows)
+
+
+def save_status(sa, problems, issue_url):
+    """점검 결과와 사용량을 Firestore boothPosts/healthcheck 에 저장(관리 화면이 읽음).
+    boothPosts 의 main 이외 문서는 규칙상 운영자만 읽을 수 있어 일반 방문자에게는 보이지 않음.
+    서비스 계정(관리자 권한)으로 쓰므로 규칙과 상관없이 써짐. 1시간에 쓰기 1번."""
+    if sa is None:
+        print("상태 저장 건너뜀: FIREBASE_SA_KEY 없음")
+        return
+    run_url = ""
+    if os.environ.get("GITHUB_RUN_ID"):
+        run_url = (f"{os.environ.get('GITHUB_SERVER_URL', 'https://github.com')}/"
+                   f"{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}")
+    payload = {
+        "checkedAt": dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+        "runUrl": run_url,
+        "issueUrl": issue_url or "",
+        "results": [dict(x, critical=is_critical(x)) for x in results],
+        "criticalCount": len(problems),
+        "usage": usage,
+    }
+    body = {"fields": {"data": {"stringValue": json.dumps(payload, ensure_ascii=False)},
+                       "checkedAt": {"timestampValue": payload["checkedAt"]}}}
+    try:
+        s = sa_session(sa, "https://www.googleapis.com/auth/datastore")
+        r = s.patch(f"{FIRESTORE_DOCS}/boothPosts/healthcheck", json=body, timeout=20)
+        print(f"관리 화면용 상태 저장: HTTP {r.status_code}")
+    except Exception as e:
+        print(f"관리 화면용 상태 저장 실패: {type(e).__name__}")
+
+
 # ---------------------------------------------------------------- 알림 (GitHub 이슈)
 LABEL = "healthcheck"
 OWNER_MENTION = os.environ.get("HC_NOTIFY", "@mononono97")
@@ -510,7 +626,7 @@ def sync_issue(problems):
             push_phone("✅ 사이트 헬스체크 정상 복구", [], issue["html_url"], recovered=True)
         else:
             print("이상 없음 → 알림 없음")
-        return
+        return None
 
     summary = ", ".join(f"{p['key']}" for p in problems[:3]) + (" 외" if len(problems) > 3 else "")
     title = f"🚨 사이트 헬스체크 이상: {summary}"
@@ -523,7 +639,7 @@ def sync_issue(problems):
         r.raise_for_status()
         print(f"새 이상 → 이슈 #{r.json()['number']} 엶")
         push_phone(title, problems, r.json().get("html_url"))
-        return
+        return r.json().get("html_url")
 
     old = re.search(r"<!-- hc-sig: (.*?) -->", issue.get("body") or "")
     head = f"{OWNER_MENTION} 사이트 점검에서 이상을 찾았습니다.\n\n"
@@ -536,6 +652,7 @@ def sync_issue(problems):
         push_phone(title, problems, issue["html_url"])
     else:
         print(f"같은 이상 계속 → 이슈 #{issue['number']} 본문만 갱신(알림 없음)")
+    return issue["html_url"]
 
 
 def run_checks(args):
@@ -552,6 +669,7 @@ def run_checks(args):
     check_sync(sa)
     check_firestore_quota(sa)
     check_cloudflare_quota()
+    run_checks.sa = sa
     return [x for x in results if is_critical(x)]
 
 
@@ -559,6 +677,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--issue", action="store_true", help="결과로 GitHub 이슈 열기·갱신·닫기")
     ap.add_argument("--push-test", action="store_true", help="휴대폰 알림(ntfy) 시험 알림 보내기")
+    ap.add_argument("--show-usage", action="store_true", help="사용량(방문자·로그인 사용자)도 모아 출력(저장 안 함)")
     ap.add_argument("--skip-site", action="store_true", help="접속·배포 점검 건너뛰기(사이트에 못 닿는 곳에서 시험할 때)")
     args = ap.parse_args()
 
@@ -583,8 +702,15 @@ def main():
         with open(summary_file, "a", encoding="utf-8") as f:
             f.write("## 사이트 헬스체크\n\n" + report_markdown(problems) + "\n")
     if args.issue:
-        sync_issue(problems)
+        issue_url = sync_issue(problems)
+        collect_auth_usage(run_checks.sa)
+        collect_cf_usage()
+        save_status(run_checks.sa, problems, issue_url)
         return 0
+    if args.show_usage:
+        collect_auth_usage(run_checks.sa)
+        collect_cf_usage()
+        print("사용량:", json.dumps(usage, ensure_ascii=False))
     return 1 if problems else 0
 
 

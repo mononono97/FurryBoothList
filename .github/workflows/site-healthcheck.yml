@@ -48,6 +48,6 @@ jobs:
           PUSH_TEST: ${{ inputs.push_test }}
         run: |
           args=()
-          if [ "${{ github.ref_name }}" = "main" ]; then args+=(--issue); fi
+          if [ "${{ github.ref_name }}" = "main" ]; then args+=(--issue); else args+=(--show-usage); fi
           if [ "$PUSH_TEST" = "true" ]; then args+=(--push-test); fi
           python tools/site_healthcheck.py "${args[@]}"
