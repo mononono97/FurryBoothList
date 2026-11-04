@@ -305,7 +305,7 @@ def check_firestore_quota(sa):
             r = s.get(f"https://monitoring.googleapis.com/v3/projects/{PROJECT_ID}/timeSeries",
                       params=params, timeout=30)
         except requests.RequestException as e:
-            add(g, name, "fail", f"Cloud Monitoring 응답 없음 ({e})")
+            add(g, name, "skip", f"Cloud Monitoring 이 잠시 응답하지 않음({type(e).__name__}), 다음 점검에서 다시 확인")
             continue
         if r.status_code == 403:
             try:
@@ -365,13 +365,27 @@ def check_cloudflare_quota():
     }"""
     variables = {"acc": account, "from": start.isoformat().replace("+00:00", "Z"),
                  "to": now.isoformat().replace("+00:00", "Z")}
-    try:
-        r = requests.post("https://api.cloudflare.com/client/v4/graphql",
-                          headers={"Authorization": f"Bearer {token}"},
-                          json={"query": query, "variables": variables}, timeout=30)
-        data = r.json()
-    except (requests.RequestException, ValueError) as e:
-        add(g, "Cloudflare Workers 오늘 요청", "fail", f"Cloudflare API 응답 없음 ({type(e).__name__})")
+    # 사용량 통계 API 가 잠깐 느리거나 5xx 를 주는 것은 사이트 장애가 아니므로(2026-11-04 09:01 ReadTimeout 오탐)
+    # 20초 뒤 한 번 더 해 보고, 그래도 안 되면 알림 없이 "건너뜀"으로만 남김. 토큰·권한 오류(4xx)는 계속 알림.
+    r = data = None
+    last = ""
+    for attempt in range(2):
+        if attempt:
+            time.sleep(20)
+        try:
+            r = requests.post("https://api.cloudflare.com/client/v4/graphql",
+                              headers={"Authorization": f"Bearer {token}"},
+                              json={"query": query, "variables": variables}, timeout=30)
+            if r.status_code >= 500:
+                last = f"HTTP {r.status_code}"
+                continue
+            data = r.json()
+            break
+        except (requests.RequestException, ValueError) as e:
+            last = type(e).__name__
+    if data is None:
+        add(g, "Cloudflare Workers 오늘 요청", "skip",
+            f"Cloudflare 통계 API 가 잠시 응답하지 않음({last}, 두 번 시도). 사이트 접속과는 무관, 다음 점검에서 다시 확인")
         return
     if data.get("errors") or not r.ok:
         msg = "; ".join(e.get("message", "") for e in (data.get("errors") or []))[:200]
