@@ -151,7 +151,12 @@
   </div>
 
   <div id="adminArea" hidden>
-  <div class="panel" id="healthPanel">
+  <div class="tabs" id="modes">
+    <button type="button" data-mode="booth" class="active">부스 상품 글</button>
+    <button type="button" data-mode="official">행사 안내 글</button>
+    <button type="button" id="healthModeBtn">사이트 상태</button>
+  </div>
+  <div class="panel" id="healthPanel" hidden>
     <div class="hc-head">
       <span style="font-weight:600;">사이트 상태</span>
       <span class="hc-badge" id="healthBadge">불러오는 중…</span>
@@ -160,10 +165,7 @@
     </div>
     <div id="healthBody"></div>
   </div>
-  <div class="tabs" id="modes">
-    <button type="button" data-mode="booth" class="active">부스 상품 글</button>
-    <button type="button" data-mode="official">행사 안내 글</button>
-  </div>
+  <div id="postsArea">
   <div class="sub" id="modeDesc"></div>
   <div class="panel">
     <div style="font-weight:600; margin-bottom:6px;">글 주소로 직접 추가</div>
@@ -184,6 +186,7 @@
   </div>
   <div class="msg" id="listMsg">불러오는 중…</div>
   <div id="list"></div>
+  </div>
   </div>
 </main>
 
@@ -228,6 +231,7 @@ let booths = [];
 let candidates = [];          // 상품 글 후보
 let officialCandidates = [];  // 행사 안내 글 후보
 let decisions = { approved: {}, excluded: {}, official: {}, officialExcluded: {} };
+let healthView = false;          // true = "사이트 상태" 버튼을 눌러 헬스체크 결과를 보는 중
 let currentMode = "booth";    // "booth" = 부스 상품 글, "official" = 행사 안내 글
 let currentTab = "pending";
 let openBooth = null;         // 반영됨 탭(부스 상품 글)에서 글을 펼쳐 보는 부스 id. null 이면 부스 목록
@@ -500,7 +504,7 @@ function render(){
     btn.classList.toggle("active", btn.dataset.tab === currentTab);
   });
   document.querySelectorAll("#modes button[data-mode]").forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.mode === currentMode);
+    btn.classList.toggle("active", !healthView && btn.dataset.mode === currentMode);
   });
   const official = currentMode === "official";
   document.getElementById("modeDesc").textContent = official
@@ -836,6 +840,7 @@ document.getElementById("tabs").addEventListener("click", (e) => {
 document.getElementById("modes").addEventListener("click", (e) => {
   const btn = e.target.closest("button[data-mode]");
   if(!btn) return;
+  showHealth(false);
   currentMode = btn.dataset.mode;
   currentTab = "pending";
   openBooth = null;
@@ -874,6 +879,7 @@ function loadHealth(){
     const minor = results.filter(x => !x.critical && (x.status === "fail" || x.status === "warn"));
     const age = Date.now() - Date.parse(d.checkedAt);
     const stale = age > 2 * 3600 * 1000;
+    document.getElementById("healthModeBtn").textContent = `사이트 상태 ${crit.length ? "❌" : stale ? "⚠️" : "✅"}`;
     badge.className = "hc-badge " + (crit.length ? "bad" : "ok");
     badge.textContent = crit.length ? `치명적 이상 ${crit.length}건` : "정상";
     const t = new Date(d.checkedAt).toLocaleString("ko-KR", { timeZone:"Asia/Seoul", month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit" });
@@ -912,6 +918,22 @@ function loadHealth(){
   });
 }
 document.getElementById("healthReloadBtn").addEventListener("click", loadHealth);
+/* 위쪽 "부스 상품 글 / 행사 안내 글" 옆 "사이트 상태" 버튼: 누르면 글 목록 대신 헬스체크 결과를 보여줌(2026-11-04 사용자 요청).
+   버튼 글자에 최근 상태(✅ 정상 / ❌ 치명적 이상)를 붙여서 누르지 않아도 알 수 있게 함. */
+function showHealth(on){
+  healthView = on;
+  document.getElementById("healthPanel").hidden = !on;
+  document.getElementById("postsArea").hidden = on;
+  document.getElementById("healthModeBtn").classList.toggle("active", on);
+  document.querySelectorAll("#modes button[data-mode]").forEach(btn => {
+    btn.classList.toggle("active", !on && btn.dataset.mode === currentMode);
+  });
+}
+document.getElementById("healthModeBtn").addEventListener("click", () => {
+  if(healthView) return;
+  showHealth(true);
+  loadHealth();
+});
 
 
 updateAuthUI();
