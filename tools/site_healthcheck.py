@@ -677,7 +677,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--issue", action="store_true", help="결과로 GitHub 이슈 열기·갱신·닫기")
     ap.add_argument("--push-test", action="store_true", help="휴대폰 알림(ntfy) 시험 알림 보내기")
-    ap.add_argument("--show-usage", action="store_true", help="사용량(방문자·로그인 사용자)도 모아 출력(저장 안 함)")
+    ap.add_argument("--show-usage", action="store_true", help="사용량(방문자·로그인 사용자)을 모을 수 있는지 확인(숫자는 출력 안 함)")
+    ap.add_argument("--save-status", action="store_true", help="이슈는 건드리지 않고 관리 화면용 상태만 저장")
     ap.add_argument("--skip-site", action="store_true", help="접속·배포 점검 건너뛰기(사이트에 못 닿는 곳에서 시험할 때)")
     args = ap.parse_args()
 
@@ -707,10 +708,13 @@ def main():
         collect_cf_usage()
         save_status(run_checks.sa, problems, issue_url)
         return 0
-    if args.show_usage:
+    if args.show_usage or args.save_status:
         collect_auth_usage(run_checks.sa)
         collect_cf_usage()
-        print("사용량:", json.dumps(usage, ensure_ascii=False))
+        # 저장소가 공개라 실행 기록도 공개 → 숫자는 찍지 않고 어떤 항목을 모았는지만
+        print("사용량 수집:", ", ".join(sorted(usage)) or "없음")
+    if args.save_status:
+        save_status(run_checks.sa, problems, None)
     return 1 if problems else 0
 
 
