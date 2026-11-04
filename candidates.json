@@ -1,6 +1,24 @@
 {
- "updatedAt": "2026-11-04T13:29:18+00:00",
+ "updatedAt": "2026-11-04T14:28:38+00:00",
  "posts": [
+  {
+   "id": "2117972253682041048",
+   "handle": "noway_jin",
+   "booths": [
+    "A30"
+   ],
+   "boothNames": [
+    "FURST SNOW"
+   ],
+   "created": "2026-11-04T13:28:29+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "품목"
+   ],
+   "foundAt": "2026-11-04T14:24:30+00:00"
+  },
   {
    "id": "2117969108356796463",
    "handle": "ringo2ALS",
