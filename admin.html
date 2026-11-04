@@ -249,7 +249,7 @@ function boothName(id){ const b = booths.find(b => b.id === id); return b ? b.na
 function fmtDate(iso){
   const d = new Date(iso);
   if(isNaN(d)) return "";
-  return d.toLocaleString("ko-KR", { month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit" });
+  return d.toLocaleString("ko-KR", { timeZone:"Asia/Seoul", month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit" });
 }
 // 글 id 는 시간이 지날수록 커지는 숫자(문자열)라 길이 → 사전순으로 비교하면 최신순 정렬이 됨
 function newestFirst(a, b){ return b.length - a.length || (b > a ? 1 : b < a ? -1 : 0); }
@@ -876,7 +876,7 @@ function loadHealth(){
     const stale = age > 2 * 3600 * 1000;
     badge.className = "hc-badge " + (crit.length ? "bad" : "ok");
     badge.textContent = crit.length ? `치명적 이상 ${crit.length}건` : "정상";
-    const t = new Date(d.checkedAt).toLocaleString("ko-KR", { month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit" });
+    const t = new Date(d.checkedAt).toLocaleString("ko-KR", { timeZone:"Asia/Seoul", month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit" });
     when.innerHTML = `마지막 점검 ${escapeHtml(t)} (${escapeHtml(fmtAgo(age))})`
       + (d.runUrl ? ` · <a href="${escapeHtml(d.runUrl)}" target="_blank" rel="noopener">실행 기록</a>` : "")
       + (d.issueUrl ? ` · <a href="${escapeHtml(d.issueUrl)}" target="_blank" rel="noopener">알림 이슈</a>` : "");
@@ -890,8 +890,8 @@ function loadHealth(){
       + stat(fmtNum(u.web_today_pageviews), "오늘 페이지뷰")
       + stat(fmtNum(u.web_yesterday_visits), "어제 방문")
       + stat(fmtNum(u.web_yesterday_pageviews), "어제 페이지뷰")
-      + stat(fmtNum(u.auth_active_24h), "로그인 사용자 (최근 24시간 이용)")
-      + stat(fmtNum(u.auth_new_24h), "새 로그인 사용자 (최근 24시간)")
+      + stat(fmtNum(u.auth_active_24h), "24시간 내 이용한 로그인 사용자")
+      + stat(fmtNum(u.auth_new_24h), "24시간 내 새 로그인 사용자")
       + stat(fmtNum(u.auth_total), "로그인 사용자 전체")
       + `</div>`;
     const notes = [];
