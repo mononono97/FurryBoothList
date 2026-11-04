@@ -305,7 +305,7 @@ def check_firestore_quota(sa):
             r = s.get(f"https://monitoring.googleapis.com/v3/projects/{PROJECT_ID}/timeSeries",
                       params=params, timeout=30)
         except requests.RequestException as e:
-            add(g, name, "fail", f"Cloud Monitoring 응답 없음 ({e})")
+            add(g, name, "skip", f"Cloud Monitoring 이 잠시 응답하지 않음({type(e).__name__}), 다음 점검에서 다시 확인")
             continue
         if r.status_code == 403:
             try:
@@ -365,13 +365,27 @@ def check_cloudflare_quota():
     }"""
     variables = {"acc": account, "from": start.isoformat().replace("+00:00", "Z"),
                  "to": now.isoformat().replace("+00:00", "Z")}
-    try:
-        r = requests.post("https://api.cloudflare.com/client/v4/graphql",
-                          headers={"Authorization": f"Bearer {token}"},
-                          json={"query": query, "variables": variables}, timeout=30)
-        data = r.json()
-    except (requests.RequestException, ValueError) as e:
-        add(g, "Cloudflare Workers 오늘 요청", "fail", f"Cloudflare API 응답 없음 ({type(e).__name__})")
+    # 사용량 통계 API 가 잠깐 느리거나 5xx 를 주는 것은 사이트 장애가 아니므로(2026-11-04 09:01 ReadTimeout 오탐)
+    # 20초 뒤 한 번 더 해 보고, 그래도 안 되면 알림 없이 "건너뜀"으로만 남김. 토큰·권한 오류(4xx)는 계속 알림.
+    r = data = None
+    last = ""
+    for attempt in range(2):
+        if attempt:
+            time.sleep(20)
+        try:
+            r = requests.post("https://api.cloudflare.com/client/v4/graphql",
+                              headers={"Authorization": f"Bearer {token}"},
+                              json={"query": query, "variables": variables}, timeout=30)
+            if r.status_code >= 500:
+                last = f"HTTP {r.status_code}"
+                continue
+            data = r.json()
+            break
+        except (requests.RequestException, ValueError) as e:
+            last = type(e).__name__
+    if data is None:
+        add(g, "Cloudflare Workers 오늘 요청", "skip",
+            f"Cloudflare 통계 API 가 잠시 응답하지 않음({last}, 두 번 시도). 사이트 접속과는 무관, 다음 점검에서 다시 확인")
         return
     if data.get("errors") or not r.ok:
         msg = "; ".join(e.get("message", "") for e in (data.get("errors") or []))[:200]
@@ -410,12 +424,37 @@ def report_markdown(problems):
         lines += [f"- {'❌' if p['status'] == 'fail' else '⚠️'} **[{p['group']}] {p['key']}**: {p['detail']}"
                   for p in problems]
         lines.append("")
+    minor = [x for x in results if x["status"] in ("fail", "warn") and not is_critical(x)]
+    if minor:
+        lines += ["### 참고 (알림 없음)", ""]
+        lines += [f"- ⚠️ [{x['group']}] {x['key']}: {x['detail']}" for x in minor]
+        lines.append("")
     lines += ["<details><summary>전체 점검 결과</summary>", ""]
     mark = {"ok": "✅", "fail": "❌", "warn": "⚠️", "skip": "⏭️"}
     lines += [f"- {mark[x['status']]} [{x['group']}] {x['key']}: {x['detail']}" for x in results]
     lines += ["", "</details>", "",
               "점검 내용과 대처 방법: [사이트 헬스체크 문서](../blob/main/docs/wiki/기능-사이트-헬스체크.md)"]
     return "\n".join(lines)
+
+
+# 알림(이슈·휴대폰)은 사이트를 실제로 못 쓰게 되는 "치명적" 이상에만 보냄 (사용자 요청, 2026-11-04).
+# 그 밖의 이상(느림, sw.js·관리 화면·부스컷 이미지, 상품 정보 글 문서, 점검용 토큰·통계 API 문제)은
+# 실행 기록 요약과(이슈가 열려 있으면) 이슈 본문의 "참고"에만 남기고 알림은 보내지 않음.
+CRITICAL_SITE_KEYS = {"첫 화면", "Firebase SDK (gstatic)"}
+NONCRITICAL_SYNC_KEYS = {"상품 정보 글 문서 읽기"}
+
+
+def is_critical(x):
+    if x["status"] not in ("fail", "warn"):
+        return False
+    g, key = x["group"], x["key"]
+    if g == "접속":
+        return x["status"] == "fail" and key in CRITICAL_SITE_KEYS
+    if g == "할당량":
+        return x["status"] == "warn"           # 무료 한도 기준 초과만. 토큰·통계 API 오류는 참고
+    if g == "동기화":
+        return x["status"] == "fail" and key not in NONCRITICAL_SYNC_KEYS
+    return x["status"] == "fail"               # 배포·로그인
 
 
 def signature(problems):
@@ -499,6 +538,23 @@ def sync_issue(problems):
         print(f"같은 이상 계속 → 이슈 #{issue['number']} 본문만 갱신(알림 없음)")
 
 
+def run_checks(args):
+    """모든 점검을 돌리고 치명적 이상 목록을 돌려줌."""
+    if not args.skip_site:
+        check_site()
+    check_login_config()
+    try:
+        sa = load_sa()
+    except ValueError:
+        sa = None
+        add("동기화", "서비스 계정 키", "fail", "FIREBASE_SA_KEY 가 JSON 형식이 아님 (키 파일 내용을 통째로 붙여 넣어야 함)")
+    check_public_firestore()
+    check_sync(sa)
+    check_firestore_quota(sa)
+    check_cloudflare_quota()
+    return [x for x in results if is_critical(x)]
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--issue", action="store_true", help="결과로 GitHub 이슈 열기·갱신·닫기")
@@ -512,22 +568,16 @@ def main():
                        message="이 알림이 보이면 휴대폰 알림 설정이 끝난 것입니다.")
         else:
             print("휴대폰 알림 시험: 비밀값 NTFY_TOPIC 이 없어 보내지 않음")
-    if not args.skip_site:
-        check_site()
-    check_login_config()
-    try:
-        sa = load_sa()
-    except ValueError:
-        sa = None
-        add("동기화", "서비스 계정 키", "fail", "FIREBASE_SA_KEY 가 JSON 형식이 아님 (키 파일 내용을 통째로 붙여 넣어야 함)")
-    check_public_firestore()
-    check_sync(sa)
-    check_firestore_quota(sa)
-    check_cloudflare_quota()
-
-    problems = [x for x in results if x["status"] in ("fail", "warn")]
+    problems = run_checks(args)
+    if problems:
+        # 치명적 이상은 순간적인 끊김일 수 있어 1분 뒤 전체를 한 번 더 점검하고, 그때도 같을 때만 알림
+        print(f"\n치명적 이상 {len(problems)}건 → 60초 뒤 다시 점검\n")
+        time.sleep(60)
+        results.clear()
+        problems = run_checks(args)
+    minor = [x for x in results if x["status"] in ("fail", "warn") and not is_critical(x)]
     print()
-    print(f"이상 {len(problems)}건 / 점검 {len(results)}건")
+    print(f"치명적 이상 {len(problems)}건 / 참고(알림 없음) {len(minor)}건 / 점검 {len(results)}건")
     summary_file = os.environ.get("GITHUB_STEP_SUMMARY")
     if summary_file:
         with open(summary_file, "a", encoding="utf-8") as f:
