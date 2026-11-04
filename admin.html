@@ -313,7 +313,11 @@ function cleanupStoredContent(){
 let backfillRunning = false;
 function backfillQuoted(){
   if(backfillRunning || !currentUser) return;
-  const ids = Object.keys(decisions.approved).filter(id => decisions.approved[id] && !("quoted" in decisions.approved[id]));
+  // 인용한 글의 민감한 글 여부(quoted.sensitive)가 생기기 전(2026-11-04)에 채운 값도 다시 확인함
+  const ids = Object.keys(decisions.approved).filter(id => {
+    const e = decisions.approved[id];
+    return e && (!("quoted" in e) || (e.quoted && !("sensitive" in e.quoted)));
+  });
   if(!ids.length) return;
   backfillRunning = true;
   let patch = {};
@@ -357,7 +361,8 @@ function writeDecision(data){
    예전 quote(본문 사본)와 헷갈리지 않게 이름을 quoted 로 함 */
 function quotedFrom(st){
   const q = st && st.quote;
-  return q && q.id ? { id: String(q.id), handle: (q.author && q.author.screen_name) || "" } : null;
+  // sensitive: 인용한 글이 성인(민감한 내용) 설정 글이면 사이트가 임베드 대신 안내와 X 링크를 바로 보여줌 (2026-11-04)
+  return q && q.id ? { id: String(q.id), handle: (q.author && q.author.screen_name) || "", sensitive: !!q.possibly_sensitive } : null;
 }
 function fetchPostInfo(id, candidate){
   const fromCandidate = () => ({

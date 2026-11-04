@@ -1526,6 +1526,8 @@
   .booth-post-quoted-btn:hover{ filter:brightness(1.08); }
   .booth-post-quoted-btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
   .booth-post-quoted-label{ font-size:11.5px; font-weight:700; color:var(--muted); margin:4px 0 0; }
+  .booth-post-quoted-hint{ font-size:11.5px; line-height:1.45; color:var(--muted); margin:0 0 4px; }
+  .booth-post-quoted-hint a{ color:var(--accent); font-weight:700; white-space:nowrap; }
   .official-feed{
     height:520px;
     overflow-y:auto;
@@ -2395,6 +2397,8 @@ const I18N = {
     boothPostOpenX: "X에서 보기",
     boothPostQuotedShow: "인용한 글 보기 (@{handle}) · 이미지·링크가 안 보이면 눌러 보세요",
     boothPostQuotedLabel: "인용한 글",
+    boothPostQuotedUnavailable: "인용한 글을 여기서 불러오지 못했어요. 성인(민감한 내용) 설정이 된 글이나 지워진 글은 X 밖에서는 보이지 않아요. 아래 링크로 X에 직접 접속해 확인해 주세요.",
+    boothPostQuotedHint: "위에 \"찾을 수 없음\"이 보이면 성인(민감한 내용) 설정이 된 글이라 여기서는 볼 수 없는 글일 수 있어요. X에 직접 접속해 확인해 주세요.",
     postHide: "숨기기",
     postUnhide: "다시 보이기",
     postHiddenLabel: "숨긴 글",
@@ -2587,6 +2591,8 @@ const I18N = {
     boothPostOpenX: "View on X",
     boothPostQuotedShow: "Show quoted post (@{handle}) · tap if images or links are missing",
     boothPostQuotedLabel: "Quoted post",
+    boothPostQuotedUnavailable: "The quoted post couldn't be loaded here. Posts marked as adult (sensitive) content, or deleted posts, can't be shown outside X. Please open it on X with the link below.",
+    boothPostQuotedHint: "If it says \"not found\" above, the post may be marked as adult (sensitive) content and can't be shown here. Please check it on X.",
     postHide: "Hide",
     postUnhide: "Unhide",
     postHiddenLabel: "Hidden",
@@ -2779,6 +2785,8 @@ const I18N = {
     boothPostOpenX: "Xで見る",
     boothPostQuotedShow: "引用元の投稿を見る (@{handle})・画像やリンクが見えない場合はこちら",
     boothPostQuotedLabel: "引用元の投稿",
+    boothPostQuotedUnavailable: "引用元の投稿をここで読み込めませんでした。成人向け（センシティブな内容）に設定された投稿や削除された投稿は、X以外では表示されません。下のリンクからXで直接ご確認ください。",
+    boothPostQuotedHint: "上に「見つかりません」と表示される場合は、成人向け（センシティブな内容）に設定された投稿のため、ここでは表示できない可能性があります。Xで直接ご確認ください。",
     postHide: "非表示",
     postUnhide: "再表示",
     postHiddenLabel: "非表示中",
@@ -4320,7 +4328,8 @@ function loadApprovedBoothPosts(){ return loadBoothPostsDoc().then(d => d.approv
 
 // X 임베드 대신 보여주는 링크 카드. 민감한 글(임베드가 막힘)과 임베드가 안 되는 글(지워졌거나 X 스크립트가 막힘)에 씀.
 // 글 본문·이미지는 X 밖에 사본을 두지 않으려고 넣지 않음. 작성 날짜는 글 id 에서 계산함(저장한 값 아님)
-function buildBoothPostCard(id, entry){
+// note 를 주면 그 문구를 안내로 씀(인용한 글을 못 불러왔을 때, 2026-11-04)
+function buildBoothPostCard(id, entry, note){
   const card = document.createElement("div");
   card.className = "booth-post-card";
   const url = `https://x.com/${encodeURIComponent(entry.handle || "i")}/status/${encodeURIComponent(id)}`;
@@ -4329,7 +4338,8 @@ function buildBoothPostCard(id, entry){
     { year: "numeric", month: "short", day: "numeric" }) : "";
   card.innerHTML = `
     <div class="booth-post-handle">@${escapeHtml(entry.handle || "")}${date ? `<span class="booth-post-date"> · ${escapeHtml(date)}</span>` : ""}</div>
-    ${entry.sensitive ? `<div class="booth-post-note">${escapeHtml(t("boothPostSensitive"))}</div>` : ""}
+    ${note ? `<div class="booth-post-note">${escapeHtml(note)}</div>`
+      : entry.sensitive ? `<div class="booth-post-note">${escapeHtml(t("boothPostSensitive"))}</div>` : ""}
     <a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(t("boothPostOpenX"))}</a>
   `;
   return card;
@@ -4376,8 +4386,23 @@ function appendQuotedPost(slot, quoted){
     label.textContent = t("boothPostQuotedLabel");
     const item = document.createElement("div");
     item.className = "booth-post";
-    btn.replaceWith(label, item);
-    const toCard = () => { if(item.isConnected) item.replaceWith(buildBoothPostCard(quoted.id, quoted)); };
+    // 성인(민감한 내용) 설정 글은 로그인하지 않은 임베드에서 "찾을 수 없음"만 나옴(2026-11-04).
+    // 그런 글로 알려진 인용 글은 임베드하지 않고 바로 안내와 X 링크를 보여줌
+    if(quoted.sensitive){
+      btn.replaceWith(label, buildBoothPostCard(quoted.id, quoted, t("boothPostQuotedUnavailable")));
+      return;
+    }
+    // X 가 "찾을 수 없음" 칸을 보통 높이로 그리면 높이로는 못 걸러서, 임베드 아래에 항상 짧은 안내와 X 링크를 둠
+    const hint = document.createElement("div");
+    hint.className = "booth-post-quoted-hint";
+    const hintUrl = `https://x.com/${encodeURIComponent(quoted.handle || "i")}/status/${encodeURIComponent(quoted.id)}`;
+    hint.innerHTML = `${escapeHtml(t("boothPostQuotedHint"))} <a href="${escapeHtml(hintUrl)}" target="_blank" rel="noopener">${escapeHtml(t("boothPostOpenX"))}</a>`;
+    btn.replaceWith(label, item, hint);
+    const toCard = () => {
+      if(!item.isConnected) return;
+      hint.remove();   // 카드에 같은 안내와 링크가 있음
+      item.replaceWith(buildBoothPostCard(quoted.id, quoted, t("boothPostQuotedUnavailable")));
+    };
     const fallback = setTimeout(toCard, 8000);
     ensureTwitterWidgets(function start(){
       if(!item.isConnected) return;
