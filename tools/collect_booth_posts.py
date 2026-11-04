@@ -288,7 +288,9 @@ def quoted_ref(p):
     qid = str(q.get("id") or "")
     if not qid:
         return {}
-    return {"quoted": {"id": qid, "handle": (q.get("author") or {}).get("screen_name") or ""}}
+    # sensitive: 인용한 글이 성인(민감한 내용) 설정 글이면 로그인하지 않은 임베드에 "찾을 수 없음"만 나옴 (2026-11-04)
+    return {"quoted": {"id": qid, "handle": (q.get("author") or {}).get("screen_name") or "",
+                       "sensitive": bool(q.get("possibly_sensitive"))}}
 
 
 def post_images(p):
