@@ -112,6 +112,17 @@
   .booth-card .latest{ color:var(--muted); font-size:11px; margin-top:2px; }
   .booth-detail-head{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px; }
   .booth-detail-head .title{ font-weight:700; font-size:15px; }
+  /* 사이트 상태(헬스체크) 패널 */
+  .hc-head{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .hc-badge{ font-weight:700; font-size:12.5px; padding:2px 10px; border-radius:999px; background:var(--chip-bg); }
+  .hc-badge.ok{ background:var(--ok); color:#fff; }
+  .hc-badge.bad{ background:var(--accent); color:#fff; }
+  .hc-stats{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px; margin:10px 0 4px; }
+  .hc-stat{ background:var(--chip-bg); border-radius:10px; padding:8px 10px; }
+  .hc-stat .v{ font-size:18px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .hc-stat .k{ color:var(--muted); font-size:11.5px; }
+  .hc-list{ margin:6px 0 0; padding-left:0; list-style:none; font-size:12.5px; }
+  .hc-list li{ padding:2px 0; overflow-wrap:anywhere; }
   @media (max-width:520px){ .booth-grid{ grid-template-columns:repeat(auto-fill,minmax(104px,1fr)); gap:8px; } }
 </style>
 </head>
@@ -140,6 +151,15 @@
   </div>
 
   <div id="adminArea" hidden>
+  <div class="panel" id="healthPanel">
+    <div class="hc-head">
+      <span style="font-weight:600;">사이트 상태</span>
+      <span class="hc-badge" id="healthBadge">불러오는 중…</span>
+      <span class="msg" id="healthWhen"></span>
+      <button type="button" id="healthReloadBtn" style="margin-left:auto;">새로고침</button>
+    </div>
+    <div id="healthBody"></div>
+  </div>
   <div class="tabs" id="modes">
     <button type="button" data-mode="booth" class="active">부스 상품 글</button>
     <button type="button" data-mode="official">행사 안내 글</button>
@@ -229,7 +249,7 @@ function boothName(id){ const b = booths.find(b => b.id === id); return b ? b.na
 function fmtDate(iso){
   const d = new Date(iso);
   if(isNaN(d)) return "";
-  return d.toLocaleString("ko-KR", { month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit" });
+  return d.toLocaleString("ko-KR", { timeZone:"Asia/Seoul", month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit" });
 }
 // 글 id 는 시간이 지날수록 커지는 숫자(문자열)라 길이 → 사전순으로 비교하면 최신순 정렬이 됨
 function newestFirst(a, b){ return b.length - a.length || (b > a ? 1 : b < a ? -1 : 0); }
@@ -796,7 +816,7 @@ function checkAdmin(user){
     if(currentUser !== user) return;
     gate.textContent = "";
     area.hidden = false;
-    if(!adminLoaded){ adminLoaded = true; boothsReady.then(refresh); }
+    if(!adminLoaded){ adminLoaded = true; boothsReady.then(refresh); loadHealth(); }
   }).catch(err => {
     if(currentUser !== user) return;
     gate.textContent = err && err.code === "permission-denied"
@@ -827,6 +847,72 @@ document.getElementById("modes").addEventListener("click", (e) => {
   render();
 });
 document.getElementById("reloadBtn").addEventListener("click", refresh);
+
+/* ---------- 사이트 상태(헬스체크) ----------
+   GitHub Actions 사이트 헬스체크(tools/site_healthcheck.py)가 1시간마다 결과와 사용량을
+   Firestore boothPosts/healthcheck 문서의 data(JSON 문자열)에 저장함. 운영자만 읽을 수 있는 문서.
+   이 화면은 열 때·새로고침을 누를 때 한 번 읽음(읽기 1). */
+function fmtNum(n){ return (typeof n === "number") ? n.toLocaleString("ko-KR") : "–"; }
+function fmtAgo(ms){
+  const m = Math.round(ms / 60000);
+  if(m < 1) return "방금";
+  if(m < 60) return `${m}분 전`;
+  const h = Math.floor(m / 60);
+  return h < 48 ? `${h}시간 ${m % 60}분 전` : `${Math.floor(h / 24)}일 전`;
+}
+function loadHealth(){
+  const badge = document.getElementById("healthBadge");
+  const when = document.getElementById("healthWhen");
+  const body = document.getElementById("healthBody");
+  badge.className = "hc-badge"; badge.textContent = "불러오는 중…"; when.textContent = "";
+  db.collection("boothPosts").doc("healthcheck").get().then(doc => {
+    if(!doc.exists){ badge.textContent = "기록 없음"; body.innerHTML = `<div class="msg">아직 헬스체크 결과가 없습니다. 다음 정시 점검(매시 41분) 뒤에 보입니다.</div>`; return; }
+    let d;
+    try { d = JSON.parse(doc.data().data || "{}"); } catch(e){ badge.textContent = "읽기 실패"; return; }
+    const results = d.results || [];
+    const crit = results.filter(x => x.critical);
+    const minor = results.filter(x => !x.critical && (x.status === "fail" || x.status === "warn"));
+    const age = Date.now() - Date.parse(d.checkedAt);
+    const stale = age > 2 * 3600 * 1000;
+    badge.className = "hc-badge " + (crit.length ? "bad" : "ok");
+    badge.textContent = crit.length ? `치명적 이상 ${crit.length}건` : "정상";
+    const t = new Date(d.checkedAt).toLocaleString("ko-KR", { timeZone:"Asia/Seoul", month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit" });
+    when.innerHTML = `마지막 점검 ${escapeHtml(t)} (${escapeHtml(fmtAgo(age))})`
+      + (d.runUrl ? ` · <a href="${escapeHtml(d.runUrl)}" target="_blank" rel="noopener">실행 기록</a>` : "")
+      + (d.issueUrl ? ` · <a href="${escapeHtml(d.issueUrl)}" target="_blank" rel="noopener">알림 이슈</a>` : "");
+    const u = d.usage || {};
+    const stat = (v, k) => `<div class="hc-stat"><div class="v">${v}</div><div class="k">${escapeHtml(k)}</div></div>`;
+    const cfWorkers = results.find(x => x.key === "Cloudflare Workers 오늘 요청");
+    let html = "";
+    if(stale) html += `<div class="msg err" style="margin-top:6px;">마지막 점검이 2시간 넘게 지났습니다. cron-job.org 작업이나 GitHub Actions가 멈췄는지 확인하세요.</div>`;
+    html += `<div class="hc-stats">`
+      + stat(fmtNum(u.web_today_visits), "오늘 방문 (한국 날짜)")
+      + stat(fmtNum(u.web_today_pageviews), "오늘 페이지뷰")
+      + stat(fmtNum(u.web_yesterday_visits), "어제 방문")
+      + stat(fmtNum(u.web_yesterday_pageviews), "어제 페이지뷰")
+      + stat(fmtNum(u.auth_active_24h), "24시간 내 이용한 로그인 사용자")
+      + stat(fmtNum(u.auth_new_24h), "24시간 내 새 로그인 사용자")
+      + stat(fmtNum(u.auth_total), "로그인 사용자 전체")
+      + `</div>`;
+    const notes = [];
+    if(u.web_error) notes.push(`방문 통계를 못 읽음: ${u.web_error}`);
+    if(u.auth_error) notes.push(`로그인 사용자 수를 못 읽음: ${u.auth_error}`);
+    notes.push("Firestore 읽기·쓰기 사용량: 무료(Spark) 플랜이라 자동으로 읽을 수 없음 → Firebase 콘솔 → Firestore → 사용량. 한도를 다 쓰면 헬스체크가 알림");
+    if(cfWorkers) notes.push(`Cloudflare Workers: ${cfWorkers.detail}`);
+    html += `<ul class="hc-list msg">${notes.map(n => `<li>${escapeHtml(n)}</li>`).join("")}</ul>`;
+    const line = (x, mark) => `<li>${mark} [${escapeHtml(x.group)}] ${escapeHtml(x.key)}: ${escapeHtml(x.detail)}</li>`;
+    if(crit.length) html += `<div style="font-weight:600; margin-top:8px; color:var(--accent);">치명적 이상 (알림 보냄)</div><ul class="hc-list">${crit.map(x => line(x, "❌")).join("")}</ul>`;
+    if(minor.length) html += `<div style="font-weight:600; margin-top:8px;">참고 (알림 없음)</div><ul class="hc-list">${minor.map(x => line(x, "⚠️")).join("")}</ul>`;
+    const mark = { ok:"✅", fail:"❌", warn:"⚠️", skip:"⏭️" };
+    html += `<details style="margin-top:8px;"><summary>전체 점검 결과 ${results.length}건</summary><ul class="hc-list">${results.map(x => line(x, mark[x.status] || "")).join("")}</ul></details>`;
+    body.innerHTML = html;
+  }).catch(err => {
+    badge.textContent = "읽기 실패";
+    body.innerHTML = `<div class="msg err">${escapeHtml((err && (err.code || err.message)) || String(err))}</div>`;
+  });
+}
+document.getElementById("healthReloadBtn").addEventListener("click", loadHealth);
+
 
 updateAuthUI();
 const boothsReady = loadBooths().catch(() => {}).then(() => fillManualBooths(""));
