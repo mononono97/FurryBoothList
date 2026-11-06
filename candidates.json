@@ -1,6 +1,63 @@
 {
- "updatedAt": "2026-11-06T06:58:40+00:00",
+ "updatedAt": "2026-11-06T08:27:24+00:00",
  "posts": [
+  {
+   "id": "2118610040831742233",
+   "handle": "100symbol",
+   "booths": [
+    "C27"
+   ],
+   "boothNames": [
+    "Mr. furshowtime"
+   ],
+   "created": "2026-11-06T07:42:50+00:00",
+   "score": 2,
+   "sensitive": true,
+   "reasons": [
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-11-06T08:17:16+00:00"
+  },
+  {
+   "id": "2118609821285150964",
+   "handle": "100symbol",
+   "booths": [
+    "C27"
+   ],
+   "boothNames": [
+    "Mr. furshowtime"
+   ],
+   "created": "2026-11-06T07:41:57+00:00",
+   "score": 2,
+   "sensitive": true,
+   "reasons": [
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-11-06T08:17:16+00:00"
+  },
+  {
+   "id": "2118608807861608597",
+   "handle": "100symbol",
+   "booths": [
+    "C27"
+   ],
+   "boothNames": [
+    "Mr. furshowtime"
+   ],
+   "created": "2026-11-06T07:37:56+00:00",
+   "score": 8,
+   "sensitive": true,
+   "reasons": [
+    "통판·선입금·예약",
+    "굿즈·판매",
+    "행사·부스",
+    "주문서 링크",
+    "이미지"
+   ],
+   "foundAt": "2026-11-06T08:17:16+00:00"
+  },
   {
    "id": "2118591942179045871",
    "handle": "perel_fur",
