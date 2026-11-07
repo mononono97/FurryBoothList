@@ -1,6 +1,46 @@
 {
- "updatedAt": "2026-11-07T02:30:36+00:00",
+ "updatedAt": "2026-11-07T05:22:01+00:00",
  "posts": [
+  {
+   "id": "2118933531766517873",
+   "handle": "noway_jin",
+   "booths": [
+    "A30"
+   ],
+   "boothNames": [
+    "FURST SNOW"
+   ],
+   "created": "2026-11-07T05:08:16+00:00",
+   "score": 2,
+   "sensitive": false,
+   "quoted": {
+    "id": "2117374357756600597",
+    "handle": "noway_jin",
+    "sensitive": false
+   },
+   "reasons": [
+    "통판·선입금·예약"
+   ],
+   "foundAt": "2026-11-07T05:20:24+00:00"
+  },
+  {
+   "id": "2118921901594780144",
+   "handle": "ideatami",
+   "booths": [
+    "A36"
+   ],
+   "boothNames": [
+    "또롱별"
+   ],
+   "created": "2026-11-07T04:22:03+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-07T05:19:08+00:00"
+  },
   {
    "id": "2118743903075713393",
    "handle": "mucknagabe",
