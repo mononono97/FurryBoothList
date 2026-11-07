@@ -1,6 +1,24 @@
 {
- "updatedAt": "2026-11-07T05:22:01+00:00",
+ "updatedAt": "2026-11-07T06:21:57+00:00",
  "posts": [
+  {
+   "id": "2118941332853121503",
+   "handle": "FurryGintan",
+   "booths": [
+    "A09"
+   ],
+   "boothNames": [
+    "GINTAN STUDIO"
+   ],
+   "created": "2026-11-07T05:39:16+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-07T06:18:41+00:00"
+  },
   {
    "id": "2118933531766517873",
    "handle": "noway_jin",
