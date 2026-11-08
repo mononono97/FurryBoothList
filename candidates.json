@@ -1,6 +1,48 @@
 {
- "updatedAt": "2026-11-08T08:27:41+00:00",
+ "updatedAt": "2026-11-08T09:22:18+00:00",
  "posts": [
+  {
+   "id": "2119348989338513883",
+   "handle": "noway_jin",
+   "booths": [
+    "A30"
+   ],
+   "boothNames": [
+    "FURST SNOW"
+   ],
+   "created": "2026-11-08T08:39:09+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "인포"
+   ],
+   "foundAt": "2026-11-08T09:20:35+00:00"
+  },
+  {
+   "id": "2119346540942881051",
+   "handle": "Yell0whale",
+   "booths": [
+    "A20"
+   ],
+   "boothNames": [
+    "내가 쓰려고 만든 굿즈"
+   ],
+   "created": "2026-11-08T08:29:25+00:00",
+   "score": 6,
+   "sensitive": false,
+   "quoted": {
+    "id": "2119011431328919690",
+    "handle": "Yell0whale",
+    "sensitive": false
+   },
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "주문서 링크",
+    "이미지"
+   ],
+   "foundAt": "2026-11-08T09:22:11+00:00"
+  },
   {
    "id": "2119332538758090931",
    "handle": "noway_jin",
