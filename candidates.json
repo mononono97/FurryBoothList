@@ -1,6 +1,29 @@
 {
- "updatedAt": "2026-11-08T04:30:36+00:00",
+ "updatedAt": "2026-11-08T05:28:17+00:00",
  "posts": [
+  {
+   "id": "2119289450991853895",
+   "handle": "FurNemB",
+   "booths": [
+    "C19-20"
+   ],
+   "boothNames": [
+    "작전명: 에이전트 버니"
+   ],
+   "created": "2026-11-08T04:42:34+00:00",
+   "score": 3,
+   "sensitive": false,
+   "quoted": {
+    "id": "2114671342788489558",
+    "handle": "FurNemB",
+    "sensitive": false
+   },
+   "reasons": [
+    "통판·선입금·예약",
+    "이미지"
+   ],
+   "foundAt": "2026-11-08T05:20:10+00:00"
+  },
   {
    "id": "2119282836595454393",
    "handle": "noway_jin",
