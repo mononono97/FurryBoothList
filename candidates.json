@@ -1,6 +1,67 @@
 {
- "updatedAt": "2026-11-09T08:28:48+00:00",
+ "updatedAt": "2026-11-09T11:22:27+00:00",
  "posts": [
+  {
+   "id": "2119748038898139330",
+   "handle": "GomTang_P",
+   "booths": [
+    "B22"
+   ],
+   "boothNames": [
+    "BoxBear"
+   ],
+   "created": "2026-11-09T11:04:50+00:00",
+   "score": 5,
+   "sensitive": true,
+   "reasons": [
+    "통판·선입금·예약",
+    "굿즈·판매",
+    "행사·부스",
+    "타래(자기 글 답글)"
+   ],
+   "foundAt": "2026-11-09T11:19:01+00:00"
+  },
+  {
+   "id": "2119746571172745500",
+   "handle": "Beuu0920",
+   "booths": [
+    "A16"
+   ],
+   "boothNames": [
+    "브 BEUU / FURPPET"
+   ],
+   "created": "2026-11-09T10:59:00+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-09T11:17:53+00:00"
+  },
+  {
+   "id": "2119738638108110862",
+   "handle": "pangpayaaaak",
+   "booths": [
+    "B31-32"
+   ],
+   "boothNames": [
+    "퍼리다이소 ~카지노점~"
+   ],
+   "created": "2026-11-09T10:27:28+00:00",
+   "score": 3,
+   "sensitive": false,
+   "quoted": {
+    "id": "2115312971694137681",
+    "handle": "pangpayaaaak",
+    "sensitive": false
+   },
+   "reasons": [
+    "가격",
+    "이미지"
+   ],
+   "foundAt": "2026-11-09T11:21:02+00:00"
+  },
   {
    "id": "2119703028567876079",
    "handle": "ringo2ALS",
