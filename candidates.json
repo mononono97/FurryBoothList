@@ -1,6 +1,100 @@
 {
- "updatedAt": "2026-11-09T05:22:18+00:00",
+ "updatedAt": "2026-11-09T06:27:18+00:00",
  "posts": [
+  {
+   "id": "2119674635319202210",
+   "handle": "GomTang_P",
+   "booths": [
+    "B22"
+   ],
+   "boothNames": [
+    "BoxBear"
+   ],
+   "created": "2026-11-09T06:13:09+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약",
+    "행사·부스",
+    "타래(자기 글 답글)"
+   ],
+   "foundAt": "2026-11-09T06:20:04+00:00"
+  },
+  {
+   "id": "2119672483490267229",
+   "handle": "FurNemB",
+   "booths": [
+    "C19-20"
+   ],
+   "boothNames": [
+    "작전명: 에이전트 버니"
+   ],
+   "created": "2026-11-09T06:04:36+00:00",
+   "score": 2,
+   "sensitive": false,
+   "quoted": {
+    "id": "2113933524747370526",
+    "handle": "nyong_studio",
+    "sensitive": false
+   },
+   "reasons": [
+    "통판·선입금·예약"
+   ],
+   "foundAt": "2026-11-09T06:19:39+00:00"
+  },
+  {
+   "id": "2119668624436969841",
+   "handle": "ToriS6526",
+   "booths": [
+    "A19"
+   ],
+   "boothNames": [
+    "메이커 연합부스 - 아르모아"
+   ],
+   "created": "2026-11-09T05:49:16+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-11-09T06:26:18+00:00"
+  },
+  {
+   "id": "2119665053939237005",
+   "handle": "ED_in_FF14",
+   "booths": [
+    "C24"
+   ],
+   "boothNames": [
+    "보즈야 연구소"
+   ],
+   "created": "2026-11-09T05:35:04+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "이미지"
+   ],
+   "foundAt": "2026-11-09T06:19:15+00:00"
+  },
+  {
+   "id": "2119664178357313588",
+   "handle": "connecting_Y",
+   "booths": [
+    "B09"
+   ],
+   "boothNames": [
+    "청록용"
+   ],
+   "created": "2026-11-09T05:31:36+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-11-09T06:18:44+00:00"
+  },
   {
    "id": "2119658514566275133",
    "handle": "ToriS6526",
