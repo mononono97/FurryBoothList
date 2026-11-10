@@ -1,6 +1,40 @@
 {
- "updatedAt": "2026-11-10T02:11:52+00:00",
+ "updatedAt": "2026-11-10T03:26:38+00:00",
  "posts": [
+  {
+   "id": "2119988389823053864",
+   "handle": "bigwhite_cat",
+   "booths": [
+    "C26"
+   ],
+   "boothNames": [
+    "뭐든 해봤습니다 털공장"
+   ],
+   "created": "2026-11-10T02:59:54+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "가격"
+   ],
+   "foundAt": "2026-11-10T03:17:59+00:00"
+  },
+  {
+   "id": "2119983101447393510",
+   "handle": "milang_313",
+   "booths": [
+    "C22"
+   ],
+   "boothNames": [
+    "늑랑 狼"
+   ],
+   "created": "2026-11-10T02:38:53+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약"
+   ],
+   "foundAt": "2026-11-10T03:23:00+00:00"
+  },
   {
    "id": "2119963283591688647",
    "handle": "syukapong",
