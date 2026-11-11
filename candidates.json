@@ -1,6 +1,49 @@
 {
- "updatedAt": "2026-11-10T17:29:16+00:00",
+ "updatedAt": "2026-11-11T02:22:10+00:00",
  "posts": [
+  {
+   "id": "2120333796293959697",
+   "handle": "mindal3118",
+   "booths": [
+    "B05"
+   ],
+   "boothNames": [
+    "탑 부쉬 접근금지령"
+   ],
+   "created": "2026-11-11T01:52:25+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "이미지",
+    "타래(자기 글 답글)"
+   ],
+   "foundAt": "2026-11-11T02:20:08+00:00"
+  },
+  {
+   "id": "2120330620513714679",
+   "handle": "ringo2ALS",
+   "booths": [
+    "A35"
+   ],
+   "boothNames": [
+    "빙다리 햍바지"
+   ],
+   "created": "2026-11-11T01:39:48+00:00",
+   "score": 4,
+   "sensitive": false,
+   "quoted": {
+    "id": "2119700398198169753",
+    "handle": "ringo2ALS",
+    "sensitive": false
+   },
+   "reasons": [
+    "통판·선입금·예약",
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-11-11T02:21:16+00:00"
+  },
   {
    "id": "2120201234833613174",
    "handle": "FurNemB",
