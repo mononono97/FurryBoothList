@@ -1,6 +1,24 @@
 {
- "updatedAt": "2026-11-11T07:22:35+00:00",
+ "updatedAt": "2026-11-11T08:22:22+00:00",
  "posts": [
+  {
+   "id": "2120422074426761600",
+   "handle": "mofuaki_",
+   "booths": [
+    "A41"
+   ],
+   "boothNames": [
+    "MOFUMOFUYA"
+   ],
+   "created": "2026-11-11T07:43:12+00:00",
+   "score": 3,
+   "sensitive": true,
+   "reasons": [
+    "통판·선입금·예약",
+    "이미지"
+   ],
+   "foundAt": "2026-11-11T08:20:15+00:00"
+  },
   {
    "id": "2120410540669636799",
    "handle": "ideatami",
