@@ -2412,6 +2412,8 @@ const I18N = {
     budgetTotal: "총 예산: {amount}",
     filterMemo: "📝 메모된 부스만",
     memoCount: "메모를 적은 부스 {n}개",
+    plannedCount: "방문 예정 부스 {n}개",
+    visitedCount: "방문 완료 부스 {n}개",
     emptyMemo: "메모를 적은 부스가 없어요. 부스를 열어 \"내 메모\" 칸에 적어 두면 여기에 모여요.",
     quickVisitCheck: "방문 완료",
     quickVisitDoneLabel: "방문 완료로 표시",
@@ -2423,7 +2425,7 @@ const I18N = {
     spentTotalOnly: "쓴 돈 합계: {spent}",
     moneyLine: "💸 {spent} / 예산 {budget}",
     moneyLineSpentOnly: "💸 쓴 돈 {spent}",
-    updatesFilterMine: "⭐ 내 부스만",
+    updatesFilterMine: "⭐ 내 관심 부스만",
     updatesCountMine: "내 부스 중 상품 정보가 올라온 부스 {n}개 (최근 순)",
     emptyUpdatesMine: "메모·방문 예정·우선순위·예산·선입금을 적어 둔 부스 중에 상품 정보가 올라온 부스가 아직 없어요.",
     updatesNewDot: "새 글 있음",
@@ -2604,6 +2606,8 @@ const I18N = {
     budgetTotal: "Total budget: {amount}",
     filterMemo: "📝 With notes",
     memoCount: "{n} booths with notes",
+    plannedCount: "{n} booths planned",
+    visitedCount: "{n} booths visited",
     emptyMemo: "No booths with notes yet. Open a booth and write in \"My Notes\" to gather them here.",
     quickVisitCheck: "Visited",
     quickVisitDoneLabel: "Mark as visited",
@@ -2615,7 +2619,7 @@ const I18N = {
     spentTotalOnly: "Total spent: {spent}",
     moneyLine: "💸 {spent} / budget {budget}",
     moneyLineSpentOnly: "💸 Spent {spent}",
-    updatesFilterMine: "⭐ My booths",
+    updatesFilterMine: "⭐ My Booths only",
     updatesCountMine: "{n} of my booths with product info (newest first)",
     emptyUpdatesMine: "None of the booths you've marked (note, plan, priority, budget, pre-order) have product info yet.",
     updatesNewDot: "New posts",
@@ -2796,6 +2800,8 @@ const I18N = {
     budgetTotal: "総予算：{amount}",
     filterMemo: "📝 メモありのみ",
     memoCount: "メモを書いたブース {n}件",
+    plannedCount: "訪問予定のブース {n}件",
+    visitedCount: "訪問済みのブース {n}件",
     emptyMemo: "メモを書いたブースがありません。ブースを開いて「マイメモ」に書くと、ここにまとまります。",
     quickVisitCheck: "訪問済み",
     quickVisitDoneLabel: "訪問済みにする",
@@ -2807,7 +2813,7 @@ const I18N = {
     spentTotalOnly: "使った金額の合計：{spent}",
     moneyLine: "💸 {spent} / 予算 {budget}",
     moneyLineSpentOnly: "💸 使った金額 {spent}",
-    updatesFilterMine: "⭐ 自分のブースのみ",
+    updatesFilterMine: "⭐ 気になるブースのみ",
     updatesCountMine: "自分のブースのうち商品情報があるブース {n}件（新しい順）",
     emptyUpdatesMine: "メモ・訪問予定・優先度・予算・事前通販を登録したブースに、まだ商品情報はありません。",
     updatesNewDot: "新しい投稿あり",
@@ -4738,6 +4744,9 @@ function renderGrid(){
 
   document.getElementById("currentCount").textContent = isMemoOnly
     ? t("memoCount", { n: list.length })
+    // 방문 예정·방문 완료 필터: 그 상태인 부스 개수 (2026-11-11 사용자 요청)
+    : isNotesView && notesVisitFilter === "planned" ? t("plannedCount", { n: list.length })
+    : isNotesView && notesVisitFilter === "visited" ? t("visitedCount", { n: list.length })
     : isNotesView ? t("notesCount", { n: list.length })
     : isUpdatesView ? t(updatesMineOnly ? "updatesCountMine" : "updatesCount", { n: list.length })
     : isPreorderView ? t("preorderCount", {
