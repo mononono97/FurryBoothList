@@ -457,6 +457,38 @@ def collect(feed_dir, dry_run=False, quick=False):
     path.write_text(json.dumps(out, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 
 
+def syndication_token(pid):
+    """X 임베드가 쓰는 cdn.syndication.twimg.com 의 token 값 (임베드 스크립트와 같은 계산)."""
+    x = (int(pid) / 1e15) * 3.141592653589793
+    digits = "0123456789abcdefghijklmnopqrstuvwxyz"
+    whole, frac = int(x), x - int(x)
+    out = ""
+    while True:
+        out = digits[whole % 36] + out
+        whole //= 36
+        if not whole:
+            break
+    out += "."
+    for _ in range(12):
+        frac *= 36
+        out += digits[int(frac)]
+        frac -= int(frac)
+    return re.sub(r"(0+|\.)", "", out)
+
+
+def edit_info(pid):
+    """X 임베드 서버가 보는 이 글의 수정 기록. 글을 수정하면 X 는 새 글 id 를 만들고, 예전 id 의 임베드는 예전 내용을 그대로 보여줌
+    (2026-11-12 B14). 반환: (가장 최근 판 id, 모든 판 id 목록). 수정 기록이 없거나 못 받으면 (None, [])."""
+    url = f"https://cdn.syndication.twimg.com/tweet-result?id={pid}&lang=ko&token={syndication_token(pid)}"
+    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    with urllib.request.urlopen(req, timeout=20) as res:
+        data = json.load(res)
+    ids = [str(x) for x in ((data.get("edit_control") or {}).get("edit_tweet_ids") or [])]
+    if not ids and (data.get("edit_control") or {}).get("initial_tweet_id"):
+        ids = [str(data["edit_control"]["initial_tweet_id"])]
+    return (ids[-1] if ids else None), ids
+
+
 def check_posts(feed_dir, refs):
     """글 주소·id 마다 수집기가 그 글을 어떻게 보는지 출력. "이 글이 왜 안 들어왔나" 제보 확인용 (2026-11-03).
     글 본문은 공개 로그에 남기지 않고 판단에 쓰인 값만 보여줌."""
@@ -485,6 +517,12 @@ def check_posts(feed_dir, refs):
         print(f"  작성 {created_at(p).isoformat()}, 답글 대상: {reply_target(p) or '없음'}, 인용 글: {bool(p.get('quote'))}, "
               f"민감한 글 표시: {bool(p.get('possibly_sensitive'))}")
         print(f"  키워드 점수 {score} (기준 {MIN_SCORE}) {reasons}, 이미지 {len(post_images(p))}장")
+        try:
+            latest, versions = edit_info(pid)
+            print(f"  X 수정 기록: {versions or '없음'}"
+                  + (f" → 가장 최근 판 {latest} (이 글은 예전 판)" if latest and latest != pid else ""))
+        except Exception as e:
+            print(f"  X 수정 기록 받기 실패: {e}")
         q = p.get("quote") or {}
         if q:
             # 인용한 글은 임베드 안에 따로 그려짐. 그 글이 민감한 글이면 X 가 로그인 안 한 방문자에게 빼고 보여줌 (2026-11-03 C-11)
