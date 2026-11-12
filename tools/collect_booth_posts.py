@@ -70,6 +70,11 @@ REQUEST_GAP_SECONDS = 1.0
 SKIP_LOG_HOURS = 24
 SELF_REPLY_REASON = "타래(자기 글 답글)"
 AUDIT_REASON = "빠진 글 점검"
+EDITED_REASON = "수정된 글"
+# X 는 글을 올리고 1시간 안에만 수정할 수 있음. 수집이 늦게 도는 날도 있어서 넉넉히 이 시간 안의 후보만 수정 여부를 봄
+EDIT_CHECK_HOURS_FULL = 36
+EDIT_CHECK_HOURS_QUICK = 3
+EDIT_CHECK_GAP_SECONDS = 0.3
 USER_AGENT = "FurryBoothList booth post collector (+https://github.com/mononono97/FurryBoothList)"
 
 # (정규식, 점수, 설명). 한국어·일본어·영어 작가가 섞여 있어서 세 언어를 다 봄.
@@ -346,7 +351,9 @@ def collect(feed_dir, dry_run=False, quick=False):
     data["posts"] = [p for p in data["posts"]
                      if not p.get("created") or datetime.fromisoformat(p["created"]) >= RT_SINCE]
     removed_old = before - len(data["posts"])
-    known = {p["id"] for p in data["posts"]}
+    # 예전 판 id → 최신 판 id. 예전 판이 RT 계정 등으로 다시 후보에 들어오지 않게 known 에도 넣음
+    edits = data.get("edits") or {}
+    known = {p["id"] for p in data["posts"]} | set(edits)
 
     added, failed, skipped = [], [], []
     now = datetime.now(timezone.utc)
@@ -423,6 +430,7 @@ def collect(feed_dir, dry_run=False, quick=False):
             c["via"] = RT_HANDLE
             rt_marked += 1
     added += rt_added
+    edited = apply_edits(data, added, edits, now, quick, failed)
 
     print(f"{'공식·RT 계정만 확인' if quick else f'계정 {len(handles)}개 확인'}, 새 후보 {len(added)}개(RT 계정 {len(rt_added)}개), 공식 글 새 후보 {len(official_added)}개, 실패 {len(failed)}개")
     for c in added:
@@ -443,7 +451,9 @@ def collect(feed_dir, dry_run=False, quick=False):
         print(f"  2026-09-01(KST) 이전 글 후보 {removed_old}개 정리")
     if stripped:
         print(f"  후보 {stripped}개에서 본문·이미지 지움")
-    if dry_run or not (added or official_added or removed or removed_old or stripped or rt_marked):
+    for old, new, c in edited:
+        print(f"  ~ 수정된 글: {c['booths'] or '부스 미지정'} @{c['handle']} 예전 판 {old} → 최신 판 https://x.com/{c['handle']}/status/{new}")
+    if dry_run or not (added or official_added or removed or removed_old or stripped or rt_marked or edited):
         return  # 새 후보가 없으면 파일을 그대로 둬서 쓸데없는 커밋이 생기지 않게 함
 
     # 최신 글이 위로 오도록 id(시간순으로 커지는 숫자) 기준 내림차순
@@ -452,9 +462,91 @@ def collect(feed_dir, dry_run=False, quick=False):
         "updatedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "posts": newest(data["posts"] + added),
         "official": newest(data["official"] + official_added),
+        # 관리 화면(admin.html)이 열릴 때 예전 판으로 반영·제외된 글을 최신 판으로 옮기는 데 씀
+        "edits": edits,
     }
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(out, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+
+
+def syndication_token(pid):
+    """X 임베드가 쓰는 cdn.syndication.twimg.com 의 token 값 (임베드 스크립트와 같은 계산)."""
+    x = (int(pid) / 1e15) * 3.141592653589793
+    digits = "0123456789abcdefghijklmnopqrstuvwxyz"
+    whole, frac = int(x), x - int(x)
+    out = ""
+    while True:
+        out = digits[whole % 36] + out
+        whole //= 36
+        if not whole:
+            break
+    out += "."
+    for _ in range(12):
+        frac *= 36
+        out += digits[int(frac)]
+        frac -= int(frac)
+    return re.sub(r"(0+|\.)", "", out)
+
+
+def edit_info(pid):
+    """X 임베드 서버가 보는 이 글의 수정 기록. 글을 수정하면 X 는 새 글 id 를 만들고, 예전 id 의 임베드는 예전 내용을 그대로 보여줌
+    (2026-11-12 B14). 반환: (가장 최근 판 id, 모든 판 id 목록). 수정 기록이 없거나 못 받으면 (None, [])."""
+    url = f"https://cdn.syndication.twimg.com/tweet-result?id={pid}&lang=ko&token={syndication_token(pid)}"
+    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    with urllib.request.urlopen(req, timeout=20) as res:
+        data = json.load(res)
+    ids = [str(x) for x in ((data.get("edit_control") or {}).get("edit_tweet_ids") or [])]
+    if not ids and (data.get("edit_control") or {}).get("initial_tweet_id"):
+        ids = [str(data["edit_control"]["initial_tweet_id"])]
+    return (ids[-1] if ids else None), ids
+
+
+def snowflake_time(pid):
+    """X 글 id 에 들어 있는 작성 시각."""
+    return datetime.fromtimestamp(((int(pid) >> 22) + 1288834974657) / 1000, timezone.utc)
+
+
+def apply_edits(data, added, edits, now, quick, failed):
+    """최근 후보 중 X 에서 수정된 글을 최신 판 id 로 바꿈 (2026-11-12 B14).
+    X 는 글을 수정하면 새 id 를 만들고, 예전 id 의 임베드는 수정 전 내용을 그대로 보여줌.
+    이 계정처럼 프로필 목록에 최근 글이 안 떠서 RT 계정 경로로만 들어온 글은 수집기가 새 판을 따로 볼 길이 없어서 여기서 확인함.
+    edits(예전 → 최신)에 기록하면 관리 화면이 반영·제외 결정을 최신 판으로 옮김. 반환: [(예전 id, 최신 id, 후보)]"""
+    since = now - timedelta(hours=EDIT_CHECK_HOURS_QUICK if quick else EDIT_CHECK_HOURS_FULL)
+    pool = data["posts"] + added
+    by_id = {c["id"]: c for c in pool}
+    changed = []
+    for c in list(pool):
+        if c["id"] not in by_id or snowflake_time(c["id"]) < since:
+            continue
+        try:
+            latest, _ = edit_info(c["id"])
+        except Exception as e:
+            failed.append(f"수정 기록 {c['id']}: {e}")
+            continue
+        finally:
+            time.sleep(EDIT_CHECK_GAP_SECONDS)
+        if not latest or latest == c["id"] or int(latest) < int(c["id"]):
+            continue
+        old = c["id"]
+        edits[old] = latest
+        for lst in (data["posts"], added):
+            if c in lst:
+                lst.remove(c)
+        del by_id[old]
+        if latest in by_id:   # 최신 판이 이미 후보에 있으면 예전 판만 뺌
+            target = by_id[latest]
+        else:
+            target = dict(c, id=latest, created=snowflake_time(latest).isoformat(timespec="seconds"))
+            data["posts"].append(target)
+            by_id[latest] = target
+        target["editedFrom"] = old
+        if EDITED_REASON not in target.get("reasons", []):
+            target["reasons"] = target.get("reasons", []) + [EDITED_REASON]
+        changed.append((old, latest, target))
+    # 오래된 기록은 더 쓸 일이 없음(관리 화면이 이미 옮겼거나 옮길 게 없음)
+    for old in [k for k in edits if snowflake_time(k) < now - timedelta(days=30)]:
+        del edits[old]
+    return changed
 
 
 def check_posts(feed_dir, refs):
@@ -485,6 +577,12 @@ def check_posts(feed_dir, refs):
         print(f"  작성 {created_at(p).isoformat()}, 답글 대상: {reply_target(p) or '없음'}, 인용 글: {bool(p.get('quote'))}, "
               f"민감한 글 표시: {bool(p.get('possibly_sensitive'))}")
         print(f"  키워드 점수 {score} (기준 {MIN_SCORE}) {reasons}, 이미지 {len(post_images(p))}장")
+        try:
+            latest, versions = edit_info(pid)
+            print(f"  X 수정 기록: {versions or '없음'}"
+                  + (f" → 가장 최근 판 {latest} (이 글은 예전 판)" if latest and latest != pid else ""))
+        except Exception as e:
+            print(f"  X 수정 기록 받기 실패: {e}")
         q = p.get("quote") or {}
         if q:
             # 인용한 글은 임베드 안에 따로 그려짐. 그 글이 민감한 글이면 X 가 로그인 안 한 방문자에게 빼고 보여줌 (2026-11-03 C-11)

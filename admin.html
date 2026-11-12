@@ -231,6 +231,7 @@ let booths = [];
 let boothIdRenames = {};   // index.html 의 BOOTH_ID_RENAMES (예전 부스 번호 → 새 번호)
 let candidates = [];          // 상품 글 후보
 let officialCandidates = [];  // 행사 안내 글 후보
+let postEdits = {};           // X 에서 수정된 글: 예전 판 id → 최신 판 id (수집기가 candidates.json 의 edits 에 기록)
 let decisions = { approved: {}, excluded: {}, official: {}, officialExcluded: {} };
 let healthView = false;          // true = "사이트 상태" 버튼을 눌러 헬스체크 결과를 보는 중
 let currentMode = "booth";    // "booth" = 부스 상품 글, "official" = 행사 안내 글
@@ -278,6 +279,7 @@ function loadCandidates(){
       officialCandidates = data.official || [];
       // 수집기가 예전 부스 번호로 찾아 둔 후보도 새 번호로 보여줌
       candidates.forEach(c => { if(Array.isArray(c.booths)) c.booths = c.booths.map(renamedBoothId); });
+      postEdits = data.edits || {};
     });
 }
 function loadDecisions(){
@@ -359,6 +361,37 @@ function backfillQuoted(){
   }).then(() => i < ids.length - 1 && new Promise(r => setTimeout(r, 1000)))), Promise.resolve())
     .then(flush)
     .finally(() => { backfillRunning = false; });
+}
+
+/* X 는 글을 수정하면 새 글 id 를 만들고, 예전 id 의 임베드는 수정 전 내용을 그대로 보여줌 (2026-11-12 B14).
+   수집기가 찾아 둔 수정 기록(postEdits)대로, 예전 판으로 반영한 글은 최신 판으로 옮기고(부스·민감한 글 여부 등은 그대로),
+   예전 판으로 제외한 글은 최신 판도 제외함. 최신 판을 이미 직접 반영·제외했으면 그 결정을 그대로 둠 */
+function migrateEdits(){
+  if(!currentUser || !decisionsReadable) return Promise.resolve([]);
+  const approved = {}, excluded = {}, moved = [];
+  Object.keys(postEdits).forEach(oldId => {
+    let newId = postEdits[oldId];
+    // 여러 번 수정했으면 마지막 판까지 따라감
+    for(let i = 0; i < 10 && postEdits[newId]; i++) newId = postEdits[newId];
+    if(!newId || newId === oldId) return;
+    const decided = newId in decisions.approved || newId in decisions.excluded;
+    if(decisions.approved[oldId]){
+      if(!decided) approved[newId] = { ...decisions.approved[oldId], at: new Date().toISOString() };
+      approved[oldId] = FieldValue.delete();
+      moved.push({ oldId, newId, booth: decisions.approved[oldId].booth });
+    } else if(decisions.excluded[oldId] && !decided){
+      excluded[newId] = true;
+    }
+  });
+  if(!Object.keys(approved).length && !Object.keys(excluded).length) return Promise.resolve([]);
+  return writeDecision({ approved, excluded }).then(() => {
+    moved.forEach(({ oldId, newId }) => {
+      if(approved[newId]) decisions.approved[newId] = approved[newId];
+      delete decisions.approved[oldId];
+    });
+    Object.keys(excluded).forEach(id => { decisions.excluded[id] = true; });
+    return moved;
+  }).catch(() => []);   // 실패해도 다음에 열 때 다시 시도함
 }
 
 function boothsForHandle(handle){
@@ -746,9 +779,10 @@ function refresh(){
   msg.className = "msg";
   msg.textContent = "불러오는 중…";
   // 부스 번호 바뀐 목록(boothIdRenames)을 먼저 읽어야 후보·반영 글 번호를 새 번호로 고칠 수 있음
-  return boothsReady.then(() => Promise.all([loadCandidates(), loadDecisions()])).then(() => {
+  return boothsReady.then(() => Promise.all([loadCandidates(), loadDecisions()])).then(migrateEdits).then(moved => {
     msg.textContent = !decisionsReadable
       ? "Firebase 규칙이 아직 없어 반영 기록을 읽지 못했습니다. 위쪽 \"반영 권한 설정 방법\"을 먼저 해 주세요."
+      : moved.length ? `X에서 수정된 글 ${moved.length}개를 최신 판으로 바꿨습니다 (${moved.map(m => m.booth).join(", ")}).`
       : candidates.length || officialCandidates.length ? "" : "아직 모인 후보가 없습니다. 후보는 1시간마다 자동으로 모입니다.";
     if(!decisionsReadable) msg.className = "msg err";
     render();
