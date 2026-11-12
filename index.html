@@ -4691,7 +4691,10 @@ function renderGrid(){
     return;
   }
 
-  grid.innerHTML = "";
+  // 펼친 상세(PC)는 빼지 않고 둔 채 카드만 다시 그림. 상세를 DOM 에서 뺐다 넣으면 안의 X 글(iframe)이
+  // 처음부터 다시 불러와져서, 메모·선입금 칸을 옮겨 다닐 때마다 상세가 사라졌다 나타났음(2026-11-12 수정).
+  const keepInline = inlineDetail && inlineDetail.el.parentNode === grid ? inlineDetail.el : null;
+  Array.from(grid.children).forEach(child => { if(child !== keepInline) child.remove(); });
   document.getElementById("sortPriorityBtn").style.display = "";
   document.getElementById("sortPriorityBtn").classList.toggle("active", sortByPriority);
 
@@ -4987,17 +4990,24 @@ function placeInlineDetail(scroll){
     return;
   }
   const el = inlineDetail.el;
-  // 자리를 재기 전에 빼 둬야 카드 줄 위치가 상세 때문에 흐트러지지 않음.
-  // 빼고 넣는 사이 입력 중이던 칸의 포커스가 풀리므로 다시 돌려줌.
-  const focused = el.contains(document.activeElement) ? document.activeElement : null;
-  el.remove();
-  const top = card.offsetTop;
-  let last = card;
-  for(let next = card.nextElementSibling; next && next.classList.contains("booth") && next.offsetTop === top; next = next.nextElementSibling){
-    last = next;
+  // 누른 카드와 같은 줄의 마지막 카드를 열 수로 계산(상세가 끼어 있어도 줄 계산이 흐트러지지 않게 위치를 재지 않음)
+  const cards = Array.from(grid.children).filter(c => c !== el && c.classList.contains("booth"));
+  const cols = Math.max(1, getComputedStyle(grid).gridTemplateColumns.split(" ").filter(Boolean).length);
+  const index = cards.indexOf(card);
+  const lastIndex = Math.min(cards.length - 1, Math.floor(index / cols) * cols + cols - 1);
+  const last = cards[lastIndex];
+  if(el.parentNode !== grid){
+    last.after(el);   // 처음 펼칠 때
+  } else if(last.nextElementSibling !== el){
+    // 이미 펼쳐 둔 상세는 그대로 두고 카드 쪽을 앞뒤로 옮김.
+    // 상세를 빼서 옮기면 안의 X 글(iframe)이 다시 불러와져 깜빡이고, 입력 중이던 칸의 포커스도 풀림.
+    cards.slice(0, lastIndex + 1).forEach(c => { if(c.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_PRECEDING) grid.insertBefore(c, el); });
+    let ref = el;
+    cards.slice(lastIndex + 1).forEach(c => {
+      if(ref.nextElementSibling !== c) ref.after(c);
+      ref = c;
+    });
   }
-  last.after(el);
-  if(focused) focused.focus({ preventScroll: true });
   document.querySelectorAll(".booth.detail-open").forEach(c => { if(c !== card) c.classList.remove("detail-open"); });
   card.classList.add("detail-open");
   // 위쪽 작은 화살표가 누른 카드 가운데를 가리키게 함
