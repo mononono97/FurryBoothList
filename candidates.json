@@ -1,6 +1,61 @@
 {
- "updatedAt": "2026-11-12T12:31:04+00:00",
+ "updatedAt": "2026-11-12T14:28:54+00:00",
  "posts": [
+  {
+   "id": "2120879320604570084",
+   "handle": "tappe124",
+   "booths": [
+    "B30"
+   ],
+   "boothNames": [
+    "마운자로 결사반대 위원회"
+   ],
+   "created": "2026-11-12T14:00:08+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약"
+   ],
+   "foundAt": "2026-11-12T14:26:54+00:00"
+  },
+  {
+   "id": "2120859771607924802",
+   "handle": "rikose",
+   "booths": [
+    "B13"
+   ],
+   "boothNames": [
+    "RIKOSE"
+   ],
+   "created": "2026-11-12T12:42:27+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "인포",
+    "품목",
+    "타래(자기 글 답글)"
+   ],
+   "foundAt": "2026-11-12T14:26:06+00:00"
+  },
+  {
+   "id": "2120859724845547553",
+   "handle": "rikose",
+   "booths": [
+    "B13"
+   ],
+   "boothNames": [
+    "RIKOSE"
+   ],
+   "created": "2026-11-12T12:42:16+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-12T14:26:06+00:00"
+  },
   {
    "id": "2120841895358398893",
    "handle": "rikose",
