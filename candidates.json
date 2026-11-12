@@ -1,6 +1,73 @@
 {
- "updatedAt": "2026-11-12T05:28:09+00:00",
+ "updatedAt": "2026-11-12T06:26:24+00:00",
  "posts": [
+  {
+   "id": "2120760796053463218",
+   "handle": "milang_313",
+   "booths": [
+    "C22"
+   ],
+   "boothNames": [
+    "늑랑 狼"
+   ],
+   "created": "2026-11-12T06:09:10+00:00",
+   "score": 3,
+   "sensitive": false,
+   "quoted": {
+    "id": "2120747653868982309",
+    "handle": "skymeatball",
+    "sensitive": true
+   },
+   "reasons": [
+    "통판·선입금·예약",
+    "행사·부스"
+   ],
+   "foundAt": "2026-11-12T06:22:43+00:00"
+  },
+  {
+   "id": "2120760377416053154",
+   "handle": "26_suigi",
+   "booths": [
+    "B11"
+   ],
+   "boothNames": [
+    "CandleLight"
+   ],
+   "created": "2026-11-12T06:07:30+00:00",
+   "score": 3,
+   "sensitive": false,
+   "quoted": {
+    "id": "2107973657184412091",
+    "handle": "26_suigi",
+    "sensitive": true
+   },
+   "reasons": [
+    "신간"
+   ],
+   "foundAt": "2026-11-12T06:17:18+00:00"
+  },
+  {
+   "id": "2120753991747576317",
+   "handle": "bighornsheeppic",
+   "booths": [
+    "C06"
+   ],
+   "boothNames": [
+    "스튜디오 엘레지"
+   ],
+   "created": "2026-11-12T05:42:07+00:00",
+   "score": 3,
+   "sensitive": false,
+   "quoted": {
+    "id": "2120691875225190879",
+    "handle": "",
+    "sensitive": false
+   },
+   "reasons": [
+    "신간"
+   ],
+   "foundAt": "2026-11-12T06:18:09+00:00"
+  },
   {
    "id": "2120747653868982309",
    "handle": "skymeatball",
