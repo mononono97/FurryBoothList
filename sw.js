@@ -4,7 +4,7 @@
 // 또 페이지가 보내준 이미지 목록(precache-images 메시지, 부스컷 썸네일·프로필 사진)을 백그라운드에서 미리 받아 두어서,
 // 처음 접속한 뒤에는 보지 않은 부스의 사진도 오프라인에서 보이게 함.
 // 이미지를 같은 파일명으로 교체했을 때 바로 반영되게 하려면 CACHE_VERSION 을 올리면 됨.
-const CACHE_VERSION = "v5";
+const CACHE_VERSION = "v6";
 const CACHE_NAME = `furstclass-cache-${CACHE_VERSION}`;
 const SHELL_URLS = ["./", "./index.html", "./favicon.png"];
 // 저장해 둔 페이지가 있을 때 네트워크를 기다리는 최대 시간(이 시간이 지나면 저장해 둔 페이지로 먼저 띄움)
