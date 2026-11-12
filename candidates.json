@@ -1,6 +1,92 @@
 {
- "updatedAt": "2026-11-12T07:26:03+00:00",
+ "updatedAt": "2026-11-12T08:27:01+00:00",
  "posts": [
+  {
+   "id": "2120788470637740264",
+   "handle": "Neilos0526",
+   "booths": [
+    "B14"
+   ],
+   "boothNames": [
+    "버츄얼 렌탈 남편"
+   ],
+   "created": "2026-11-12T07:59:08+00:00",
+   "score": 6,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약",
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-12T08:22:58+00:00"
+  },
+  {
+   "id": "2120788270816845874",
+   "handle": "nanimonaitto",
+   "booths": [
+    "A15"
+   ],
+   "boothNames": [
+    "PPP2"
+   ],
+   "created": "2026-11-12T07:58:20+00:00",
+   "score": 4,
+   "sensitive": false,
+   "quoted": {
+    "id": "2120787177789669583",
+    "handle": "hachi_duchi",
+    "sensitive": false
+   },
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "행사·부스"
+   ],
+   "foundAt": "2026-11-12T08:22:51+00:00"
+  },
+  {
+   "id": "2120787177789669583",
+   "handle": "hachi_duchi",
+   "booths": [
+    "A14"
+   ],
+   "boothNames": [
+    "초건전회지연구회"
+   ],
+   "created": "2026-11-12T07:54:00+00:00",
+   "score": 5,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-12T08:20:03+00:00"
+  },
+  {
+   "id": "2120779192887591361",
+   "handle": "GTDignified",
+   "booths": [
+    "B17"
+   ],
+   "boothNames": [
+    "STUDIO雄虎凛"
+   ],
+   "created": "2026-11-12T07:22:16+00:00",
+   "score": 3,
+   "sensitive": false,
+   "quoted": {
+    "id": "2107459575687643341",
+    "handle": "GTDignified",
+    "sensitive": true
+   },
+   "reasons": [
+    "신간"
+   ],
+   "foundAt": "2026-11-12T08:19:57+00:00"
+  },
   {
    "id": "2120773702044520824",
    "handle": "100symbol",
