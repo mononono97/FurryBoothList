@@ -1,6 +1,26 @@
 {
- "updatedAt": "2026-11-11T16:26:51+00:00",
+ "updatedAt": "2026-11-12T02:29:54+00:00",
  "posts": [
+  {
+   "id": "2120693059562385700",
+   "handle": "bighornsheeppic",
+   "booths": [
+    "C06"
+   ],
+   "boothNames": [
+    "스튜디오 엘레지"
+   ],
+   "created": "2026-11-12T01:40:00+00:00",
+   "score": 7,
+   "sensitive": false,
+   "reasons": [
+    "신간",
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-12T02:18:26+00:00"
+  },
   {
    "id": "2120539787291660776",
    "handle": "nanimonaitto",
