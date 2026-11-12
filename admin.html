@@ -228,6 +228,7 @@ const FieldValue = firebase.firestore.FieldValue;
 const OFFICIAL_HANDLE = "FURSTCLASS_KR";
 
 let booths = [];
+let boothIdRenames = {};   // index.html 의 BOOTH_ID_RENAMES (예전 부스 번호 → 새 번호)
 let candidates = [];          // 상품 글 후보
 let officialCandidates = [];  // 행사 안내 글 후보
 let decisions = { approved: {}, excluded: {}, official: {}, officialExcluded: {} };
@@ -263,14 +264,20 @@ function loadBooths(){
   return fetch("index.html", { cache: "no-cache" }).then(r => r.text()).then(html => {
     const m = html.match(/^const BOOTHS = (.*);$/m);
     booths = m ? JSON.parse(m[1]) : [];
+    // 번호가 바뀐 부스: 예전 번호 → 새 번호 (index.html 의 BOOTH_ID_RENAMES 줄, 2026-11-12~)
+    const r = html.match(/^const BOOTH_ID_RENAMES = (.*);$/m);
+    boothIdRenames = r ? JSON.parse(r[1]) : {};
   });
 }
+const renamedBoothId = id => boothIdRenames[id] || id;
 function loadCandidates(){
   return fetch(`${CANDIDATES_URL}?t=${Date.now()}`, { cache: "no-store" })
     .then(r => r.ok ? r.json() : { posts: [] })
     .then(data => {
       candidates = data.posts || [];
       officialCandidates = data.official || [];
+      // 수집기가 예전 부스 번호로 찾아 둔 후보도 새 번호로 보여줌
+      candidates.forEach(c => { if(Array.isArray(c.booths)) c.booths = c.booths.map(renamedBoothId); });
     });
 }
 function loadDecisions(){
@@ -281,11 +288,27 @@ function loadDecisions(){
       official: d.official || {}, officialExcluded: d.officialExcluded || {},
     };
     decisionsReadable = true;
-    return cleanupStoredContent().then(() => { backfillQuoted(); });
+    return cleanupStoredContent().then(renameStoredBooths).then(() => { backfillQuoted(); });
   }).catch(err => {
     // 규칙을 아직 넣지 않았으면 읽기도 막힘. 후보 목록은 그래도 보여줌
     if(!err || err.code !== "permission-denied") throw err;
     decisionsReadable = false;
+  });
+}
+/* 부스 번호가 바뀌면(BOOTH_ID_RENAMES, 예: 2026-11-12 A14→C29, A15→C30) 반영해 둔 글의 부스 번호를
+   운영자가 이 화면을 열 때 한 번 새 번호로 고쳐 저장함. 사이트는 고치기 전에도 새 번호로 바꿔 보여줌 */
+function renameStoredBooths(){
+  const patch = {};
+  Object.keys(decisions.approved).forEach(id => {
+    const entry = decisions.approved[id] || {};
+    const to = boothIdRenames[entry.booth];
+    if(!to) return;
+    entry.booth = to;
+    patch[id] = { booth: to };
+  });
+  if(!Object.keys(patch).length) return Promise.resolve();
+  return decisionsRef.set({ approved: patch }, { merge: true }).catch(err => {
+    console.warn("부스 번호 고치기 실패", err);
   });
 }
 /* 2026-10-05 이전에 반영한 글에는 본문·이미지 주소(text, images)와 quote 가 함께 저장돼 있었음.
@@ -722,7 +745,8 @@ function refresh(){
   const msg = document.getElementById("listMsg");
   msg.className = "msg";
   msg.textContent = "불러오는 중…";
-  return Promise.all([loadCandidates(), loadDecisions()]).then(() => {
+  // 부스 번호 바뀐 목록(boothIdRenames)을 먼저 읽어야 후보·반영 글 번호를 새 번호로 고칠 수 있음
+  return boothsReady.then(() => Promise.all([loadCandidates(), loadDecisions()])).then(() => {
     msg.textContent = !decisionsReadable
       ? "Firebase 규칙이 아직 없어 반영 기록을 읽지 못했습니다. 위쪽 \"반영 권한 설정 방법\"을 먼저 해 주세요."
       : candidates.length || officialCandidates.length ? "" : "아직 모인 후보가 없습니다. 후보는 1시간마다 자동으로 모입니다.";
