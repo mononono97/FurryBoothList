@@ -1,6 +1,44 @@
 {
- "updatedAt": "2026-11-12T15:23:17+00:00",
+ "updatedAt": "2026-11-12T16:23:16+00:00",
  "posts": [
+  {
+   "id": "2120906218772500561",
+   "handle": "connecting_Y",
+   "booths": [
+    "B09"
+   ],
+   "boothNames": [
+    "청록용"
+   ],
+   "created": "2026-11-12T15:47:01+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "품목",
+    "행사·부스"
+   ],
+   "foundAt": "2026-11-12T16:18:32+00:00"
+  },
+  {
+   "id": "2120900821110178177",
+   "handle": "100symbol",
+   "booths": [
+    "C27"
+   ],
+   "boothNames": [
+    "Mr. furshowtime"
+   ],
+   "created": "2026-11-12T15:25:34+00:00",
+   "score": 5,
+   "sensitive": true,
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-12T16:17:26+00:00"
+  },
   {
    "id": "2120879320604570084",
    "handle": "tappe124",
