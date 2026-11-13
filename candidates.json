@@ -1,6 +1,25 @@
 {
- "updatedAt": "2026-11-13T06:28:30+00:00",
+ "updatedAt": "2026-11-13T07:28:28+00:00",
  "posts": [
+  {
+   "id": "2121128977855291751",
+   "handle": "largo_furry",
+   "booths": [
+    "A18"
+   ],
+   "boothNames": [
+    "BAD PAW Co."
+   ],
+   "created": "2026-11-13T06:32:11+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-11-13T07:23:04+00:00"
+  },
   {
    "id": "2121125488303464926",
    "handle": "ToriS6526",
