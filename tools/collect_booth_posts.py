@@ -96,6 +96,70 @@ KEYWORD_RES = [(re.compile(p, re.I), s, label) for p, s, label in KEYWORDS]
 FORM_LINK_RE = re.compile(r"witchform\.com|forms\.gle|docs\.google\.com/forms", re.I)
 FORM_LINK_POINTS = 2
 
+# ---------- 선입금 추천값 (2026-11-15 사용자 요청) ----------
+# 선입금 글로 보이는 후보(통판·선입금 키워드 또는 주문서 링크)는 글에서 선입금 링크와 기간을 뽑아
+# candidates.json 의 preorderHint {link, start, end} 로 남김. 관리 화면이 이 값을 미리 채우고 운영자가 확인해 저장함.
+# 본문은 저장하지 않고 링크 주소와 날짜만 남김.
+PREORDER_REASONS = ("통판·선입금·예약", "통판·예약", "주문서 링크")
+ORDER_LINK_RE = re.compile(
+    r"witchform\.com|forms\.gle|docs\.google\.com/forms|form\.naver\.com|naver\.me|smartstore\.naver\.com|"
+    r"postype\.com|booth\.pm|tumblbug\.com|formtory|typeform\.com|tally\.so|linktr\.ee|lit\.link|potofu\.me", re.I)
+PREORDER_YEAR = 2026
+# 행사 날짜(11/28~29)는 "행사 당일 수령" 같은 말로 자주 나와서 선입금 기간으로 보지 않음
+EVENT_START = (11, 28)
+_MD = r"(\d{1,2})\s*(?:[/.]|월\s*|月)\s*(\d{1,2})\s*(?:일|日)?"
+RANGE_RE = re.compile(_MD + r"[^0-9~〜～\n]{0,14}[~〜～\-–]\s*(?:" + r"(\d{1,2})\s*(?:[/.]|월\s*|月)\s*)?(\d{1,2})\s*(?:일|日)?")
+DATE_RE = re.compile(_MD)
+END_AFTER_RE = re.compile(r"^[^0-9\n]{0,16}(까지|마감|締切|締め切り|〆|まで|until|deadline)", re.I)
+END_BEFORE_RE = re.compile(r"(마감|締切|締め切り|〆切|deadline|until|~|〜|～)\s*[:：]?\s*$", re.I)
+START_AFTER_RE = re.compile(r"^[^0-9\n]{0,16}(부터|시작|오픈|open|から|開始)", re.I)
+START_BEFORE_RE = re.compile(r"(시작|오픈|open|開始)\s*[:：]?\s*$", re.I)
+
+
+def _ymd(month, day):
+    try:
+        m, d = int(month), int(day)
+        if not (9 <= m <= 12 and 1 <= d <= 31) or (m, d) >= EVENT_START:
+            return ""
+        return datetime(PREORDER_YEAR, m, d).strftime("%Y-%m-%d")
+    except (TypeError, ValueError):
+        return ""
+
+
+def preorder_hint(text, links):
+    """글에서 선입금 링크와 기간(YYYY-MM-DD)을 추정. 못 찾은 값은 빈 문자열. 운영자가 확인하는 추천값일 뿐임."""
+    link = next((u for u in links.split() if u.lower().startswith("http") and ORDER_LINK_RE.search(u)), "")
+    text = re.sub(r"https?://\S+", " ", text)
+    text = re.sub(r"\d{1,2}\s*:\s*\d{2}", " ", text)   # 23:59 같은 시각이 날짜로 잡히지 않게
+    start = end = ""
+    m = RANGE_RE.search(text)
+    if m:
+        s_ = _ymd(m.group(1), m.group(2))
+        e_ = _ymd(m.group(3) or m.group(1), m.group(4))
+        if s_ and e_ and s_ <= e_:
+            start, end = s_, e_
+    if not end:
+        for m in DATE_RE.finditer(text):
+            ymd = _ymd(m.group(1), m.group(2))
+            if not ymd:
+                continue
+            before, after = text[max(0, m.start() - 12):m.start()], text[m.end():m.end() + 20]
+            if not end and (END_AFTER_RE.search(after) or END_BEFORE_RE.search(before)):
+                end = ymd
+            elif not start and (START_AFTER_RE.search(after) or START_BEFORE_RE.search(before)):
+                start = ymd
+        if start and end and start > end:
+            start = ""
+    return {"link": link, "start": start, "end": end}
+
+
+def is_preorder_candidate(reasons):
+    return any(r in PREORDER_REASONS for r in reasons or [])
+
+
+# 예전 후보(이 기능 전에 모은 글)의 추천값을 전체 실행 한 번에 이만큼씩 채움
+PREORDER_BACKFILL_MAX = 80
+
 
 def load_booths():
     html = HTML_PATH.read_text(encoding="utf-8")
@@ -406,6 +470,7 @@ def collect(feed_dir, dry_run=False, quick=False):
                 "sensitive": bool(p.get("possibly_sensitive")),
                 **quoted_ref(p),
                 "reasons": reasons,
+                **({"preorderHint": preorder_hint(text, post_links(p))} if is_preorder_candidate(reasons) else {}),
                 "foundAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             })
         time.sleep(REQUEST_GAP_SECONDS)
@@ -431,6 +496,7 @@ def collect(feed_dir, dry_run=False, quick=False):
             rt_marked += 1
     added += rt_added
     edited = apply_edits(data, added, edits, now, quick, failed)
+    hinted = [] if quick else backfill_preorder_hints(data["posts"] + added, failed)
 
     print(f"{'공식·RT 계정만 확인' if quick else f'계정 {len(handles)}개 확인'}, 새 후보 {len(added)}개(RT 계정 {len(rt_added)}개), 공식 글 새 후보 {len(official_added)}개, 실패 {len(failed)}개")
     for c in added:
@@ -451,9 +517,11 @@ def collect(feed_dir, dry_run=False, quick=False):
         print(f"  2026-09-01(KST) 이전 글 후보 {removed_old}개 정리")
     if stripped:
         print(f"  후보 {stripped}개에서 본문·이미지 지움")
+    if hinted:
+        print(f"  선입금 추천값 채움 {len(hinted)}개 (링크 {sum(1 for c in hinted if c['preorderHint']['link'])}, 마감일 {sum(1 for c in hinted if c['preorderHint']['end'])})")
     for old, new, c in edited:
         print(f"  ~ 수정된 글: {c['booths'] or '부스 미지정'} @{c['handle']} 예전 판 {old} → 최신 판 https://x.com/{c['handle']}/status/{new}")
-    if dry_run or not (added or official_added or removed or removed_old or stripped or rt_marked or edited):
+    if dry_run or not (added or official_added or removed or removed_old or stripped or rt_marked or edited or hinted):
         return  # 새 후보가 없으면 파일을 그대로 둬서 쓸데없는 커밋이 생기지 않게 함
 
     # 최신 글이 위로 오도록 id(시간순으로 커지는 숫자) 기준 내림차순
@@ -549,6 +617,32 @@ def apply_edits(data, added, edits, now, quick, failed):
     return changed
 
 
+def backfill_preorder_hints(posts, failed):
+    """선입금 글로 보이는데 추천값(preorderHint)이 아직 없는 후보의 글을 다시 받아 추천값을 채움.
+    RT 계정으로 들어온 후보는 키워드 판단을 안 해서 여기서 키워드로 한 번 봄. 채운 후보 목록을 돌려줌."""
+    done = []
+    todo = [c for c in posts if "preorderHint" not in c and (is_preorder_candidate(c.get("reasons")) or c.get("via") == RT_HANDLE)]
+    for c in todo[:PREORDER_BACKFILL_MAX]:
+        try:
+            req = urllib.request.Request(f"https://api.fxtwitter.com/2/status/{c['id']}", headers={"User-Agent": USER_AGENT})
+            with urllib.request.urlopen(req, timeout=20) as res:
+                p = json.load(res).get("status") or {}
+        except Exception as e:
+            failed.append(f"선입금 추천값 {c['id']}: {e}")
+            continue
+        finally:
+            time.sleep(REQUEST_GAP_SECONDS)
+        text, links = post_text(p), post_links(p)
+        if not is_preorder_candidate(c.get("reasons")):
+            _, reasons = judge(text, post_images(p), links)
+            if not is_preorder_candidate(reasons):
+                c["preorderHint"] = None   # RT 글인데 선입금 글이 아님. 다시 받지 않게 표시만
+                continue
+        c["preorderHint"] = preorder_hint(text, links)
+        done.append(c)
+    return done
+
+
 def check_posts(feed_dir, refs):
     """글 주소·id 마다 수집기가 그 글을 어떻게 보는지 출력. "이 글이 왜 안 들어왔나" 제보 확인용 (2026-11-03).
     글 본문은 공개 로그에 남기지 않고 판단에 쓰인 값만 보여줌."""
@@ -577,6 +671,8 @@ def check_posts(feed_dir, refs):
         print(f"  작성 {created_at(p).isoformat()}, 답글 대상: {reply_target(p) or '없음'}, 인용 글: {bool(p.get('quote'))}, "
               f"민감한 글 표시: {bool(p.get('possibly_sensitive'))}")
         print(f"  키워드 점수 {score} (기준 {MIN_SCORE}) {reasons}, 이미지 {len(post_images(p))}장")
+        if is_preorder_candidate(reasons):
+            print(f"  선입금 추천값: {preorder_hint(post_text(p), post_links(p))}")
         try:
             latest, versions = edit_info(pid)
             print(f"  X 수정 기록: {versions or '없음'}"

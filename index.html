@@ -1399,6 +1399,40 @@
   .booth-posts{ margin:10px 0 12px; }
   .booth .preorder-line{ font-size:11px; color:var(--text-2); font-weight:600; margin-top:2px; }
   .booth .preorder-line.received{ color:var(--preorder-done); }
+  /* 선입금 진행 중·끝난 부스 탭 카드: 선입금 기간과 내 선입금 여부 (2026-11-15) */
+  .booth .preorder-period{ font-size:11px; font-weight:700; color:var(--text-2); margin-top:2px; }
+  .booth .preorder-period.soon{ color:#c0504d; }
+  .booth .preorder-period.closed{ font-weight:600; opacity:.8; }
+  .booth .preorder-mine{ font-size:10.5px; color:var(--preorder-done); font-weight:600; margin-top:1px; }
+  /* 부스 상세의 "작가 선입금 안내": 글마다 기간·선입금 링크·글 보기 */
+  .preorder-notice{
+    margin:10px 0 2px;
+    padding:10px 12px;
+    border:1px solid var(--panel-line);
+    border-radius:8px;
+    background:var(--panel-field);
+    color:var(--on-panel);
+    font-size:12px;
+  }
+  .preorder-notice-title{ font-weight:700; font-size:12.5px; margin-bottom:4px; }
+  .preorder-notice-item{ padding:6px 0; }
+  .preorder-notice-item + .preorder-notice-item{ border-top:1px dashed var(--panel-line); }
+  .preorder-notice-period{ font-weight:600; }
+  .preorder-notice-period .tag{
+    display:inline-block; font-size:10.5px; font-weight:700; padding:0 7px; margin-right:6px;
+    border-radius:999px; background:#2f8f8a; color:#eafcfb;
+  }
+  .preorder-notice-period .tag.closed{ background:var(--panel-line); color:var(--on-panel); }
+  .preorder-notice-period .tag.upcoming{ background:#b07a1f; color:#fff8ea; }
+  .preorder-notice-links{ display:flex; gap:6px; flex-wrap:wrap; margin-top:5px; }
+  .preorder-notice-links a{
+    font-size:11.5px; font-weight:600; text-decoration:none; color:var(--on-panel);
+    border:1px solid var(--panel-line); border-radius:999px; padding:3px 10px; background:transparent;
+  }
+  .preorder-notice-links a.primary{ background:#2f8f8a; border-color:#2f8f8a; color:#eafcfb; }
+  .booth-post-preorder-tag{
+    font-size:10.5px; font-weight:700; padding:0 7px; border-radius:999px; background:#2f8f8a; color:#eafcfb; margin-right:auto;
+  }
   .booth .updated-on{ font-size:11px; color:var(--accent); font-weight:600; margin-top:2px; white-space:nowrap; }
   .booth .new-badge{
     display:inline-block; margin-right:4px; padding:0 5px; border-radius:4px;
@@ -2120,6 +2154,13 @@
       <button type="button" data-filter="mine"></button>
     </div>
   </div>
+  <div class="notes-extra" id="preorderExtra" style="display:none;">
+    <div class="visit-filter" id="preorderFilter">
+      <button type="button" data-filter="mine"></button>
+      <button type="button" data-filter="open"></button>
+      <button type="button" data-filter="closed"></button>
+    </div>
+  </div>
   <div class="grid" id="grid"></div>
   <div class="map-grid" id="mapGrid" style="display:none;"></div>
   <div class="info-view" id="infoView" style="display:none;"></div>
@@ -2221,6 +2262,16 @@ const NOTES_FILTER_KEY = `${STORAGE_PREFIX}-notes-filter`;
 try {
   const f = localStorage.getItem(NOTES_FILTER_KEY);
   if(["all", "planned", "visited", "memo"].includes(f)) notesVisitFilter = f;
+} catch {}
+
+// 선입금 탭 구역: "mine"(내 선입금 정보) | "open"(선입금 진행 중) | "closed"(선입금 끝남) (2026-11-15 사용자 요청)
+// 고른 구역을 기억함. 처음이면 내 선입금이 있을 때 "내 선입금 정보", 없으면 "선입금 진행 중"으로 시작(renderGrid 에서 정함)
+const PREORDER_FILTER_KEY = `${STORAGE_PREFIX}-preorder-filter`;
+let preorderFilter = null;
+let preorderNotices = {};   // renderGrid 에서 boothPreorderNotices() 로 채움
+try {
+  const f = localStorage.getItem(PREORDER_FILTER_KEY);
+  if(["mine", "open", "closed"].includes(f)) preorderFilter = f;
 } catch {}
 
 // 검색: 부스명·부스 번호·부스원 이름·X 아이디에 검색어가 들어 있으면 맞음 (목록과 배치도 강조에 같이 씀)
@@ -2365,6 +2416,28 @@ const I18N = {
     preorderItemRemoveConfirm: "선입금 {n}에 적은 정보(날짜·플랫폼·금액·입금자명·메모·수령 여부)를 지울까요?",
     preorderItemsSummary: "선입금 {n}건 · 수령 완료 {done}건 · 합계 {amount}",
     preorderItemsProgress: "{done}/{n}건",
+    preorderFilterMine: "💳 내 선입금 정보 ({n})",
+    preorderFilterOpen: "🟢 선입금 진행 중 ({n})",
+    preorderFilterClosed: "⚪ 선입금 끝남 ({n})",
+    preorderOpenCount: "선입금을 받는 중이거나 곧 받는 부스 {n}개 · 마감이 가까운 순",
+    preorderClosedCount: "선입금이 끝난 부스 {n}개",
+    emptyPreorderOpen: "지금 선입금을 받는 부스가 없어요. 작가가 선입금 글을 올리면 여기에 모여요.",
+    emptyPreorderClosed: "선입금이 끝난 부스가 아직 없어요.",
+    preorderPeriodUntil: "~{date} 마감",
+    preorderPeriodDday: "D-{n}",
+    preorderPeriodToday: "오늘 마감",
+    preorderPeriodFrom: "{date} 시작",
+    preorderPeriodNone: "기간 정보 없음",
+    preorderPeriodClosed: "{date} 마감됨",
+    preorderStatusOpen: "진행 중",
+    preorderStatusUpcoming: "예정",
+    preorderStatusClosed: "끝남",
+    preorderMineTag: "💳 내 선입금 기록 있음",
+    preorderNoticeTitle: "📢 작가 선입금 안내",
+    preorderNoticeLink: "🔗 선입금 링크 열기",
+    preorderNoticePost: "📄 선입금 글 보기",
+    preorderNoticeHint: "기간은 운영자가 작가 글을 보고 적은 값이에요. 정확한 내용은 작가 글을 확인해 주세요.",
+    preorderPostTag: "💳 선입금 글",
     mapBtn: "🗺️ 배치도",
     mapHint: "부스를 눌러서 메모/부스 정보를 확인하세요 (공식 일요일 부스 안내 기준)",
     mapTitle: "Furst Class 부스 배치도",
@@ -2559,6 +2632,28 @@ const I18N = {
     preorderItemRemoveConfirm: "Delete the details of pre-order {n} (date, platform, amount, payer name, notes, received)?",
     preorderItemsSummary: "{n} pre-orders · {done} received · Total {amount}",
     preorderItemsProgress: "{done}/{n}",
+    preorderFilterMine: "💳 My pre-orders ({n})",
+    preorderFilterOpen: "🟢 Open now ({n})",
+    preorderFilterClosed: "⚪ Closed ({n})",
+    preorderOpenCount: "{n} booths taking pre-orders now or soon · closing soonest first",
+    preorderClosedCount: "{n} booths with closed pre-orders",
+    emptyPreorderOpen: "No booths are taking pre-orders right now. Artists' pre-order posts show up here.",
+    emptyPreorderClosed: "No booths have closed pre-orders yet.",
+    preorderPeriodUntil: "Closes {date}",
+    preorderPeriodDday: "D-{n}",
+    preorderPeriodToday: "Closes today",
+    preorderPeriodFrom: "Opens {date}",
+    preorderPeriodNone: "Dates not listed",
+    preorderPeriodClosed: "Closed {date}",
+    preorderStatusOpen: "Open",
+    preorderStatusUpcoming: "Soon",
+    preorderStatusClosed: "Closed",
+    preorderMineTag: "💳 You have a pre-order here",
+    preorderNoticeTitle: "📢 Artist pre-order info",
+    preorderNoticeLink: "🔗 Open pre-order link",
+    preorderNoticePost: "📄 View pre-order post",
+    preorderNoticeHint: "Dates were entered by the site operator from the artist's post. Please check the post for details.",
+    preorderPostTag: "💳 Pre-order post",
     mapBtn: "🗺️ Map",
     mapHint: "Click a booth to see notes/booth info (based on the official Sunday booth guide)",
     mapTitle: "Furst Class booth map",
@@ -2753,6 +2848,28 @@ const I18N = {
     preorderItemRemoveConfirm: "事前通販 {n} の情報（入金日・プラットフォーム・金額・入金者名・メモ・受取状態）を削除しますか？",
     preorderItemsSummary: "事前通販 {n}件 · 受取済み {done}件 · 合計 {amount}",
     preorderItemsProgress: "{done}/{n}件",
+    preorderFilterMine: "💳 自分の事前通販 ({n})",
+    preorderFilterOpen: "🟢 受付中 ({n})",
+    preorderFilterClosed: "⚪ 受付終了 ({n})",
+    preorderOpenCount: "事前通販を受付中・受付予定のブース {n}件 · 締切が近い順",
+    preorderClosedCount: "事前通販の受付が終わったブース {n}件",
+    emptyPreorderOpen: "今、事前通販を受け付けているブースはありません。作家さんの事前通販の投稿がここに集まります。",
+    emptyPreorderClosed: "受付が終わったブースはまだありません。",
+    preorderPeriodUntil: "{date} 締切",
+    preorderPeriodDday: "あと{n}日",
+    preorderPeriodToday: "本日締切",
+    preorderPeriodFrom: "{date} 開始",
+    preorderPeriodNone: "期間の記載なし",
+    preorderPeriodClosed: "{date} 締切済み",
+    preorderStatusOpen: "受付中",
+    preorderStatusUpcoming: "予定",
+    preorderStatusClosed: "終了",
+    preorderMineTag: "💳 自分の記録あり",
+    preorderNoticeTitle: "📢 作家さんの事前通販案内",
+    preorderNoticeLink: "🔗 事前通販のリンクを開く",
+    preorderNoticePost: "📄 事前通販の投稿を見る",
+    preorderNoticeHint: "期間は運営者が作家さんの投稿を見て入力したものです。詳しくは投稿をご確認ください。",
+    preorderPostTag: "💳 事前通販の投稿",
     mapBtn: "🗺️ 配置図",
     mapHint: "ブースを押してメモ・ブース情報を確認してください（公式の日曜日ブース案内に基づく）",
     mapTitle: "Furst Class ブース配置図",
@@ -4318,7 +4435,7 @@ function loadBoothPostsDoc(){
         localStorage.setItem(BOOTH_POSTS_FETCHED_AT_KEY, String(Date.now()));
       } catch {}
       approvedBoothPosts = approved;
-      if(currentRow === "UPDATES") renderGrid();
+      if(currentRow === "UPDATES" || currentRow === "PREORDER") renderGrid();
       else renderNav();   // 최근 갱신 탭 버튼의 새 글 점
       return { approved, official };
     })
@@ -4329,6 +4446,112 @@ function loadBoothPostsDoc(){
   return boothPostsDocPromise;
 }
 function loadApprovedBoothPosts(){ return loadBoothPostsDoc().then(d => d.approved); }
+
+/* ---------- 작가 선입금 안내 (2026-11-15) ----------
+   운영자가 관리 화면에서 반영한 글 중 "선입금 글"로 표시한 글은 approved.{글id}.preorder 에
+   { link: "https://...", start: "2026-11-01", end: "2026-11-20" } 가 있음(셋 다 없어도 됨).
+   수집기가 글에서 주문서 링크·기간을 뽑아 추천하고, 운영자가 확인해 저장함.
+   글마다 오늘(한국 날짜)과 비교해 진행 중 / 예정 / 끝남을 정하고, 부스는 글 하나라도 진행 중·예정이면 "진행 중".
+------------------------------------------------- */
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+function kstToday(){
+  return new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+}
+// 저장된 preorder 값을 검사해 { link, start, end } 로. 선입금 글이 아니면 null.
+// 링크는 http(s) 주소만 씀(다른 형식은 버림)
+function preorderMeta(entry){
+  const p = entry && entry.preorder;
+  if(!p) return null;
+  const o = typeof p === "object" ? p : {};
+  const link = typeof o.link === "string" && /^https?:\/\/[^\s"<>]+$/i.test(o.link.trim()) ? o.link.trim() : "";
+  const start = typeof o.start === "string" && DATE_RE.test(o.start) ? o.start : "";
+  const end = typeof o.end === "string" && DATE_RE.test(o.end) ? o.end : "";
+  return { link, start, end };
+}
+function preorderPostStatus(meta, today){
+  if(meta.end && meta.end < today) return "closed";
+  if(meta.start && meta.start > today) return "upcoming";
+  return "open";
+}
+// 부스 id → { status: "open"|"closed", posts: [{ id, handle, link, start, end, status }], main }
+// main: 카드에 보여줄 대표 글(진행 중이면 마감이 가장 가까운 글, 예정만 있으면 가장 먼저 시작하는 글, 끝났으면 가장 늦게 끝난 글)
+function boothPreorderNotices(){
+  const today = kstToday();
+  const byBooth = {};
+  Object.keys(approvedBoothPosts).sort(newestPostFirst).forEach(id => {
+    const entry = approvedBoothPosts[id];
+    const meta = entry && entry.booth ? preorderMeta(entry) : null;
+    if(!meta) return;
+    (byBooth[entry.booth] = byBooth[entry.booth] || []).push({ id, handle: entry.handle || "", ...meta, status: preorderPostStatus(meta, today) });
+  });
+  const result = {};
+  Object.keys(byBooth).forEach(boothId => {
+    const posts = byBooth[boothId];
+    const open = posts.filter(p => p.status === "open").sort((a, b) => (a.end || "9999") < (b.end || "9999") ? -1 : 1);
+    const upcoming = posts.filter(p => p.status === "upcoming").sort((a, b) => a.start < b.start ? -1 : 1);
+    const closed = posts.filter(p => p.status === "closed").sort((a, b) => a.end < b.end ? 1 : -1);
+    const main = open[0] || upcoming[0] || closed[0];
+    result[boothId] = { status: open.length || upcoming.length ? "open" : "closed", posts: [...open, ...upcoming, ...closed], main };
+  });
+  return result;
+}
+function shortDate(ymd){
+  const [, m, d] = ymd.split("-").map(Number);
+  return `${m}/${d}`;
+}
+function daysBetween(fromYmd, toYmd){
+  return Math.round((Date.parse(toYmd + "T00:00:00Z") - Date.parse(fromYmd + "T00:00:00Z")) / 86400000);
+}
+// 기간 한 줄: "~11/20 마감 · D-5", "오늘 마감", "11/22 시작", "11/10 마감됨", "기간 정보 없음"
+function preorderPeriodText(p, withDday = true){
+  const today = kstToday();
+  if(p.status === "closed") return t("preorderPeriodClosed", { date: shortDate(p.end) });
+  if(p.status === "upcoming"){
+    return t("preorderPeriodFrom", { date: shortDate(p.start) }) + (p.end ? ` · ${t("preorderPeriodUntil", { date: shortDate(p.end) })}` : "");
+  }
+  if(!p.end) return p.start ? `${shortDate(p.start)} ~ · ${t("preorderPeriodNone")}` : t("preorderPeriodNone");
+  if(p.end === today) return t("preorderPeriodToday");
+  const left = daysBetween(today, p.end);
+  return t("preorderPeriodUntil", { date: shortDate(p.end) }) + (withDday ? ` · ${t("preorderPeriodDday", { n: left })}` : "");
+}
+
+// 부스 상세의 "작가 선입금 안내" 칸. 선입금 글이 없는 부스면 아무것도 붙이지 않음.
+// 반영 목록을 아직 못 받았으면 받은 뒤에 채움
+function appendPreorderNotice(container, booth, before){
+  const box = document.createElement("div");
+  box.className = "preorder-notice";
+  box.hidden = true;
+  if(before && before.parentNode === container) container.insertBefore(box, before);
+  else container.appendChild(box);
+  const fill = () => {
+    const info = boothPreorderNotices()[booth.id];
+    if(!info || !box.isConnected) return;
+    box.hidden = false;
+    box.innerHTML = `<div class="preorder-notice-title">${escapeHtml(t("preorderNoticeTitle"))}</div>`;
+    info.posts.forEach(p => {
+      const item = document.createElement("div");
+      item.className = "preorder-notice-item";
+      const statusKey = p.status === "closed" ? "preorderStatusClosed" : p.status === "upcoming" ? "preorderStatusUpcoming" : "preorderStatusOpen";
+      const postUrl = `https://x.com/${encodeURIComponent(p.handle || "i")}/status/${encodeURIComponent(p.id)}`;
+      const range = p.start && p.end ? ` <span style="font-weight:400;opacity:.8">(${escapeHtml(shortDate(p.start))} ~ ${escapeHtml(shortDate(p.end))})</span>` : "";
+      item.innerHTML = `
+        <div class="preorder-notice-period"><span class="tag ${p.status === "open" ? "" : p.status}">${escapeHtml(t(statusKey))}</span>${escapeHtml(preorderPeriodText(p))}${range}</div>
+        <div class="preorder-notice-links">
+          ${p.link && p.status !== "closed" ? `<a class="primary" href="${escapeHtml(p.link)}" target="_blank" rel="noopener">${escapeHtml(t("preorderNoticeLink"))}</a>` : ""}
+          ${p.link && p.status === "closed" ? `<a href="${escapeHtml(p.link)}" target="_blank" rel="noopener">${escapeHtml(t("preorderNoticeLink"))}</a>` : ""}
+          <a href="${escapeHtml(postUrl)}" target="_blank" rel="noopener">${escapeHtml(t("preorderNoticePost"))}</a>
+        </div>`;
+      box.appendChild(item);
+    });
+    const hint = document.createElement("div");
+    hint.style.cssText = "font-size:10.5px;opacity:.75;margin-top:4px;";
+    hint.textContent = t("preorderNoticeHint");
+    box.appendChild(hint);
+  };
+  fill();
+  loadApprovedBoothPosts().then(() => { if(box.hidden) fill(); });
+  return box;
+}
 
 // X 임베드 대신 보여주는 링크 카드. 민감한 글(임베드가 막힘)과 임베드가 안 되는 글(지워졌거나 X 스크립트가 막힘)에 씀.
 // 글 본문·이미지는 X 밖에 사본을 두지 않으려고 넣지 않음. 작성 날짜는 글 id 에서 계산함(저장한 값 아님)
@@ -4437,6 +4660,8 @@ function buildBoothPosts(booth, onShown){
     const ids = Object.keys(approved)
       .filter(id => approved[id] && approved[id].booth === booth.id)
       .sort(newestPostFirst);
+    // 선입금 탭에서 열면 선입금 글을 맨 위로 (나머지는 최신순 그대로, 2026-11-15)
+    if(currentRow === "PREORDER") ids.sort((a, b) => !!preorderMeta(approved[b]) - !!preorderMeta(approved[a]));
     if(!ids.length || !box.isConnected) return;
     box.hidden = false;
     if(onShown) onShown();
@@ -4475,6 +4700,13 @@ function buildBoothPosts(booth, onShown){
         if(!ids.some(isPostHidden)) showAll = false;   // 숨긴 글이 다 복구되면 펼침도 끝냄
         update();
       });
+      // 운영자가 선입금 글로 표시한 글에는 "💳 선입금 글" 표시 (2026-11-15)
+      if(preorderMeta(approved[id])){
+        const tag = document.createElement("span");
+        tag.className = "booth-post-preorder-tag";
+        tag.textContent = t("preorderPostTag");
+        bar.appendChild(tag);
+      }
       bar.append(label, btn);
       const slot = document.createElement("div");
       wrap.append(bar, slot);
@@ -4661,6 +4893,7 @@ function renderGrid(){
   // 배치도 위치 찾기 강조는 배치도 탭을 떠나면 끝냄
   if(!isMapView) mapLocateId = null;
   document.getElementById("updatesExtra").style.display = currentRow === "UPDATES" ? "flex" : "none";
+  document.getElementById("preorderExtra").style.display = currentRow === "PREORDER" ? "flex" : "none";
 
   if(isTimetableView){
     document.getElementById("currentLetter").textContent = "🕒";
@@ -4744,7 +4977,29 @@ function renderGrid(){
       btn.classList.toggle("active", btn.dataset.filter === notesVisitFilter);
     });
   } else if(isPreorderView){
-    list = BOOTHS.filter(b => getPreorder(b.id));
+    // 세 구역: 내 선입금 정보(내가 적은 선입금) / 선입금 진행 중 / 선입금 끝남(작가 선입금 글 기준) (2026-11-15)
+    loadApprovedBoothPosts();
+    preorderNotices = boothPreorderNotices();
+    const mine = BOOTHS.filter(b => getPreorder(b.id));
+    const open = BOOTHS.filter(b => preorderNotices[b.id] && preorderNotices[b.id].status === "open");
+    const closed = BOOTHS.filter(b => preorderNotices[b.id] && preorderNotices[b.id].status === "closed");
+    if(!preorderFilter) preorderFilter = mine.length ? "mine" : "open";
+    const counts = { mine: mine.length, open: open.length, closed: closed.length };
+    const labelKeys = { mine: "preorderFilterMine", open: "preorderFilterOpen", closed: "preorderFilterClosed" };
+    document.querySelectorAll("#preorderFilter button").forEach(btn => {
+      btn.textContent = t(labelKeys[btn.dataset.filter], { n: counts[btn.dataset.filter] });
+      btn.classList.toggle("active", btn.dataset.filter === preorderFilter);
+    });
+    if(preorderFilter === "open"){
+      // 마감이 가까운 순(마감일이 없는 글은 뒤로, 예정인 글은 그 뒤)
+      const key = b => { const m = preorderNotices[b.id].main; return m.status === "upcoming" ? "2" + m.start : "1" + (m.end || "9999-99-99"); };
+      list = open.slice().sort((a, b) => key(a) < key(b) ? -1 : key(a) > key(b) ? 1 : 0);
+    } else if(preorderFilter === "closed"){
+      // 최근에 끝난 순
+      list = closed.slice().sort((a, b) => preorderNotices[a.id].main.end < preorderNotices[b.id].main.end ? 1 : -1);
+    } else {
+      list = mine;
+    }
   } else if(isAllView){
     list = BOOTHS;
   } else {
@@ -4765,6 +5020,8 @@ function renderGrid(){
     : isNotesView && notesVisitFilter === "visited" ? t("visitedCount", { n: list.length })
     : isNotesView ? t("notesCount", { n: list.length })
     : isUpdatesView ? t(updatesMineOnly ? "updatesCountMine" : "updatesCount", { n: list.length })
+    : isPreorderView && preorderFilter === "open" ? t("preorderOpenCount", { n: list.length })
+    : isPreorderView && preorderFilter === "closed" ? t("preorderClosedCount", { n: list.length })
     : isPreorderView ? t("preorderCount", {
         n: list.length,
         done: list.filter(b => isPreorderReceived(b.id)).length,
@@ -4777,6 +5034,8 @@ function renderGrid(){
     : isNotesView ? t("emptyNotes")
     : isUpdatesView && updatesMineOnly && !currentQuery ? t("emptyUpdatesMine")
     : isUpdatesView && !currentQuery ? t("emptyUpdates")
+    : isPreorderView && !currentQuery && preorderFilter === "open" ? t("emptyPreorderOpen")
+    : isPreorderView && !currentQuery && preorderFilter === "closed" ? t("emptyPreorderClosed")
     : isPreorderView && !currentQuery ? t("emptyPreorder")
     : t("emptyDefault");
 
@@ -4886,7 +5145,22 @@ function renderGrid(){
       card.appendChild(checkBtn);
     }
 
-    if(isPreorderView){
+    if(isPreorderView && preorderFilter !== "mine"){
+      // 선입금 진행 중·끝남: 대표 글의 기간("~11/20 마감 · D-5")과 내가 적은 선입금이 있는지
+      const main = preorderNotices[booth.id].main;
+      const periodEl = document.createElement("div");
+      const soon = main.status === "open" && main.end && daysBetween(kstToday(), main.end) <= 2;
+      periodEl.className = "preorder-period" + (main.status === "closed" ? " closed" : soon ? " soon" : "");
+      periodEl.textContent = main.status === "upcoming" ? `🗓 ${t("preorderPeriodFrom", { date: shortDate(main.start) })}`
+        : (main.status === "closed" ? "" : "⏰ ") + preorderPeriodText(main);
+      card.appendChild(periodEl);
+      if(getPreorder(booth.id)){
+        const mineEl = document.createElement("div");
+        mineEl.className = "preorder-mine";
+        mineEl.textContent = t("preorderMineTag");
+        card.appendChild(mineEl);
+      }
+    } else if(isPreorderView){
       const items = getPreorderItems(booth.id);
       const done = isPreorderReceived(booth.id);
       const amount = getPreorderAmount(booth.id);
@@ -5661,6 +5935,8 @@ function fillBoothActions(content, booth){
     if(currentRow === "MAP") renderMapView();
   });
   content.appendChild(visitBox);
+  // 작가가 선입금 글을 올린 부스면 방문 버튼 아래에 선입금 기간·링크를 보여줌 (2026-11-15)
+  appendPreorderNotice(content, booth);
 
   const priorityBox = document.createElement("div");
   priorityBox.className = "priority-box";
@@ -5795,6 +6071,7 @@ function fillPreorderActions(content, booth){
     if(currentRow === "MAP") renderMapView();
   };
 
+  appendPreorderNotice(content, booth);
   const box = document.createElement("div");
   box.className = "preorder-box";
   content.appendChild(box);
@@ -6288,6 +6565,14 @@ document.getElementById("visitFilter").addEventListener("click", (e) => {
   if(!btn) return;
   notesVisitFilter = btn.dataset.filter;
   try { localStorage.setItem(NOTES_FILTER_KEY, notesVisitFilter); } catch {}
+  renderGrid();
+});
+document.getElementById("preorderFilter").addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-filter]");
+  if(!btn) return;
+  preorderFilter = btn.dataset.filter;
+  try { localStorage.setItem(PREORDER_FILTER_KEY, preorderFilter); } catch {}
+  closeInlineDetail();
   renderGrid();
 });
 document.getElementById("updatesFilter").addEventListener("click", (e) => {
