@@ -2435,6 +2435,7 @@ const I18N = {
     preorderMineTag: "💳 내 선입금 기록 있음",
     preorderNoticeTitle: "📢 작가 선입금 안내",
     preorderNoticeLink: "🔗 선입금 링크 열기",
+    preorderNoticeLinkN: "🔗 선입금 링크 {n}",
     preorderNoticePost: "📄 선입금 글 보기",
     preorderNoticeHint: "기간은 운영자가 작가 글을 보고 적은 값이에요. 정확한 내용은 작가 글을 확인해 주세요.",
     preorderPostTag: "💳 선입금 글",
@@ -2651,6 +2652,7 @@ const I18N = {
     preorderMineTag: "💳 You have a pre-order here",
     preorderNoticeTitle: "📢 Artist pre-order info",
     preorderNoticeLink: "🔗 Open pre-order link",
+    preorderNoticeLinkN: "🔗 Pre-order link {n}",
     preorderNoticePost: "📄 View pre-order post",
     preorderNoticeHint: "Dates were entered by the site operator from the artist's post. Please check the post for details.",
     preorderPostTag: "💳 Pre-order post",
@@ -2867,6 +2869,7 @@ const I18N = {
     preorderMineTag: "💳 自分の記録あり",
     preorderNoticeTitle: "📢 作家さんの事前通販案内",
     preorderNoticeLink: "🔗 事前通販のリンクを開く",
+    preorderNoticeLinkN: "🔗 事前通販リンク {n}",
     preorderNoticePost: "📄 事前通販の投稿を見る",
     preorderNoticeHint: "期間は運営者が作家さんの投稿を見て入力したものです。詳しくは投稿をご確認ください。",
     preorderPostTag: "💳 事前通販の投稿",
@@ -4463,10 +4466,13 @@ function preorderMeta(entry){
   const p = entry && entry.preorder;
   if(!p) return null;
   const o = typeof p === "object" ? p : {};
-  const link = typeof o.link === "string" && /^https?:\/\/[^\s"<>]+$/i.test(o.link.trim()) ? o.link.trim() : "";
+  // 한 글에 선입금 링크가 여러 개일 수 있음(2026-11-15 사용자 요청): links 배열, 예전 값은 link 하나
+  const okLink = v => typeof v === "string" && /^https?:\/\/[^\s"<>]+$/i.test(v.trim());
+  const links = [...new Set((Array.isArray(o.links) ? o.links : [o.link]).filter(okLink).map(v => v.trim()))].slice(0, 10);
+  const link = links[0] || "";
   const start = typeof o.start === "string" && DATE_RE.test(o.start) ? o.start : "";
   const end = typeof o.end === "string" && DATE_RE.test(o.end) ? o.end : "";
-  return { link, start, end };
+  return { link, links, start, end };
 }
 function preorderPostStatus(meta, today){
   if(meta.end && meta.end < today) return "closed";
@@ -4537,8 +4543,12 @@ function appendPreorderNotice(container, booth, before){
       item.innerHTML = `
         <div class="preorder-notice-period"><span class="tag ${p.status === "open" ? "" : p.status}">${escapeHtml(t(statusKey))}</span>${escapeHtml(preorderPeriodText(p))}${range}</div>
         <div class="preorder-notice-links">
-          ${p.link && p.status !== "closed" ? `<a class="primary" href="${escapeHtml(p.link)}" target="_blank" rel="noopener">${escapeHtml(t("preorderNoticeLink"))}</a>` : ""}
-          ${p.link && p.status === "closed" ? `<a href="${escapeHtml(p.link)}" target="_blank" rel="noopener">${escapeHtml(t("preorderNoticeLink"))}</a>` : ""}
+          ${p.links.map((u, i) => {
+            let host = "";
+            try { host = new URL(u).hostname.replace(/^www\./, ""); } catch {}
+            const label = p.links.length > 1 ? t("preorderNoticeLinkN", { n: i + 1 }) : t("preorderNoticeLink");
+            return `<a${p.status !== "closed" ? ` class="primary"` : ""} href="${escapeHtml(u)}" title="${escapeHtml(host)}" target="_blank" rel="noopener">${escapeHtml(label)}</a>`;
+          }).join("")}
           <a href="${escapeHtml(postUrl)}" target="_blank" rel="noopener">${escapeHtml(t("preorderNoticePost"))}</a>
         </div>`;
       box.appendChild(item);

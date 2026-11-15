@@ -128,7 +128,9 @@ def _ymd(month, day):
 
 def preorder_hint(text, links):
     """글에서 선입금 링크와 기간(YYYY-MM-DD)을 추정. 못 찾은 값은 빈 문자열. 운영자가 확인하는 추천값일 뿐임."""
-    link = next((u for u in links.split() if u.lower().startswith("http") and ORDER_LINK_RE.search(u)), "")
+    # 한 글에 주문서 링크가 여러 개일 수 있어서(2026-11-15) 모두 모음. link 는 첫 링크(예전 관리 화면용)
+    found = list(dict.fromkeys(u for u in links.split() if u.lower().startswith("http") and ORDER_LINK_RE.search(u)))[:10]
+    link = found[0] if found else ""
     text = re.sub(r"https?://\S+", " ", text)
     text = re.sub(r"\d{1,2}\s*:\s*\d{2}", " ", text)   # 23:59 같은 시각이 날짜로 잡히지 않게
     start = end = ""
@@ -150,7 +152,7 @@ def preorder_hint(text, links):
                 start = ymd
         if start and end and start > end:
             start = ""
-    return {"link": link, "start": start, "end": end}
+    return {"link": link, "links": found, "start": start, "end": end}
 
 
 def is_preorder_candidate(reasons):
