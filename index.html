@@ -5343,11 +5343,13 @@ const MAP_SLOTS = (() => {
   // C구역(주성홀)
   row("C", range(17, 24), 193, 462, MAP_W, 42);
   col("C", range(16, 9), 146, 506);
-  col("C", range(25, 28), 534, 506);
+  col("C", range(25, 30), 534, 506);   // 2026-11-14 수정 배치도: 오른쪽 열 C25~C30
   row("C", range(8, 1), 193, 790, MAP_W, 42);
   // A구역(그랜드볼룸 왼쪽)
   col("A", range(1, 9), 832, 440);
-  col("A", range(18, 10), 900, 440);
+  // A14·A15 자리는 C29·C30으로 옮겨가 비어 있음(2026-11-14 수정 배치도) → 칸 위치는 그대로 두고 두 칸만 뺌
+  col("A", range(18, 16), 900, 440);
+  col("A", range(13, 10), 900, 440 + 5 * MAP_STEP);
   col("A", range(19, 23), 1040, 440, 40, 36);
   col("A", range(28, 24), 1082, 440, 40, 36);
   col("A", range(29, 37), 1312, 440);
@@ -5840,7 +5842,7 @@ function buildMapLocateBtn(booth){
   btn.type = "button";
   btn.className = "map-locate-btn";
   btn.textContent = t("mapLocateBtn", { hall: t(boothHallKey(booth)), zone: t("mapZone" + booth.block) });
-  // 배치도에 아직 칸이 없는 부스(번호가 바뀌어 배치도 갱신 전인 C29·C30 등)는 버튼을 숨김 (2026-11-12)
+  // 배치도에 칸이 없는 부스는 버튼을 숨김 (2026-11-12)
   if(!(booth.nums || [booth.num]).some(n => MAP_SLOTS[booth.block + parseInt(n, 10)])) btn.style.display = "none";
   btn.addEventListener("click", (e) => {
     e.stopPropagation();
