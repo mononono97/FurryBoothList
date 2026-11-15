@@ -606,7 +606,7 @@ function render(){
     const rows = preorderRows();
     const desc = document.createElement("div");
     desc.className = "sub";
-    desc.textContent = "반영한 글 중 선입금 글로 보이는 글입니다(확인 안 한 글이 위). \"💳 선입금 글\"을 켜고 링크·기간을 확인해 저장하면 사이트 선입금 탭의 진행 중·끝남 구역과 부스 상세에 나옵니다. 선입금 글이 아니면 끈 채로 저장하세요. 마감일이 지나면 자동으로 '끝남'으로 옮겨집니다.";
+    desc.textContent = "반영한 글 중 선입금 글로 보이는 글입니다(확인 안 한 글이 위). \"💳 선입금 글\"을 켜고 링크·기간을 확인해 저장하면 사이트 선입금 탭의 진행 중·끝남 구역과 부스 상세에 나옵니다. 선입금 글이 아니면 \"선입금 글 아님\"을 누르세요(상품 정보 글은 사이트에 그대로 남습니다). 마감일이 지나면 자동으로 '끝남'으로 옮겨집니다.";
     list.appendChild(desc);
     if(!rows.length){ list.insertAdjacentHTML("beforeend", `<div class="empty">아직 없습니다.</div>`); return; }
     rows.forEach(c => list.appendChild(buildPost(c)));
@@ -872,7 +872,13 @@ function buildPost(c){
         catch(err){ errBox.textContent = err.message; errBox.hidden = false; return; }
         run(() => savePreorder(c.id, value));
       });
+      // 선입금 글 아님: 상품 정보 글(반영)은 그대로 두고 선입금 표시만 빼고 "확인함"으로 저장 (2026-11-15 사용자 요청)
+      const notPre = document.createElement("button");
+      notPre.textContent = "선입금 글 아님";
+      notPre.title = "상품 정보 글은 사이트에 그대로 남고, 선입금 진행 중·끝남 구역과 작가 선입금 안내에서만 빠집니다.";
+      notPre.addEventListener("click", () => run(() => savePreorder(c.id, null)));
       actions.prepend(save);
+      save.after(notPre);
     }
   }
   const link = document.createElement("a");
