@@ -247,6 +247,7 @@ let decisions = { approved: {}, excluded: {}, official: {}, officialExcluded: {}
 let healthView = false;          // true = "사이트 상태" 버튼을 눌러 헬스체크 결과를 보는 중
 let currentMode = "booth";    // "booth" = 부스 상품 글, "official" = 행사 안내 글
 let currentTab = "pending";
+let showNotPreorder = false;  // 선입금 정보 탭: "선입금 글 아님"으로 뺀 글도 보기
 let openBooth = null;         // 반영됨 탭(부스 상품 글)에서 글을 펼쳐 보는 부스 id. null 이면 부스 목록
 let currentUser = null;
 let decisionsReadable = true;
@@ -603,12 +604,24 @@ function render(){
   list.innerHTML = "";
   if(!official && currentTab === "approved"){ renderApprovedBooths(list); return; }
   if(currentTab === "preorder"){
-    const rows = preorderRows();
+    // "선입금 글 아님"으로 확인한 글은 목록에서 빼고, 아래 버튼으로만 다시 봄 (2026-11-15 사용자 요청: 눌러도 안 사라져 보였음)
+    const isNot = c => decisions.approved[c.id].preorderChecked && !decisions.approved[c.id].preorder;
+    const all = preorderRows();
+    const notCount = all.filter(isNot).length;
+    const rows = showNotPreorder ? all.filter(isNot) : all.filter(c => !isNot(c));
     const desc = document.createElement("div");
     desc.className = "sub";
     desc.textContent = "반영한 글 중 선입금 글로 보이는 글입니다(확인 안 한 글이 위). \"💳 선입금 글\"을 켜고 링크·기간을 확인해 저장하면 사이트 선입금 탭의 진행 중·끝남 구역과 부스 상세에 나옵니다. 선입금 글이 아니면 \"선입금 글 아님\"을 누르세요(상품 정보 글은 사이트에 그대로 남습니다). 마감일이 지나면 자동으로 '끝남'으로 옮겨집니다.";
     list.appendChild(desc);
-    if(!rows.length){ list.insertAdjacentHTML("beforeend", `<div class="empty">아직 없습니다.</div>`); return; }
+    if(notCount || showNotPreorder){
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.style.margin = "4px 0 6px";
+      toggle.textContent = showNotPreorder ? "← 선입금 글 목록으로" : `"선입금 글 아님"으로 뺀 글 ${notCount}개 보기`;
+      toggle.addEventListener("click", () => { showNotPreorder = !showNotPreorder; render(); });
+      list.appendChild(toggle);
+    }
+    if(!rows.length){ list.insertAdjacentHTML("beforeend", `<div class="empty">${showNotPreorder ? "뺀 글이 없습니다." : "아직 없습니다."}</div>`); return; }
     rows.forEach(c => list.appendChild(buildPost(c)));
     return;
   }
@@ -1021,6 +1034,7 @@ document.getElementById("tabs").addEventListener("click", (e) => {
   const btn = e.target.closest("button[data-tab]");
   if(!btn) return;
   currentTab = btn.dataset.tab;
+  showNotPreorder = false;
   openBooth = null;
   render();
 });
