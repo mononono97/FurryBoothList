@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-15T17:21:02+00:00",
+ "updatedAt": "2026-11-15T17:32:48+00:00",
  "posts": [
   {
    "id": "2122014411640709560",
@@ -117,6 +117,25 @@
     "end": ""
    },
    "foundAt": "2026-11-15T11:24:18+00:00"
+  },
+  {
+   "id": "2121907800054091844",
+   "handle": "Chung_hwani",
+   "booths": [],
+   "boothNames": [],
+   "created": "2026-11-15T10:06:57+00:00",
+   "via": "furstclassrt",
+   "sensitive": false,
+   "reasons": [
+    "RT 계정"
+   ],
+   "foundAt": "2026-11-15T17:32:27+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2121890699473821883",
