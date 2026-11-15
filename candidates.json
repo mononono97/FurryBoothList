@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-15T09:27:59+00:00",
+ "updatedAt": "2026-11-15T10:25:53+00:00",
  "posts": [
   {
    "id": "2121890699473821883",
@@ -59,7 +59,13 @@
     "통판·선입금·예약",
     "품목"
    ],
-   "foundAt": "2026-11-15T00:20:07+00:00"
+   "foundAt": "2026-11-15T00:20:07+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2121682237930545357",
@@ -179,7 +185,13 @@
     "통판·선입금·예약",
     "굿즈·판매"
    ],
-   "foundAt": "2026-11-14T13:24:54+00:00"
+   "foundAt": "2026-11-14T13:24:54+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2121561020007370980",
@@ -277,7 +289,13 @@
     "통판·선입금·예약",
     "이미지"
    ],
-   "foundAt": "2026-11-14T09:20:59+00:00"
+   "foundAt": "2026-11-14T09:20:59+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2121528311428030610",
@@ -375,7 +393,13 @@
    "reasons": [
     "통판·선입금·예약"
    ],
-   "foundAt": "2026-11-14T03:17:54+00:00"
+   "foundAt": "2026-11-14T03:17:54+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2121398536541745373",
@@ -393,7 +417,13 @@
     "통판·선입금·예약",
     "타래(자기 글 답글)"
    ],
-   "foundAt": "2026-11-14T01:18:58+00:00"
+   "foundAt": "2026-11-14T01:18:58+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2121288892674662825",
@@ -467,7 +497,15 @@
     "행사·부스",
     "주문서 링크"
    ],
-   "foundAt": "2026-11-13T15:22:11+00:00"
+   "foundAt": "2026-11-13T15:22:11+00:00",
+   "preorderHint": {
+    "link": "https://witchform.com/deposit_form.php?idx=1091788",
+    "links": [
+     "https://witchform.com/deposit_form.php?idx=1091788"
+    ],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2121252757416153189",
@@ -605,7 +643,13 @@
    "reasons": [
     "통판·선입금·예약"
    ],
-   "foundAt": "2026-11-13T11:26:13+00:00"
+   "foundAt": "2026-11-13T11:26:13+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2121174171648729577",
@@ -627,7 +671,15 @@
     "주문서 링크",
     "이미지"
    ],
-   "foundAt": "2026-11-13T10:18:09+00:00"
+   "foundAt": "2026-11-13T10:18:09+00:00",
+   "preorderHint": {
+    "link": "https://forms.gle/1oUfWkaQevagezQq7",
+    "links": [
+     "https://forms.gle/1oUfWkaQevagezQq7"
+    ],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2121128977855291751",
@@ -682,7 +734,15 @@
     "주문서 링크",
     "타래(자기 글 답글)"
    ],
-   "foundAt": "2026-11-13T05:21:40+00:00"
+   "foundAt": "2026-11-13T05:21:40+00:00",
+   "preorderHint": {
+    "link": "https://docs.google.com/forms/d/e/1FAIpQLSf0q0sB70doDZNLLuEoNqQcv-l1yOzA0wDW2JiyOOHqbOQu2Q/viewform",
+    "links": [
+     "https://docs.google.com/forms/d/e/1FAIpQLSf0q0sB70doDZNLLuEoNqQcv-l1yOzA0wDW2JiyOOHqbOQu2Q/viewform"
+    ],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2121106594826170738",
@@ -798,7 +858,13 @@
    "reasons": [
     "통판·선입금·예약"
    ],
-   "foundAt": "2026-11-12T14:26:54+00:00"
+   "foundAt": "2026-11-12T14:26:54+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2120874624598827257",
@@ -930,7 +996,15 @@
     "주문서 링크",
     "타래(자기 글 답글)"
    ],
-   "foundAt": "2026-11-12T11:15:40+00:00"
+   "foundAt": "2026-11-12T11:15:40+00:00",
+   "preorderHint": {
+    "link": "https://forms.gle/txFZVPVLgt1g4u9V7",
+    "links": [
+     "https://forms.gle/txFZVPVLgt1g4u9V7"
+    ],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2120828232283099560",
@@ -950,7 +1024,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-12T11:15:40+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2120811945347662262",
@@ -1048,7 +1123,15 @@
    ],
    "foundAt": "2026-11-12T08:22:58+00:00",
    "editedFrom": "2120788470637740264",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": {
+    "link": "https://naver.me/FhuPVYMj",
+    "links": [
+     "https://naver.me/FhuPVYMj"
+    ],
+    "start": "2026-11-12",
+    "end": "2026-11-15"
+   }
   },
   {
    "id": "2120788270816845874",
@@ -1136,7 +1219,13 @@
    "reasons": [
     "통판·선입금·예약"
    ],
-   "foundAt": "2026-11-12T07:17:14+00:00"
+   "foundAt": "2026-11-12T07:17:14+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2120766505717752306",
@@ -1194,7 +1283,13 @@
     "통판·선입금·예약",
     "행사·부스"
    ],
-   "foundAt": "2026-11-12T06:22:43+00:00"
+   "foundAt": "2026-11-12T06:22:43+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2120760377416053154",
@@ -1261,7 +1356,15 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-12T05:26:24+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": {
+    "link": "https://docs.google.com/forms/d/e/1FAIpQLSf0q0sB70doDZNLLuEoNqQcv-l1yOzA0wDW2JiyOOHqbOQu2Q/viewform",
+    "links": [
+     "https://docs.google.com/forms/d/e/1FAIpQLSf0q0sB70doDZNLLuEoNqQcv-l1yOzA0wDW2JiyOOHqbOQu2Q/viewform"
+    ],
+    "start": "",
+    "end": "2026-11-15"
+   }
   },
   {
    "id": "2120693059562385700",
@@ -1304,7 +1407,13 @@
     "통판·선입금·예약",
     "품목"
    ],
-   "foundAt": "2026-11-11T16:23:08+00:00"
+   "foundAt": "2026-11-11T16:23:08+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2120537335771300032",
@@ -1326,7 +1435,15 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-11T16:23:08+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": {
+    "link": "https://forms.gle/NXABQX8CvLQmaco59",
+    "links": [
+     "https://forms.gle/NXABQX8CvLQmaco59"
+    ],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2120515670366621718",
@@ -1369,7 +1486,13 @@
     "품목",
     "이미지"
    ],
-   "foundAt": "2026-11-11T13:19:10+00:00"
+   "foundAt": "2026-11-11T13:19:10+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2120501880614998161",
@@ -1390,7 +1513,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-11T13:21:59+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2120492896277430327",
@@ -1413,7 +1537,15 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-11T13:18:42+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": {
+    "link": "https://docs.google.com/forms/d/e/1FAIpQLSfYNyFFKMQr5w_sdzBKJdsTs3oo-UkXKnS8bcftetsJf_rOwA/viewform?usp=publish-editor",
+    "links": [
+     "https://docs.google.com/forms/d/e/1FAIpQLSfYNyFFKMQr5w_sdzBKJdsTs3oo-UkXKnS8bcftetsJf_rOwA/viewform?usp=publish-editor"
+    ],
+    "start": "2026-11-11",
+    "end": "2026-11-23"
+   }
   },
   {
    "id": "2120492646447907141",
@@ -1460,7 +1592,13 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-11T12:18:24+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2120472524131869035",
@@ -1514,7 +1652,13 @@
     "통판·선입금·예약",
     "이미지"
    ],
-   "foundAt": "2026-11-11T08:20:15+00:00"
+   "foundAt": "2026-11-11T08:20:15+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2120410540669636799",
@@ -1534,7 +1678,13 @@
     "행사·부스",
     "이미지"
    ],
-   "foundAt": "2026-11-11T07:19:21+00:00"
+   "foundAt": "2026-11-11T07:19:21+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2120357928612028860",
@@ -1614,7 +1764,13 @@
     "통판·선입금·예약",
     "굿즈·판매"
    ],
-   "foundAt": "2026-11-11T02:21:16+00:00"
+   "foundAt": "2026-11-11T02:21:16+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2120201234833613174",
@@ -1632,7 +1788,13 @@
     "통판·선입금·예약",
     "행사·부스"
    ],
-   "foundAt": "2026-11-10T17:20:01+00:00"
+   "foundAt": "2026-11-10T17:20:01+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2120140666596663345",
@@ -1728,7 +1890,13 @@
    "reasons": [
     "통판·선입금·예약"
    ],
-   "foundAt": "2026-11-10T09:17:18+00:00"
+   "foundAt": "2026-11-10T09:17:18+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2120059915276624064",
@@ -1767,7 +1935,13 @@
    "reasons": [
     "통판·선입금·예약"
    ],
-   "foundAt": "2026-11-10T07:18:59+00:00"
+   "foundAt": "2026-11-10T07:18:59+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2119988389823053864",
@@ -1823,7 +1997,13 @@
    "reasons": [
     "통판·선입금·예약"
    ],
-   "foundAt": "2026-11-10T02:11:18+00:00"
+   "foundAt": "2026-11-10T02:11:18+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2119868591449534717",
@@ -1846,7 +2026,15 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-09T19:20:43+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": {
+    "link": "https://forms.gle/U6XU7vup1KS1UFQd6",
+    "links": [
+     "https://forms.gle/U6XU7vup1KS1UFQd6"
+    ],
+    "start": "",
+    "end": "2026-11-15"
+   }
   },
   {
    "id": "2119783310637531525",
@@ -1922,7 +2110,15 @@
     "행사·부스",
     "타래(자기 글 답글)"
    ],
-   "foundAt": "2026-11-09T11:19:01+00:00"
+   "foundAt": "2026-11-09T11:19:01+00:00",
+   "preorderHint": {
+    "link": "https://gomtang.booth.pm/items/9040716",
+    "links": [
+     "https://gomtang.booth.pm/items/9040716"
+    ],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2119746571172745500",
@@ -1984,7 +2180,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-09T08:26:10+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2119701744515240002",
@@ -2020,7 +2217,8 @@
    "reasons": [
     "RT 계정"
    ],
-   "foundAt": "2026-11-10T05:45:32+00:00"
+   "foundAt": "2026-11-10T05:45:32+00:00",
+   "preorderHint": null
   },
   {
    "id": "2119700398198169753",
@@ -2042,7 +2240,15 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-09T08:02:12+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": {
+    "link": "https://witchform.com/deposit_form.php?idx=1096751",
+    "links": [
+     "https://witchform.com/deposit_form.php?idx=1096751"
+    ],
+    "start": "2026-11-09",
+    "end": "2026-11-14"
+   }
   },
   {
    "id": "2119674635319202210",
@@ -2061,7 +2267,13 @@
     "행사·부스",
     "타래(자기 글 답글)"
    ],
-   "foundAt": "2026-11-09T06:20:04+00:00"
+   "foundAt": "2026-11-09T06:20:04+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2119672483490267229",
@@ -2083,7 +2295,13 @@
    "reasons": [
     "통판·선입금·예약"
    ],
-   "foundAt": "2026-11-09T06:19:39+00:00"
+   "foundAt": "2026-11-09T06:19:39+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2119668624436969841",
@@ -2157,7 +2375,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-09T05:21:51+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2119636294183887343",
@@ -2180,7 +2399,13 @@
     "통판·선입금·예약",
     "굿즈·판매"
    ],
-   "foundAt": "2026-11-09T04:21:38+00:00"
+   "foundAt": "2026-11-09T04:21:38+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2119633334376841677",
@@ -2242,7 +2467,13 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-09T03:22:19+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2119625775582416958",
@@ -2302,7 +2533,13 @@
    "reasons": [
     "통판·선입금·예약"
    ],
-   "foundAt": "2026-11-09T02:20:32+00:00"
+   "foundAt": "2026-11-09T02:20:32+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2119445038862405930",
@@ -2324,7 +2561,13 @@
    "reasons": [
     "통판·선입금·예약"
    ],
-   "foundAt": "2026-11-08T15:21:24+00:00"
+   "foundAt": "2026-11-08T15:21:24+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2119429958091346277",
@@ -2346,7 +2589,13 @@
    "reasons": [
     "통판·선입금·예약"
    ],
-   "foundAt": "2026-11-08T14:21:36+00:00"
+   "foundAt": "2026-11-08T14:21:36+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2119423496552116639",
@@ -2486,7 +2735,15 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-08T09:22:11+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": {
+    "link": "https://forms.gle/Fopes2LCfCWR772r8",
+    "links": [
+     "https://forms.gle/Fopes2LCfCWR772r8"
+    ],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2119332538758090931",
@@ -2566,7 +2823,15 @@
     "통판·선입금·예약",
     "이미지"
    ],
-   "foundAt": "2026-11-08T05:20:10+00:00"
+   "foundAt": "2026-11-08T05:20:10+00:00",
+   "preorderHint": {
+    "link": "https://naver.me/G3vTfFMH",
+    "links": [
+     "https://naver.me/G3vTfFMH"
+    ],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2119286794181304556",
@@ -2611,7 +2876,13 @@
    "reasons": [
     "통판·선입금·예약"
    ],
-   "foundAt": "2026-11-08T04:20:23+00:00"
+   "foundAt": "2026-11-08T04:20:23+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2119263387481690602",
@@ -2648,7 +2919,15 @@
     "주문서 링크",
     "타래(자기 글 답글)"
    ],
-   "foundAt": "2026-11-08T01:19:59+00:00"
+   "foundAt": "2026-11-08T01:19:59+00:00",
+   "preorderHint": {
+    "link": "https://docs.google.com/forms/d/e/1FAIpQLSdXqzvaWzbVxEX9qOAqv3FIII85W7Ozmcye4q66zpOU_4tMiQ/viewform?usp=dialog",
+    "links": [
+     "https://docs.google.com/forms/d/e/1FAIpQLSdXqzvaWzbVxEX9qOAqv3FIII85W7Ozmcye4q66zpOU_4tMiQ/viewform?usp=dialog"
+    ],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2119235957614653645",
@@ -2691,7 +2970,13 @@
     "굿즈·판매",
     "품목"
    ],
-   "foundAt": "2026-11-08T00:23:58+00:00"
+   "foundAt": "2026-11-08T00:23:58+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2119131803634319410",
@@ -2750,7 +3035,13 @@
     "굿즈·판매",
     "이미지"
    ],
-   "foundAt": "2026-11-07T16:24:20+00:00"
+   "foundAt": "2026-11-07T16:24:20+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2119084335815168321",
@@ -2813,7 +3104,13 @@
     "굿즈·판매",
     "이미지"
    ],
-   "foundAt": "2026-11-07T13:20:27+00:00"
+   "foundAt": "2026-11-07T13:20:27+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2119044025902850403",
@@ -2832,7 +3129,13 @@
     "품목",
     "타래(자기 글 답글)"
    ],
-   "foundAt": "2026-11-07T13:21:56+00:00"
+   "foundAt": "2026-11-07T13:21:56+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2119016865418858818",
@@ -2857,7 +3160,13 @@
     "품목",
     "이미지"
    ],
-   "foundAt": "2026-11-07T11:24:00+00:00"
+   "foundAt": "2026-11-07T11:24:00+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2119015735028793515",
@@ -2879,7 +3188,15 @@
     "행사·부스",
     "이미지"
    ],
-   "foundAt": "2026-11-07T11:20:12+00:00"
+   "foundAt": "2026-11-07T11:20:12+00:00",
+   "preorderHint": {
+    "link": "https://dai-xt.booth.pm/items/9111761",
+    "links": [
+     "https://dai-xt.booth.pm/items/9111761"
+    ],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2119011431328919690",
@@ -2902,7 +3219,15 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-07T10:21:54+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": {
+    "link": "https://forms.gle/Babt8uZ2XtKd6Q3Y7",
+    "links": [
+     "https://forms.gle/Babt8uZ2XtKd6Q3Y7"
+    ],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2119000882818023935",
@@ -2924,7 +3249,8 @@
    "reasons": [
     "RT 계정"
    ],
-   "foundAt": "2026-11-09T03:45:28+00:00"
+   "foundAt": "2026-11-09T03:45:28+00:00",
+   "preorderHint": null
   },
   {
    "id": "2118993107975061796",
@@ -2945,7 +3271,15 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-07T10:18:57+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": {
+    "link": "https://witchform.com/deposit_form.php?idx=1091788",
+    "links": [
+     "https://witchform.com/deposit_form.php?idx=1091788"
+    ],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2118963472801353784",
@@ -2965,7 +3299,15 @@
     "이미지",
     "타래(자기 글 답글)"
    ],
-   "foundAt": "2026-11-07T07:29:12+00:00"
+   "foundAt": "2026-11-07T07:29:12+00:00",
+   "preorderHint": {
+    "link": "https://witchform.com/deposit_form.php?idx=1096114",
+    "links": [
+     "https://witchform.com/deposit_form.php?idx=1096114"
+    ],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2118961108388401459",
@@ -2985,7 +3327,13 @@
     "행사·부스",
     "이미지"
    ],
-   "foundAt": "2026-11-07T07:29:12+00:00"
+   "foundAt": "2026-11-07T07:29:12+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": "2026-11-16"
+   }
   },
   {
    "id": "2118941332853121503",
@@ -3170,7 +3518,15 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-06T11:21:36+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": {
+    "link": "https://forms.gle/xaXscTVVbdnBcwmF8",
+    "links": [
+     "https://forms.gle/xaXscTVVbdnBcwmF8"
+    ],
+    "start": "2026-11-06",
+    "end": "2026-11-20"
+   }
   },
   {
    "id": "2118658537043960158",
@@ -3240,7 +3596,15 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-06T11:52:34+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": {
+    "link": "https://witchform.com/deposit_form/1095884",
+    "links": [
+     "https://witchform.com/deposit_form/1095884"
+    ],
+    "start": "2026-11-06",
+    "end": "2026-11-10"
+   }
   },
   {
    "id": "2118610040831742233",
@@ -3299,7 +3663,16 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-06T08:17:16+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": {
+    "link": "https://forms.gle/QsrPNHrJcJoAXJJF7",
+    "links": [
+     "https://forms.gle/QsrPNHrJcJoAXJJF7",
+     "https://witchform.com/payform/XNLFCFSQZU"
+    ],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2118591942179045871",
@@ -3336,7 +3709,13 @@
     "품목",
     "이미지"
    ],
-   "foundAt": "2026-11-06T05:20:13+00:00"
+   "foundAt": "2026-11-06T05:20:13+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2118556766745030879",
@@ -3393,7 +3772,13 @@
    "reasons": [
     "통판·선입금·예약"
    ],
-   "foundAt": "2026-11-06T04:24:53+00:00"
+   "foundAt": "2026-11-06T04:24:53+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2118463531725344868",
@@ -3430,7 +3815,13 @@
     "굿즈·판매",
     "이미지"
    ],
-   "foundAt": "2026-11-05T20:20:41+00:00"
+   "foundAt": "2026-11-05T20:20:41+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2118406448661291193",
@@ -3450,7 +3841,13 @@
     "행사·부스",
     "이미지"
    ],
-   "foundAt": "2026-11-05T18:21:54+00:00"
+   "foundAt": "2026-11-05T18:21:54+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2118394234000818312",
@@ -3584,7 +3981,15 @@
     "행사·부스",
     "주문서 링크"
    ],
-   "foundAt": "2026-11-05T08:18:39+00:00"
+   "foundAt": "2026-11-05T08:18:39+00:00",
+   "preorderHint": {
+    "link": "https://witchform.com/deposit_form/1095517",
+    "links": [
+     "https://witchform.com/deposit_form/1095517"
+    ],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2118225996763799610",
@@ -3728,7 +4133,13 @@
     "품목",
     "이미지"
    ],
-   "foundAt": "2026-11-04T13:26:42+00:00"
+   "foundAt": "2026-11-04T13:26:42+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2117943537191006413",
@@ -3767,7 +4178,13 @@
    "reasons": [
     "통판·선입금·예약"
    ],
-   "foundAt": "2026-11-04T10:18:54+00:00"
+   "foundAt": "2026-11-04T10:18:54+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2117911361716158967",
@@ -3809,7 +4226,15 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-04T10:21:57+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": {
+    "link": "https://forms.gle/tykiyaLV3m46yv399",
+    "links": [
+     "https://forms.gle/tykiyaLV3m46yv399"
+    ],
+    "start": "",
+    "end": "2026-11-10"
+   }
   },
   {
    "id": "2117901257402908819",
@@ -3826,7 +4251,13 @@
    "reasons": [
     "통판·선입금·예약"
    ],
-   "foundAt": "2026-11-04T09:24:07+00:00"
+   "foundAt": "2026-11-04T09:24:07+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2117897730114896169",
@@ -3942,7 +4373,13 @@
    "reasons": [
     "통판·선입금·예약"
    ],
-   "foundAt": "2026-11-04T03:18:31+00:00"
+   "foundAt": "2026-11-04T03:18:31+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2117679468496228558",
@@ -4033,7 +4470,13 @@
     "통판·선입금·예약",
     "타래(자기 글 답글)"
    ],
-   "foundAt": "2026-11-03T12:21:15+00:00"
+   "foundAt": "2026-11-03T12:21:15+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2117555967739199726",
@@ -4086,7 +4529,13 @@
     "통판·선입금·예약",
     "이미지"
    ],
-   "foundAt": "2026-11-03T09:20:16+00:00"
+   "foundAt": "2026-11-03T09:20:16+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2117542614316843216",
@@ -4105,7 +4554,13 @@
     "품목",
     "행사·부스"
    ],
-   "foundAt": "2026-11-03T09:18:13+00:00"
+   "foundAt": "2026-11-03T09:18:13+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2117542387442716729",
@@ -4125,7 +4580,15 @@
     "행사·부스",
     "이미지"
    ],
-   "foundAt": "2026-11-03T10:53:36+00:00"
+   "foundAt": "2026-11-03T10:53:36+00:00",
+   "preorderHint": {
+    "link": "https://naver.me/xIF4wLet",
+    "links": [
+     "https://naver.me/xIF4wLet"
+    ],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2117528276617040191",
@@ -4166,7 +4629,15 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-03T10:20:37+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": {
+    "link": "https://forms.gle/YhBCxuLW2vRHCYA19",
+    "links": [
+     "https://forms.gle/YhBCxuLW2vRHCYA19"
+    ],
+    "start": "2026-11-03",
+    "end": "2026-11-09"
+   }
   },
   {
    "id": "2117287937176178690",
@@ -4219,7 +4690,13 @@
    "reasons": [
     "통판·선입금·예약"
    ],
-   "foundAt": "2026-11-02T13:23:46+00:00"
+   "foundAt": "2026-11-02T13:23:46+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2117238069728530747",
@@ -4294,7 +4771,13 @@
     "통판·선입금·예약",
     "행사·부스"
    ],
-   "foundAt": "2026-11-02T11:21:25+00:00"
+   "foundAt": "2026-11-02T11:21:25+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2117206762743111799",
@@ -4400,7 +4883,13 @@
    "reasons": [
     "통판·선입금·예약"
    ],
-   "foundAt": "2026-11-02T03:19:40+00:00"
+   "foundAt": "2026-11-02T03:19:40+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2117013542000103867",
