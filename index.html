@@ -1049,6 +1049,8 @@
     color:var(--on-panel);
     cursor:pointer;
   }
+  .memo-box button.delete{ color:#c0392b; }
+  .memo-box button.delete:hover{ border-color:#c0392b; }
   .memo-box .memo-status{
     font-size:10.5px;
     color:var(--moss-light);
@@ -1324,6 +1326,20 @@
   }
   .preorder-add-btn:hover:not(:disabled){ background:var(--panel-field); }
   .preorder-add-btn:disabled{ opacity:.5; cursor:default; }
+  /* 이 부스 선입금 기록 삭제 (2026-11-17) */
+  .preorder-delete-all-btn{
+    display:block;
+    margin:10px 0 0 auto;
+    font-size:11.5px;
+    padding:5px 10px;
+    border-radius:6px;
+    border:1px solid var(--panel-line);
+    background:var(--panel-field);
+    color:#c0392b;
+    cursor:pointer;
+  }
+  .preorder-delete-all-btn:hover{ border-color:#c0392b; }
+  :root[data-theme="dark"] .preorder-delete-all-btn, :root[data-theme="dark"] .memo-box button.delete{ color:#ff8a80; }
 
   /* 우선순위 선택 버튼 */
   .priority-box{
@@ -2408,12 +2424,10 @@ const I18N = {
     preorderPayerPlaceholder: "입금할 때 쓴 이름",
     preorderMemo: "선입금 메모 (품목 등)",
     preorderMemoPlaceholder: "예: 아크릴 스탠드 1, 엽서 세트 2, 현장 수령",
-    preorderOffConfirm: "선입금 표시를 끄면 이 부스에 적은 선입금 정보(날짜·플랫폼·금액·입금자명·메모·수령 여부)도 함께 지워집니다. 계속할까요?",
     preorderOff: "끄기",
     preorderItemTitle: "선입금 {n}",
     preorderItemAdd: "＋ 선입금 항목 추가",
     preorderItemRemove: "삭제",
-    preorderItemRemoveConfirm: "선입금 {n}에 적은 정보(날짜·플랫폼·금액·입금자명·메모·수령 여부)를 지울까요?",
     preorderItemsSummary: "선입금 {n}건 · 수령 완료 {done}건 · 합계 {amount}",
     preorderItemsProgress: "{done}/{n}건",
     preorderFilterMine: "💳 내 선입금 정보 ({n})",
@@ -2544,6 +2558,26 @@ const I18N = {
     adultNotice: "🔞 성인 부스 안내\n\n성인 부스는 행사 당일\n추가적인 인증이 필요할 수 있으며,\n미성년자의 경우 구매가 어려울 수 있습니다.",
     savedStatus: "저장됨",
     deletedStatus: "삭제됨",
+    boothDeleteBtn: "🗑 이 부스 기록 삭제",
+    boothDeleteConfirm: "[{id}] {name}\n이 부스의 아래 기록을 지울까요?",
+    boothDeleteKeepPreorder: "선입금 기록은 그대로 남아요(💳 선입금 탭에서 따로 삭제).",
+    boothDeleteNothing: "이 부스에는 지울 기록(메모·방문 상태·우선순위·예산·쓴 돈)이 없어요.",
+    deleteCannotUndo: "지운 기록은 되돌릴 수 없어요.",
+    recMemo: "메모",
+    recVisit: "방문 상태",
+    recBudget: "예산",
+    recSpent: "쓴 돈",
+    recDate: "날짜",
+    recPlatform: "플랫폼",
+    recAmount: "금액",
+    recPayer: "입금자명",
+    recReceived: "수령 완료",
+    recNotReceived: "아직 안 받음",
+    recEmpty: "(비어 있음)",
+    preorderDeleteAllBtn: "🗑 이 부스 선입금 기록 삭제",
+    preorderDeleteConfirm: "[{id}] {name}\n이 부스의 선입금 기록을 모두 지울까요?",
+    preorderItemDeleteConfirm: "[{id}] {name}\n선입금 {n}을 지울까요?",
+    preorderOffDetails: "선입금 표시를 끄면 이 부스의 선입금 기록도 함께 지워져요.",
     resetBtn: "🗑️ 데이터 초기화",
     resetConfirm: "메모, 방문 상태, 예산·쓴 돈, 우선순위, 선입금 정보, 숨긴 상품 정보 글 등 저장된 모든 데이터가 삭제됩니다. 이 작업은 되돌릴 수 없습니다. 계속할까요?",
     resetConfirmCloud: "Google 계정으로 로그인되어 있어서 이 기기뿐 아니라 클라우드에 저장된 데이터(다른 기기에서 보던 메모·방문 상태·예산·쓴 돈·우선순위·선입금·숨긴 상품 정보 글)도 모두 삭제됩니다. 이 작업은 되돌릴 수 없습니다. 계속할까요?",
@@ -2625,12 +2659,10 @@ const I18N = {
     preorderPayerPlaceholder: "Name used for the payment",
     preorderMemo: "Pre-order notes (items, etc.)",
     preorderMemoPlaceholder: "e.g. 1 acrylic stand, 2 postcard sets, pick up on site",
-    preorderOffConfirm: "Turning off pre-order also deletes the pre-order details for this booth (date, platform, amount, payer name, notes, received). Continue?",
     preorderOff: "Turn off",
     preorderItemTitle: "Pre-order {n}",
     preorderItemAdd: "＋ Add pre-order",
     preorderItemRemove: "Delete",
-    preorderItemRemoveConfirm: "Delete the details of pre-order {n} (date, platform, amount, payer name, notes, received)?",
     preorderItemsSummary: "{n} pre-orders · {done} received · Total {amount}",
     preorderItemsProgress: "{done}/{n}",
     preorderFilterMine: "💳 My pre-orders ({n})",
@@ -2761,6 +2793,26 @@ const I18N = {
     adultNotice: "🔞 Adult booth notice\n\nAdult booths may require additional age verification on the event day, and minors may not be able to make purchases.",
     savedStatus: "Saved",
     deletedStatus: "Deleted",
+    boothDeleteBtn: "🗑 Delete this booth's records",
+    boothDeleteConfirm: "[{id}] {name}\nDelete these records for this booth?",
+    boothDeleteKeepPreorder: "Pre-order records are kept (delete them in the 💳 Pre-order tab).",
+    boothDeleteNothing: "This booth has nothing to delete (notes, visit status, priority, budget, spent).",
+    deleteCannotUndo: "Deleted records can't be restored.",
+    recMemo: "Notes",
+    recVisit: "Visit status",
+    recBudget: "Budget",
+    recSpent: "Spent",
+    recDate: "Date",
+    recPlatform: "Platform",
+    recAmount: "Amount",
+    recPayer: "Payer",
+    recReceived: "Received",
+    recNotReceived: "Not received yet",
+    recEmpty: "(empty)",
+    preorderDeleteAllBtn: "🗑 Delete this booth's pre-order records",
+    preorderDeleteConfirm: "[{id}] {name}\nDelete all pre-order records for this booth?",
+    preorderItemDeleteConfirm: "[{id}] {name}\nDelete pre-order {n}?",
+    preorderOffDetails: "Turning off pre-order also deletes this booth's pre-order records.",
     resetBtn: "🗑️ Reset Data",
     resetConfirm: "This will delete all your saved data — notes, visit status, budget and spending, priority, pre-orders, and hidden merch posts. This cannot be undone. Continue?",
     resetConfirmCloud: "You're signed in with Google, so this will also delete the data saved in the cloud (notes, visit status, budget and spending, priority, pre-orders, and hidden merch posts on your other devices). This cannot be undone. Continue?",
@@ -2842,12 +2894,10 @@ const I18N = {
     preorderPayerPlaceholder: "入金時に使った名前",
     preorderMemo: "事前通販メモ（品目など）",
     preorderMemoPlaceholder: "例：アクリルスタンド1、ポストカードセット2、現地受取",
-    preorderOffConfirm: "事前通販をオフにすると、このブースに記入した事前通販の情報（入金日・プラットフォーム・金額・入金者名・メモ・受取状態）も削除されます。続行しますか？",
     preorderOff: "オフにする",
     preorderItemTitle: "事前通販 {n}",
     preorderItemAdd: "＋ 事前通販を追加",
     preorderItemRemove: "削除",
-    preorderItemRemoveConfirm: "事前通販 {n} の情報（入金日・プラットフォーム・金額・入金者名・メモ・受取状態）を削除しますか？",
     preorderItemsSummary: "事前通販 {n}件 · 受取済み {done}件 · 合計 {amount}",
     preorderItemsProgress: "{done}/{n}件",
     preorderFilterMine: "💳 自分の事前通販 ({n})",
@@ -2978,6 +3028,26 @@ const I18N = {
     adultNotice: "🔞 成人向けブースのご案内\n\n成人向けブースでは、イベント当日に追加の年齢確認が必要になる場合があります。\n未成年の方は購入が難しい場合があります。",
     savedStatus: "保存済み",
     deletedStatus: "削除済み",
+    boothDeleteBtn: "🗑 このブースの記録を削除",
+    boothDeleteConfirm: "[{id}] {name}\nこのブースの以下の記録を削除しますか？",
+    boothDeleteKeepPreorder: "事前通販の記録は残ります（💳 事前通販 タブで別に削除できます）。",
+    boothDeleteNothing: "このブースには削除する記録（メモ・訪問状態・優先度・予算・使った金額）がありません。",
+    deleteCannotUndo: "削除した記録は元に戻せません。",
+    recMemo: "メモ",
+    recVisit: "訪問状態",
+    recBudget: "予算",
+    recSpent: "使った金額",
+    recDate: "入金日",
+    recPlatform: "プラットフォーム",
+    recAmount: "金額",
+    recPayer: "入金者名",
+    recReceived: "受取済み",
+    recNotReceived: "未受取",
+    recEmpty: "（空）",
+    preorderDeleteAllBtn: "🗑 このブースの事前通販記録を削除",
+    preorderDeleteConfirm: "[{id}] {name}\nこのブースの事前通販の記録をすべて削除しますか？",
+    preorderItemDeleteConfirm: "[{id}] {name}\n事前通販 {n} を削除しますか？",
+    preorderOffDetails: "事前通販をオフにすると、このブースの事前通販の記録も削除されます。",
     resetBtn: "🗑️ データを初期化",
     resetConfirm: "メモ・訪問状態・予算・使った金額・優先度・事前通販情報・非表示にした頒布物情報など保存されたすべてのデータが削除されます。この操作は元に戻せません。続行しますか？",
     resetConfirmCloud: "Googleでログイン中のため、この端末だけでなくクラウドに保存されたデータ（他の端末で見ていたメモ・訪問状態・予算・使った金額・優先度・事前通販・非表示にした頒布物情報）もすべて削除されます。この操作は元に戻せません。続行しますか？",
@@ -3667,9 +3737,44 @@ function updateAuthUI(){
   }
 }
 
-function mergeField(local, cloud){
+function mergeField(local, cloud, base){
   // 같은 부스에 로컬/클라우드 값이 둘 다 있으면 로컬을 우선(현재 기기에서 방금 한 작업을 덮어쓰지 않기 위함)
-  return Object.assign({}, cloud || {}, local || {});
+  const out = Object.assign({}, cloud || {}, local || {});
+  if(!base) return out;
+  // 지운 항목이 되살아나지 않게(2026-11-17): 마지막으로 이 기기와 클라우드를 맞췄을 때 값(base)과 비교해
+  //  - 이 기기엔 그대로 남아 있는데 클라우드에서 사라졌으면 → 다른 기기에서 지운 것 → 지움
+  //  - 클라우드엔 그대로 남아 있는데 이 기기에서 사라졌으면 → 이 기기에서 지우고 아직 못 올린 것 → 지움
+  // 그 뒤에 어느 쪽에서든 값을 고쳤으면(base 와 다르면) 지우지 않고 남김.
+  // (Firestore 가 객체 안 키 순서를 바꿔 돌려줄 수 있어서 키 순서와 상관없이 비교)
+  const same = (v, baseJson) => { try { return stableJson(v) === stableJson(JSON.parse(baseJson)); } catch { return false; } };
+  Object.keys(out).forEach(k => {
+    if(!(k in base)) return;
+    const inLocal = !!local && local[k] !== undefined, inCloud = !!cloud && cloud[k] !== undefined;
+    if(inLocal && !inCloud && same(local[k], base[k])) delete out[k];
+    else if(inCloud && !inLocal && same(cloud[k], base[k])) delete out[k];
+  });
+  return out;
+}
+function stableJson(v){
+  if(Array.isArray(v)) return "[" + v.map(stableJson).join(",") + "]";
+  if(v && typeof v === "object") return "{" + Object.keys(v).sort().map(k => JSON.stringify(k) + ":" + stableJson(v[k])).join(",") + "}";
+  return JSON.stringify(v);
+}
+
+// 마지막으로 클라우드와 맞춘 값(기준점)을 계정별로 이 기기에 저장해 둠. 페이지를 새로 열어 병합할 때
+// 위 mergeField 가 "어느 쪽에서 지운 항목인지" 가리는 데 씀. 다른 계정의 기준점은 쓰지 않음.
+const SYNC_BASE_KEY = `${STORAGE_PREFIX}-sync-base`;
+function setSyncBase(snap){
+  autoSync.snapshot = snap;
+  if(!currentUser || snap === null) return;
+  try { localStorage.setItem(SYNC_BASE_KEY, JSON.stringify({ uid: currentUser.uid, snap })); } catch {}
+}
+function loadSyncBase(uid){
+  try {
+    const saved = JSON.parse(localStorage.getItem(SYNC_BASE_KEY));
+    if(saved && saved.uid === uid && typeof saved.snap === "string") return JSON.parse(saved.snap);
+  } catch {}
+  return null;
 }
 
 // users/{uid} 문서 안의 행사별 필드(furstclass)에 저장함.
@@ -3696,13 +3801,14 @@ function pushToCloud(uid){
 function pullAndMergeFromCloud(uid){
   return firebase.firestore().collection("users").doc(uid).get().then((doc) => {
     const cloud = (doc.exists && doc.data()[STORAGE_PREFIX]) || {};
-    notes = mergeField(notes, cloud.notes);
-    visitStatus = mergeField(visitStatus, cloud.visitStatus);
-    budgets = mergeField(budgets, cloud.budgets);
-    spent = mergeField(spent, cloud.spent);
-    priority = mergeField(priority, cloud.priority);
-    preorders = mergeField(preorders, cloud.preorders);
-    hiddenPosts = mergeField(hiddenPosts, cloud.hiddenPosts);
+    const base = loadSyncBase(uid) || {};
+    notes = mergeField(notes, cloud.notes, base.notes);
+    visitStatus = mergeField(visitStatus, cloud.visitStatus, base.visitStatus);
+    budgets = mergeField(budgets, cloud.budgets, base.budgets);
+    spent = mergeField(spent, cloud.spent, base.spent);
+    priority = mergeField(priority, cloud.priority, base.priority);
+    preorders = mergeField(preorders, cloud.preorders, base.preorders);
+    hiddenPosts = mergeField(hiddenPosts, cloud.hiddenPosts, base.hiddenPosts);
     migrateAllMergedBoothIds();
     migrateMergedBoothIds(spent);
     migratePreorderShape();
@@ -3735,7 +3841,7 @@ function pullMergePush(uid){
     })
     .then(() => {
       markCloudSynced();
-      autoSync.snapshot = snap;
+      setSyncBase(snap);
       // 올리는 사이에 또 편집했다면 그 부분은 자동 저장으로 이어서 올림
       if(snapshotOf(currentCloudData()) !== snap) scheduleCloudSave();
     })
@@ -3786,7 +3892,7 @@ function snapshotOf(data){
 }
 
 function markCloudSynced(){
-  autoSync.snapshot = snapshotOf(currentCloudData());
+  setSyncBase(snapshotOf(currentCloudData()));
   autoSync.pendingSince = 0;
   clearTimeout(autoSync.timer);
   autoSync.timer = null;
@@ -3856,7 +3962,7 @@ function flushCloudSave(){
       throw err;
     })
     .then(() => {
-      autoSync.snapshot = sentSnapshot;
+      setSyncBase(sentSnapshot);
     })
     .catch((err) => {
       bugTrace("sync", `auto save fail ${(err && (err.code || err.message)) || ""}`);
@@ -4039,7 +4145,7 @@ async function resetAllData(){
         },
       });
       // 클라우드가 빈 상태가 기준점이 됨 → 아래에서 로컬을 비울 때 자동 저장이 따로 쓰지 않음
-      autoSync.snapshot = snapshotOf({});
+      setSyncBase(snapshotOf({}));
       autoSync.pendingSince = 0;
       clearTimeout(autoSync.timer);
     } catch {
@@ -5900,6 +6006,47 @@ function openBoothModal(boothId){
 
 // 방문 예정/완료·선입금·우선순위·예산·메모. 모달에서는 부스 정보 아래, PC 펼침 상세에서는 오른쪽 칸.
 // 대표자 X 글 칸과 "X 프로필 열기" 버튼은 2026-10-05 사용자 요청으로 뺌(X는 부스원 사진·아이디로 이동).
+/* ---------- 기록 삭제 확인 창 (2026-11-17 사용자 요청) ----------
+   부스 상세의 "🗑 이 부스 기록 삭제"는 관심 부스 탭에 쓰는 기록(메모·방문 상태·우선순위·예산·쓴 돈)을
+   한꺼번에 지우고, 선입금 칸의 삭제는 선입금 기록을 지움. 둘 다 어느 부스의 무엇이 지워지는지
+   값까지 보여 주고 확인을 눌러야 지움. 지운 항목은 자동 동기화가 클라우드에서도 지움(FieldValue.delete).
+------------------------------------------------------------------ */
+function shortText(text, max = 60){
+  const one = String(text || "").replace(/\s+/g, " ").trim();
+  return one.length > max ? one.slice(0, max) + "…" : one;
+}
+// 관심 부스 탭 기록 중 이 부스에 있는 것만 "· 항목: 값" 줄로
+function boothRecordLines(boothId){
+  const lines = [];
+  const note = getNote(boothId);
+  if(note) lines.push(`· ${t("recMemo")}: "${shortText(note)}"`);
+  const visit = getVisitStatus(boothId);
+  if(visit) lines.push(`· ${t("recVisit")}: ${t(visit === "visited" ? "visitVisited" : "visitPlanned")}`);
+  const level = getPriority(boothId);
+  if(level) lines.push(`· ${t("priority" + level)}`);   // "1순위"/"Priority 1"/"優先度1" 자체가 항목 이름을 담고 있음
+  if(getBudget(boothId)) lines.push(`· ${t("recBudget")}: ${formatWon(getBudget(boothId))}`);
+  if(getSpent(boothId)) lines.push(`· ${t("recSpent")}: ${formatWon(getSpent(boothId))}`);
+  return lines;
+}
+// 선입금 항목 하나를 "· 선입금 n: 금액 ₩… · 날짜 … · … · 아직 안 받음" 줄로
+function preorderItemLine(item, index){
+  const parts = [];
+  if(item.amount) parts.push(`${t("recAmount")} ${formatWon(item.amount)}`);
+  if(item.date) parts.push(`${t("recDate")} ${item.date}`);
+  if(item.platform) parts.push(`${t("recPlatform")} ${shortText(item.platform, 30)}`);
+  if(item.payer) parts.push(`${t("recPayer")} ${shortText(item.payer, 30)}`);
+  if(item.memo) parts.push(`${t("recMemo")} "${shortText(item.memo, 40)}"`);
+  if(!parts.length && !item.received) parts.push(t("recEmpty"));
+  parts.push(t(item.received ? "recReceived" : "recNotReceived"));
+  return `· ${t("preorderItemTitle", { n: index + 1 })}: ${parts.join(" · ")}`;
+}
+function preorderRecordLines(boothId){
+  return getPreorderItems(boothId).map(preorderItemLine);
+}
+function confirmDeleteText(head, lines, tail){
+  return [head, lines.join("\n"), tail, t("deleteCannotUndo")].filter(Boolean).join("\n\n");
+}
+
 function fillBoothActions(content, booth){
   const visitBox = document.createElement("div");
   visitBox.className = "visit-box";
@@ -5936,7 +6083,8 @@ function fillBoothActions(content, booth){
   preorderBtn.addEventListener("click", async () => {
     if(getPreorder(booth.id)){
       // 적어 둔 선입금 정보가 있으면 실수로 지우지 않게 한 번 묻고 끔
-      if(preorderHasDetails(booth.id) && !(await showConfirmDialog(t("preorderOffConfirm"), t("preorderOff")))) return;
+      if(preorderHasDetails(booth.id) && !(await showConfirmDialog(
+        confirmDeleteText(`[${booth.id}] ${booth.name}\n${t("preorderOffDetails")}`, preorderRecordLines(booth.id)), t("preorderOff")))) return;
       setPreorderOn(booth.id, false);
     } else {
       setPreorderOn(booth.id, true);
@@ -6019,7 +6167,7 @@ function fillBoothActions(content, booth){
     <label>${escapeHtml(t("memoLabel"))}</label>
     <textarea maxlength="1000" placeholder="${escapeHtml(t("memoPlaceholder"))}">${escapeHtml(getNote(booth.id))}</textarea>
     <div class="memo-actions">
-      <button type="button" class="delete">${escapeHtml(t("delete"))}</button>
+      <button type="button" class="delete">${escapeHtml(t("boothDeleteBtn"))}</button>
       <span class="memo-status"></span>
     </div>
   `;
@@ -6047,10 +6195,29 @@ function fillBoothActions(content, booth){
     statusTimer = setTimeout(() => { status.textContent = ""; }, 1500);
   });
   textarea.addEventListener("change", refreshNotesList);
-  deleteBtn.addEventListener("click", () => {
+  // 예전(~2026-11-16)에는 메모만 지웠음. 이제 관심 부스 탭 기록을 모두 지우되 선입금은 남김(사용자 요청).
+  deleteBtn.addEventListener("click", async () => {
+    // 입력 중인 메모를 먼저 저장해야 확인 창에 지금 값이 보임
+    setNote(booth.id, textarea.value);
+    const lines = boothRecordLines(booth.id);
+    if(!lines.length){ await showNoticeDialog(t("boothDeleteNothing")); return; }
+    const message = confirmDeleteText(t("boothDeleteConfirm", { id: booth.id, name: booth.name }), lines,
+      getPreorder(booth.id) ? t("boothDeleteKeepPreorder") : "");
+    if(!(await showConfirmDialog(message, t("delete")))) return;
+    bugTrace("delete", `booth records ${booth.id}`);
     textarea.value = "";
     setNote(booth.id, "");
+    setVisitStatus(booth.id, null);
+    setPriority(booth.id, null);
+    setBudget(booth.id, 0);
+    setSpent(booth.id, 0);
+    budgetBox.querySelectorAll("input[data-money]").forEach(input => { input.value = ""; });
+    syncVisitButtons();
+    syncPriorityButtons();
     updateNoteVisuals(booth.id);
+    updateVisitVisuals(booth.id);
+    updatePriorityVisuals(booth.id);
+    updateBudgetTotalDisplay();
     notesListStale = false;
     renderNav();
     if(currentRow === "MAP") renderMapView();
@@ -6148,8 +6315,9 @@ function fillPreorderActions(content, booth){
       const removeBtn = item.querySelector(".preorder-item-remove");
       if(removeBtn) removeBtn.addEventListener("click", async () => {
         // 적어 둔 내용이 있는 항목은 실수로 지우지 않게 한 번 물어봄
-        if(preorderItemHasDetails(currentItem()) &&
-          !(await showConfirmDialog(t("preorderItemRemoveConfirm", { n: index + 1 }), t("preorderItemRemove")))) return;
+        if(preorderItemHasDetails(currentItem()) && !(await showConfirmDialog(
+          confirmDeleteText(t("preorderItemDeleteConfirm", { id: booth.id, name: booth.name, n: index + 1 }), [preorderItemLine(currentItem(), index)]),
+          t("preorderItemRemove")))) return;
         removePreorderItem(booth.id, index);
         render(Math.min(index, getPreorderItems(booth.id).length - 1));
         renderNav();
@@ -6170,6 +6338,24 @@ function fillPreorderActions(content, booth){
       refreshPreorderTab();
     });
     box.appendChild(addBtn);
+
+    // 이 부스 선입금 기록 전체 삭제(2026-11-17 사용자 요청). 적어 둔 게 있을 때만 보임.
+    if(getPreorder(booth.id)){
+      const delAllBtn = document.createElement("button");
+      delAllBtn.type = "button";
+      delAllBtn.className = "preorder-delete-all-btn";
+      delAllBtn.textContent = t("preorderDeleteAllBtn");
+      delAllBtn.addEventListener("click", async () => {
+        const message = confirmDeleteText(t("preorderDeleteConfirm", { id: booth.id, name: booth.name }), preorderRecordLines(booth.id));
+        if(!(await showConfirmDialog(message, t("delete")))) return;
+        bugTrace("delete", `preorder records ${booth.id}`);
+        setPreorderOn(booth.id, false);
+        render(null);
+        renderNav();
+        refreshPreorderTab();
+      });
+      box.appendChild(delAllBtn);
+    }
 
     syncSummary();
     if(focusIndex != null){
