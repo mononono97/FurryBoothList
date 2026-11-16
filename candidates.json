@@ -1,6 +1,54 @@
 {
- "updatedAt": "2026-11-16T14:45:34+00:00",
+ "updatedAt": "2026-11-16T15:25:35+00:00",
  "posts": [
+  {
+   "id": "2122346928575000741",
+   "handle": "kongzorim",
+   "booths": [
+    "A11-12"
+   ],
+   "boothNames": [
+    "콩자반 김자반"
+   ],
+   "created": "2026-11-16T15:11:53+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "타래(자기 글 답글)"
+   ],
+   "foundAt": "2026-11-16T15:21:11+00:00"
+  },
+  {
+   "id": "2122346925714538790",
+   "handle": "kongzorim",
+   "booths": [
+    "A11-12"
+   ],
+   "boothNames": [
+    "콩자반 김자반"
+   ],
+   "created": "2026-11-16T15:11:53+00:00",
+   "score": 11,
+   "sensitive": false,
+   "reasons": [
+    "인포",
+    "통판·선입금·예약",
+    "굿즈·판매",
+    "행사·부스",
+    "주문서 링크",
+    "이미지"
+   ],
+   "preorderHint": {
+    "link": "https://witchform.com/deposit_form.php?idx=1099476",
+    "links": [
+     "https://witchform.com/deposit_form.php?idx=1099476"
+    ],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-16T15:21:11+00:00"
+  },
   {
    "id": "2122331673560072412",
    "handle": "Furriverse",
@@ -130,7 +178,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-16T13:17:25+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2122283286311399601",
@@ -169,7 +218,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-16T11:18:48+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2122249159906586909",
@@ -369,7 +419,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-16T05:20:32+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2122177847972479036",
@@ -433,7 +484,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-16T02:13:08+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2122142333592572064",
@@ -11913,6 +11965,29 @@
     "이미지"
    ],
    "foundAt": "2026-10-04T12:52:02+00:00"
+  },
+  {
+   "id": "2106327079310766330",
+   "handle": "kongzorim",
+   "booths": [
+    "A11-12"
+   ],
+   "boothNames": [
+    "콩자반 김자반"
+   ],
+   "created": "2026-10-03T10:14:44+00:00",
+   "score": 2,
+   "sensitive": false,
+   "quoted": {
+    "id": "2106288446562296301",
+    "handle": "FURSTCLASS_KR",
+    "sensitive": false
+   },
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-16T15:21:11+00:00"
   },
   {
    "id": "2106315348689784916",
