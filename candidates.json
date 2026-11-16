@@ -1,6 +1,23 @@
 {
- "updatedAt": "2026-11-16T13:28:34+00:00",
+ "updatedAt": "2026-11-16T14:29:47+00:00",
  "posts": [
+  {
+   "id": "2122331673560072412",
+   "handle": "Furriverse",
+   "booths": [
+    "A39"
+   ],
+   "boothNames": [
+    "Furriverse"
+   ],
+   "created": "2026-11-16T14:11:16+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-11-16T14:20:45+00:00"
+  },
   {
    "id": "2122316652058730828",
    "handle": "yongback00",
