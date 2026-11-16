@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-15T19:28:22+00:00",
+ "updatedAt": "2026-11-16T00:30:46+00:00",
  "posts": [
   {
    "id": "2122037234673312033",
@@ -17,7 +17,8 @@
     "통판·선입금·예약",
     "행사·부스",
     "주문서 링크",
-    "이미지"
+    "이미지",
+    "RT 계정"
    ],
    "preorderHint": {
     "link": "https://docs.google.com/forms/d/e/1FAIpQLSfi4z0TIHb4JWGh6EZUSXanr6vfmAk9SWU3A5qoum1VUexBQg/viewform?usp=header",
@@ -27,7 +28,8 @@
     "start": "",
     "end": ""
    },
-   "foundAt": "2026-11-15T19:24:12+00:00"
+   "foundAt": "2026-11-15T19:24:12+00:00",
+   "via": "furstclassrt"
   },
   {
    "id": "2122014411640709560",
@@ -785,9 +787,11 @@
     "굿즈·판매",
     "품목",
     "행사·부스",
-    "이미지"
+    "이미지",
+    "RT 계정"
    ],
-   "foundAt": "2026-11-13T11:22:54+00:00"
+   "foundAt": "2026-11-13T11:22:54+00:00",
+   "via": "furstclassrt"
   },
   {
    "id": "2121196122970464277",
