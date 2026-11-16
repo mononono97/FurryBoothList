@@ -1,6 +1,44 @@
 {
- "updatedAt": "2026-11-16T00:30:46+00:00",
+ "updatedAt": "2026-11-16T02:17:06+00:00",
  "posts": [
+  {
+   "id": "2122147865439170871",
+   "handle": "orpiamman",
+   "booths": [
+    "C09"
+   ],
+   "boothNames": [
+    "퍼리중독신고는7811"
+   ],
+   "created": "2026-11-16T02:00:53+00:00",
+   "score": 4,
+   "sensitive": true,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-16T02:13:08+00:00"
+  },
+  {
+   "id": "2122142333592572064",
+   "handle": "kemoistani",
+   "booths": [
+    "C08"
+   ],
+   "boothNames": [
+    "High-Fur"
+   ],
+   "created": "2026-11-16T01:38:54+00:00",
+   "score": 4,
+   "sensitive": true,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-16T02:09:55+00:00"
+  },
   {
    "id": "2122037234673312033",
    "handle": "nrimbotree",
@@ -791,7 +829,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-13T11:22:54+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2121196122970464277",
