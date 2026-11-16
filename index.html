@@ -1505,8 +1505,6 @@
   /* 예산 · 쓴 돈 두 칸 */
   .money-fields{ display:grid; grid-template-columns:minmax(0, 1fr) minmax(0, 1fr); gap:10px; }
   .money-fields > div{ min-width:0; }
-  /* 쓴 돈 칸에 선입금 금액을 적어 관심 부스에 계속 남는 일이 있어서(2026-11-17 제보) 칸 아래에 안내 */
-  .money-hint{ margin-top:6px; font-size:11px; line-height:1.45; color:var(--moss-light); }
   .booth-posts-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:2px; }
   .booth-posts-title{ font-size:13px; font-weight:700; }
   /* 숨긴 상품 정보 글: 제목 옆 "모두 보기" 토글, 글마다 위의 "숨기기/다시 보이기" (2026-10-26) */
@@ -2475,7 +2473,7 @@ const I18N = {
     mapModePreorder: "💳 선입금 보기",
     mapPreorderHint: "선입금 부스를 누르면 선입금 메모가 열려요",
     circleCount: "{n}개 부스",
-    notesCount: "관심 부스 {n}개",
+    notesCount: "방문 예정·메모된 부스 {n}개",
     emptyDefault: "검색 결과가 없어요.",
     emptyNotes: "아직 관심 부스가 없어요. 부스를 열어 \"🟡 방문 예정\"을 누르거나 메모를 적어 보세요.",
     noBoothData: "표시할 부스 데이터가 없어요.",
@@ -2515,7 +2513,6 @@ const I18N = {
     quickVisitUndoLabel: "방문 완료 해제 (방문 예정으로 되돌리기)",
     moneyLineBudgetOnly: "예산 {budget}",
     spentLabel: "쓴 돈 (원)",
-    spentHint: "쓴 돈은 행사장에서 실제로 쓴 금액이에요. 선입금은 💳 선입금 탭에 따로 적어 주세요. 금액을 적은 부스는 📝 관심 부스에 모여요.",
     spentTotal: "예산 {budget} · 쓴 돈 {spent} · 남은 예산 {left}",
     spentTotalOver: "예산 {budget} · 쓴 돈 {spent} · {left} 초과",
     spentTotalOnly: "쓴 돈 합계: {spent}",
@@ -2711,7 +2708,7 @@ const I18N = {
     mapModePreorder: "💳 Pre-orders",
     mapPreorderHint: "Tap a pre-order booth to see its pre-order notes",
     circleCount: "{n} booths",
-    notesCount: "My Booths: {n}",
+    notesCount: "{n} planned / noted booths",
     emptyDefault: "No search results.",
     emptyNotes: "No booths here yet. Open a booth and tap \"🟡 Plan to Visit\" or write a note.",
     noBoothData: "No booth data to display.",
@@ -2751,7 +2748,6 @@ const I18N = {
     quickVisitUndoLabel: "Unmark visited (back to planned)",
     moneyLineBudgetOnly: "Budget {budget}",
     spentLabel: "Spent (KRW)",
-    spentHint: "Spent is what you actually paid at the event. Record pre-orders in the 💳 Pre-order tab instead. Booths with an amount appear in 📝 My Booths.",
     spentTotal: "Budget {budget} · Spent {spent} · {left} left",
     spentTotalOver: "Budget {budget} · Spent {spent} · {left} over",
     spentTotalOnly: "Total spent: {spent}",
@@ -2947,7 +2943,7 @@ const I18N = {
     mapModePreorder: "💳 事前通販表示",
     mapPreorderHint: "事前通販ブースを押すと事前通販メモが開きます",
     circleCount: "{n}ブース",
-    notesCount: "気になるブース {n}件",
+    notesCount: "訪問予定・メモありのブース {n}件",
     emptyDefault: "検索結果がありません。",
     emptyNotes: "まだ気になるブースがありません。ブースを開いて「🟡 訪問予定」を押すか、メモを書いてみましょう。",
     noBoothData: "表示するブースデータがありません。",
@@ -2987,7 +2983,6 @@ const I18N = {
     quickVisitUndoLabel: "訪問済みを解除（訪問予定に戻す）",
     moneyLineBudgetOnly: "予算 {budget}",
     spentLabel: "使った金額（ウォン）",
-    spentHint: "使った金額はイベント会場で実際に払った金額です。事前通販は 💳 事前通販 タブに記録してください。金額を入れたブースは 📝 気になるブース に表示されます。",
     spentTotal: "予算 {budget} · 使った金額 {spent} · 残り {left}",
     spentTotalOver: "予算 {budget} · 使った金額 {spent} · {left} 超過",
     spentTotalOnly: "使った金額の合計：{spent}",
@@ -6153,7 +6148,6 @@ function fillBoothActions(content, booth){
         </div>
       </div>
     </div>
-    <div class="money-hint">${escapeHtml(t("spentHint"))}</div>
   `;
   budgetBox.querySelectorAll("input[data-money]").forEach(input => {
     input.addEventListener("input", () => {
