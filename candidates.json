@@ -1,6 +1,98 @@
 {
- "updatedAt": "2026-11-17T11:23:20+00:00",
+ "updatedAt": "2026-11-17T12:24:03+00:00",
  "posts": [
+  {
+   "id": "2122661826085441886",
+   "handle": "omyuriceart",
+   "booths": [
+    "B03"
+   ],
+   "boothNames": [
+    "Omyurice"
+   ],
+   "created": "2026-11-17T12:03:11+00:00",
+   "score": 4,
+   "sensitive": true,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-17T12:21:25+00:00"
+  },
+  {
+   "id": "2122659337894326508",
+   "handle": "Yell0whale",
+   "booths": [
+    "A20"
+   ],
+   "boothNames": [
+    "내가 쓰려고 만든 굿즈"
+   ],
+   "created": "2026-11-17T11:53:17+00:00",
+   "score": 7,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약",
+    "굿즈·판매",
+    "주문서 링크",
+    "이미지"
+   ],
+   "preorderHint": {
+    "link": "https://forms.gle/hHqYCuQ8d3Cgsdec9",
+    "links": [
+     "https://forms.gle/hHqYCuQ8d3Cgsdec9"
+    ],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-17T12:23:28+00:00"
+  },
+  {
+   "id": "2122657957615980588",
+   "handle": "ToriS6526",
+   "booths": [
+    "A19"
+   ],
+   "boothNames": [
+    "메이커 연합부스 - 아르모아"
+   ],
+   "created": "2026-11-17T11:47:48+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-17T12:23:00+00:00"
+  },
+  {
+   "id": "2122650784802427096",
+   "handle": "Breadragon",
+   "booths": [
+    "A32"
+   ],
+   "boothNames": [
+    "고소한 빵냄새가 솔솔"
+   ],
+   "created": "2026-11-17T11:19:18+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약",
+    "행사·부스",
+    "이미지"
+   ],
+   "preorderHint": {
+    "link": "https://naver.me/F3EyE1ea",
+    "links": [
+     "https://naver.me/F3EyE1ea"
+    ],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-17T12:18:08+00:00"
+  },
   {
    "id": "2122637957312209041",
    "handle": "_Kimroco",
