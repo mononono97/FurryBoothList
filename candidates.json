@@ -1,6 +1,35 @@
 {
- "updatedAt": "2026-11-16T16:22:59+00:00",
+ "updatedAt": "2026-11-17T00:30:05+00:00",
  "posts": [
+  {
+   "id": "2122477637641945542",
+   "handle": "Wolf__Duke",
+   "booths": [
+    "C02"
+   ],
+   "boothNames": [
+    "어서오세요, 두바이 쫀득 김메이에!"
+   ],
+   "created": "2026-11-16T23:51:17+00:00",
+   "score": 3,
+   "sensitive": false,
+   "quoted": {
+    "id": "2112733781044105477",
+    "handle": "Wolf__Duke",
+    "sensitive": false
+   },
+   "reasons": [
+    "통판·선입금·예약",
+    "이미지"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-17T00:29:04+00:00"
+  },
   {
    "id": "2122346928575000741",
    "handle": "kongzorim",
