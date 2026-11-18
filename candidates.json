@@ -1,6 +1,30 @@
 {
- "updatedAt": "2026-11-18T14:15:59+00:00",
+ "updatedAt": "2026-11-18T14:27:31+00:00",
  "posts": [
+  {
+   "id": "2123060110713098720",
+   "handle": "Yell0whale",
+   "booths": [
+    "A20"
+   ],
+   "boothNames": [
+    "내가 쓰려고 만든 굿즈"
+   ],
+   "created": "2026-11-18T14:25:49+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약",
+    "타래(자기 글 답글)"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-18T14:26:46+00:00"
+  },
   {
    "id": "2123053620790968624",
    "handle": "OCHALOBSTER",
@@ -53,9 +77,12 @@
    "sensitive": false,
    "reasons": [
     "행사·부스",
-    "이미지"
+    "이미지",
+    "RT 계정"
    ],
-   "foundAt": "2026-11-18T13:18:30+00:00"
+   "foundAt": "2026-11-18T13:18:30+00:00",
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2123038620055753126",
@@ -75,6 +102,24 @@
     "이미지"
    ],
    "foundAt": "2026-11-18T13:19:19+00:00"
+  },
+  {
+   "id": "2123034453832306836",
+   "handle": "agitype01",
+   "booths": [
+    "B02"
+   ],
+   "boothNames": [
+    "Agi's Garage"
+   ],
+   "created": "2026-11-18T12:43:52+00:00",
+   "via": "furstclassrt",
+   "sensitive": true,
+   "reasons": [
+    "RT 계정"
+   ],
+   "foundAt": "2026-11-18T14:26:57+00:00",
+   "preorderHint": null
   },
   {
    "id": "2123027935045337527",
@@ -179,9 +224,12 @@
     "굿즈·판매",
     "품목",
     "행사·부스",
-    "이미지"
+    "이미지",
+    "RT 계정"
    ],
-   "foundAt": "2026-11-18T10:17:57+00:00"
+   "foundAt": "2026-11-18T10:17:57+00:00",
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2122975664194441369",
@@ -340,9 +388,12 @@
    "reasons": [
     "굿즈·판매",
     "행사·부스",
-    "이미지"
+    "이미지",
+    "RT 계정"
    ],
-   "foundAt": "2026-11-18T04:25:59+00:00"
+   "foundAt": "2026-11-18T04:25:59+00:00",
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2122895069363548299",
@@ -537,7 +588,8 @@
     "통판·선입금·예약",
     "굿즈·판매",
     "주문서 링크",
-    "이미지"
+    "이미지",
+    "RT 계정"
    ],
    "preorderHint": {
     "link": "https://forms.gle/hHqYCuQ8d3Cgsdec9",
@@ -547,7 +599,8 @@
     "start": "",
     "end": ""
    },
-   "foundAt": "2026-11-17T12:23:28+00:00"
+   "foundAt": "2026-11-17T12:23:28+00:00",
+   "via": "furstclassrt"
   },
   {
    "id": "2122657957615980588",
@@ -677,9 +730,12 @@
    "reasons": [
     "굿즈·판매",
     "행사·부스",
-    "이미지"
+    "이미지",
+    "RT 계정"
    ],
-   "foundAt": "2026-11-17T09:19:13+00:00"
+   "foundAt": "2026-11-17T09:19:13+00:00",
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2122615804596547869",
@@ -794,7 +850,8 @@
     "굿즈·판매",
     "행사·부스",
     "주문서 링크",
-    "이미지"
+    "이미지",
+    "RT 계정"
    ],
    "preorderHint": {
     "link": "https://witchform.com/deposit_form.php?idx=1099476",
@@ -804,7 +861,8 @@
     "start": "",
     "end": ""
    },
-   "foundAt": "2026-11-16T15:21:11+00:00"
+   "foundAt": "2026-11-16T15:21:11+00:00",
+   "via": "furstclassrt"
   },
   {
    "id": "2122333673110560818",
