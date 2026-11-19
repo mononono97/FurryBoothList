@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-19T15:00:49+00:00",
+ "updatedAt": "2026-11-19T15:29:45+00:00",
  "posts": [
   {
    "id": "2123416853943120113",
@@ -290,6 +290,75 @@
     "이미지"
    ],
    "foundAt": "2026-11-19T04:19:24+00:00"
+  },
+  {
+   "id": "2123261191770575032",
+   "handle": "Furscord_booth",
+   "booths": [
+    "C03"
+   ],
+   "boothNames": [
+    "Furscord : 카지노 털쟁이"
+   ],
+   "created": "2026-11-19T03:44:51+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "행사·부스",
+    "타래(자기 글 답글)"
+   ],
+   "foundAt": "2026-11-19T15:21:29+00:00"
+  },
+  {
+   "id": "2123261186011705631",
+   "handle": "Furscord_booth",
+   "booths": [
+    "C03"
+   ],
+   "boothNames": [
+    "Furscord : 카지노 털쟁이"
+   ],
+   "created": "2026-11-19T03:44:49+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "이미지",
+    "타래(자기 글 답글)"
+   ],
+   "foundAt": "2026-11-19T15:21:29+00:00"
+  },
+  {
+   "id": "2123259584873980098",
+   "handle": "Furscord_booth",
+   "booths": [
+    "C03"
+   ],
+   "boothNames": [
+    "Furscord : 카지노 털쟁이"
+   ],
+   "created": "2026-11-19T03:38:27+00:00",
+   "score": 9,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약",
+    "굿즈·판매",
+    "품목",
+    "행사·부스",
+    "주문서 링크",
+    "이미지"
+   ],
+   "preorderHint": {
+    "link": "https://witchform.com/deposit_form/1100234",
+    "links": [
+     "https://witchform.com/deposit_form/1100234"
+    ],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-19T15:21:29+00:00"
   },
   {
    "id": "2123248233720029427",
@@ -13038,6 +13107,38 @@
     "이미지"
    ],
    "foundAt": "2026-10-04T12:56:17+00:00"
+  },
+  {
+   "id": "2106637947206529361",
+   "handle": "Furscord_booth",
+   "booths": [
+    "C03"
+   ],
+   "boothNames": [
+    "Furscord : 카지노 털쟁이"
+   ],
+   "created": "2026-10-04T06:50:00+00:00",
+   "score": 7,
+   "sensitive": false,
+   "quoted": {
+    "id": "2106288446562296301",
+    "handle": "FURSTCLASS_KR",
+    "sensitive": false
+   },
+   "reasons": [
+    "통판·선입금·예약",
+    "굿즈·판매",
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-19T15:21:29+00:00"
   },
   {
    "id": "2106526522777710850",
