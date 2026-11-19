@@ -158,6 +158,8 @@ HANDLE_FILL = {
 EXTRA_MEMBERS = {
     # 2026-10-06 사용자 요청: 리더 @kigurumikagetsu, 1번 Geppei, 2번 KC, 3번 mikatagura
     "A06": ["mikatagura"],
+    # 2026-11-19 사용자 요청: C03(Furscord : 카지노 털쟁이) 부스 계정 @Furscord_booth 를 부스원으로 추가
+    "C03": ["Furscord / @Furscord_booth"],
 }
 
 # 리더의 일본어 이름이 부스원 칸에 따로 적힌 경우 → 같은 사람으로 보고 리더 이름 옆에 붙임
