@@ -82,6 +82,7 @@
   .sensitive-tag{ color:var(--accent) !important; }
   .msg{ font-size:12.5px; color:var(--muted); }
   .msg.err{ color:var(--accent); }
+  .msg.warn{ color:#b26a00; font-weight:600; }
   .empty{ color:var(--muted); padding:24px 0; text-align:center; }
   details summary{ cursor:pointer; color:var(--muted); font-size:12.5px; }
   pre{ background:var(--chip-bg); padding:8px 10px; border-radius:8px; overflow-x:auto; font-size:12px; }
@@ -181,10 +182,12 @@
     <div style="font-weight:600; margin-bottom:6px;">글 주소로 직접 추가</div>
     <div class="row">
       <input id="manualUrl" placeholder="https://x.com/아이디/status/1234..." style="flex:1 1 260px;">
-      <select id="manualBooth" style="flex:0 1 220px;"></select>
+      <input id="manualBoothSearch" placeholder="다른 부스 찾기 (번호·이름·계정)" style="flex:0 1 200px;">
+      <select id="manualBooth" style="flex:0 1 260px;"></select>
       <button type="button" id="manualAddBtn" class="ok">반영</button>
     </div>
-    <div class="msg" id="manualMsg" style="margin-top:4px;">자동 후보에 없는 글(예: 키워드가 없는 상품 글)을 직접 넣을 때 씁니다.</div>
+    <div class="msg" id="manualMsg" style="margin-top:4px;">자동 후보에 없는 글(예: 키워드가 없는 상품 글)을 직접 넣을 때 씁니다. 부스는 글쓴이 계정으로 자동으로 골라지며, 다른 부스의 홍보글이면 "다른 부스 찾기"나 목록에서 바꿔 고를 수 있습니다.</div>
+    <div class="msg" id="manualBoothNote" style="margin-top:2px;" hidden></div>
   </div>
 
   <div class="tabs" id="tabs">
@@ -594,6 +597,8 @@ function render(){
     ? `공식 계정(@${OFFICIAL_HANDLE})의 새 글입니다. "반영"한 글만 사이트의 행사 안내 탭에 최신순으로 나옵니다. 하나도 반영하지 않으면 미리 정해 둔 최근 글 6개가 나옵니다.`
     : "부스 X 계정에서 자동으로 찾은 상품 글 후보입니다. \"반영\"을 누르면 사이트의 부스 상세 창에 바로 나타납니다.";
   document.getElementById("manualBooth").hidden = official;
+  document.getElementById("manualBoothSearch").hidden = official;
+  document.getElementById("manualBoothNote").hidden = official || !document.getElementById("manualBoothNote").textContent;
   document.getElementById("manualUrl").placeholder = official
     ? `https://x.com/${OFFICIAL_HANDLE}/status/1234...`
     : "https://x.com/아이디/status/1234...";
@@ -934,13 +939,44 @@ function refresh(){
   });
 }
 
-/* ---------- 직접 추가 ---------- */
-function fillManualBooths(handle){
+/* ---------- 직접 추가 ----------
+   부스는 글쓴이 계정으로 자동으로 골라 두되(기본값), 부스원이 다른 부스의 홍보글을 올리는 경우가 있어
+   전체 부스 중에서 바꿔 고를 수 있게 함 (2026-11-19). 자동 수집 후보의 부스 판정은 그대로. */
+let manualAutoBooths = [];
+function boothMatchesQuery(b, q){
+  if(!q) return true;
+  const hay = [b.id, b.id.replace(/^([A-Z])0?(\d+)$/, "$1-$2"), b.name, b.twitter,
+    ...(b.members || []).flatMap(m => [m.name, m.twitter])].filter(Boolean).join(" ").toLowerCase();
+  return q.toLowerCase().split(/\s+/).filter(Boolean).every(w => hay.includes(w.replace(/^@/, "")));
+}
+function fillManualBooths(handle, keepSelection){
   const select = document.getElementById("manualBooth");
-  const matched = boothsForHandle(handle);
-  const list = matched.length ? booths.filter(b => matched.includes(b.id)) : booths;
-  select.innerHTML = (matched.length ? "" : `<option value="">부스 선택</option>`) +
-    list.map(b => `<option value="${escapeHtml(b.id)}">${escapeHtml(b.id)} ${escapeHtml(b.name)}</option>`).join("");
+  const query = document.getElementById("manualBoothSearch").value.trim();
+  const prev = select.value;
+  if(handle !== undefined) manualAutoBooths = boothsForHandle(handle);
+  const opt = b => `<option value="${escapeHtml(b.id)}">${escapeHtml(b.id)} ${escapeHtml(b.name)}</option>`;
+  const auto = booths.filter(b => manualAutoBooths.includes(b.id));
+  const others = booths.filter(b => !manualAutoBooths.includes(b.id) && boothMatchesQuery(b, query));
+  let html = auto.length ? "" : `<option value="">부스 선택</option>`;
+  if(auto.length) html += `<optgroup label="글쓴이 계정으로 찾은 부스 (자동)">${auto.map(opt).join("")}</optgroup>`;
+  if(others.length) html += `<optgroup label="${query ? `\"${escapeHtml(query)}\" 검색 결과` : (auto.length ? "다른 부스" : "전체 부스")}">${others.map(opt).join("")}</optgroup>`;
+  else if(query) html += `<option value="" disabled>"${escapeHtml(query)}"에 맞는 다른 부스가 없습니다</option>`;
+  select.innerHTML = html;
+  // 검색 중이면 첫 검색 결과를, 아니면 자동 판정 부스를 고름. 바꿔 고른 값은 가능하면 유지
+  if(keepSelection && prev && [...select.options].some(o => o.value === prev && !o.disabled)) select.value = prev;
+  else if(query && others.length) select.value = others[0].id;
+  else select.value = auto.length ? auto[0].id : "";
+  updateManualBoothNote();
+}
+function updateManualBoothNote(){
+  const note = document.getElementById("manualBoothNote");
+  const booth = document.getElementById("manualBooth").value;
+  const changed = booth && manualAutoBooths.length && !manualAutoBooths.includes(booth);
+  note.className = changed ? "msg warn" : "msg";
+  note.textContent = changed
+    ? `글쓴이 계정은 ${manualAutoBooths.join("·")} 부스 소속이지만, ${booth} ${boothName(booth)}에 반영합니다.`
+    : "";
+  note.hidden = !note.textContent;
 }
 function parseStatusUrl(text){
   const m = String(text).trim().match(/(?:x|twitter)\.com\/([A-Za-z0-9_]{1,15})\/status(?:es)?\/(\d+)/i);
@@ -950,6 +986,8 @@ document.getElementById("manualUrl").addEventListener("input", (e) => {
   const parsed = parseStatusUrl(e.target.value);
   fillManualBooths(parsed ? parsed.handle : "");
 });
+document.getElementById("manualBoothSearch").addEventListener("input", () => fillManualBooths(undefined, false));
+document.getElementById("manualBooth").addEventListener("change", updateManualBoothNote);
 document.getElementById("manualAddBtn").addEventListener("click", () => {
   const msg = document.getElementById("manualMsg");
   const parsed = parseStatusUrl(document.getElementById("manualUrl").value);
@@ -966,6 +1004,7 @@ document.getElementById("manualAddBtn").addEventListener("click", () => {
     msg.className = "msg";
     msg.textContent = official ? "행사 안내 탭에 반영했습니다." : `${booth} ${boothName(booth)}에 반영했습니다.`;
     document.getElementById("manualUrl").value = "";
+    document.getElementById("manualBoothSearch").value = "";
     fillManualBooths("");
     render();
   }).catch(err => { msg.textContent = err.message || String(err); });
