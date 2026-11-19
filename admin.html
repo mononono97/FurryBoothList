@@ -184,7 +184,7 @@
       <select id="manualBooth" style="flex:0 1 220px;"></select>
       <button type="button" id="manualAddBtn" class="ok">반영</button>
     </div>
-    <div class="msg" id="manualMsg" style="margin-top:4px;">자동 후보에 없는 글(예: 키워드가 없는 상품 글)을 직접 넣을 때 씁니다.</div>
+    <div class="msg" id="manualMsg" style="margin-top:4px;">자동 후보에 없는 글(예: 키워드가 없는 상품 글)을 직접 넣을 때 씁니다. 부스는 글쓴이 계정의 부스로 자동 선택되고, 다른 부스 홍보글이면 목록 아래 "다른 부스"에서 바꿀 수 있습니다.</div>
   </div>
 
   <div class="tabs" id="tabs">
@@ -938,9 +938,16 @@ function refresh(){
 function fillManualBooths(handle){
   const select = document.getElementById("manualBooth");
   const matched = boothsForHandle(handle);
-  const list = matched.length ? booths.filter(b => matched.includes(b.id)) : booths;
-  select.innerHTML = (matched.length ? "" : `<option value="">부스 선택</option>`) +
-    list.map(b => `<option value="${escapeHtml(b.id)}">${escapeHtml(b.id)} ${escapeHtml(b.name)}</option>`).join("");
+  const opt = b => `<option value="${escapeHtml(b.id)}">${escapeHtml(b.id)} ${escapeHtml(b.name)}</option>`;
+  if(!matched.length){
+    select.innerHTML = `<option value="">부스 선택</option>` + booths.map(opt).join("");
+    return;
+  }
+  // 글쓴이 계정의 부스를 먼저 골라 두되, 부스원이 다른 부스 홍보글을 올린 경우를 위해
+  // 나머지 부스도 아래 "다른 부스" 묶음에서 고를 수 있게 함 (2026-11-19 사용자 요청)
+  select.innerHTML =
+    `<optgroup label="이 계정의 부스">${booths.filter(b => matched.includes(b.id)).map(opt).join("")}</optgroup>` +
+    `<optgroup label="다른 부스 (다른 부스 홍보글일 때)">${booths.filter(b => !matched.includes(b.id)).map(opt).join("")}</optgroup>`;
 }
 function parseStatusUrl(text){
   const m = String(text).trim().match(/(?:x|twitter)\.com\/([A-Za-z0-9_]{1,15})\/status(?:es)?\/(\d+)/i);
@@ -964,7 +971,9 @@ document.getElementById("manualAddBtn").addEventListener("click", () => {
   if(!official && !booth){ msg.textContent = "어느 부스의 글인지 골라 주세요."; return; }
   (official ? approveOfficial([parsed.id]) : approve(parsed.id, booth, parsed.handle)).then(() => {
     msg.className = "msg";
-    msg.textContent = official ? "행사 안내 탭에 반영했습니다." : `${booth} ${boothName(booth)}에 반영했습니다.`;
+    const other = !official && !boothsForHandle(parsed.handle).includes(booth);
+    msg.textContent = official ? "행사 안내 탭에 반영했습니다."
+      : `${booth} ${boothName(booth)}에 반영했습니다.` + (other ? ` (@${parsed.handle} 계정의 부스가 아닌 부스로 반영)` : "");
     document.getElementById("manualUrl").value = "";
     fillManualBooths("");
     render();
@@ -1054,7 +1063,7 @@ document.getElementById("modes").addEventListener("click", (e) => {
   msg.className = "msg";
   msg.textContent = currentMode === "official"
     ? "자동 후보에 없는 공식 글을 직접 넣을 때 씁니다."
-    : "자동 후보에 없는 글(예: 키워드가 없는 상품 글)을 직접 넣을 때 씁니다.";
+    : "자동 후보에 없는 글(예: 키워드가 없는 상품 글)을 직접 넣을 때 씁니다. 부스는 글쓴이 계정의 부스로 자동 선택되고, 다른 부스 홍보글이면 목록 아래 \"다른 부스\"에서 바꿀 수 있습니다.";
   render();
 });
 document.getElementById("reloadBtn").addEventListener("click", refresh);
