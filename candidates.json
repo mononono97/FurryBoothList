@@ -1,6 +1,47 @@
 {
- "updatedAt": "2026-11-19T11:28:33+00:00",
+ "updatedAt": "2026-11-19T13:15:36+00:00",
  "posts": [
+  {
+   "id": "2123403981884117398",
+   "handle": "ramee_C",
+   "booths": [
+    "C28"
+   ],
+   "boothNames": [
+    "S.O.C"
+   ],
+   "created": "2026-11-19T13:12:14+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-19T13:12:45+00:00"
+  },
+  {
+   "id": "2123401882282676318",
+   "handle": "suinduckhu",
+   "booths": [
+    "B31-32"
+   ],
+   "boothNames": [
+    "퍼리다이소 ~카지노점~"
+   ],
+   "created": "2026-11-19T13:03:54+00:00",
+   "score": 2,
+   "sensitive": false,
+   "quoted": {
+    "id": "2123038620055753126",
+    "handle": "",
+    "sensitive": false
+   },
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-19T13:13:31+00:00"
+  },
   {
    "id": "2123363555559014710",
    "handle": "mindal3118",
