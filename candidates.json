@@ -1,6 +1,63 @@
 {
- "updatedAt": "2026-11-20T03:20:14+00:00",
+ "updatedAt": "2026-11-20T03:27:14+00:00",
  "posts": [
+  {
+   "id": "2123617116750549084",
+   "handle": "Furscord_booth",
+   "booths": [
+    "C03"
+   ],
+   "boothNames": [
+    "Furscord : 카지노 털쟁이"
+   ],
+   "created": "2026-11-20T03:19:10+00:00",
+   "score": 3,
+   "sensitive": false,
+   "quoted": {
+    "id": "2123261159826723153",
+    "handle": "Furscord_booth",
+    "sensitive": false
+   },
+   "reasons": [
+    "통판·선입금·예약",
+    "품목"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-20T03:22:12+00:00"
+  },
+  {
+   "id": "2123617037708857727",
+   "handle": "Furscord_booth",
+   "booths": [
+    "C03"
+   ],
+   "boothNames": [
+    "Furscord : 카지노 털쟁이"
+   ],
+   "created": "2026-11-20T03:18:51+00:00",
+   "score": 2,
+   "sensitive": false,
+   "quoted": {
+    "id": "2123261133511704578",
+    "handle": "",
+    "sensitive": false
+   },
+   "reasons": [
+    "통판·선입금·예약"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-20T03:22:12+00:00"
+  },
   {
    "id": "2123616542705520692",
    "handle": "vpfj423423",
