@@ -1,6 +1,78 @@
 {
- "updatedAt": "2026-11-20T05:23:05+00:00",
+ "updatedAt": "2026-11-20T06:27:07+00:00",
  "posts": [
+  {
+   "id": "2123651227754094667",
+   "handle": "mdfurr",
+   "booths": [
+    "C18"
+   ],
+   "boothNames": [
+    "자폭버튼"
+   ],
+   "created": "2026-11-20T05:34:42+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약",
+    "행사·부스"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-20T06:22:50+00:00"
+  },
+  {
+   "id": "2123651025496412178",
+   "handle": "KalonEzhno",
+   "booths": [
+    "C05"
+   ],
+   "boothNames": [
+    "Ezhno / エズノ"
+   ],
+   "created": "2026-11-20T05:33:54+00:00",
+   "score": 2,
+   "sensitive": true,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-20T06:21:53+00:00"
+  },
+  {
+   "id": "2123648248149901496",
+   "handle": "nrimbotree",
+   "booths": [
+    "A25"
+   ],
+   "boothNames": [
+    "숲속의 범"
+   ],
+   "created": "2026-11-20T05:22:52+00:00",
+   "score": 5,
+   "sensitive": false,
+   "quoted": {
+    "id": "2122037234673312033",
+    "handle": "nrimbotree",
+    "sensitive": false
+   },
+   "reasons": [
+    "통판·선입금·예약",
+    "굿즈·판매",
+    "이미지"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-20T06:23:40+00:00"
+  },
   {
    "id": "2123634605656051855",
    "handle": "nrimbotree",
