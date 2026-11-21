@@ -1,6 +1,48 @@
 {
- "updatedAt": "2026-11-21T08:28:52+00:00",
+ "updatedAt": "2026-11-21T09:30:41+00:00",
  "posts": [
+  {
+   "id": "2124066687045783613",
+   "handle": "Meta_NONE",
+   "booths": [
+    "C08"
+   ],
+   "boothNames": [
+    "High-Fur"
+   ],
+   "created": "2026-11-21T09:05:36+00:00",
+   "score": 2,
+   "sensitive": false,
+   "quoted": {
+    "id": "2123737225435460073",
+    "handle": "",
+    "sensitive": false
+   },
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-21T09:24:01+00:00"
+  },
+  {
+   "id": "2124065026570936579",
+   "handle": "Beuu0920",
+   "booths": [
+    "A16"
+   ],
+   "boothNames": [
+    "브 BEUU / FURPPET"
+   ],
+   "created": "2026-11-21T08:59:00+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-21T09:18:16+00:00"
+  },
   {
    "id": "2124045133276655894",
    "handle": "kongzorim",
