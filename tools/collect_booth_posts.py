@@ -536,6 +536,9 @@ def collect(feed_dir, dry_run=False, quick=False):
         # 관리 화면(admin.html)이 열릴 때 예전 판으로 반영·제외된 글을 최신 판으로 옮기는 데 씀
         "edits": edits,
     }
+    # 임베드 점검 결과(check_embeds)는 그대로 둠. 관리 화면이 이 값으로 "찾을 수 없음" 글을 링크 카드로 바꿈
+    if data.get("embedStatus"):
+        out["embedStatus"] = data["embedStatus"]
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(out, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 
@@ -703,6 +706,7 @@ def check_posts(feed_dir, refs):
 
 BOOTH_POSTS_DOC = "https://firestore.googleapis.com/v1/projects/boothlist-4589c/databases/(default)/documents/boothPosts/main"
 EMBED_CHECK_GAP_SECONDS = 0.3
+EMBED_CHECK_EVERY_HOURS = 3   # 전체 수집(1시간마다) 때 이만큼 지났으면 임베드 점검도 함. 반영된 글 300개쯤이면 2~3분 걸림
 
 
 def firestore_value(v):
@@ -754,12 +758,19 @@ def embed_status(pid):
     return f"error: {kind or '알 수 없는 응답'}"
 
 
-def check_embeds(feed_dir, write=False):
+def check_embeds(feed_dir, write=False, auto=False):
     """반영된 상품 글(과 그 글이 인용한 글)이 사이트에서 X 임베드로 보이는지 하나씩 확인 (2026-11-21 사용자 요청).
     X 는 글이 나중에 민감한 글로 표시되거나 지워지면 임베드 자리에 "찾을 수 없음(Not found)"만 보여줌.
     반영할 때 저장한 민감한 글 여부(sensitive)는 그 순간 값이라, 그 뒤에 바뀐 글을 여기서 찾음.
     write 이면 결과를 후보 파일의 embedStatus 에 적고, 관리 화면이 열릴 때 반영함(링크 카드로 전환 등).
+    auto 이면 지난 점검 뒤 EMBED_CHECK_EVERY_HOURS 시간이 안 지났을 때 건너뜀(전체 수집 뒤에 붙여 돌릴 때).
     본문은 로그에 남기지 않음."""
+    path = Path(feed_dir) / "candidates.json"
+    if auto and path.exists():
+        last = (json.loads(path.read_text(encoding="utf-8")).get("embedStatus") or {}).get("checkedAt")
+        if last and datetime.fromisoformat(last) > datetime.now(timezone.utc) - timedelta(hours=EMBED_CHECK_EVERY_HOURS):
+            print(f"임베드 점검: 지난 점검({last}) 뒤 {EMBED_CHECK_EVERY_HOURS}시간이 안 지나 건너뜀")
+            return
     approved = load_approved()
     status, counts, lines = {}, {}, []
     for pid in sorted(approved, key=int, reverse=True):
@@ -795,7 +806,6 @@ def check_embeds(feed_dir, write=False):
         print(line)
     if not write:
         return
-    path = Path(feed_dir) / "candidates.json"
     data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"posts": [], "official": []}
     problems = {k: v for k, v in status.items() if v != "ok"}
     data["embedStatus"] = {"checkedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"), "posts": problems}
@@ -926,7 +936,7 @@ if __name__ == "__main__":
         sys.exit(0)
     if "--embeds" in sys.argv:
         args = [a for a in sys.argv[1:] if not a.startswith("--")]
-        check_embeds(args[0], write="--write" in sys.argv)
+        check_embeds(args[0], write="--write" in sys.argv, auto="--auto" in sys.argv)
         sys.exit(0)
     check = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--check=")), "")
     args = [a for a in sys.argv[1:] if not a.startswith("--")]

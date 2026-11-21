@@ -68,6 +68,11 @@ jobs:
       - name: 후보 모으기
         if: ${{ !inputs.check && !inputs.audit && !inputs.embeds }}
         run: python3 tools/collect_booth_posts.py feed ${{ github.ref_name != 'main' && '--dry-run' || '' }} ${{ ((github.event_name == 'schedule' && github.event.schedule != '17 * * * *') || inputs.quick) && '--quick' || '' }}
+      # 전체 수집 때 3시간마다 반영된 글의 임베드 상태도 점검 (민감한 글·지워진 글 → 관리 화면이 링크 카드로 전환, 2026-11-21)
+      - name: 임베드 점검 (자동)
+        if: ${{ github.ref_name == 'main' && !inputs.check && !inputs.audit && !inputs.embeds && !((github.event_name == 'schedule' && github.event.schedule != '17 * * * *') || inputs.quick) }}
+        continue-on-error: true
+        run: python3 tools/collect_booth_posts.py feed --embeds --write --auto
       - name: 후보 저장
         if: github.ref_name == 'main' && !inputs.check
         run: |
