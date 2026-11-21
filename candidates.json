@@ -1,6 +1,46 @@
 {
- "updatedAt": "2026-11-21T04:22:45+00:00",
+ "updatedAt": "2026-11-21T06:28:09+00:00",
  "posts": [
+  {
+   "id": "2124019248465150451",
+   "handle": "nekogaki0324",
+   "booths": [
+    "C07"
+   ],
+   "boothNames": [
+    "GGG: GO GET 'EM, GOAT!"
+   ],
+   "created": "2026-11-21T05:57:05+00:00",
+   "score": 5,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-21T06:23:41+00:00"
+  },
+  {
+   "id": "2124015127188132133",
+   "handle": "thee1621",
+   "booths": [
+    "C28"
+   ],
+   "boothNames": [
+    "S.O.C"
+   ],
+   "created": "2026-11-21T05:40:43+00:00",
+   "score": 6,
+   "sensitive": false,
+   "reasons": [
+    "신간",
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-21T06:26:12+00:00"
+  },
   {
    "id": "2123984632031101191",
    "handle": "Spirit_Kimm",
