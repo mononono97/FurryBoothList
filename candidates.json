@@ -1,6 +1,42 @@
 {
- "updatedAt": "2026-11-21T12:00:48+00:00",
+ "updatedAt": "2026-11-21T12:22:40+00:00",
  "posts": [
+  {
+   "id": "2124108342520107338",
+   "handle": "GTDignified",
+   "booths": [
+    "B17"
+   ],
+   "boothNames": [
+    "STUDIO雄虎凛"
+   ],
+   "created": "2026-11-21T11:51:07+00:00",
+   "score": 2,
+   "sensitive": true,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-21T12:18:52+00:00"
+  },
+  {
+   "id": "2124098245555020190",
+   "handle": "BlackClownOwO",
+   "booths": [
+    "B06"
+   ],
+   "boothNames": [
+    "Black's Den"
+   ],
+   "created": "2026-11-21T11:11:00+00:00",
+   "score": 2,
+   "sensitive": true,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-21T12:17:47+00:00"
+  },
   {
    "id": "2124087823410311383",
    "handle": "IG1119",
@@ -35,7 +71,15 @@
    "reasons": [
     "RT 계정"
    ],
-   "foundAt": "2026-11-21T12:00:45+00:00"
+   "foundAt": "2026-11-21T12:00:45+00:00",
+   "preorderHint": {
+    "link": "https://forms.gle/mjCzeiZDiJFNkZ6A7",
+    "links": [
+     "https://forms.gle/mjCzeiZDiJFNkZ6A7"
+    ],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2124066687045783613",
@@ -117,7 +161,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-21T06:23:41+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2124015127188132133",
@@ -203,7 +248,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-21T03:23:26+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2123971309940195443",
@@ -226,7 +272,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-21T03:23:26+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2123882363105268065",
@@ -335,6 +382,26 @@
     "이미지"
    ],
    "foundAt": "2026-11-20T15:17:28+00:00"
+  },
+  {
+   "id": "2123754845513691249",
+   "handle": "snow_meatball",
+   "booths": [
+    "B27"
+   ],
+   "boothNames": [
+    "풀하우스"
+   ],
+   "created": "2026-11-20T12:26:27+00:00",
+   "score": 5,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-21T12:21:18+00:00"
   },
   {
    "id": "2123754688504033544",
@@ -469,7 +536,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-20T12:20:01+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2123737564700168443",
@@ -539,7 +607,8 @@
    "reasons": [
     "RT 계정"
    ],
-   "foundAt": "2026-11-21T12:00:45+00:00"
+   "foundAt": "2026-11-21T12:00:45+00:00",
+   "preorderHint": null
   },
   {
    "id": "2123706199577420113",
@@ -561,7 +630,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-20T09:25:06+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2123698744864686586",
@@ -1857,7 +1927,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-18T04:23:30+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2122887266322276642",
@@ -1896,6 +1967,24 @@
     "이미지"
    ],
    "foundAt": "2026-11-17T14:21:11+00:00"
+  },
+  {
+   "id": "2122690196353495492",
+   "handle": "BlackClownOwO",
+   "booths": [
+    "B06"
+   ],
+   "boothNames": [
+    "Black's Den"
+   ],
+   "created": "2026-11-17T13:55:55+00:00",
+   "score": 2,
+   "sensitive": true,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-21T12:17:47+00:00"
   },
   {
    "id": "2122679622555070820",
