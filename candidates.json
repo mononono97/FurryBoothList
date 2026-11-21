@@ -1,6 +1,73 @@
 {
- "updatedAt": "2026-11-20T21:22:33+00:00",
+ "updatedAt": "2026-11-21T03:32:21+00:00",
  "posts": [
+  {
+   "id": "2123981467353309655",
+   "handle": "rikose",
+   "booths": [
+    "B13"
+   ],
+   "boothNames": [
+    "RIKOSE"
+   ],
+   "created": "2026-11-21T03:26:58+00:00",
+   "score": 2,
+   "sensitive": false,
+   "quoted": {
+    "id": "2123370249840128119",
+    "handle": "rikose",
+    "sensitive": false
+   },
+   "reasons": [
+    "통판·선입금·예약"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-21T03:29:05+00:00"
+  },
+  {
+   "id": "2123974673520361721",
+   "handle": "KalonEzhno",
+   "booths": [
+    "C05"
+   ],
+   "boothNames": [
+    "Ezhno / エズノ"
+   ],
+   "created": "2026-11-21T02:59:58+00:00",
+   "score": 2,
+   "sensitive": true,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-21T03:23:26+00:00"
+  },
+  {
+   "id": "2123971309940195443",
+   "handle": "KalonEzhno",
+   "booths": [
+    "C05"
+   ],
+   "boothNames": [
+    "Ezhno / エズノ"
+   ],
+   "created": "2026-11-21T02:46:36+00:00",
+   "score": 8,
+   "sensitive": true,
+   "reasons": [
+    "신간",
+    "굿즈·판매",
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-21T03:23:26+00:00"
+  },
   {
    "id": "2123882363105268065",
    "handle": "liq_soli",
