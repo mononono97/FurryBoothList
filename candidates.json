@@ -1,6 +1,88 @@
 {
- "updatedAt": "2026-11-21T16:27:49+00:00",
+ "updatedAt": "2026-11-21T17:22:57+00:00",
  "posts": [
+  {
+   "id": "2124183533057093931",
+   "handle": "J_ip721",
+   "booths": [
+    "B26"
+   ],
+   "boothNames": [
+    "Fur-펙트 게임"
+   ],
+   "created": "2026-11-21T16:49:54+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-21T17:19:23+00:00"
+  },
+  {
+   "id": "2124183113463165412",
+   "handle": "J_ip721",
+   "booths": [
+    "B26"
+   ],
+   "boothNames": [
+    "Fur-펙트 게임"
+   ],
+   "created": "2026-11-21T16:48:14+00:00",
+   "score": 8,
+   "sensitive": false,
+   "quoted": {
+    "id": "2124166255301337113",
+    "handle": "",
+    "sensitive": false
+   },
+   "reasons": [
+    "통판·선입금·예약",
+    "품목",
+    "가격",
+    "행사·부스",
+    "주문서 링크",
+    "RT 계정"
+   ],
+   "preorderHint": {
+    "link": "https://docs.google.com/forms/d/e/1FAIpQLSfMFVa6KFCBMyOlIP-Vz3LrVcheTVHckFePmZP8EL9ihtq_Eg/viewform?usp=sharing&ouid=115510990133031523931",
+    "links": [
+     "https://docs.google.com/forms/d/e/1FAIpQLSfMFVa6KFCBMyOlIP-Vz3LrVcheTVHckFePmZP8EL9ihtq_Eg/viewform?usp=sharing&ouid=115510990133031523931"
+    ],
+    "start": "",
+    "end": "2026-11-26"
+   },
+   "foundAt": "2026-11-21T17:19:23+00:00",
+   "via": "furstclassrt"
+  },
+  {
+   "id": "2124174269093753244",
+   "handle": "nekogaki0324",
+   "booths": [
+    "C07"
+   ],
+   "boothNames": [
+    "GGG: GO GET 'EM, GOAT!"
+   ],
+   "created": "2026-11-21T16:13:05+00:00",
+   "score": 2,
+   "sensitive": false,
+   "quoted": {
+    "id": "2124019248465150451",
+    "handle": "nekogaki0324",
+    "sensitive": false
+   },
+   "reasons": [
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-11-21T17:20:29+00:00"
+  },
   {
    "id": "2124173128079479138",
    "handle": "J_ip721",
@@ -73,9 +155,12 @@
    "sensitive": true,
    "reasons": [
     "행사·부스",
-    "이미지"
+    "이미지",
+    "RT 계정"
    ],
-   "foundAt": "2026-11-21T16:25:12+00:00"
+   "foundAt": "2026-11-21T16:25:12+00:00",
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2124157757846962315",
@@ -160,9 +245,12 @@
     "굿즈·판매",
     "품목",
     "행사·부스",
-    "이미지"
+    "이미지",
+    "RT 계정"
    ],
-   "foundAt": "2026-11-21T13:19:52+00:00"
+   "foundAt": "2026-11-21T13:19:52+00:00",
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2124108342520107338",
@@ -215,9 +303,12 @@
    "reasons": [
     "굿즈·판매",
     "행사·부스",
-    "이미지"
+    "이미지",
+    "RT 계정"
    ],
-   "foundAt": "2026-11-21T11:19:24+00:00"
+   "foundAt": "2026-11-21T11:19:24+00:00",
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2124085685556777126",
