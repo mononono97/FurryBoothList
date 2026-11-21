@@ -301,9 +301,12 @@
     --map-planned-fg:#241b06;
     --map-visited:#4a8f3c;
     --map-visited-fg:#eafce6;
+    --map-planned-line:#8a6400;  /* 방문 예정 칸 가장자리(채움색보다 진하게) */
+    --map-visited-line:#2c5f22;
     --map-prio-1:#d64545;
     --map-prio-2:#8b5fbf;
     --map-prio-3:#3b82c4;
+    --map-prio-fg:#ffffff;      /* 우선순위 숫자 배지 글자 */
   }
   :root[data-theme="dark"]{
     color-scheme:dark;
@@ -390,9 +393,12 @@
     --map-planned-fg:#241b06;
     --map-visited:#4a8f3c;
     --map-visited-fg:#eafce6;
-    --map-prio-1:#d64545;
-    --map-prio-2:#a77fdc;
-    --map-prio-3:#5aa0e0;
+    --map-planned-line:#ffe08a;
+    --map-visited-line:#8fd27e;
+    --map-prio-1:#ff6b6b;
+    --map-prio-2:#b892ec;
+    --map-prio-3:#6cb2f0;
+    --map-prio-fg:#1a1418;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -1621,11 +1627,19 @@
   .map-legend .swatch.note{ background:var(--clay); }
   .map-legend .swatch.planned{ background:var(--map-planned); }
   .map-legend .swatch.visited{ background:var(--map-visited); }
-  .map-legend .swatch.ring{ background:transparent; border:2px solid; margin-right:3px; }
-  .map-legend .swatch.ring:last-of-type{ margin-right:5px; }
-  .map-legend .swatch.p1{ border-color:var(--map-prio-1); }
-  .map-legend .swatch.p2{ border-color:var(--map-prio-2); }
-  .map-legend .swatch.p3{ border-color:var(--map-prio-3); }
+  /* 우선순위: 배치도 칸 오른쪽 위의 숫자 배지와 같은 모양 */
+  .prio-dot{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:15px; height:15px; border-radius:50%;
+    font-size:10px; font-weight:800; font-style:normal; line-height:1; color:var(--map-prio-fg);
+    vertical-align:-2px; margin-right:3px;
+  }
+  .map-legend .prio-dot:nth-of-type(3){ margin-right:5px; }
+  .prio-dot.p1{ background:var(--map-prio-1); }
+  .prio-dot.p2{ background:var(--map-prio-2); }
+  .prio-dot.p3{ background:var(--map-prio-3); }
+  .map-prio-filter button{ display:inline-flex; align-items:center; }
+  .map-prio-filter .prio-dot{ margin-right:5px; vertical-align:0; }
   /* 좁은 화면에서는 글자가 너무 작아지지 않도록 최소 폭을 두고 가로 스크롤 */
   .venue-map-scroll{
     overflow-x:auto;
@@ -1647,6 +1661,7 @@
   }
   .map-zone-filter{ margin-bottom:12px; }
   .map-zone-filter button{ font-size:13px; padding:6px 16px; }
+  @media (max-width:640px){ .map-zone-filter.map-prio-filter button{ padding:6px 10px; } .map-prio-filter .prio-dot{ margin-right:4px; } }
   .venue-map text{ text-anchor:middle; dominant-baseline:central; }
   .venue-map .map-wall{ fill:none; stroke:var(--map-wall); stroke-width:3; stroke-linejoin:round; }
   .venue-map .map-room{ fill:none; stroke:var(--map-room-line); stroke-width:3; }
@@ -1676,18 +1691,23 @@
   .venue-map .map-booth.zone-b .map-booth-text, .venue-map .map-booth.zone-c .map-booth-text{ fill:var(--map-booth-bc); }
   .venue-map .map-booth:hover .map-booth-box, .venue-map .map-booth:focus-visible .map-booth-box{ stroke-width:4; }
   .venue-map .map-booth.has-note .map-booth-box{ fill:var(--clay); stroke:var(--clay); }
-  .venue-map .map-booth.visit-planned .map-booth-box{ fill:var(--map-planned); stroke:var(--map-planned); }
-  .venue-map .map-booth.visit-visited .map-booth-box{ fill:var(--map-visited); stroke:var(--map-visited); }
+  /* 방문 예정·완료 칸은 채움색보다 진한 가장자리로 옆 칸·테두리와 구분 */
+  .venue-map .map-booth.visit-planned .map-booth-box{ fill:var(--map-planned); stroke:var(--map-planned-line); }
+  .venue-map .map-booth.visit-visited .map-booth-box{ fill:var(--map-visited); stroke:var(--map-visited-line); }
   .venue-map .map-booth.has-note .map-booth-text{ fill:#fff; }
   .venue-map .map-booth.visit-planned .map-booth-text{ fill:var(--map-planned-fg); }
   .venue-map .map-booth.visit-visited .map-booth-text{ fill:var(--map-visited-fg); }
   .venue-map .map-booth.has-note .map-booth-split,
   .venue-map .map-booth.visit-planned .map-booth-split,
   .venue-map .map-booth.visit-visited .map-booth-split{ stroke:rgba(255,255,255,.7); }
-  .venue-map .map-booth.priority-1 .map-booth-ring{ stroke:var(--map-prio-1); }
-  .venue-map .map-booth.priority-2 .map-booth-ring{ stroke:var(--map-prio-2); }
-  .venue-map .map-booth.priority-3 .map-booth-ring{ stroke:var(--map-prio-3); }
-  .venue-map .map-booth.dim{ opacity:.35; }
+  /* 우선순위: 칸 바깥 테두리 대신 오른쪽 위 숫자 배지(칸 사이가 2px라 테두리는 채움색·옆 칸과 겹쳐 보였음) */
+  .venue-map .map-prio-badge{ pointer-events:none; }
+  .venue-map .map-prio-badge circle{ stroke:var(--card-bg); stroke-width:2; }
+  .venue-map .map-prio-badge text{ fill:var(--map-prio-fg); font-size:13px; font-weight:900; }
+  .venue-map .map-prio-badge.p1 circle{ fill:var(--map-prio-1); }
+  .venue-map .map-prio-badge.p2 circle{ fill:var(--map-prio-2); }
+  .venue-map .map-prio-badge.p3 circle{ fill:var(--map-prio-3); }
+  .venue-map .map-booth.dim, .venue-map .map-prio-badge.dim{ opacity:.3; }
   .venue-map .map-booth.empty{ cursor:default; }
   .venue-map .map-booth.empty .map-booth-box{ stroke:var(--line); stroke-dasharray:4 3; }
   .venue-map .map-booth.empty .map-booth-text{ fill:var(--muted); }
@@ -2468,7 +2488,11 @@ const I18N = {
     mapLegendNote: "메모",
     mapLegendPlanned: "방문 예정",
     mapLegendVisited: "방문 완료",
-    mapLegendPriority: "1·2·3순위 테두리",
+    mapLegendPriority: "우선순위",
+    mapPrioAll: "모든 순위",
+    mapPrioNone: "아직 {level}로 정한 부스가 없어요. 부스를 눌러 우선순위를 골라 보세요.",
+    mapPrioCount: "{level} 부스 {n}곳만 진하게 보여요.",
+    mapPrioOutside: "{level} 부스 중 {n}곳은 다른 구역에 있어요. \"전체\"를 누르면 모두 보여요.",
     mapModeBasic: "🗺️ 기본 보기",
     mapModePreorder: "💳 선입금 보기",
     mapPreorderHint: "선입금 부스를 누르면 선입금 메모가 열려요",
@@ -2703,7 +2727,11 @@ const I18N = {
     mapLegendNote: "Note",
     mapLegendPlanned: "Plan to visit",
     mapLegendVisited: "Visited",
-    mapLegendPriority: "Priority 1·2·3 border",
+    mapLegendPriority: "Priority",
+    mapPrioAll: "All priorities",
+    mapPrioNone: "No booths are set to {level} yet. Tap a booth to choose its priority.",
+    mapPrioCount: "Showing {n} {level} booth(s); the rest are faded.",
+    mapPrioOutside: "{n} {level} booth(s) are in other zones. Tap \"All\" to see them.",
     mapModeBasic: "🗺️ Basic",
     mapModePreorder: "💳 Pre-orders",
     mapPreorderHint: "Tap a pre-order booth to see its pre-order notes",
@@ -2938,7 +2966,11 @@ const I18N = {
     mapLegendNote: "メモ",
     mapLegendPlanned: "訪問予定",
     mapLegendVisited: "訪問済み",
-    mapLegendPriority: "優先順位1・2・3の枠",
+    mapLegendPriority: "優先度",
+    mapPrioAll: "すべての優先度",
+    mapPrioNone: "{level}に設定したブースはまだありません。ブースをタップして優先度を選んでください。",
+    mapPrioCount: "{level}のブース{n}件だけを濃く表示しています。",
+    mapPrioOutside: "{level}のブースのうち{n}件は他のエリアにあります。「全体」を押すとすべて見られます。",
     mapModeBasic: "🗺️ 基本表示",
     mapModePreorder: "💳 事前通販表示",
     mapPreorderHint: "事前通販ブースを押すと事前通販メモが開きます",
@@ -5505,6 +5537,18 @@ function setMapMode(mode){
   renderMapView();
 }
 
+// 우선순위 필터: 0(모든 순위) / 1 / 2 / 3. 고른 순위의 부스만 진하게, 나머지는 흐리게. 새로고침해도 유지.
+// 구역 필터(어디를 크게 볼지)와 따로 움직여서 둘 다 함께 쓸 수 있음(예: B구역 + 1순위)
+const MAP_PRIO_KEY = `${STORAGE_PREFIX}-map-priority`;
+let mapPrio = 0;
+try { const v = parseInt(localStorage.getItem(MAP_PRIO_KEY), 10); if(v >= 1 && v <= 3) mapPrio = v; } catch {}
+
+function setMapPrio(level){
+  mapPrio = level;
+  try { localStorage.setItem(MAP_PRIO_KEY, String(level)); } catch {}
+  renderMapView();
+}
+
 function setMapZone(zone){
   mapZone = zone;
   try { localStorage.setItem(MAP_ZONE_KEY, zone); } catch {}
@@ -5547,6 +5591,7 @@ function buildMapSvg(){
 
   // 부스 칸: 부스 번호("A1")별 칸을 부스 단위로 묶음
   const used = new Set();
+  let badges = "";
   BOOTHS.forEach(booth => {
     const parts = (booth.nums || [booth.num])
       .map(n => ({ n, slot: MAP_SLOTS[booth.block + parseInt(n, 10)] }))
@@ -5562,11 +5607,12 @@ function buildMapSvg(){
       : (getNote(booth.id) ? " has-note" : "") +
         (status === "planned" ? " visit-planned" : status === "visited" ? " visit-visited" : "") +
         (level ? ` priority-${level}` : ""));
-    // 위치 찾기·검색 강조: 찾는 부스는 굵은 테두리로, 검색 중이면 맞지 않는 부스는 흐리게
+    // 위치 찾기·검색 강조: 찾는 부스는 굵은 테두리로, 검색 중이면 맞지 않는 부스는 흐리게.
+    // 우선순위 필터를 골랐으면 그 순위가 아닌 부스도 흐리게(찾는 부스는 예외)
     const located = mapLocateId === booth.id;
     const hit = currentQuery && boothMatchesQuery(booth, currentQuery);
-    const markCls = (located ? " locate" : "") + (hit ? " search-hit" : "") +
-      (currentQuery && !hit && !located ? " dim" : "");
+    const faded = !located && ((currentQuery && !hit) || (mapPrio && level !== mapPrio));
+    const markCls = (located ? " locate" : "") + (hit ? " search-hit" : "") + (faded ? " dim" : "");
     const label = `${booth.id} ${booth.name}`;
     const open = `<g class="${cls}${markCls}" data-booth-id="${escapeHtml(booth.id)}" tabindex="0" role="button" aria-label="${escapeHtml(label)}"><title>${escapeHtml(label)}</title>`;
 
@@ -5591,8 +5637,12 @@ function buildMapSvg(){
         s += `<text class="map-booth-text" x="${p.slot.x + p.slot.w / 2}" y="${p.slot.y + p.slot.h / 2 + 1}">${escapeHtml(booth.block + parseInt(p.n, 10))}</text>`;
       });
       s += `</g>`;
+      // 우선순위 숫자 배지는 칸 오른쪽 위 모서리에. 옆 칸에 가려지지 않게 모든 칸을 그린 뒤 맨 위에 그림
+      if(level) badges += `<g class="map-prio-badge p${level}${faded ? " dim" : ""}" aria-hidden="true">` +
+        `<circle cx="${x2 - 1}" cy="${y1}" r="9"/><text x="${x2 - 1}" y="${y1 + 0.5}">${level}</text></g>`;
     });
   });
+  s += badges;
   // 배치도에는 있는데 부스 데이터에 없는 칸은 회색 빈 칸으로(누를 수 없음)
   Object.entries(MAP_SLOTS).forEach(([key, slot]) => {
     if(used.has(key)) return;
@@ -5636,6 +5686,22 @@ function renderMapView(){
   });
   mapGrid.appendChild(zoneFilter);
 
+  // 우선순위 필터(구역 필터 바로 아래, 같은 모양의 버튼)
+  const prioFilter = document.createElement("div");
+  prioFilter.className = "visit-filter map-zone-filter map-prio-filter";
+  [0, 1, 2, 3].forEach(level => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.innerHTML = level
+      ? `<i class="prio-dot p${level}">${level}</i>${escapeHtml(t("priority" + level))}`
+      : escapeHtml(t("mapPrioAll"));
+    btn.classList.toggle("active", mapPrio === level);
+    btn.setAttribute("aria-pressed", mapPrio === level ? "true" : "false");
+    btn.addEventListener("click", () => setMapPrio(level));
+    prioFilter.appendChild(btn);
+  });
+  mapGrid.appendChild(prioFilter);
+
   const legend = document.createElement("div");
   legend.className = "map-legend";
   legend.innerHTML = mapMode === "preorder" ?
@@ -5645,7 +5711,7 @@ function renderMapView(){
     `<span><i class="swatch note"></i>${escapeHtml(t("mapLegendNote"))}</span>` +
     `<span><i class="swatch planned"></i>${escapeHtml(t("mapLegendPlanned"))}</span>` +
     `<span><i class="swatch visited"></i>${escapeHtml(t("mapLegendVisited"))}</span>` +
-    `<span><i class="swatch ring p1"></i><i class="swatch ring p2"></i><i class="swatch ring p3"></i>${escapeHtml(t("mapLegendPriority"))}</span>`;
+    `<span><i class="prio-dot p1">1</i><i class="prio-dot p2">2</i><i class="prio-dot p3">3</i>${escapeHtml(t("mapLegendPriority"))}</span>`;
   mapGrid.appendChild(legend);
 
   // 위치 찾기로 넘어왔으면 "📍 [A03] GYM LIGER · 그랜드볼룸 A구역" 안내 줄(✕로 강조 끄기)
@@ -5677,6 +5743,19 @@ function renderMapView(){
       note.textContent = t("mapSearchOutside", { n: outside });
       mapGrid.appendChild(note);
     }
+  }
+
+  // 우선순위 필터를 골랐으면 몇 곳인지, 없으면 고르는 방법, 다른 구역에 있으면 그 수를 알려줌
+  if(mapPrio){
+    const levelName = t("priority" + mapPrio);
+    const matched = BOOTHS.filter(b => getPriority(b.id) === mapPrio);
+    const outside = mapZone === "ALL" ? 0 : matched.filter(b => b.block !== mapZone).length;
+    const note = document.createElement("div");
+    note.className = "map-search-note";
+    note.textContent = !matched.length ? t("mapPrioNone", { level: levelName })
+      : outside ? t("mapPrioOutside", { level: levelName, n: outside })
+      : t("mapPrioCount", { level: levelName, n: matched.length });
+    mapGrid.appendChild(note);
   }
 
   const scroller = document.createElement("div");
@@ -6477,7 +6556,7 @@ function bugEnvLines(){
   const tzMin = -new Date().getTimezoneOffset();
   const tz = `UTC${tzMin >= 0 ? "+" : "-"}${String(Math.floor(Math.abs(tzMin) / 60)).padStart(2, "0")}:${String(Math.abs(tzMin) % 60).padStart(2, "0")}`;
   let page = currentRow;
-  if(currentRow === "MAP") page += ` (zone ${mapZone}, mode ${mapMode})`;
+  if(currentRow === "MAP") page += ` (zone ${mapZone}, mode ${mapMode}, priority ${mapPrio || "all"})`;
   if(currentRow === "NOTES") page += ` (filter ${notesVisitFilter})`;
   if(currentRow === "UPDATES") page += ` (${updatesMineOnly ? "mine" : "all"})`;
   if(sortByPriority) page += ", priority sort on";
