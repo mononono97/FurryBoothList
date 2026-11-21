@@ -14,6 +14,7 @@ X 약관상 X 밖에 글 사본을 두지 않는 편이 안전해서 (2026-10-05
     python3 tools/collect_booth_posts.py <후보 폴더> --quick    # 부스 계정은 건너뛰고 공식·RT 계정만 (몇 초면 끝남)
     python3 tools/collect_booth_posts.py <후보 폴더> --check=<글 주소나 id,...>  # 그 글이 왜 후보에 없는지만 확인
     python3 tools/collect_booth_posts.py <후보 폴더> --audit=<부스 번호,...>     # 그 부스 계정의 지난 글을 끝까지 훑어 빠진 글 찾기 (--write 면 후보에 추가)
+    python3 tools/collect_booth_posts.py <후보 폴더> --embeds                    # 반영된 글이 X 임베드로 보이는지 확인 (--write 면 결과를 후보 파일에 기록)
 
 동작:
 1. index.html 의 BOOTHS 줄에서 부스장·부스원 X 아이디를 읽음
@@ -700,6 +701,109 @@ def check_posts(feed_dir, refs):
                 print(f"  프로필 글 목록 받기 실패: {e}")
 
 
+BOOTH_POSTS_DOC = "https://firestore.googleapis.com/v1/projects/boothlist-4589c/databases/(default)/documents/boothPosts/main"
+EMBED_CHECK_GAP_SECONDS = 0.3
+
+
+def firestore_value(v):
+    """Firestore REST 응답의 타입 붙은 값({"stringValue": ...} 등)을 파이썬 값으로 바꿈."""
+    if "mapValue" in v:
+        return {k: firestore_value(x) for k, x in (v["mapValue"].get("fields") or {}).items()}
+    if "arrayValue" in v:
+        return [firestore_value(x) for x in v["arrayValue"].get("values") or []]
+    if "nullValue" in v:
+        return None
+    if "integerValue" in v:
+        return int(v["integerValue"])
+    return next(iter(v.values()), None)
+
+
+def load_approved():
+    """사이트에 반영된 상품 글 목록(boothPosts/main 의 approved). 이 문서는 누구나 읽을 수 있음."""
+    req = urllib.request.Request(BOOTH_POSTS_DOC, headers={"User-Agent": USER_AGENT})
+    with urllib.request.urlopen(req, timeout=30) as res:
+        doc = json.load(res)
+    return firestore_value((doc.get("fields") or {}).get("approved") or {"mapValue": {}}) or {}
+
+
+def embed_status(pid):
+    """X 임베드 서버(cdn.syndication.twimg.com)가 이 글을 어떻게 주는지. 사이트의 X 임베드도 같은 곳에서 받음.
+    반환: "ok"(임베드 됨) / "sensitive"(성인·민감한 글이라 로그인 안 한 방문자에게 "찾을 수 없음") /
+    "gone"(지워졌거나 비공개·정지된 계정의 글) / "error: ..."(확인 실패, 다음에 다시 봄)."""
+    url = f"https://cdn.syndication.twimg.com/tweet-result?id={pid}&lang=ko&token={syndication_token(pid)}"
+    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    try:
+        with urllib.request.urlopen(req, timeout=20) as res:
+            body = res.read()
+    except urllib.error.HTTPError as e:
+        return "gone" if e.code == 404 else f"error: HTTP {e.code}"
+    except Exception as e:
+        return f"error: {e}"
+    try:
+        data = json.loads(body or b"{}")
+    except ValueError:
+        return "error: JSON 아님"
+    kind = data.get("__typename")
+    if kind == "TweetTombstone":
+        return "sensitive"
+    if kind == "Tweet" and data.get("id_str"):
+        # 민감한 글 표시가 있어도 X 가 내용을 주면 임베드는 그려짐. 몇 개나 되는지 보려고 따로 셈
+        return "ok-flagged" if data.get("possibly_sensitive") else "ok"
+    if not data:
+        return "gone"
+    return f"error: {kind or '알 수 없는 응답'}"
+
+
+def check_embeds(feed_dir, write=False):
+    """반영된 상품 글(과 그 글이 인용한 글)이 사이트에서 X 임베드로 보이는지 하나씩 확인 (2026-11-21 사용자 요청).
+    X 는 글이 나중에 민감한 글로 표시되거나 지워지면 임베드 자리에 "찾을 수 없음(Not found)"만 보여줌.
+    반영할 때 저장한 민감한 글 여부(sensitive)는 그 순간 값이라, 그 뒤에 바뀐 글을 여기서 찾음.
+    write 이면 결과를 후보 파일의 embedStatus 에 적고, 관리 화면이 열릴 때 반영함(링크 카드로 전환 등).
+    본문은 로그에 남기지 않음."""
+    approved = load_approved()
+    status, counts, lines = {}, {}, []
+    for pid in sorted(approved, key=int, reverse=True):
+        e = approved[pid] or {}
+        targets = [("글", pid, e.get("handle") or "i", bool(e.get("sensitive")))]
+        q = e.get("quoted") or {}
+        if q.get("id"):
+            targets.append(("인용한 글", str(q["id"]), q.get("handle") or "i", bool(q.get("sensitive"))))
+        for kind, tid, handle, marked in targets:
+            st = embed_status(tid)
+            time.sleep(EMBED_CHECK_GAP_SECONDS)
+            key = f"{kind} {st if not st.startswith('error') else '확인 실패'}" + (" (이미 링크 카드)" if marked and st == "sensitive" else "")
+            counts[key] = counts.get(key, 0) + 1
+            if st.startswith("error"):
+                lines.append(f"  ! {e.get('booth')} {kind} {st} https://x.com/{handle}/status/{tid}")
+                continue
+            if kind == "글":
+                status[pid] = st
+            else:
+                status.setdefault(pid, "ok")
+                status[f"{pid}:quoted"] = st
+            if st == "ok-flagged":
+                st = "ok"
+            if st != "ok" and not (marked and st == "sensitive"):
+                label = {"sensitive": "민감한 글(찾을 수 없음)", "gone": "지워진 글"}[st]
+                lines.append(f"  - {e.get('booth')} {kind} {label}{', 아직 임베드로 표시 중' if not marked else ''} https://x.com/{handle}/status/{tid}"
+                             + (f" (반영된 글 {pid})" if kind != "글" else ""))
+    print(f"반영된 글 {len(approved)}개 확인")
+    for k in sorted(counts):
+        print(f"  {k}: {counts[k]}개")
+    print("손볼 글:" if lines else "손볼 글 없음")
+    for line in lines:
+        print(line)
+    if not write:
+        return
+    path = Path(feed_dir) / "candidates.json"
+    data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"posts": [], "official": []}
+    problems = {k: v for k, v in status.items() if v != "ok"}
+    data["embedStatus"] = {"checkedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"), "posts": problems}
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    print(f"후보 파일 embedStatus 에 {len(problems)}개 기록")
+
+
 AUDIT_MAX_PAGES = 20   # 계정마다 넘겨 볼 최대 페이지(약 400개). 그 전에 POST_SINCE 이전 글이 나오면 멈춤
 
 
@@ -819,6 +923,10 @@ if __name__ == "__main__":
     if audit:
         args = [a for a in sys.argv[1:] if not a.startswith("--")]
         audit_booths(args[0], audit, write="--write" in sys.argv)
+        sys.exit(0)
+    if "--embeds" in sys.argv:
+        args = [a for a in sys.argv[1:] if not a.startswith("--")]
+        check_embeds(args[0], write="--write" in sys.argv)
         sys.exit(0)
     check = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--check=")), "")
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
