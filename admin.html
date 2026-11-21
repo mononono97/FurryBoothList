@@ -246,6 +246,7 @@ let boothIdRenames = {};   // index.html 의 BOOTH_ID_RENAMES (예전 부스 번
 let candidates = [];          // 상품 글 후보
 let officialCandidates = [];  // 행사 안내 글 후보
 let postEdits = {};           // X 에서 수정된 글: 예전 판 id → 최신 판 id (수집기가 candidates.json 의 edits 에 기록)
+let embedStatus = {};         // 임베드 점검 결과: { "글id": "sensitive"|"gone", "글id:quoted": ... } (수집기가 candidates.json 의 embedStatus 에 기록)
 let decisions = { approved: {}, excluded: {}, official: {}, officialExcluded: {} };
 let healthView = false;          // true = "사이트 상태" 버튼을 눌러 헬스체크 결과를 보는 중
 let currentMode = "booth";    // "booth" = 부스 상품 글, "official" = 행사 안내 글
@@ -295,6 +296,7 @@ function loadCandidates(){
       // 수집기가 예전 부스 번호로 찾아 둔 후보도 새 번호로 보여줌
       candidates.forEach(c => { if(Array.isArray(c.booths)) c.booths = c.booths.map(renamedBoothId); });
       postEdits = data.edits || {};
+      embedStatus = (data.embedStatus && data.embedStatus.posts) || {};
     });
 }
 function loadDecisions(){
@@ -406,6 +408,39 @@ function migrateEdits(){
     });
     Object.keys(excluded).forEach(id => { decisions.excluded[id] = true; });
     return moved;
+  }).catch(() => []);   // 실패해도 다음에 열 때 다시 시도함
+}
+
+/* 임베드 점검(수집기 --embeds, 2026-11-21): 반영한 뒤에 X 가 민감한 글로 표시했거나 지운 글은 사이트 임베드 자리에
+   "찾을 수 없음(Not found)"만 나옴. 수집기가 X 임베드 서버에 물어 찾아 둔 글을 운영자가 이 화면을 열 때 한 번에 고침.
+   - 글이 민감한 글이거나 지워졌으면 sensitive: true (사이트는 임베드 대신 아이디·날짜·"X에서 보기" 링크 카드를 바로 보여줌)
+   - 인용한 글이 그렇다면 quoted.sensitive: true ("인용한 글 보기"를 누르면 "X에서 직접 확인" 안내와 링크)
+   - 지워진 글은 gone: true 도 적어 둠(반영됨 탭에 "지워진 글" 표시. 사이트에서 뺄지는 운영자가 "제외"로 정함)
+   운영자가 "임베드로 되돌리기"로 되돌린 글도 다음 점검에서 여전히 안 되면 다시 링크 카드가 됨 */
+function applyEmbedStatus(){
+  if(!currentUser || !decisionsReadable) return Promise.resolve([]);
+  const patch = {}, fixed = [];
+  Object.keys(decisions.approved).forEach(id => {
+    const e = decisions.approved[id];
+    if(!e) return;
+    const st = embedStatus[id], qst = embedStatus[`${id}:quoted`];
+    const p = {};
+    if((st === "sensitive" || st === "gone") && !e.sensitive) p.sensitive = true;
+    if(st === "gone" && !e.gone) p.gone = true;
+    if((qst === "sensitive" || qst === "gone") && e.quoted && e.quoted.id && !e.quoted.sensitive) p.quoted = { sensitive: true };
+    if(!Object.keys(p).length) return;
+    patch[id] = p;
+    fixed.push(e.booth || "?");
+  });
+  if(!fixed.length) return Promise.resolve([]);
+  return writeDecision({ approved: patch }).then(() => {
+    Object.keys(patch).forEach(id => {
+      const e = decisions.approved[id], p = patch[id];
+      if(p.sensitive) e.sensitive = true;
+      if(p.gone) e.gone = true;
+      if(p.quoted) e.quoted = { ...e.quoted, sensitive: true };
+    });
+    return fixed;
   }).catch(() => []);   // 실패해도 다음에 열 때 다시 시도함
 }
 
@@ -816,7 +851,7 @@ function buildPost(c){
       <span class="booth-tag">${official ? "행사 안내" : escapeHtml((approvedBooth ? [approvedBooth] : boothIds).map(id => `${id} ${boothName(id)}`).join(" · ") || "부스 미지정")}</span>
       ${c.handle ? `<span class="meta">@${escapeHtml(c.handle)}</span>` : ""}
       ${c.created ? `<span class="meta">${escapeHtml(fmtDate(c.created))}</span>` : ""}
-      <span class="reasons">${(c.reasons || []).map(r => `<span>${escapeHtml(r)}</span>`).join("")}${((decisions.approved[c.id] || {}).sensitive ?? c.sensitive) ? `<span class="sensitive-tag">민감한 글 · 링크 카드</span>` : ""}${(decisions.approved[c.id] || {}).preorder ? `<span class="preorder-tag">💳 선입금 글</span>` : ""}</span>
+      <span class="reasons">${(c.reasons || []).map(r => `<span>${escapeHtml(r)}</span>`).join("")}${((decisions.approved[c.id] || {}).sensitive ?? c.sensitive) ? `<span class="sensitive-tag">${(decisions.approved[c.id] || {}).gone ? "지워진 글 · 링크 카드" : "민감한 글 · 링크 카드"}</span>` : ""}${(decisions.approved[c.id] || {}).preorder ? `<span class="preorder-tag">💳 선입금 글</span>` : ""}</span>
     </div>
     <div class="embed"></div>
     <div class="actions"></div>
@@ -921,16 +956,20 @@ function buildPost(c){
   return el;
 }
 
+let embedFixed = [];
 function refresh(){
   const msg = document.getElementById("listMsg");
   msg.className = "msg";
   msg.textContent = "불러오는 중…";
   // 부스 번호 바뀐 목록(boothIdRenames)을 먼저 읽어야 후보·반영 글 번호를 새 번호로 고칠 수 있음
-  return boothsReady.then(() => Promise.all([loadCandidates(), loadDecisions()])).then(migrateEdits).then(moved => {
-    msg.textContent = !decisionsReadable
+  return boothsReady.then(() => Promise.all([loadCandidates(), loadDecisions()])).then(migrateEdits)
+    .then(moved => applyEmbedStatus().then(fixed => { embedFixed = fixed; return moved; })).then(moved => {
+    const fixedNote = embedFixed.length ? ` 사이트에서 "찾을 수 없음"으로 나오던 글 ${embedFixed.length}개를 링크 카드로 바꿨습니다 (${[...new Set(embedFixed)].join(", ")}).` : "";
+    msg.textContent = (!decisionsReadable
       ? "Firebase 규칙이 아직 없어 반영 기록을 읽지 못했습니다. 위쪽 \"반영 권한 설정 방법\"을 먼저 해 주세요."
       : moved.length ? `X에서 수정된 글 ${moved.length}개를 최신 판으로 바꿨습니다 (${moved.map(m => m.booth).join(", ")}).`
-      : candidates.length || officialCandidates.length ? "" : "아직 모인 후보가 없습니다. 후보는 1시간마다 자동으로 모입니다.";
+      : candidates.length || officialCandidates.length ? "" : "아직 모인 후보가 없습니다. 후보는 1시간마다 자동으로 모입니다.")
+      + (decisionsReadable ? fixedNote : "");
     if(!decisionsReadable) msg.className = "msg err";
     render();
   }).catch(err => {

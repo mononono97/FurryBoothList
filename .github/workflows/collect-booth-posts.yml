@@ -22,6 +22,10 @@ on:
         description: "이 부스들의 지난 글을 끝까지 훑어 빠진 상품 글 찾기 (부스 번호, 여러 개는 쉼표로. ALL 은 전체). main 에서 실행하면 찾은 글을 대기 탭 후보에 넣음"
         type: string
         default: ""
+      embeds:
+        description: "반영된 글이 사이트에서 X 임베드로 보이는지 점검 (민감한 글·지워진 글 찾기). main 에서 실행하면 결과를 관리 화면이 반영"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -58,9 +62,17 @@ jobs:
         env:
           AUDIT: ${{ inputs.audit }}
         run: python3 tools/collect_booth_posts.py feed "--audit=$AUDIT" ${{ github.ref_name == 'main' && '--write' || '' }}
+      - name: 임베드 점검
+        if: inputs.embeds
+        run: python3 tools/collect_booth_posts.py feed --embeds ${{ github.ref_name == 'main' && '--write' || '' }}
       - name: 후보 모으기
-        if: ${{ !inputs.check && !inputs.audit }}
+        if: ${{ !inputs.check && !inputs.audit && !inputs.embeds }}
         run: python3 tools/collect_booth_posts.py feed ${{ github.ref_name != 'main' && '--dry-run' || '' }} ${{ ((github.event_name == 'schedule' && github.event.schedule != '17 * * * *') || inputs.quick) && '--quick' || '' }}
+      # 전체 수집 때 3시간마다 반영된 글의 임베드 상태도 점검 (민감한 글·지워진 글 → 관리 화면이 링크 카드로 전환, 2026-11-21)
+      - name: 임베드 점검 (자동)
+        if: ${{ github.ref_name == 'main' && !inputs.check && !inputs.audit && !inputs.embeds && !((github.event_name == 'schedule' && github.event.schedule != '17 * * * *') || inputs.quick) }}
+        continue-on-error: true
+        run: python3 tools/collect_booth_posts.py feed --embeds --write --auto
       - name: 후보 저장
         if: github.ref_name == 'main' && !inputs.check
         run: |
