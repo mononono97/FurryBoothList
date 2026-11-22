@@ -1,0 +1,429 @@
+/* =========================================================================
+   새 디자인 시험 페이지(/newui) 전용 스타일 — "동인 행사 카탈로그" (2026-11-22)
+   newui.html 이 기존 index.html 을 그대로 불러온 뒤 이 파일만 덧붙임.
+   기존 화면의 기능·HTML·JS 는 하나도 바꾸지 않고, 겉모습(색 변수와 모양)만 덮어씀.
+   모든 규칙은 html[data-newui] 아래에만 걸리므로 기존 화면(/)에는 영향이 없음.
+   ========================================================================= */
+
+/* ---------- 1. 색 변수: 카탈로그 종이 + 크림슨 표지 ---------- */
+html[data-newui]{
+  --nu-cover:#a3122b;
+  --nu-cover-ink:#ffffff;
+  --nu-cover-ink-2:#f6d7dc;
+  --nu-rule:#d8d5de;
+  --nu-rule-strong:#17151c;
+  --nu-blk-a:#b3122e;
+  --nu-blk-b:#2147c4;
+  --nu-blk-c:#0d7350;
+  --nu-blk-ink:#ffffff;
+  --nu-focus:#2147c4;
+  --nu-num:"SF Mono","Cascadia Mono",Consolas,"Roboto Mono",ui-monospace,monospace;
+
+  --paper:#f4f3f6;
+  --page-glow:none;
+  --ink:#17151c;
+  --text-2:#4a4652;
+  --muted:#6b6674;
+  --line:#d8d5de;
+  --card-bg:#ffffff;
+  --hover-tint:#eeedf1;
+  --moss:#b3122e;
+  --clay:#b3122e;
+  --accent:#b3122e;
+  --display-font:inherit;
+
+  --header-bg:#f4f3f6;
+  --header-fg:#17151c;
+  --header-sub:var(--nu-cover-ink-2);
+  --header-border:1px solid #17151c;
+  --chip-bg:#ffffff;
+  --chip-border:#17151c;
+  --chip-hover:#eeedf1;
+  --chip-active-bg:#17151c;
+  --chip-active-fg:#ffffff;
+  --chip-active-glow:none;
+  --chip-radius:6px;
+  --search-bg:#ffffff;
+  --search-border:#bdb8c6;
+  --search-ph:#6b6674;
+
+  --card-border:transparent;
+  --card-border-hover:transparent;
+  --card-radius:0;
+  --card-shadow:none;
+  --card-shadow-hover:none;
+  --id-color:#b3122e;
+  --id-bg:transparent;
+  --big-letter:#b3122e;
+  --heading-rule:transparent;
+  --pill-active-bg:#17151c;
+  --pill-active-fg:#ffffff;
+  --note-bg:#fdf0f2;
+  --planned-bg:#fff7d6;
+  --visited-bg:#e6f4e2;
+
+  --panel:#ffffff;
+  --panel-2:#f4f3f6;
+  --panel-border:#d8d5de;
+  --on-panel:#17151c;
+  --on-panel-dim:#5d5966;
+  --moss-light:#b3122e;
+  --panel-line:#bdb8c6;
+  --panel-divider:#e4e1e8;
+  --panel-field:#ffffff;
+  --panel-hover:#f1eff4;
+  --panel-shadow:rgba(23,21,28,.22);
+  --scroll-thumb:#bdb8c6;
+  --scroll-thumb-hover:#8f8a99;
+  --thumb-bg:#eceaf0;
+}
+html[data-newui][data-theme="dark"]{
+  --nu-cover:#5c0b1a;
+  --nu-cover-ink-2:#e7b9c1;
+  --nu-rule:#2f2b36;
+  --nu-rule-strong:#f1eff5;
+  --nu-blk-a:#ff5c72;
+  --nu-blk-b:#86a2ff;
+  --nu-blk-c:#4fd3a0;
+  --nu-blk-ink:#121015;
+  --nu-focus:#86a2ff;
+
+  --paper:#121015;
+  --ink:#f1eff5;
+  --text-2:#c9c4d2;
+  --muted:#9d97a8;
+  --line:#2f2b36;
+  --card-bg:#1b1920;
+  --hover-tint:#24212a;
+  --moss:#ff5c72;
+  --clay:#ff5c72;
+  --accent:#ff5c72;
+  --display-font:inherit;
+
+  --header-bg:#121015;
+  --header-fg:#f1eff5;
+  --header-border:1px solid #f1eff5;
+  --chip-bg:#1b1920;
+  --chip-border:#f1eff5;
+  --chip-hover:#24212a;
+  --chip-active-bg:#f1eff5;
+  --chip-active-fg:#121015;
+  --chip-radius:6px;
+  --search-bg:#1b1920;
+  --search-border:#4a4553;
+  --search-ph:#9d97a8;
+
+  --card-border:transparent;
+  --card-border-hover:transparent;
+  --card-shadow:none;
+  --card-shadow-hover:none;
+  --id-color:#ff5c72;
+  --id-bg:transparent;
+  --big-letter:#ff5c72;
+  --pill-active-bg:#f1eff5;
+  --pill-active-fg:#121015;
+  --note-bg:#2a1820;
+  --planned-bg:#2a2414;
+  --visited-bg:#172417;
+
+  --panel:#1b1920;
+  --panel-2:#24212a;
+  --panel-border:#2f2b36;
+  --on-panel:#f1eff5;
+  --on-panel-dim:#b4aebe;
+  --moss-light:#ff8597;
+  --panel-line:#4a4553;
+  --panel-divider:#2f2b36;
+  --panel-field:#121015;
+  --panel-hover:#24212a;
+  --panel-shadow:rgba(0,0,0,.6);
+  --scroll-thumb:#4a4553;
+  --scroll-thumb-hover:#6a6474;
+  --thumb-bg:#24212a;
+}
+
+/* ---------- 2. 바탕 글자·브라우저 기본 요소 ---------- */
+html[data-newui] body{
+  font-family:"Pretendard","Pretendard Variable","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,-apple-system,sans-serif;
+  font-feature-settings:"tnum" 1;
+  -webkit-font-smoothing:antialiased;
+}
+html[data-newui] ::selection{ background:var(--nu-cover); color:var(--nu-cover-ink); }
+html[data-newui] :focus-visible{ outline:2px solid var(--nu-focus); outline-offset:2px; }
+
+/* ---------- 3. 머리: 크림슨 표지 띠 + 도구줄 ---------- */
+html[data-newui] header.top{
+  padding-top:0;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+}
+/* 표지 띠: .top-inner 뒤에 화면 폭(100vw)만큼 넓은 띠를 깔아 줌.
+   (clip-path 로 늘리면 설정 메뉴가 잘려서 쓰지 않음. 스크롤바 폭만큼 넘치는 건 body 의 overflow-x:clip 이 자름) */
+html[data-newui] body{ overflow-x:clip; }
+html[data-newui] .top-inner{
+  position:relative;
+  isolation:isolate;
+  color:var(--nu-cover-ink);
+  padding:16px 0 14px;
+  align-items:center;
+}
+html[data-newui] .top-inner::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  top:0; bottom:0;
+  left:calc(50% - 50vw);
+  right:calc(50% - 50vw);
+  background:var(--nu-cover);
+}
+html[data-newui] .brand .mark{ font-size:24px; font-weight:800; letter-spacing:-.02em; color:var(--nu-cover-ink); }
+html[data-newui] .brand .mark::before{ display:none; }
+html[data-newui] .brand .sub{ color:var(--nu-cover-ink-2); font-size:13px; letter-spacing:0; }
+html[data-newui] .header-btn,
+html[data-newui] .settings-btn{
+  background:transparent;
+  border:1px solid rgba(255,255,255,.45);
+  color:var(--nu-cover-ink);
+  border-radius:6px;
+}
+html[data-newui] .header-btn:hover,
+html[data-newui] .settings-btn:hover{ background:rgba(255,255,255,.14); }
+html[data-newui] .header-btn:focus-visible,
+html[data-newui] .settings-btn:focus-visible{ outline-color:#fff; }
+/* 설정 메뉴는 표지 위에서 일반 패널 색으로 */
+html[data-newui] .settings-menu{ color:var(--on-panel); border-radius:8px; }
+
+/* 블록 탭(전체·A·B·C): 한 덩어리로 붙은 버튼, 블록마다 색 */
+html[data-newui] nav.rows{ gap:0; margin-top:12px; }
+html[data-newui] nav.rows button{
+  border-radius:0;
+  border:1px solid var(--nu-rule-strong);
+  margin-left:-1px;
+  width:48px;
+  height:40px;
+  font-weight:800;
+  transition:background-color .15s ease-out, color .15s ease-out;
+}
+html[data-newui] nav.rows button:first-child{ margin-left:0; border-radius:6px 0 0 6px; width:auto; padding:0 14px; }
+html[data-newui] nav.rows button:last-child{ border-radius:0 6px 6px 0; }
+html[data-newui] nav.rows button:nth-child(2).active{ background:var(--nu-blk-a); border-color:var(--nu-rule-strong); color:var(--nu-blk-ink); }
+html[data-newui] nav.rows button:nth-child(3).active{ background:var(--nu-blk-b); border-color:var(--nu-rule-strong); color:var(--nu-blk-ink); }
+html[data-newui] nav.rows button:nth-child(4).active{ background:var(--nu-blk-c); border-color:var(--nu-rule-strong); color:var(--nu-blk-ink); }
+
+/* 기능 탭(관심 부스·선입금·…): 카탈로그 목차처럼 밑줄 탭 */
+html[data-newui] .second-row{ margin-top:6px; align-items:flex-end; }
+html[data-newui] .tab-group{ gap:2px; }
+html[data-newui] .tab-group button{
+  background:transparent;
+  border:0;
+  border-bottom:3px solid transparent;
+  border-radius:0;
+  height:40px;
+  padding:0 10px;
+  color:var(--text-2);
+  font-weight:700;
+  transition:color .15s ease-out, border-color .15s ease-out;
+}
+html[data-newui] .tab-group button:hover{ background:transparent; color:var(--ink); border-bottom-color:var(--nu-rule); }
+html[data-newui] .tab-group button.active{
+  background:transparent;
+  color:var(--ink);
+  border-bottom-color:var(--accent);
+  box-shadow:none;
+}
+html[data-newui] .search-box{ border-radius:6px; padding:0 12px; height:40px; margin-bottom:6px; }
+html[data-newui] .search-box:focus-within{ border-color:var(--nu-focus); box-shadow:0 0 0 3px color-mix(in srgb, var(--nu-focus) 25%, transparent); }
+html[data-newui] .search-box input{ font-size:14px; width:260px; }
+
+/* ---------- 4. 목록 머리(큰 블록 글자) ---------- */
+html[data-newui] .row-heading{ align-items:baseline; margin-bottom:12px; padding-bottom:0; border-bottom:0; }
+html[data-newui] .row-heading .big-letter{ font-size:56px; line-height:.9; font-weight:900; letter-spacing:-.04em; font-family:inherit; }
+html[data-newui] .row-heading .count{ font-size:13px; color:var(--muted); }
+html[data-newui] .sort-priority-btn,
+html[data-newui] .visit-filter button{
+  border-radius:6px;
+  border:1px solid var(--nu-rule-strong);
+  background:var(--card-bg);
+  color:var(--ink);
+  font-weight:700;
+}
+html[data-newui] .sort-priority-btn.active,
+html[data-newui] .visit-filter button.active{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+
+/* ---------- 5. 부스 격자: 1px 괘선으로 붙인 서클컷 카탈로그 ---------- */
+html[data-newui] .grid{
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:1px;
+  padding:1px 1px 0;
+  border-top:3px solid var(--accent);
+}
+html[data-newui] .booth{
+  --blk:var(--accent);
+  display:flex;
+  flex-direction:column;
+  padding:0 0 10px;
+  text-align:left;
+  border:0;
+  border-radius:0;
+  background:var(--card-bg);
+  box-shadow:0 0 0 1px var(--line);      /* 칸 사이 1px 틈 위로 겹쳐 그려 괘선이 됨 */
+  transition:background-color .15s ease-out;
+}
+html[data-newui] .booth[data-booth-id^="A"]{ --blk:var(--nu-blk-a); }
+html[data-newui] .booth[data-booth-id^="B"]{ --blk:var(--nu-blk-b); }
+html[data-newui] .booth[data-booth-id^="C"]{ --blk:var(--nu-blk-c); }
+html[data-newui] .booth:hover{ transform:none; box-shadow:0 0 0 1px var(--line); background:color-mix(in srgb, var(--blk) 7%, var(--card-bg)); }
+html[data-newui] .booth .cut-thumb{
+  order:-1;
+  width:100%;
+  margin:0 0 8px;
+  border-radius:0;
+  background:var(--thumb-bg);
+}
+html[data-newui] .booth .cut-thumb img{ object-fit:cover; }
+html[data-newui] .booth .avatar-wrap{ order:-1; margin:16px auto 12px; }
+html[data-newui] .booth .id{
+  align-self:flex-start;
+  margin:0 10px 2px;
+  padding:0;
+  border-radius:0;
+  background:transparent;
+  color:var(--blk);
+  font-family:var(--nu-num);
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.02em;
+}
+html[data-newui] .booth .circle-name{ padding:0 10px; font-size:14px; line-height:1.3; }
+html[data-newui] .booth .rep-name{ padding:0 10px; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+html[data-newui] .no-tw-badge{ top:8px; right:8px; box-shadow:0 0 0 2px var(--card-bg); }
+
+/* 메모·방문·우선순위 표시: 칸 바탕색 + 칸 안쪽 굵은 테두리 */
+html[data-newui] .booth.has-note{ background:var(--note-bg); box-shadow:0 0 0 1px var(--line), inset 0 0 0 2px var(--clay); }
+html[data-newui] .booth.visit-planned{ background:var(--planned-bg); box-shadow:0 0 0 1px var(--line), inset 0 0 0 2px #c99a1f; }
+html[data-newui] .booth.visit-visited{ background:var(--visited-bg); box-shadow:0 0 0 1px var(--line), inset 0 0 0 2px #3f7a33; }
+html[data-newui] .booth.priority-1,
+html[data-newui] .booth.priority-2,
+html[data-newui] .booth.priority-3{ outline-offset:-3px; z-index:2; }
+html[data-newui] .memo-flag{
+  top:6px; left:6px; z-index:1;
+  background:var(--card-bg); border-radius:4px; padding:3px 4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.25);
+}
+html[data-newui] .booth.detail-open{
+  transform:none;
+  background:color-mix(in srgb, var(--blk) 10%, var(--card-bg));
+  box-shadow:0 0 0 1px var(--line), inset 0 -4px 0 var(--blk);
+}
+
+/* PC 펼침 상세: 격자 한 줄을 통째로 쓰는 "펼친 면" */
+html[data-newui] .booth-inline{
+  margin:0;
+  border:0;
+  border-radius:0;
+  border-top:3px solid var(--ink);
+  box-shadow:0 0 0 1px var(--line), 0 18px 40px -16px var(--panel-shadow);
+  padding:22px 24px 24px;
+  z-index:3;
+}
+html[data-newui] .booth-inline::before{
+  top:-12px;
+  background:var(--ink);
+  border:0;
+  width:14px; height:14px;
+  left:calc(var(--arrow-x, 50%) - 7px);
+}
+html[data-newui] .booth-inline .inline-close,
+html[data-newui] .modal.booth-modal .modal-close{ border-radius:6px; }
+
+/* ---------- 6. 부스 상세 안쪽(PC 펼침·휴대폰 창 공통) ---------- */
+html[data-newui] .booth-title{ letter-spacing:-.01em; }
+html[data-newui] .booth-title-id{ font-family:var(--nu-num); font-weight:800; }
+html[data-newui] .booth-cut{ border-radius:0; }
+html[data-newui] .booth-cut img{ border-radius:0; }
+html[data-newui] .visit-btn,
+html[data-newui] .priority-box button,
+html[data-newui] .map-locate-btn,
+html[data-newui] .memo-box button,
+html[data-newui] .preorder-add-btn,
+html[data-newui] .preorder-item-remove,
+html[data-newui] .preorder-delete-all-btn,
+html[data-newui] .booth-posts-toggle,
+html[data-newui] .booth-post-hide-btn{ border-radius:6px; }
+html[data-newui] .visit-btn,
+html[data-newui] .priority-box button{ min-height:38px; font-weight:700; }
+html[data-newui] .memo-box textarea,
+html[data-newui] .budget-input-row,
+html[data-newui] .budget-input-row input{ border-radius:6px; }
+html[data-newui] .memo-box label,
+html[data-newui] .budget-box label{ font-weight:700; }
+
+/* ---------- 7. 모달 ---------- */
+html[data-newui] .modal-backdrop{ background:rgba(18,16,21,.55); }
+html[data-newui] .modal{ border-radius:10px; }
+html[data-newui] .confirm-actions button{ border-radius:6px; }
+/* 휴대폰 부스 상세: 아래에서 올라오는 시트 */
+html[data-newui] .modal-backdrop.booth-full{ padding:0; align-items:flex-end; }
+html[data-newui] .modal.booth-modal.booth-modal-full{
+  max-width:none;
+  height:94vh;
+  height:94dvh;
+  border-radius:14px 14px 0 0;
+  border:0;
+  animation:nu-sheet-in .24s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes nu-sheet-in{ from{ transform:translateY(48px); opacity:.4; } }
+
+/* ---------- 8. 기존 디자인으로 돌아가는 버튼 ---------- */
+.newui-back{
+  position:fixed;
+  left:16px;
+  bottom:16px;
+  z-index:400;
+  display:inline-flex;
+  align-items:center;
+  height:36px;
+  padding:0 14px;
+  border-radius:6px;
+  background:var(--ink);
+  color:var(--paper);
+  font-size:13px;
+  font-weight:700;
+  text-decoration:none;
+  box-shadow:0 6px 18px -6px rgba(0,0,0,.45);
+}
+.newui-back::before{ content:"←"; margin-right:6px; }
+.newui-back:hover{ background:var(--text-2); }
+html.modal-open .newui-back{ display:none; }
+
+/* ---------- 9. 휴대폰 ---------- */
+@media (max-width:700px){
+  html[data-newui] .top-inner{ padding:10px 0; }
+  html[data-newui] .brand .mark{ font-size:18px; }
+  html[data-newui] nav.rows{ margin-top:2px; }
+  html[data-newui] nav.rows button{ width:38px; height:36px; }
+  html[data-newui] .search-box{ height:36px; margin-bottom:0; }
+  html[data-newui] .search-box input{ width:100%; font-size:16px; }
+  html[data-newui] .tab-group button{ height:36px; padding:0 8px; }
+  html[data-newui] .row-heading .big-letter{ font-size:44px; }
+  html[data-newui] .grid{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+  html[data-newui] .booth .id{ margin:0 7px 2px; font-size:11px; }
+  html[data-newui] .booth .circle-name{ padding:0 7px; font-size:13px; }
+  html[data-newui] .booth .rep-name{ padding:0 7px; }
+  html[data-newui] .newui-back{ left:12px; bottom:12px; height:32px; padding:0 10px; font-size:12px; }
+}
+@media (max-width:360px){
+  html[data-newui] .grid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (prefers-reduced-motion:reduce){
+  html[data-newui] *{ animation:none !important; transition:none !important; }
+}
+
+/* ---------- 10. 지금 고른 블록 색을 큰 글자·격자 윗선에도 ---------- */
+html[data-newui]:has(#rowNav button:nth-child(2).active){ --big-letter:var(--nu-blk-a); --nu-grid-top:var(--nu-blk-a); }
+html[data-newui]:has(#rowNav button:nth-child(3).active){ --big-letter:var(--nu-blk-b); --nu-grid-top:var(--nu-blk-b); }
+html[data-newui]:has(#rowNav button:nth-child(4).active){ --big-letter:var(--nu-blk-c); --nu-grid-top:var(--nu-blk-c); }
+html[data-newui] .grid{ border-top-color:var(--nu-grid-top, var(--ink)); }
+html[data-newui]{ background:var(--paper); }
+/* 관심 부스 탭 카드 아래 "방문 완료" 버튼 */
+html[data-newui] .booth .quick-visit-btn{ width:calc(100% - 16px); margin:8px 8px 0; border-radius:6px; }
