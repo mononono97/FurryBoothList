@@ -1,6 +1,42 @@
 {
- "updatedAt": "2026-11-22T06:27:16+00:00",
+ "updatedAt": "2026-11-22T07:27:11+00:00",
  "posts": [
+  {
+   "id": "2124401793849589763",
+   "handle": "mofuaki_",
+   "booths": [
+    "A41"
+   ],
+   "boothNames": [
+    "MOFUMOFUYA"
+   ],
+   "created": "2026-11-22T07:17:11+00:00",
+   "score": 2,
+   "sensitive": true,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-22T07:23:13+00:00"
+  },
+  {
+   "id": "2124396280587948175",
+   "handle": "noway_jin",
+   "booths": [
+    "A30"
+   ],
+   "boothNames": [
+    "FURST SNOW"
+   ],
+   "created": "2026-11-22T06:55:17+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "이미지"
+   ],
+   "foundAt": "2026-11-22T07:23:43+00:00"
+  },
   {
    "id": "2124380401041088627",
    "handle": "BLAEDIC",
