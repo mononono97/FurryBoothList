@@ -1,6 +1,55 @@
 {
- "updatedAt": "2026-11-22T12:28:21+00:00",
+ "updatedAt": "2026-11-22T15:28:53+00:00",
  "posts": [
+  {
+   "id": "2124522714555965936",
+   "handle": "qYESp",
+   "booths": [
+    "B04"
+   ],
+   "boothNames": [
+    "뀨"
+   ],
+   "created": "2026-11-22T15:17:41+00:00",
+   "score": 4,
+   "sensitive": false,
+   "quoted": {
+    "id": "2123706199577420113",
+    "handle": "qYESp",
+    "sensitive": false
+   },
+   "reasons": [
+    "통판·선입금·예약",
+    "품목",
+    "행사·부스"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": "2026-11-25"
+   },
+   "foundAt": "2026-11-22T15:25:33+00:00"
+  },
+  {
+   "id": "2124520678699520080",
+   "handle": "ADKT0448",
+   "booths": [
+    "C23"
+   ],
+   "boothNames": [
+    "tag : tiger boy"
+   ],
+   "created": "2026-11-22T15:09:36+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-22T15:17:38+00:00"
+  },
   {
    "id": "2124473978022466031",
    "handle": "perel_fur",
