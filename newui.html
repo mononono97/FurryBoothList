@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Furst Class 부스 목록 (새 디자인 시험)</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<style>
+  /* 기존 화면을 받아 오는 동안 잠깐 보이는 바탕 */
+  html, body { margin: 0; background: #f4f3f6; }
+  @media (prefers-color-scheme: dark) { html, body { background: #121015; } .boot { color: #9d97a8; } }
+  .boot { font: 15px/1.5 system-ui, sans-serif; color: #6b6674; padding: 40vh 16px 0; text-align: center; }
+</style>
+</head>
+<body>
+<div class="boot" id="boot">불러오는 중…</div>
+<noscript>이 페이지는 자바스크립트가 필요합니다.</noscript>
+<script>
+/* 새 디자인 시험 페이지 /newui (2026-11-22)
+   기존 화면(index.html)을 그대로 받아 와서, 새 디자인 스타일시트(newui.css)를 덧붙여 그립니다.
+   그래서 부스 데이터·로그인 동기화·메모·우선순위·선입금·배치도 같은 기능과 저장 데이터는
+   기존 화면과 완전히 같고, 기존 화면이 바뀌면 이 페이지도 자동으로 따라갑니다. 바뀌는 건 겉모습뿐입니다.
+
+   겉모습 때문에 받아 온 HTML 글자를 그리기 전에 고치는 곳:
+   1) 버튼·탭·안내 문구의 이모지를 뺌(사용자 요청 2026-11-22). 부스 데이터 줄(const BOOTHS)은 건드리지 않음.
+      닫기 ✕, 체크 ✓, 순위 ①②③ 같은 기호는 남김.
+   2) 이모지가 들어가던 큰 제목 칸(관심 부스·선입금·배치도 등)은 탭 이름 글자로,
+      설정 톱니바퀴와 날씨 그림은 직접 그린 SVG 아이콘으로 바꿈.
+   기존 화면 코드가 바뀌어 바꿀 글자를 못 찾으면 그 부분만 기존 모습 그대로 둠(기능에는 영향 없음). */
+(function(){
+  var NEWUI_CSS_VERSION = "2";
+
+  var ICONS = {
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    partly: '<path d="M8 3v1.5M3.5 7.5H2M4.6 4.6l1 1M12.4 4.6l-1 1"/><path d="M5.2 10.5a3.5 3.5 0 0 1 6.3-3.3"/><path d="M8 20h9a4 4 0 0 0 0-8 5.5 5.5 0 0 0-10.6 1.6A3.2 3.2 0 0 0 8 20z"/>',
+    cloud: '<path d="M7 19h10a4.5 4.5 0 0 0 .5-9A6 6 0 0 0 6 11.5 3.8 3.8 0 0 0 7 19z"/>',
+    fog: '<path d="M4 9h16M2 13h20M5 17h14"/>',
+    rain: '<path d="M7 15h10a4.5 4.5 0 0 0 .5-9A6 6 0 0 0 6 7.5 3.8 3.8 0 0 0 7 15z"/><path d="M8 18l-1 3M12 18l-1 3M16 18l-1 3"/>',
+    snow: '<path d="M7 14h10a4.5 4.5 0 0 0 .5-9A6 6 0 0 0 6 6.5 3.8 3.8 0 0 0 7 14z"/><path d="M8 18h.01M12 20h.01M16 18h.01M10 22h.01M14 22h.01"/>',
+    storm: '<path d="M7 14h10a4.5 4.5 0 0 0 .5-9A6 6 0 0 0 6 6.5 3.8 3.8 0 0 0 7 14z"/><path d="M12 15l-2 4h4l-2 4"/>',
+    temp: '<path d="M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0z"/>',
+    drop: '<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>',
+    gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'
+  };
+  function iconSvg(name){
+    return '<svg class="nu-icon" viewBox="0 0 24 24" aria-hidden="true">' + (ICONS[name] || ICONS.temp) + '</svg>';
+  }
+
+  // 기존 화면 스크립트보다 먼저 실행되는 도우미 (날씨 아이콘, 큰 제목 칸)
+  var NEWUI_PRELUDE = '<script>' +
+    'window.__nuIconSet=' + JSON.stringify(ICONS) + ';' +
+    'window.__nuIcon=function(n){var s=window.__nuIconSet;return \'<svg class="nu-icon" viewBox="0 0 24 24" aria-hidden="true">\'+(s[n]||s.temp)+\'</svg>\';};' +
+    'window.__nuWeather=function(c){' +
+      'var n=c===0?"sun":(c===1||c===2)?"partly":c===3?"cloud":(c===45||c===48)?"fog":' +
+      '[51,53,55,56,57,61,63,65,66,67,80,81,82].indexOf(c)>=0?"rain":[71,73,75,77,85,86].indexOf(c)>=0?"snow":' +
+      '[95,96,99].indexOf(c)>=0?"storm":"temp";' +
+      'return window.__nuIcon(n);' +
+    '};' +
+    'window.__nuLetter=function(text,isWord){' +
+      'var el=document.getElementById("currentLetter");' +
+      'if(!el)return;el.textContent=text;el.classList.toggle("nu-word",!!isWord);' +
+    '};' +
+  '<\/script>';
+
+  var NEWUI_HEAD =
+    NEWUI_PRELUDE +
+    '<link rel="stylesheet" href="/newui.css?v=' + NEWUI_CSS_VERSION + '">' +
+    '<meta name="robots" content="noindex">';
+  var NEWUI_BODY =
+    '<a class="newui-back" href="/" title="기존 디자인으로 보기">기존 디자인</a>';
+
+  // 이모지(그림 글자)와 뒤따르는 띄어쓰기 하나. ✓✔✕✖(2713~2716)·①②③ 같은 기호는 남김.
+  var EMOJI_RE = /(?:[\u{1F000}-\u{1FAFF}]|[☀-✒✗-➿]|[⬀-⯿]|[←-⇿]|[⌚-⏿]|[〰〽㊗㊙])(?:️|‍(?:[\u{1F000}-\u{1FAFF}]|[☀-➿])️?)*[ \t]?/gu;
+
+  function stripEmoji(html){
+    return html.split("\n").map(function(line){
+      if(line.indexOf("const BOOTHS = ") === 0) return line;   // 부스 데이터(부스 이름 등)는 그대로
+      return line.replace(EMOJI_RE, "");
+    }).join("\n");
+  }
+
+  // 정확히 이 글자가 있을 때만 바꿈
+  function swap(html, from, to){
+    return html.indexOf(from) >= 0 ? html.split(from).join(to) : html;
+  }
+
+  function transform(html){
+    var L = 'document.getElementById("currentLetter").textContent = ';
+    html = swap(html, L + '"🕒";', 'window.__nuLetter(t("timetableBtn"), true);');
+    html = swap(html, L + '"🎪";', 'window.__nuLetter(t("infoBtn"), true);');
+    html = swap(html, L + '"🗺️";', 'window.__nuLetter(t("mapBtn"), true);');
+    html = swap(html,
+      L + 'isNotesView ? "📝" : isPreorderView ? "💳" : isAllView ? "📋" : isUpdatesView ? "🆕" : currentRow;',
+      'window.__nuLetter(isNotesView ? t("notesBtn") : isPreorderView ? t("preorderBtn") : isAllView ? t("allBtn") : isUpdatesView ? t("updatesBtn") : currentRow, isNotesView || isPreorderView || isAllView || isUpdatesView);');
+    html = swap(html, '<div class="weather-icon">${weatherIcon(c.code)}</div>', '<div class="weather-icon">${window.__nuWeather(c.code)}</div>');
+    html = swap(html, '<div class="weather-hum">💧 ', '<div class="weather-hum">${window.__nuIcon("drop")}');
+    html = swap(html, 'aria-label="Settings">⚙️</button>', 'aria-label="Settings">' + iconSvg("gear") + '</button>');
+    html = stripEmoji(html);
+    return html
+      .replace("</head>", NEWUI_HEAD + "\n</head>")
+      .replace(/<title>([^<]*)<\/title>/, "<title>$1 (새 디자인)</title>")
+      .replace(/<html([^>]*)>/, '<html$1 data-newui="1">')
+      .replace(/<\/body>(?![\s\S]*<\/body>)/, NEWUI_BODY + "\n</body>");
+  }
+
+  function fail(msg){
+    var b = document.getElementById("boot");
+    if(b) b.innerHTML = "기존 화면을 불러오지 못했어요. " + msg + '<br><a href="/">기존 화면으로 가기</a>';
+  }
+  fetch("/index.html", { cache: "no-cache" }).then(function(r){
+    if(!r.ok) throw new Error("(" + r.status + ")");
+    return r.text();
+  }).then(function(html){
+    if(html.indexOf("</head>") < 0 || html.indexOf("</body>") < 0) throw new Error("(형식)");
+    document.open();
+    document.write(transform(html));
+    document.close();
+  }).catch(function(e){ fail(e && e.message || ""); });
+})();
+</script>
+</body>
+</html>
