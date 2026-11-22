@@ -1,6 +1,47 @@
 {
- "updatedAt": "2026-11-21T20:31:56+00:00",
+ "updatedAt": "2026-11-22T03:23:59+00:00",
  "posts": [
+  {
+   "id": "2124338407187038577",
+   "handle": "whitefangwolves",
+   "booths": [
+    "A37-38"
+   ],
+   "boothNames": [
+    "Whitefangwolves"
+   ],
+   "created": "2026-11-22T03:05:19+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-22T03:23:17+00:00"
+  },
+  {
+   "id": "2124332005672538248",
+   "handle": "kukku_kuu",
+   "booths": [
+    "B18"
+   ],
+   "boothNames": [
+    "天神大砂丘"
+   ],
+   "created": "2026-11-22T02:39:52+00:00",
+   "score": 3,
+   "sensitive": false,
+   "quoted": {
+    "id": "2124215071169761473",
+    "handle": "Neumokun",
+    "sensitive": false
+   },
+   "reasons": [
+    "인포"
+   ],
+   "foundAt": "2026-11-22T03:17:40+00:00"
+  },
   {
    "id": "2124221374369779940",
    "handle": "anthyutena",
@@ -15933,8 +15974,11 @@
   "2120788470637740264": "2120797130399137896"
  },
  "embedStatus": {
-  "checkedAt": "2026-11-21T23:40:40+00:00",
+  "checkedAt": "2026-11-22T03:26:44+00:00",
   "posts": {
+   "2124254032651076009:quoted": "sensitive",
+   "2124183113463165412:quoted": "sensitive",
+   "2124174269093753244": "sensitive",
    "2124165494039355870": "sensitive",
    "2124157757846962315": "sensitive",
    "2124134282797146618": "sensitive",
