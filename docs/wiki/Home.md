@@ -30,6 +30,9 @@
 - [방문 통계](기능-방문-통계.md): Cloudflare Web Analytics로 일별 방문자·페이지뷰 보기, 사용량을 확인하는 다른 방법
 - [사이트 헬스체크](기능-사이트-헬스체크.md): 1시간마다 접속·배포·Google 로그인·동기화·무료 할당량 자동 점검, 치명적인 이상만 GitHub 이슈·휴대폰(ntfy)으로 알림, 관리 화면 "사이트 상태"(결과·방문자·로그인 사용자 수), 처음 한 번 설정 방법
 
+### 개발 도구
+- [디자인 스킬 3개](개발-도구-디자인-스킬.md): 저장소 `.claude/skills/`의 Claude Code 디자인 스킬(hallmark, design-taste-frontend, impeccable), 출처·라이선스, 스레드에서 쓸 수 있는 검사
+
 ### 큰 작업
 - [Furst Class 개편](작업-Furst-Class-개편.md): 케모켓 → Furst Class 개편의 결정 사항과 남은 일
 
