@@ -453,3 +453,51 @@ html[data-newui][data-theme="dark"] .memo-flag::after{ color:#121015; }
   html[data-newui] .row-heading .big-letter.nu-word{ font-size:26px; }
 }
 html[data-newui] .memo-flag{ top:auto; left:auto; bottom:10px; right:8px; background:none; box-shadow:none; }
+
+/* ---------- 12. 카드 안 줄 정리 (2026-11-22 사용자 제보: 글자가 칸 밖으로, 메모 표시 어색) ---------- */
+/* 관심 부스·선입금·최근 갱신 탭에서 카드에 붙는 줄(예산·쓴 돈, 선입금 기간, 갱신 날짜)도 이름과 같은 안쪽 여백 */
+html[data-newui] .booth .updated-on,
+html[data-newui] .booth .money-line,
+html[data-newui] .booth .preorder-period,
+html[data-newui] .booth .preorder-mine,
+html[data-newui] .booth .preorder-line{
+  padding:0 10px;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+/* "방문 완료" 버튼은 카드 맨 아래에 붙여 같은 줄 카드끼리 높이를 맞춤 */
+html[data-newui] .booth .quick-visit-btn{ margin-top:auto; }
+html[data-newui] .booth > :has(+ .quick-visit-btn){ margin-bottom:10px; }
+/* 메모 꼬리표는 부스컷 오른쪽 위로(버튼과 겹치지 않게) */
+html[data-newui] .memo-flag{ top:6px; right:6px; bottom:auto; left:auto; z-index:2; }
+html[data-newui] .memo-flag::after{ box-shadow:0 1px 3px rgba(0,0,0,.3); }
+/* 두 칸짜리 그림(가로로 긴 부스컷)도 잘리지 않게 칸 안에 통째로 */
+html[data-newui] .booth .cut-thumb img{ object-fit:contain; }
+@media (max-width:700px){
+  html[data-newui] .booth .updated-on,
+  html[data-newui] .booth .money-line,
+  html[data-newui] .booth .preorder-period,
+  html[data-newui] .booth .preorder-mine,
+  html[data-newui] .booth .preorder-line{ padding:0 7px; }
+  html[data-newui] .booth .quick-visit-btn{ width:calc(100% - 12px); margin-left:6px; margin-right:6px; padding:0 6px; }
+}
+
+/* ---------- 13. 카드 글자 줄이기·방문 완료 버튼 빼기 (2026-11-22 사용자 요청) ---------- */
+/* 부스원(대표 외 N명)과 예산·쓴 돈·기간 줄은 한 단계 작게 */
+html[data-newui] .booth .rep-name{ font-size:11px; }
+html[data-newui] .booth .updated-on,
+html[data-newui] .booth .money-line,
+html[data-newui] .booth .preorder-period,
+html[data-newui] .booth .preorder-mine,
+html[data-newui] .booth .preorder-line{ font-size:10.5px; font-weight:600; margin-top:1px; }
+/* 관심 부스 탭 카드의 "방문 완료" 버튼은 이 디자인에서는 숨김(부스 상세의 방문 완료 버튼은 그대로) */
+html[data-newui] .booth .quick-visit-btn{ display:none; }
+html[data-newui] .booth > :has(+ .quick-visit-btn){ margin-bottom:0; }
+@media (max-width:700px){
+  html[data-newui] .booth .rep-name{ font-size:10.5px; }
+  html[data-newui] .booth .updated-on,
+  html[data-newui] .booth .money-line,
+  html[data-newui] .booth .preorder-period,
+  html[data-newui] .booth .preorder-mine,
+  html[data-newui] .booth .preorder-line{ font-size:10px; }
+}
