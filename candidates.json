@@ -1,6 +1,42 @@
 {
- "updatedAt": "2026-11-22T07:45:36+00:00",
+ "updatedAt": "2026-11-22T08:22:49+00:00",
  "posts": [
+  {
+   "id": "2124417893077057655",
+   "handle": "ToriS6526",
+   "booths": [
+    "A19"
+   ],
+   "boothNames": [
+    "메이커 연합부스 - 아르모아"
+   ],
+   "created": "2026-11-22T08:21:10+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-11-22T08:21:55+00:00"
+  },
+  {
+   "id": "2124415504605749735",
+   "handle": "GomTang_P",
+   "booths": [
+    "B22"
+   ],
+   "boothNames": [
+    "BoxBear"
+   ],
+   "created": "2026-11-22T08:11:40+00:00",
+   "score": 4,
+   "sensitive": true,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-22T08:18:55+00:00"
+  },
   {
    "id": "2124401793849589763",
    "handle": "mofuaki_",
