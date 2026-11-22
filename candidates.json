@@ -1,6 +1,25 @@
 {
- "updatedAt": "2026-11-22T17:23:13+00:00",
+ "updatedAt": "2026-11-22T19:23:08+00:00",
  "posts": [
+  {
+   "id": "2124569189725909187",
+   "handle": "havelXP",
+   "booths": [
+    "C23"
+   ],
+   "boothNames": [
+    "tag : tiger boy"
+   ],
+   "created": "2026-11-22T18:22:22+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-22T19:19:12+00:00"
+  },
   {
    "id": "2124550777322803345",
    "handle": "White_Night06",
