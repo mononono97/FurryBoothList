@@ -1465,6 +1465,20 @@
   .booth .money-line{ font-size:11px; color:var(--text-2); font-weight:600; margin-top:2px; }
   .booth .money-line.over{ color:var(--accent); }
   .budget-total.over{ border-color:var(--accent); color:var(--accent); }
+  /* 합계 버튼을 누르면 어디서 얼마나 썼는지 내역 창이 열림 (2026-11-23 사용자 요청) */
+  button.budget-total{ font:inherit; font-size:13px; font-weight:700; cursor:pointer; transition:background .15s; }
+  button.budget-total:hover{ background:var(--hover-tint); }
+  button.budget-total::after{ content:"›"; margin-left:6px; opacity:.6; }
+  .money-breakdown{ width:100%; border-collapse:collapse; font-size:13px; }
+  .money-breakdown th{ text-align:left; font-size:11.5px; font-weight:600; opacity:.7; padding:0 6px 6px; border-bottom:1px solid var(--panel-border); }
+  .money-breakdown td{ padding:8px 6px; border-bottom:1px solid var(--panel-border); vertical-align:top; }
+  .money-breakdown .num{ text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .money-breakdown .bd-id{ font-weight:700; margin-right:6px; }
+  .money-breakdown .bd-sub{ font-size:11.5px; opacity:.7; margin-top:2px; overflow-wrap:anywhere; }
+  .money-breakdown .bd-tag{ display:inline-block; font-size:10.5px; font-weight:700; padding:1px 6px; border-radius:999px; border:1px solid var(--panel-border); margin-left:6px; opacity:.85; }
+  .money-breakdown .over{ color:var(--accent); }
+  .money-breakdown tfoot td{ font-weight:700; border-bottom:none; padding-top:10px; }
+  .breakdown-note{ font-size:12px; opacity:.75; margin:10px 2px 0; line-height:1.5; }
   /* 메모 탭 카드의 "✓ 방문 완료" / "↩ 방문 예정으로" 버튼 */
   /* 카드의 방문 완료 토글. 아직 안 갔으면 연한 칩 + 빈 동그라미, 다녀왔으면 초록 칩 + 체크 동그라미
      (2026-10-18 사용자 요청: 예전엔 안 간 부스 버튼이 초록으로 채워져 이미 체크된 것처럼 보였음) */
@@ -2178,7 +2192,7 @@
       <button type="button" data-filter="visited"></button>
       <button type="button" data-filter="memo"></button>
     </div>
-    <div class="budget-total" id="budgetTotal"></div>
+    <button type="button" class="budget-total" id="budgetTotal" aria-haspopup="dialog"></button>
   </div>
   <div class="notes-extra" id="updatesExtra" style="display:none;">
     <div class="visit-filter" id="updatesFilter">
@@ -2192,6 +2206,7 @@
       <button type="button" data-filter="open"></button>
       <button type="button" data-filter="closed"></button>
     </div>
+    <button type="button" class="budget-total" id="preorderTotal" aria-haspopup="dialog"></button>
   </div>
   <div class="grid" id="grid"></div>
   <div class="map-grid" id="mapGrid" style="display:none;"></div>
@@ -2534,6 +2549,22 @@ const I18N = {
     spentTotal: "예산 {budget} · 쓴 돈 {spent} · 남은 예산 {left}",
     spentTotalOver: "예산 {budget} · 쓴 돈 {spent} · {left} 초과",
     spentTotalOnly: "쓴 돈 합계: {spent}",
+    preorderTotalBtn: "선입금 합계: {amount}",
+    moneyBreakdownTitle: "예산·쓴 돈 내역",
+    preorderBreakdownTitle: "선입금 내역",
+    breakdownBooth: "부스",
+    breakdownBudget: "예산",
+    breakdownSpent: "쓴 돈",
+    breakdownAmount: "금액",
+    breakdownTotal: "합계",
+    breakdownLeft: "남은 예산 {amount}",
+    breakdownOver: "예산보다 {amount} 더 씀",
+    breakdownReceived: "수령 완료",
+    breakdownPending: "수령 전",
+    breakdownReceivedSum: "수령 완료 {done} · 수령 전 {pending}",
+    breakdownEmpty: "아직 적어 둔 예산이나 쓴 돈이 없어요. 부스를 열어서 예산·쓴 돈을 적어 보세요.",
+    preorderBreakdownEmpty: "아직 금액을 적은 선입금이 없어요.",
+    breakdownNoAmount: "금액을 안 적은 선입금 {n}건은 목록에서 빠졌어요.",
     moneyLine: "💸 {spent} / 예산 {budget}",
     moneyLineSpentOnly: "💸 쓴 돈 {spent}",
     updatesFilterMine: "⭐ 내 관심 부스만",
@@ -2771,6 +2802,22 @@ const I18N = {
     spentTotal: "Budget {budget} · Spent {spent} · {left} left",
     spentTotalOver: "Budget {budget} · Spent {spent} · {left} over",
     spentTotalOnly: "Total spent: {spent}",
+    preorderTotalBtn: "Pre-order total: {amount}",
+    moneyBreakdownTitle: "Budget & spending",
+    preorderBreakdownTitle: "Pre-order breakdown",
+    breakdownBooth: "Booth",
+    breakdownBudget: "Budget",
+    breakdownSpent: "Spent",
+    breakdownAmount: "Amount",
+    breakdownTotal: "Total",
+    breakdownLeft: "{amount} left",
+    breakdownOver: "{amount} over budget",
+    breakdownReceived: "Received",
+    breakdownPending: "Not yet",
+    breakdownReceivedSum: "Received {done} · Not yet {pending}",
+    breakdownEmpty: "No budget or spending yet. Open a booth to enter them.",
+    preorderBreakdownEmpty: "No pre-orders with an amount yet.",
+    breakdownNoAmount: "{n} pre-orders without an amount are not listed.",
     moneyLine: "💸 {spent} / budget {budget}",
     moneyLineSpentOnly: "💸 Spent {spent}",
     updatesFilterMine: "⭐ My Booths only",
@@ -3008,6 +3055,22 @@ const I18N = {
     spentTotal: "予算 {budget} · 使った金額 {spent} · 残り {left}",
     spentTotalOver: "予算 {budget} · 使った金額 {spent} · {left} 超過",
     spentTotalOnly: "使った金額の合計：{spent}",
+    preorderTotalBtn: "事前通販の合計：{amount}",
+    moneyBreakdownTitle: "予算・使った金額の内訳",
+    preorderBreakdownTitle: "事前通販の内訳",
+    breakdownBooth: "ブース",
+    breakdownBudget: "予算",
+    breakdownSpent: "使った金額",
+    breakdownAmount: "金額",
+    breakdownTotal: "合計",
+    breakdownLeft: "残り {amount}",
+    breakdownOver: "予算を {amount} 超過",
+    breakdownReceived: "受取済み",
+    breakdownPending: "受取前",
+    breakdownReceivedSum: "受取済み {done} · 受取前 {pending}",
+    breakdownEmpty: "まだ予算や使った金額がありません。ブースを開いて入力してください。",
+    preorderBreakdownEmpty: "金額を入力した事前通販はまだありません。",
+    breakdownNoAmount: "金額未入力の事前通販 {n}件は含まれていません。",
     moneyLine: "💸 {spent} / 予算 {budget}",
     moneyLineSpentOnly: "💸 使った金額 {spent}",
     updatesFilterMine: "⭐ 気になるブースのみ",
@@ -3137,6 +3200,7 @@ function applyStaticTexts(){
   document.querySelector('#updatesFilter button[data-filter="mine"]').textContent = t("updatesFilterMine");
   document.getElementById("sortPriorityBtn").textContent = t("sortPriorityBtn");
   updateBudgetTotalDisplay();
+  updatePreorderTotalDisplay();
   updateAuthUI();
   document.getElementById("siteFooter").innerHTML =
     `${t("footerSource")}: <a href="https://furst-class.com/" style="color:inherit;" target="_blank" rel="noopener">furst-class.com</a>`;
@@ -3408,6 +3472,7 @@ function savePreorders(){
     const total = p.items.reduce((sum, i) => sum + (i.amount || 0), 0);
     if(total > 0) p.amount = total; else delete p.amount;
   });
+  updatePreorderTotalDisplay();
   try {
     localStorage.setItem(PREORDER_KEY, JSON.stringify(preorders));
   } catch {
@@ -3689,6 +3754,150 @@ function updateBudgetTotalDisplay(){
     });
   }
 }
+
+// 선입금 탭 위 합계 버튼: 내 선입금 전체(필터와 상관없이)의 금액 합계 (2026-11-23 사용자 요청)
+function myPreorderBoothIds(){
+  return BOOTHS.filter(b => preorders[b.id]).map(b => b.id);
+}
+function updatePreorderTotalDisplay(){
+  const el = document.getElementById("preorderTotal");
+  if(!el) return;
+  el.textContent = t("preorderTotalBtn", { amount: formatWon(getPreorderTotal(myPreorderBoothIds())) });
+}
+
+/* ---------- 금액 내역 창 (2026-11-23 사용자 요청) ----------
+   관심 부스 탭의 예산·쓴 돈 합계 버튼, 선입금 탭의 선입금 합계 버튼을 누르면
+   어느 부스에서 얼마를 (계획/썼는지/선입금했는지) 부스 순서대로 표로 보여 줌. 읽기만 하고 저장 데이터는 안 바꿈.
+------------------------------------------------ */
+function breakdownBoothCell(booth, sub){
+  const td = document.createElement("td");
+  const id = document.createElement("span");
+  id.className = "bd-id";
+  id.textContent = booth.id;
+  td.appendChild(id);
+  td.appendChild(document.createTextNode(booth.name));
+  if(sub){
+    const s = document.createElement("div");
+    s.className = "bd-sub";
+    s.textContent = sub;
+    td.appendChild(s);
+  }
+  return td;
+}
+function breakdownNumCell(text, cls){
+  const td = document.createElement("td");
+  td.className = "num" + (cls ? " " + cls : "");
+  td.textContent = text;
+  return td;
+}
+function breakdownHeadRow(table, labels){
+  const tr = table.createTHead().insertRow();
+  labels.forEach((label, i) => {
+    const th = document.createElement("th");
+    th.textContent = label;
+    if(i > 0) th.className = "num";
+    tr.appendChild(th);
+  });
+}
+function openMoneyBreakdownModal(kind){
+  const backdrop = document.getElementById("modalBackdrop");
+  const content = document.getElementById("modalContent");
+  content.innerHTML = "";
+  content.classList.remove("booth-modal", "booth-modal-full");
+  backdrop.classList.remove("booth-full");
+  content.classList.add("modal-wide");
+
+  const closeBtn = document.createElement("button");
+  closeBtn.className = "modal-close";
+  closeBtn.textContent = "✕";
+  closeBtn.addEventListener("click", closeModal);
+  content.appendChild(closeBtn);
+
+  const title = document.createElement("h2");
+  title.style.margin = "6px 0 14px";
+  title.textContent = t(kind === "preorder" ? "preorderBreakdownTitle" : "moneyBreakdownTitle");
+  content.appendChild(title);
+
+  const table = document.createElement("table");
+  table.className = "money-breakdown";
+  const body = table.createTBody();
+  const note = document.createElement("p");
+  note.className = "breakdown-note";
+  let rows = 0;
+
+  if(kind === "preorder"){
+    breakdownHeadRow(table, [t("breakdownBooth"), t("breakdownAmount")]);
+    let total = 0, done = 0, noAmount = 0;
+    BOOTHS.forEach(booth => {
+      if(!preorders[booth.id]) return;
+      getPreorderItems(booth.id).forEach(item => {
+        if(!(item.amount > 0)){ noAmount++; return; }
+        const sub = [item.date, item.platform, item.memo].filter(Boolean).join(" · ");
+        const tr = body.insertRow();
+        const cell = breakdownBoothCell(booth, sub);
+        const tag = document.createElement("span");
+        tag.className = "bd-tag";
+        tag.textContent = t(item.received ? "breakdownReceived" : "breakdownPending");
+        cell.insertBefore(tag, cell.querySelector(".bd-sub"));
+        tr.appendChild(cell);
+        tr.appendChild(breakdownNumCell(formatWon(item.amount)));
+        total += item.amount;
+        if(item.received) done += item.amount;
+        rows++;
+      });
+    });
+    if(rows){
+      const tr = table.createTFoot().insertRow();
+      const label = document.createElement("td");
+      label.textContent = t("breakdownTotal");
+      const sub = document.createElement("div");
+      sub.className = "bd-sub";
+      sub.textContent = t("breakdownReceivedSum", { done: formatWon(done), pending: formatWon(total - done) });
+      label.appendChild(sub);
+      tr.appendChild(label);
+      tr.appendChild(breakdownNumCell(formatWon(total)));
+    }
+    note.textContent = !rows ? t("preorderBreakdownEmpty") : noAmount ? t("breakdownNoAmount", { n: noAmount }) : "";
+  } else {
+    breakdownHeadRow(table, [t("breakdownBooth"), t("breakdownBudget"), t("breakdownSpent")]);
+    BOOTHS.forEach(booth => {
+      const b = getBudget(booth.id), u = getSpent(booth.id);
+      if(!b && !u) return;
+      const tr = body.insertRow();
+      tr.appendChild(breakdownBoothCell(booth));
+      tr.appendChild(breakdownNumCell(b ? formatWon(b) : "-"));
+      tr.appendChild(breakdownNumCell(u ? formatWon(u) : "-", b && u > b ? "over" : ""));
+      rows++;
+    });
+    if(rows){
+      const budget = getTotalBudget(), used = getTotalSpent();
+      const tr = table.createTFoot().insertRow();
+      const label = document.createElement("td");
+      label.textContent = t("breakdownTotal");
+      if(budget && used){
+        const sub = document.createElement("div");
+        sub.className = "bd-sub" + (used > budget ? " over" : "");
+        sub.textContent = t(used > budget ? "breakdownOver" : "breakdownLeft", { amount: formatWon(Math.abs(budget - used)) });
+        label.appendChild(sub);
+      }
+      tr.appendChild(label);
+      tr.appendChild(breakdownNumCell(formatWon(budget)));
+      tr.appendChild(breakdownNumCell(formatWon(used), budget && used > budget ? "over" : ""));
+    }
+    note.textContent = rows ? "" : t("breakdownEmpty");
+  }
+
+  if(rows) content.appendChild(table);
+  if(note.textContent) content.appendChild(note);
+
+  bugTrace("open", `money breakdown ${kind}`);
+  backdrop.classList.add("open");
+  document.documentElement.classList.add("modal-open");
+  content.scrollTop = 0;
+  pushModalHistory();
+}
+document.getElementById("budgetTotal").addEventListener("click", () => openMoneyBreakdownModal("budget"));
+document.getElementById("preorderTotal").addEventListener("click", () => openMoneyBreakdownModal("preorder"));
 
 /* ---------- 구글 로그인 & 기기 간 동기화 ----------
    로그인하지 않아도 사이트는 지금까지와 완전히 동일하게(로컬 전용) 동작함.
@@ -5032,6 +5241,7 @@ function renderGrid(){
   if(!isMapView) mapLocateId = null;
   document.getElementById("updatesExtra").style.display = currentRow === "UPDATES" ? "flex" : "none";
   document.getElementById("preorderExtra").style.display = currentRow === "PREORDER" ? "flex" : "none";
+  updatePreorderTotalDisplay();
 
   if(isTimetableView){
     document.getElementById("currentLetter").textContent = "🕒";
