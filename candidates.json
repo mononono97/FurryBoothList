@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-22T16:15:31+00:00",
+ "updatedAt": "2026-11-22T16:22:57+00:00",
  "posts": [
   {
    "id": "2124522714555965936",
@@ -50,7 +50,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-22T15:17:38+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2124518148946935877",
@@ -68,7 +69,13 @@
    "reasons": [
     "RT 계정"
    ],
-   "foundAt": "2026-11-22T16:15:27+00:00"
+   "foundAt": "2026-11-22T16:15:27+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": "2026-11-25"
+   }
   },
   {
    "id": "2124490243311349841",
@@ -85,7 +92,8 @@
    "reasons": [
     "RT 계정"
    ],
-   "foundAt": "2026-11-22T16:15:27+00:00"
+   "foundAt": "2026-11-22T16:15:27+00:00",
+   "preorderHint": null
   },
   {
    "id": "2124473978022466031",
@@ -233,7 +241,15 @@
    "reasons": [
     "RT 계정"
    ],
-   "foundAt": "2026-11-22T16:15:27+00:00"
+   "foundAt": "2026-11-22T16:15:27+00:00",
+   "preorderHint": {
+    "link": "https://forms.gle/TxLAaS9s5A5fxM1K9",
+    "links": [
+     "https://forms.gle/TxLAaS9s5A5fxM1K9"
+    ],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2124436840006713758",
@@ -250,7 +266,15 @@
    "reasons": [
     "RT 계정"
    ],
-   "foundAt": "2026-11-22T16:15:27+00:00"
+   "foundAt": "2026-11-22T16:15:27+00:00",
+   "preorderHint": {
+    "link": "https://naver.me/xNp6W2zR",
+    "links": [
+     "https://naver.me/xNp6W2zR"
+    ],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2124435641236881755",
@@ -290,7 +314,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-22T10:18:58+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2124434945326391647",
@@ -330,9 +355,12 @@
    "reasons": [
     "굿즈·판매",
     "행사·부스",
-    "이미지"
+    "이미지",
+    "RT 계정"
    ],
-   "foundAt": "2026-11-22T09:18:04+00:00"
+   "foundAt": "2026-11-22T09:18:04+00:00",
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2124417893077057655",
