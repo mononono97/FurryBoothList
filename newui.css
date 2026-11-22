@@ -427,3 +427,29 @@ html[data-newui] .grid{ border-top-color:var(--nu-grid-top, var(--ink)); }
 html[data-newui]{ background:var(--paper); }
 /* 관심 부스 탭 카드 아래 "방문 완료" 버튼 */
 html[data-newui] .booth .quick-visit-btn{ width:calc(100% - 16px); margin:8px 8px 0; border-radius:6px; }
+
+/* ---------- 11. 이모지 대신 쓰는 아이콘·글자 (newui.html 이 이모지를 빼고 넣음) ---------- */
+html[data-newui] .nu-icon{
+  width:18px; height:18px; flex:none; vertical-align:-3px;
+  fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;
+}
+html[data-newui] .settings-btn{ display:inline-flex; align-items:center; justify-content:center; }
+html[data-newui] .settings-btn .nu-icon{ width:20px; height:20px; }
+html[data-newui] .weather-icon .nu-icon{ width:34px; height:34px; stroke-width:1.5; vertical-align:0; color:var(--ink); }
+html[data-newui] .weather-hum .nu-icon{ width:13px; height:13px; margin-right:3px; vertical-align:-2px; }
+/* 큰 제목 칸에 블록 글자 대신 탭 이름이 들어갈 때 */
+html[data-newui] .row-heading .big-letter.nu-word{ font-size:34px; letter-spacing:-.03em; color:var(--ink); }
+/* 메모 표시(기존 📝 자리): 작은 "메모" 꼬리표 */
+html[data-newui] .memo-flag{ font-size:0; padding:0; width:auto; }
+html[data-newui] .memo-flag::after{
+  content:"메모";
+  display:block;
+  font-size:10.5px; font-weight:800; line-height:1;
+  padding:4px 6px; border-radius:4px;
+  background:var(--clay); color:#fff;
+}
+html[data-newui][data-theme="dark"] .memo-flag::after{ color:#121015; }
+@media (max-width:700px){
+  html[data-newui] .row-heading .big-letter.nu-word{ font-size:26px; }
+}
+html[data-newui] .memo-flag{ top:auto; left:auto; bottom:10px; right:8px; background:none; box-shadow:none; }
