@@ -481,3 +481,23 @@ html[data-newui] .booth .cut-thumb img{ object-fit:contain; }
   html[data-newui] .booth .preorder-line{ padding:0 7px; }
   html[data-newui] .booth .quick-visit-btn{ width:calc(100% - 12px); margin-left:6px; margin-right:6px; padding:0 6px; }
 }
+
+/* ---------- 13. 카드 글자 줄이기·방문 완료 버튼 빼기 (2026-11-22 사용자 요청) ---------- */
+/* 부스원(대표 외 N명)과 예산·쓴 돈·기간 줄은 한 단계 작게 */
+html[data-newui] .booth .rep-name{ font-size:11px; }
+html[data-newui] .booth .updated-on,
+html[data-newui] .booth .money-line,
+html[data-newui] .booth .preorder-period,
+html[data-newui] .booth .preorder-mine,
+html[data-newui] .booth .preorder-line{ font-size:10.5px; font-weight:600; margin-top:1px; }
+/* 관심 부스 탭 카드의 "방문 완료" 버튼은 이 디자인에서는 숨김(부스 상세의 방문 완료 버튼은 그대로) */
+html[data-newui] .booth .quick-visit-btn{ display:none; }
+html[data-newui] .booth > :has(+ .quick-visit-btn){ margin-bottom:0; }
+@media (max-width:700px){
+  html[data-newui] .booth .rep-name{ font-size:10.5px; }
+  html[data-newui] .booth .updated-on,
+  html[data-newui] .booth .money-line,
+  html[data-newui] .booth .preorder-period,
+  html[data-newui] .booth .preorder-mine,
+  html[data-newui] .booth .preorder-line{ font-size:10px; }
+}
