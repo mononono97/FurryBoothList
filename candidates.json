@@ -1,6 +1,25 @@
 {
- "updatedAt": "2026-11-22T08:45:32+00:00",
+ "updatedAt": "2026-11-22T09:28:28+00:00",
  "posts": [
+  {
+   "id": "2124427414323540206",
+   "handle": "Beuu0920",
+   "booths": [
+    "A16"
+   ],
+   "boothNames": [
+    "브 BEUU / FURPPET"
+   ],
+   "created": "2026-11-22T08:59:00+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-22T09:18:04+00:00"
+  },
   {
    "id": "2124417893077057655",
    "handle": "ToriS6526",
@@ -37,7 +56,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-22T08:18:55+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2124401793849589763",
@@ -177,7 +197,16 @@
    "reasons": [
     "RT 계정"
    ],
-   "foundAt": "2026-11-22T08:45:25+00:00"
+   "foundAt": "2026-11-22T08:45:25+00:00",
+   "preorderHint": {
+    "link": "https://witchform.com/deposit_form.php?idx=1100723",
+    "links": [
+     "https://witchform.com/deposit_form.php?idx=1100723",
+     "https://docs.google.com/forms/d/e/1FAIpQLSel5khgbcLEFOUEjpAaqDaevBCqAKH1DxpHAYMIl1HAECmYdQ/viewform?usp=header"
+    ],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2124221374369779940",
@@ -216,7 +245,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-21T19:20:19+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2124183533057093931",
