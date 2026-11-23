@@ -1,6 +1,47 @@
 {
- "updatedAt": "2026-11-23T10:15:34+00:00",
+ "updatedAt": "2026-11-23T10:28:48+00:00",
  "posts": [
+  {
+   "id": "2124807194017439821",
+   "handle": "Hijiki_DaiXt",
+   "booths": [
+    "A02"
+   ],
+   "boothNames": [
+    "SEAWEED VILLAGE"
+   ],
+   "created": "2026-11-23T10:08:06+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "이미지"
+   ],
+   "foundAt": "2026-11-23T10:21:43+00:00"
+  },
+  {
+   "id": "2124801322348425475",
+   "handle": "connecting_Y",
+   "booths": [
+    "B09"
+   ],
+   "boothNames": [
+    "청록용"
+   ],
+   "created": "2026-11-23T09:44:46+00:00",
+   "score": 2,
+   "sensitive": false,
+   "quoted": {
+    "id": "2120501880614998161",
+    "handle": "Tighnari_55",
+    "sensitive": false
+   },
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-23T10:19:03+00:00"
+  },
   {
    "id": "2124785128065085848",
    "handle": "HOKIpong",
@@ -199,7 +240,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-23T07:20:14+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2124743195326386185",
@@ -496,7 +538,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-22T17:22:24+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2124522714555965936",
@@ -1008,7 +1051,15 @@
    "reasons": [
     "RT 계정"
    ],
-   "foundAt": "2026-11-23T10:15:29+00:00"
+   "foundAt": "2026-11-23T10:15:29+00:00",
+   "preorderHint": {
+    "link": "https://witchform.com/payform/UBFDWWBFUI",
+    "links": [
+     "https://witchform.com/payform/UBFDWWBFUI"
+    ],
+    "start": "",
+    "end": ""
+   }
   },
   {
    "id": "2124347135592145117",
