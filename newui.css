@@ -501,3 +501,9 @@ html[data-newui] .booth > :has(+ .quick-visit-btn){ margin-bottom:0; }
   html[data-newui] .booth .preorder-mine,
   html[data-newui] .booth .preorder-line{ font-size:10px; }
 }
+
+/* ---------- 14. 설정 메뉴가 탭 줄 아래로 깔리던 것 고침 (2026-11-23 사용자 제보) ----------
+   표지 띠 때문에 .top-inner 가 isolation:isolate 로 자기만의 겹침 층을 만들어서, 그 안의 설정 메뉴(z-index:50)가
+   뒤에 오는 탭 줄보다 아래에 그려졌음(휴대폰에서 메뉴가 탭 줄까지 내려올 때 탭 글자가 메뉴 위로 비침).
+   머리 층 전체를 탭 줄보다 위로 올림. */
+html[data-newui] .top-inner{ z-index:60; }
