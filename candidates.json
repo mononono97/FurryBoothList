@@ -1,6 +1,90 @@
 {
- "updatedAt": "2026-11-23T07:23:05+00:00",
+ "updatedAt": "2026-11-23T08:23:10+00:00",
  "posts": [
+  {
+   "id": "2124776853890331108",
+   "handle": "_Kimroco",
+   "booths": [
+    "A11-12"
+   ],
+   "boothNames": [
+    "콩자반 김자반"
+   ],
+   "created": "2026-11-23T08:07:33+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스"
+   ],
+   "foundAt": "2026-11-23T08:17:25+00:00"
+  },
+  {
+   "id": "2124769691466129431",
+   "handle": "inomu_shiki",
+   "booths": [
+    "C19-20"
+   ],
+   "boothNames": [
+    "작전명: 에이전트 버니"
+   ],
+   "created": "2026-11-23T07:39:05+00:00",
+   "score": 7,
+   "sensitive": true,
+   "reasons": [
+    "신간",
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-23T08:19:25+00:00"
+  },
+  {
+   "id": "2124768739677892731",
+   "handle": "milang_313",
+   "booths": [
+    "C22"
+   ],
+   "boothNames": [
+    "늑랑 狼"
+   ],
+   "created": "2026-11-23T07:35:18+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "이미지",
+    "타래(자기 글 답글)"
+   ],
+   "foundAt": "2026-11-23T08:20:17+00:00"
+  },
+  {
+   "id": "2124766017712984299",
+   "handle": "ToriS6526",
+   "booths": [
+    "A19"
+   ],
+   "boothNames": [
+    "메이커 연합부스 - 아르모아"
+   ],
+   "created": "2026-11-23T07:24:29+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "주문서 링크"
+   ],
+   "preorderHint": {
+    "link": "https://docs.google.com/forms/d/1NvXMAAKUL_e72eocltWKrH53ce4ShB0PVS1DhJMGpc4/edit?pli=1",
+    "links": [
+     "https://docs.google.com/forms/d/1NvXMAAKUL_e72eocltWKrH53ce4ShB0PVS1DhJMGpc4/edit?pli=1"
+    ],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-23T08:22:04+00:00"
+  },
   {
    "id": "2124755793954394419",
    "handle": "Trad_monmon",
@@ -16966,8 +17050,10 @@
   "2120788470637740264": "2120797130399137896"
  },
  "embedStatus": {
-  "checkedAt": "2026-11-23T04:31:19+00:00",
+  "checkedAt": "2026-11-23T08:26:35+00:00",
   "posts": {
+   "2124711211036266817": "sensitive",
+   "2124711211036266817:quoted": "sensitive",
    "2124569189725909187": "sensitive",
    "2124446999085011025:quoted": "sensitive",
    "2124443974089982435": "sensitive",
