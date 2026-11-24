@@ -1,6 +1,28 @@
 {
- "updatedAt": "2026-11-23T21:30:54+00:00",
+ "updatedAt": "2026-11-24T01:30:20+00:00",
  "posts": [
+  {
+   "id": "2125028565494411368",
+   "handle": "100symbol",
+   "booths": [
+    "C27"
+   ],
+   "boothNames": [
+    "Mr. furshowtime"
+   ],
+   "created": "2026-11-24T00:47:45+00:00",
+   "score": 2,
+   "sensitive": false,
+   "quoted": {
+    "id": "2125026651650322839",
+    "handle": "_kid777",
+    "sensitive": false
+   },
+   "reasons": [
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-11-24T01:17:16+00:00"
+  },
   {
    "id": "2124970411507204186",
    "handle": "PaGom1121_",
