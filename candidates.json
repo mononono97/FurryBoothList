@@ -1,6 +1,44 @@
 {
- "updatedAt": "2026-11-24T06:27:58+00:00",
+ "updatedAt": "2026-11-24T07:23:54+00:00",
  "posts": [
+  {
+   "id": "2125118519046238531",
+   "handle": "Panic_exc",
+   "booths": [
+    "A24"
+   ],
+   "boothNames": [
+    "어몽어스샌즈파피루스"
+   ],
+   "created": "2026-11-24T06:45:12+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-24T07:21:39+00:00"
+  },
+  {
+   "id": "2125114237702078561",
+   "handle": "AlphsBeep",
+   "booths": [
+    "B19"
+   ],
+   "boothNames": [
+    "OSURULE"
+   ],
+   "created": "2026-11-24T06:28:11+00:00",
+   "score": 3,
+   "sensitive": true,
+   "reasons": [
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-24T07:17:38+00:00"
+  },
   {
    "id": "2125109768775987461",
    "handle": "Wolf__Duke",
