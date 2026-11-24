@@ -1,6 +1,112 @@
 {
- "updatedAt": "2026-11-24T13:29:51+00:00",
+ "updatedAt": "2026-11-24T14:24:57+00:00",
  "posts": [
+  {
+   "id": "2125231741065720193",
+   "handle": "gombal_t",
+   "booths": [],
+   "boothNames": [],
+   "created": "2026-11-24T14:15:06+00:00",
+   "via": "furstclassrt",
+   "sensitive": false,
+   "reasons": [
+    "RT 계정"
+   ],
+   "foundAt": "2026-11-24T14:24:03+00:00",
+   "preorderHint": null
+  },
+  {
+   "id": "2125224873987580016",
+   "handle": "TLJPSi",
+   "booths": [
+    "A29"
+   ],
+   "boothNames": [
+    "해적판 아니고 정발입니다"
+   ],
+   "created": "2026-11-24T13:47:49+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-11-24T14:23:29+00:00"
+  },
+  {
+   "id": "2125223035997495300",
+   "handle": "seadogwal",
+   "booths": [
+    "A18"
+   ],
+   "boothNames": [
+    "BAD PAW Co."
+   ],
+   "created": "2026-11-24T13:40:31+00:00",
+   "score": 2,
+   "sensitive": false,
+   "quoted": {
+    "id": "2089244521016197369",
+    "handle": "FURSTCLASS_KR",
+    "sensitive": false
+   },
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-24T14:22:57+00:00"
+  },
+  {
+   "id": "2125222921908162873",
+   "handle": "FurryGintan",
+   "booths": [
+    "A09"
+   ],
+   "boothNames": [
+    "GINTAN STUDIO"
+   ],
+   "created": "2026-11-24T13:40:03+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-24T14:19:23+00:00"
+  },
+  {
+   "id": "2125219188029747695",
+   "handle": "nowfloating",
+   "booths": [
+    "C30"
+   ],
+   "boothNames": [
+    "PPP2"
+   ],
+   "created": "2026-11-24T13:25:13+00:00",
+   "score": 7,
+   "sensitive": false,
+   "quoted": {
+    "id": "2118643639819923923",
+    "handle": "nowfloating",
+    "sensitive": false
+   },
+   "reasons": [
+    "통판·선입금·예약",
+    "굿즈·판매",
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-24T14:21:46+00:00"
+  },
   {
    "id": "2125217569468715390",
    "handle": "syukapong",
@@ -100,6 +206,20 @@
     "이미지"
    ],
    "foundAt": "2026-11-24T13:28:39+00:00"
+  },
+  {
+   "id": "2125208819404063059",
+   "handle": "_buta99",
+   "booths": [],
+   "boothNames": [],
+   "created": "2026-11-24T12:44:01+00:00",
+   "via": "furstclassrt",
+   "sensitive": true,
+   "reasons": [
+    "RT 계정"
+   ],
+   "foundAt": "2026-11-24T14:24:03+00:00",
+   "preorderHint": null
   },
   {
    "id": "2125208366612160513",
@@ -237,6 +357,25 @@
    "foundAt": "2026-11-24T11:25:28+00:00"
   },
   {
+   "id": "2125182651267227931",
+   "handle": "furraid_kr",
+   "booths": [],
+   "boothNames": [],
+   "created": "2026-11-24T11:00:02+00:00",
+   "via": "furstclassrt",
+   "sensitive": false,
+   "reasons": [
+    "RT 계정"
+   ],
+   "foundAt": "2026-11-24T14:24:03+00:00",
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   }
+  },
+  {
    "id": "2125182218586968174",
    "handle": "Breadragon",
    "booths": [
@@ -318,7 +457,8 @@
     "품목",
     "행사·부스",
     "주문서 링크",
-    "이미지"
+    "이미지",
+    "RT 계정"
    ],
    "preorderHint": {
     "link": "https://witchform.com/deposit_form.php?idx=1101954",
@@ -328,7 +468,8 @@
     "start": "",
     "end": ""
    },
-   "foundAt": "2026-11-24T10:22:07+00:00"
+   "foundAt": "2026-11-24T10:22:07+00:00",
+   "via": "furstclassrt"
   },
   {
    "id": "2125168307758403968",
@@ -388,9 +529,12 @@
    "reasons": [
     "굿즈·판매",
     "행사·부스",
-    "이미지"
+    "이미지",
+    "RT 계정"
    ],
-   "foundAt": "2026-11-24T07:21:39+00:00"
+   "foundAt": "2026-11-24T07:21:39+00:00",
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2125114237702078561",
@@ -18073,8 +18217,12 @@
   "2120788470637740264": "2120797130399137896"
  },
  "embedStatus": {
-  "checkedAt": "2026-11-24T10:31:21+00:00",
+  "checkedAt": "2026-11-24T14:28:52+00:00",
   "posts": {
+   "2125209680872079419:quoted": "sensitive",
+   "2125207873940799697": "sensitive",
+   "2125207260712608008": "sensitive",
+   "2125187705151848804": "sensitive",
    "2125114237702078561": "sensitive",
    "2124881337312268396": "ok-flagged",
    "2124874457810710556": "sensitive",
