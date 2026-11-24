@@ -1,6 +1,30 @@
 {
- "updatedAt": "2026-11-24T17:31:21+00:00",
+ "updatedAt": "2026-11-24T18:33:21+00:00",
  "posts": [
+  {
+   "id": "2125288093607710913",
+   "handle": "youdil1004",
+   "booths": [
+    "B29"
+   ],
+   "boothNames": [
+    "두더지빵집"
+   ],
+   "created": "2026-11-24T17:59:02+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약",
+    "타래(자기 글 답글)"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-24T18:32:25+00:00"
+  },
   {
    "id": "2125269885295190057",
    "handle": "suinduckhu",
