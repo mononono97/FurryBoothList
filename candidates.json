@@ -1,6 +1,60 @@
 {
- "updatedAt": "2026-11-25T09:29:08+00:00",
+ "updatedAt": "2026-11-25T10:24:37+00:00",
  "posts": [
+  {
+   "id": "2125531647001190669",
+   "handle": "ED_in_FF14",
+   "booths": [
+    "C24"
+   ],
+   "boothNames": [
+    "보즈야 연구소"
+   ],
+   "created": "2026-11-25T10:06:49+00:00",
+   "score": 9,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약",
+    "굿즈·판매",
+    "품목",
+    "행사·부스",
+    "주문서 링크",
+    "이미지"
+   ],
+   "preorderHint": {
+    "link": "https://witchform.com/deposit_form.php?idx=1102221",
+    "links": [
+     "https://witchform.com/deposit_form.php?idx=1102221"
+    ],
+    "start": "2026-11-25",
+    "end": "2026-11-27"
+   },
+   "foundAt": "2026-11-25T10:19:11+00:00"
+  },
+  {
+   "id": "2125525486683996475",
+   "handle": "Wolf__Duke",
+   "booths": [
+    "C02"
+   ],
+   "boothNames": [
+    "어서오세요, 두바이 쫀득 김메이에!"
+   ],
+   "created": "2026-11-25T09:42:21+00:00",
+   "score": 4,
+   "sensitive": false,
+   "quoted": {
+    "id": "2112733781044105477",
+    "handle": "Wolf__Duke",
+    "sensitive": false
+   },
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-25T10:23:41+00:00"
+  },
   {
    "id": "2125516107864027380",
    "handle": "mdfurr",
