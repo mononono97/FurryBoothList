@@ -1,6 +1,35 @@
 {
- "updatedAt": "2026-11-24T19:45:27+00:00",
+ "updatedAt": "2026-11-25T00:29:06+00:00",
  "posts": [
+  {
+   "id": "2125376790759969036",
+   "handle": "Wolf__Duke",
+   "booths": [
+    "C02"
+   ],
+   "boothNames": [
+    "어서오세요, 두바이 쫀득 김메이에!"
+   ],
+   "created": "2026-11-24T23:51:29+00:00",
+   "score": 3,
+   "sensitive": false,
+   "quoted": {
+    "id": "2112733781044105477",
+    "handle": "Wolf__Duke",
+    "sensitive": false
+   },
+   "reasons": [
+    "통판·선입금·예약",
+    "이미지"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-25T00:28:09+00:00"
+  },
   {
    "id": "2125288093607710913",
    "handle": "youdil1004",
@@ -490,7 +519,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-24T11:25:28+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2125182651267227931",
@@ -627,7 +657,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-24T10:23:20+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2125153159580704788",
