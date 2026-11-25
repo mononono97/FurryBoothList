@@ -1,6 +1,66 @@
 {
- "updatedAt": "2026-11-25T13:30:52+00:00",
+ "updatedAt": "2026-11-25T14:23:42+00:00",
  "posts": [
+  {
+   "id": "2125587633514688809",
+   "handle": "bighornsheeppic",
+   "booths": [
+    "C06"
+   ],
+   "boothNames": [
+    "스튜디오 엘레지"
+   ],
+   "created": "2026-11-25T13:49:17+00:00",
+   "score": 4,
+   "sensitive": false,
+   "quoted": {
+    "id": "2120693059562385700",
+    "handle": "",
+    "sensitive": false
+   },
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-11-25T14:17:54+00:00"
+  },
+  {
+   "id": "2125582778788188478",
+   "handle": "_K0CH1",
+   "booths": [
+    "A13"
+   ],
+   "boothNames": [
+    "코치문고"
+   ],
+   "created": "2026-11-25T13:30:00+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "타래(자기 글 답글)"
+   ],
+   "foundAt": "2026-11-25T14:17:27+00:00"
+  },
+  {
+   "id": "2125582642901111076",
+   "handle": "_K0CH1",
+   "booths": [
+    "A13"
+   ],
+   "boothNames": [
+    "코치문고"
+   ],
+   "created": "2026-11-25T13:29:28+00:00",
+   "score": 5,
+   "sensitive": false,
+   "reasons": [
+    "인포",
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-11-25T14:17:27+00:00"
+  },
   {
    "id": "2125575244572168580",
    "handle": "kigurumikagetsu",
