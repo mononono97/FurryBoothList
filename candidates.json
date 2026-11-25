@@ -1,6 +1,43 @@
 {
- "updatedAt": "2026-11-25T02:29:31+00:00",
+ "updatedAt": "2026-11-25T03:28:43+00:00",
  "posts": [
+  {
+   "id": "2125427472544252088",
+   "handle": "ss0dan6",
+   "booths": [
+    "C29"
+   ],
+   "boothNames": [
+    "초건전회지연구회"
+   ],
+   "created": "2026-11-25T03:12:52+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-25T03:26:29+00:00"
+  },
+  {
+   "id": "2125423980983034123",
+   "handle": "Beuu0920",
+   "booths": [
+    "A16"
+   ],
+   "boothNames": [
+    "브 BEUU / FURPPET"
+   ],
+   "created": "2026-11-25T02:59:00+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-25T03:18:14+00:00"
+  },
   {
    "id": "2125408959813357787",
    "handle": "Dat_Del_luna",
