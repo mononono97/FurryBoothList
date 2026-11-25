@@ -1,6 +1,93 @@
 {
- "updatedAt": "2026-11-25T07:27:23+00:00",
+ "updatedAt": "2026-11-25T08:24:26+00:00",
  "posts": [
+  {
+   "id": "2125498864497217642",
+   "handle": "seadogwal",
+   "booths": [
+    "A18"
+   ],
+   "boothNames": [
+    "BAD PAW Co."
+   ],
+   "created": "2026-11-25T07:56:33+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매"
+   ],
+   "foundAt": "2026-11-25T08:22:44+00:00"
+  },
+  {
+   "id": "2125498452205510817",
+   "handle": "AlphsBeep",
+   "booths": [
+    "B19"
+   ],
+   "boothNames": [
+    "OSURULE"
+   ],
+   "created": "2026-11-25T07:54:55+00:00",
+   "score": 3,
+   "sensitive": false,
+   "quoted": {
+    "id": "2124087823410311383",
+    "handle": "IG1119",
+    "sensitive": false
+   },
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스"
+   ],
+   "foundAt": "2026-11-25T08:17:34+00:00"
+  },
+  {
+   "id": "2125495574141251784",
+   "handle": "connecting_Y",
+   "booths": [
+    "B09"
+   ],
+   "boothNames": [
+    "청록용"
+   ],
+   "created": "2026-11-25T07:43:29+00:00",
+   "score": 4,
+   "sensitive": false,
+   "quoted": {
+    "id": "2119664178357313588",
+    "handle": "connecting_Y",
+    "sensitive": false
+   },
+   "reasons": [
+    "통판·선입금·예약",
+    "굿즈·판매"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-25T08:18:23+00:00"
+  },
+  {
+   "id": "2125493835132498139",
+   "handle": "seadogwal",
+   "booths": [
+    "A18"
+   ],
+   "boothNames": [
+    "BAD PAW Co."
+   ],
+   "created": "2026-11-25T07:36:34+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-25T08:22:44+00:00"
+  },
   {
    "id": "2125483131050566078",
    "handle": "FurryGintan",
