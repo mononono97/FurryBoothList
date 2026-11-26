@@ -1,6 +1,91 @@
 {
- "updatedAt": "2026-11-26T08:29:09+00:00",
+ "updatedAt": "2026-11-26T09:28:21+00:00",
  "posts": [
+  {
+   "id": "2125876785284055361",
+   "handle": "agitype01",
+   "booths": [
+    "B02"
+   ],
+   "boothNames": [
+    "Agi's Garage"
+   ],
+   "created": "2026-11-26T08:58:17+00:00",
+   "score": 2,
+   "sensitive": true,
+   "quoted": {
+    "id": "2125599050129109053",
+    "handle": "Spirit_Kimm",
+    "sensitive": false
+   },
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-26T09:17:35+00:00"
+  },
+  {
+   "id": "2125872098988138640",
+   "handle": "Runk102030",
+   "booths": [
+    "A26"
+   ],
+   "boothNames": [
+    "히잉 형아 꼬리 상점"
+   ],
+   "created": "2026-11-26T08:39:39+00:00",
+   "score": 5,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-26T09:25:28+00:00"
+  },
+  {
+   "id": "2125870421983785403",
+   "handle": "inomu_shiki",
+   "booths": [
+    "C19-20"
+   ],
+   "boothNames": [
+    "작전명: 에이전트 버니"
+   ],
+   "created": "2026-11-26T08:33:00+00:00",
+   "score": 4,
+   "sensitive": true,
+   "quoted": {
+    "id": "2125587633514688809",
+    "handle": "",
+    "sensitive": false
+   },
+   "reasons": [
+    "신간",
+    "이미지"
+   ],
+   "foundAt": "2026-11-26T09:21:39+00:00"
+  },
+  {
+   "id": "2125869551611207726",
+   "handle": "largo_furry",
+   "booths": [
+    "A18"
+   ],
+   "boothNames": [
+    "BAD PAW Co."
+   ],
+   "created": "2026-11-26T08:29:32+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-26T09:22:27+00:00"
+  },
   {
    "id": "2125866958356930869",
    "handle": "largo_furry",
