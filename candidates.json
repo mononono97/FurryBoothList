@@ -1,6 +1,133 @@
 {
- "updatedAt": "2026-11-26T09:28:21+00:00",
+ "updatedAt": "2026-11-26T10:29:00+00:00",
  "posts": [
+  {
+   "id": "2125895964502507658",
+   "handle": "nekogaki0324",
+   "booths": [
+    "C07"
+   ],
+   "boothNames": [
+    "GGG: GO GET 'EM, GOAT!"
+   ],
+   "created": "2026-11-26T10:14:29+00:00",
+   "score": 5,
+   "sensitive": false,
+   "quoted": {
+    "id": "2124019248465150451",
+    "handle": "nekogaki0324",
+    "sensitive": false
+   },
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-26T10:23:44+00:00"
+  },
+  {
+   "id": "2125893619089551550",
+   "handle": "seadogwal",
+   "booths": [
+    "A18"
+   ],
+   "boothNames": [
+    "BAD PAW Co."
+   ],
+   "created": "2026-11-26T10:05:10+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-26T10:25:57+00:00"
+  },
+  {
+   "id": "2125893465477447899",
+   "handle": "Tos_Tos_F_ski",
+   "booths": [
+    "B21"
+   ],
+   "boothNames": [
+    "Taishokukan Noirowze"
+   ],
+   "created": "2026-11-26T10:04:34+00:00",
+   "score": 5,
+   "sensitive": true,
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-26T10:27:15+00:00"
+  },
+  {
+   "id": "2125888106700386613",
+   "handle": "Neoul_the_sea",
+   "booths": [
+    "A30"
+   ],
+   "boothNames": [
+    "FURST SNOW"
+   ],
+   "created": "2026-11-26T09:43:16+00:00",
+   "score": 2,
+   "sensitive": false,
+   "quoted": {
+    "id": "2089244521016197369",
+    "handle": "FURSTCLASS_KR",
+    "sensitive": false
+   },
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-26T10:23:46+00:00"
+  },
+  {
+   "id": "2125887361947144203",
+   "handle": "ACHAKOORA",
+   "booths": [
+    "B15"
+   ],
+   "boothNames": [
+    "아쿠파라"
+   ],
+   "created": "2026-11-26T09:40:18+00:00",
+   "score": 8,
+   "sensitive": false,
+   "reasons": [
+    "인포",
+    "굿즈·판매",
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-26T10:17:40+00:00"
+  },
+  {
+   "id": "2125880731528478891",
+   "handle": "hachi_duchi",
+   "booths": [
+    "C29"
+   ],
+   "boothNames": [
+    "초건전회지연구회"
+   ],
+   "created": "2026-11-26T09:13:58+00:00",
+   "score": 5,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-26T10:21:17+00:00"
+  },
   {
    "id": "2125876785284055361",
    "handle": "agitype01",
