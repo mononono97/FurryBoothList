@@ -1,6 +1,43 @@
 {
- "updatedAt": "2026-11-26T01:24:11+00:00",
+ "updatedAt": "2026-11-26T02:23:50+00:00",
  "posts": [
+  {
+   "id": "2125768349347131734",
+   "handle": "TLJPSi",
+   "booths": [
+    "A29"
+   ],
+   "boothNames": [
+    "해적판 아니고 정발입니다"
+   ],
+   "created": "2026-11-26T01:47:24+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-26T02:22:46+00:00"
+  },
+  {
+   "id": "2125764407666045200",
+   "handle": "cheetah_paws",
+   "booths": [
+    "B01"
+   ],
+   "boothNames": [
+    "CheetahPaws"
+   ],
+   "created": "2026-11-26T01:31:44+00:00",
+   "score": 3,
+   "sensitive": true,
+   "reasons": [
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-26T02:18:15+00:00"
+  },
   {
    "id": "2125752609441300850",
    "handle": "Wolf__Duke",
