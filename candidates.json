@@ -1,6 +1,55 @@
 {
- "updatedAt": "2026-11-26T15:39:11+00:00",
+ "updatedAt": "2026-11-26T16:31:12+00:00",
  "posts": [
+  {
+   "id": "2125979722224115910",
+   "handle": "syukapong",
+   "booths": [
+    "A10"
+   ],
+   "boothNames": [
+    "푸딩파르페"
+   ],
+   "created": "2026-11-26T15:47:19+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약",
+    "타래(자기 글 답글)"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-26T16:28:53+00:00"
+  },
+  {
+   "id": "2125979720567414927",
+   "handle": "syukapong",
+   "booths": [
+    "A10"
+   ],
+   "boothNames": [
+    "푸딩파르페"
+   ],
+   "created": "2026-11-26T15:47:18+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약",
+    "굿즈·판매",
+    "타래(자기 글 답글)"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-26T16:28:53+00:00"
+  },
   {
    "id": "2125964113050550609",
    "handle": "jangdaehun31310",
