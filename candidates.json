@@ -1,6 +1,24 @@
 {
- "updatedAt": "2026-11-26T11:00:56+00:00",
+ "updatedAt": "2026-11-26T11:29:10+00:00",
  "posts": [
+  {
+   "id": "2125911192543916494",
+   "handle": "noway_jin",
+   "booths": [
+    "A30"
+   ],
+   "boothNames": [
+    "FURST SNOW"
+   ],
+   "created": "2026-11-26T11:15:00+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-26T11:24:16+00:00"
+  },
   {
    "id": "2125900083145453858",
    "handle": "Spirit_Kimm",
@@ -16,7 +34,8 @@
    "reasons": [
     "RT 계정"
    ],
-   "foundAt": "2026-11-26T11:00:49+00:00"
+   "foundAt": "2026-11-26T11:00:49+00:00",
+   "preorderHint": null
   },
   {
    "id": "2125895964502507658",
@@ -42,6 +61,29 @@
     "이미지"
    ],
    "foundAt": "2026-11-26T10:23:44+00:00"
+  },
+  {
+   "id": "2125895905140490599",
+   "handle": "100symbol",
+   "booths": [
+    "C27"
+   ],
+   "boothNames": [
+    "Mr. furshowtime"
+   ],
+   "created": "2026-11-26T10:14:15+00:00",
+   "score": 2,
+   "sensitive": true,
+   "quoted": {
+    "id": "2125834669468090415",
+    "handle": "100symbol",
+    "sensitive": true
+   },
+   "reasons": [
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-11-26T11:17:16+00:00"
   },
   {
    "id": "2125893619089551550",
@@ -97,7 +139,8 @@
    "reasons": [
     "RT 계정"
    ],
-   "foundAt": "2026-11-26T11:00:49+00:00"
+   "foundAt": "2026-11-26T11:00:49+00:00",
+   "preorderHint": null
   },
   {
    "id": "2125888106700386613",
@@ -143,7 +186,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-26T10:17:40+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2125880731528478891",
@@ -165,7 +209,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-26T10:21:17+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2125876785284055361",
@@ -329,7 +374,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-26T08:26:46+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2125855540396118108",
@@ -389,7 +435,8 @@
    "reasons": [
     "RT 계정"
    ],
-   "foundAt": "2026-11-26T11:00:49+00:00"
+   "foundAt": "2026-11-26T11:00:49+00:00",
+   "preorderHint": null
   },
   {
    "id": "2125806498882469950",
@@ -4449,7 +4496,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-20T15:17:28+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2123782885329232038",
@@ -4472,7 +4520,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-20T15:17:28+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2123754845513691249",
