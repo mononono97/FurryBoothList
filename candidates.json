@@ -1,6 +1,67 @@
 {
- "updatedAt": "2026-11-26T13:24:35+00:00",
+ "updatedAt": "2026-11-26T14:24:43+00:00",
  "posts": [
+  {
+   "id": "2125955085318656357",
+   "handle": "26_suigi",
+   "booths": [
+    "B11"
+   ],
+   "boothNames": [
+    "CandleLight"
+   ],
+   "created": "2026-11-26T14:09:25+00:00",
+   "score": 4,
+   "sensitive": true,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-26T14:17:26+00:00"
+  },
+  {
+   "id": "2125950649309528286",
+   "handle": "yongback00",
+   "booths": [
+    "B09"
+   ],
+   "boothNames": [
+    "청록용"
+   ],
+   "created": "2026-11-26T13:51:47+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-26T14:23:45+00:00"
+  },
+  {
+   "id": "2125948084958241007",
+   "handle": "Dat_Del_luna",
+   "booths": [
+    "B07"
+   ],
+   "boothNames": [
+    "호다다다닷!"
+   ],
+   "created": "2026-11-26T13:41:36+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약",
+    "이미지"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-26T14:18:35+00:00"
+  },
   {
    "id": "2125938469931532464",
    "handle": "Tighnari_55",
