@@ -1802,6 +1802,15 @@
     cursor:zoom-in;
   }
   .timetable-modes{ margin-bottom:8px; }
+  .group-photo-day{
+    margin:14px 0 6px;
+    font-size:16px;
+    display:flex;
+    align-items:baseline;
+    flex-wrap:wrap;
+    gap:4px 10px;
+  }
+  .group-photo-day-sub{ font-size:12px; font-weight:500; color:var(--text-2); }
   /* 행사 시간표 > 단체촬영 일정 목록 */
   .group-photo-list{
     list-style:none;
@@ -2655,7 +2664,9 @@ const I18N = {
     infoTimetableNote: "공식 계정에서 확정 발표한 타임테이블입니다 (2026-10-24 확정).",
     timetableModeOfficial: "공식 시간표",
     timetableModeGroup: "단체촬영",
-    groupPhotoHint: "토요일·일요일 소규모 단체촬영 일정 (참가자 신청 시트)",
+    groupPhotoHint: "토요일·일요일 소규모 단체촬영 일정 (참가자 신청 시트, 한 화면에 모아 보기)",
+    groupPhotoPlace: "장소",
+    groupPhotoHours: "촬영 가능 {time}",
     groupPhotoEmpty: "이 날 올라온 단체촬영 일정이 아직 없어요.",
     groupPhotoNote: "참가자 소규모 단체촬영 신청 시트의 일정을 옮겨 왔어요. 시간과 장소는 바뀔 수 있으니 주최자 안내를 꼭 확인해 주세요.",
     groupPhotoUpdated: "{date} 시트 기준",
@@ -2920,6 +2931,8 @@ const I18N = {
     timetableModeOfficial: "Official timetable",
     timetableModeGroup: "Group photos",
     groupPhotoHint: "Small group photo shoots on Saturday & Sunday (attendee sign-up sheet)",
+    groupPhotoPlace: "Place",
+    groupPhotoHours: "shoots allowed {time}",
     groupPhotoEmpty: "No group photo shoots listed for this day yet.",
     groupPhotoNote: "Copied from the attendees' small group photo sign-up sheet. Times and places may change, so check the host's announcements.",
     groupPhotoUpdated: "As of the sheet on {date}",
@@ -2927,7 +2940,7 @@ const I18N = {
     groupPhotoLink: "Details",
     groupPhotoDone: "Ended",
     groupPhotoNow: "Now",
-    groupPhotoCount: "{n}",
+    groupPhotoCount: "{n} shoots",
     infoWeatherLoading: "Loading weather...",
     infoWeatherUnavailable: "The forecast for {date} isn't available yet (it appears roughly 2 weeks before the event).",
     infoWeatherError: "Failed to load weather data.",
@@ -3184,6 +3197,8 @@ const I18N = {
     timetableModeOfficial: "公式タイムテーブル",
     timetableModeGroup: "集合写真",
     groupPhotoHint: "土曜日・日曜日の小規模集合写真の予定（参加者の申込シート）",
+    groupPhotoPlace: "場所",
+    groupPhotoHours: "撮影可能 {time}",
     groupPhotoEmpty: "この日の集合写真の予定はまだありません。",
     groupPhotoNote: "参加者による小規模集合写真の申込シートから転記しています。時間や場所は変わることがあるので、主催者の案内を確認してください。",
     groupPhotoUpdated: "{date} 時点のシート",
@@ -6181,9 +6196,9 @@ function renderTimetableView(){
       <div class="visit-filter timetable-modes" id="timetableModes">
         ${modes.map(([key, label]) => `<button type="button" data-mode="${key}" class="${key === timetableMode ? "active" : ""}">${escapeHtml(t(label))}</button>`).join("")}
       </div>
-      <div class="visit-filter timetable-days" id="timetableDays">
+      ${timetableMode === "group" ? "" : `<div class="visit-filter timetable-days" id="timetableDays">
         ${TIMETABLE_DAYS.map((d) => `<button type="button" data-day="${d.key}" class="${d.key === timetableDay ? "active" : ""}">${escapeHtml(t(d.label))}</button>`).join("")}
-      </div>
+      </div>`}
       <div id="timetableBody"></div>
     </section>
   `;
@@ -6193,12 +6208,13 @@ function renderTimetableView(){
     timetableMode = btn.dataset.mode;
     renderTimetableView();
   });
-  document.getElementById("timetableDays").addEventListener("click", (e) => {
+  const daysEl = document.getElementById("timetableDays");
+  if(daysEl) daysEl.addEventListener("click", (e) => {
     const btn = e.target.closest("button[data-day]");
     if(!btn) return;
     timetableDay = btn.dataset.day;
     document.querySelectorAll("#timetableDays button").forEach((b) => b.classList.toggle("active", b.dataset.day === timetableDay));
-    if(timetableMode === "group") renderGroupPhotos(); else showTimetableImage();
+    showTimetableImage();
   });
   if(timetableMode === "group"){
     renderGroupPhotos();
@@ -6230,25 +6246,22 @@ function groupPhotoMinutes(hhmm){
   return m ? Number(m[1]) * 60 + Number(m[2]) : null;
 }
 
-// 단체촬영 일정: 고른 요일의 항목을 시작 시각 순으로. 행사 당일(한국 시간)에는 끝난 일정을 흐리게, 진행 중인 일정을 강조
+// 단체촬영 일정: 토·일을 나누지 않고 한 화면에 요일 제목과 함께 전부 보여 줌(사용자 요청, 2026-11-26). 요일 안에서는 시작 시각 순.
+// 행사 당일(한국 시간)에는 끝난 일정을 흐리게, 진행 중인 일정을 강조
 function renderGroupPhotos(){
   const body = document.getElementById("timetableBody");
   if(!body) return;
-  const day = TIMETABLE_DAYS.find((d) => d.key === timetableDay) || TIMETABLE_DAYS[0];
   const all = Array.isArray(window.GROUP_PHOTOS) ? window.GROUP_PHOTOS : [];
-  const items = all
-    .filter((g) => g && g.day === day.key)
-    .map((g, i) => ({ g, i, start: groupPhotoMinutes(g.start), end: groupPhotoMinutes(g.end) }))
-    .sort((a, b) => (a.start ?? 9999) - (b.start ?? 9999) || a.i - b.i);
+  const hours = window.GROUP_PHOTO_HOURS || {};
   const kst = new Date(Date.now() + 9 * 3600000);
-  const isToday = kst.toISOString().slice(0, 10) === day.date;
+  const today = kst.toISOString().slice(0, 10);
   const nowMin = kst.getUTCHours() * 60 + kst.getUTCMinutes();
   const safeLink = (u) => /^https:\/\//i.test(String(u || "").trim()) ? String(u).trim() : "";
-  const rows = items.map(({ g, start, end }) => {
+  const renderItem = (day, { g, start, end }) => {
     // 끝 시각이 없으면 시작 후 30분까지를 진행 중으로 봄
     const until = end ?? (start != null ? start + 30 : null);
     let state = "";
-    if(isToday && start != null){
+    if(today === day.date && start != null){
       if(nowMin >= until) state = "done";
       else if(nowMin >= start) state = "now";
     }
@@ -6258,18 +6271,27 @@ function renderGroupPhotos(){
         <div class="group-photo-time">${escapeHtml(g.start || "")}${g.end ? `<span class="group-photo-end">~ ${escapeHtml(g.end)}</span>` : ""}${state ? `<span class="group-photo-state">${escapeHtml(t(state === "now" ? "groupPhotoNow" : "groupPhotoDone"))}</span>` : ""}</div>
         <div class="group-photo-main">
           ${g.title ? `<div class="group-photo-title">${escapeHtml(g.title)}</div>` : ""}
-          ${g.place ? `<div class="group-photo-place">${escapeHtml(g.place)}</div>` : ""}
           ${g.host ? `<div class="group-photo-host">${escapeHtml(t("groupPhotoHost"))} ${escapeHtml(g.host)}</div>` : ""}
+          ${g.place ? `<div class="group-photo-place">${escapeHtml(t("groupPhotoPlace"))} ${escapeHtml(g.place)}</div>` : ""}
           ${g.note ? `<div class="group-photo-note">${escapeHtml(g.note)}</div>` : ""}
           ${link ? `<a class="group-photo-link" href="${escapeHtml(link)}" target="_blank" rel="noopener">${escapeHtml(t("groupPhotoLink"))}</a>` : ""}
         </div>
       </li>`;
+  };
+  const sections = TIMETABLE_DAYS.map((day) => {
+    const items = all
+      .filter((g) => g && g.day === day.key)
+      .map((g, i) => ({ g, i, start: groupPhotoMinutes(g.start), end: groupPhotoMinutes(g.end) }))
+      .sort((a, b) => (a.start ?? 9999) - (b.start ?? 9999) || a.i - b.i);
+    return `
+      <h3 class="group-photo-day">${escapeHtml(t(day.label))}<span class="group-photo-day-sub">${escapeHtml(t("groupPhotoCount", { n: items.length }))}${hours[day.key] ? ` · ${escapeHtml(t("groupPhotoHours", { time: hours[day.key] }))}` : ""}</span></h3>
+      ${items.length
+        ? `<ul class="group-photo-list">${items.map((it) => renderItem(day, it)).join("")}</ul>`
+        : `<div class="group-photo-empty">${escapeHtml(t("groupPhotoEmpty"))}</div>`}`;
   }).join("");
   const updated = window.GROUP_PHOTO_UPDATED ? ` · ${escapeHtml(t("groupPhotoUpdated", { date: window.GROUP_PHOTO_UPDATED }))}` : "";
   body.innerHTML = `
-    ${items.length
-      ? `<ul class="group-photo-list">${rows}</ul>`
-      : `<div class="group-photo-empty">${escapeHtml(t("groupPhotoEmpty"))}</div>`}
+    ${sections}
     <div class="timetable-note">* ${escapeHtml(t("groupPhotoNote"))}${updated}</div>
   `;
 }
