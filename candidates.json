@@ -1,6 +1,60 @@
 {
- "updatedAt": "2026-11-27T07:24:05+00:00",
+ "updatedAt": "2026-11-27T08:24:21+00:00",
  "posts": [
+  {
+   "id": "2126226678720667683",
+   "handle": "GTDignified",
+   "booths": [
+    "B17"
+   ],
+   "boothNames": [
+    "STUDIO雄虎凛"
+   ],
+   "created": "2026-11-27T08:08:38+00:00",
+   "score": 2,
+   "sensitive": true,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-27T08:19:28+00:00"
+  },
+  {
+   "id": "2126226628238066050",
+   "handle": "kukku_kuu",
+   "booths": [
+    "B18"
+   ],
+   "boothNames": [
+    "天神大砂丘"
+   ],
+   "created": "2026-11-27T08:08:26+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-27T08:20:27+00:00"
+  },
+  {
+   "id": "2126225793122771451",
+   "handle": "cheetah_paws",
+   "booths": [
+    "B01"
+   ],
+   "boothNames": [
+    "CheetahPaws"
+   ],
+   "created": "2026-11-27T08:05:07+00:00",
+   "score": 2,
+   "sensitive": true,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-27T08:18:12+00:00"
+  },
   {
    "id": "2126211052094537959",
    "handle": "mdfurr",
