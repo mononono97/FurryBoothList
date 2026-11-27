@@ -1,6 +1,53 @@
 {
- "updatedAt": "2026-11-27T03:29:15+00:00",
+ "updatedAt": "2026-11-27T04:23:00+00:00",
  "posts": [
+  {
+   "id": "2126166560347934732",
+   "handle": "HOKIpong",
+   "booths": [
+    "C14"
+   ],
+   "boothNames": [
+    "파놉티콘"
+   ],
+   "created": "2026-11-27T04:09:44+00:00",
+   "score": 5,
+   "sensitive": false,
+   "reasons": [
+    "인포",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-27T04:19:10+00:00"
+  },
+  {
+   "id": "2126161553896689898",
+   "handle": "ED_in_FF14",
+   "booths": [
+    "C24"
+   ],
+   "boothNames": [
+    "보즈야 연구소"
+   ],
+   "created": "2026-11-27T03:49:51+00:00",
+   "score": 2,
+   "sensitive": false,
+   "quoted": {
+    "id": "2125531647001190669",
+    "handle": "",
+    "sensitive": false
+   },
+   "reasons": [
+    "통판·선입금·예약"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-27T04:18:34+00:00"
+  },
   {
    "id": "2126148756773183517",
    "handle": "Beuu0920",
