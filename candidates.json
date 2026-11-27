@@ -1,6 +1,24 @@
 {
- "updatedAt": "2026-11-27T16:29:33+00:00",
+ "updatedAt": "2026-11-27T17:24:03+00:00",
  "posts": [
+  {
+   "id": "2126358170281140643",
+   "handle": "mofuaki_",
+   "booths": [
+    "A41"
+   ],
+   "boothNames": [
+    "MOFUMOFUYA"
+   ],
+   "created": "2026-11-27T16:51:08+00:00",
+   "score": 2,
+   "sensitive": true,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-27T17:20:38+00:00"
+  },
   {
    "id": "2126349955870982252",
    "handle": "largo_furry",
