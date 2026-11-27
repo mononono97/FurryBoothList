@@ -1,6 +1,29 @@
 {
- "updatedAt": "2026-11-27T10:28:52+00:00",
+ "updatedAt": "2026-11-27T11:23:56+00:00",
  "posts": [
+  {
+   "id": "2126269469987082712",
+   "handle": "seadogwal",
+   "booths": [
+    "A18"
+   ],
+   "boothNames": [
+    "BAD PAW Co."
+   ],
+   "created": "2026-11-27T10:58:40+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-27T11:22:08+00:00"
+  },
   {
    "id": "2126248520588103992",
    "handle": "GTDignified",
