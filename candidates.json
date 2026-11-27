@@ -1,6 +1,208 @@
 {
- "updatedAt": "2026-11-27T08:39:19+00:00",
+ "updatedAt": "2026-11-27T09:28:42+00:00",
  "posts": [
+  {
+   "id": "2126241159307759811",
+   "handle": "makidogang",
+   "booths": [
+    "C10"
+   ],
+   "boothNames": [
+    "지금이 절호의 찬스잖아"
+   ],
+   "created": "2026-11-27T09:06:10+00:00",
+   "score": 2,
+   "sensitive": true,
+   "quoted": {
+    "id": "2125876785284055361",
+    "handle": "agitype01",
+    "sensitive": true
+   },
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-27T09:23:23+00:00"
+  },
+  {
+   "id": "2126239335687282901",
+   "handle": "_Kimroco",
+   "booths": [
+    "A11-12"
+   ],
+   "boothNames": [
+    "콩자반 김자반"
+   ],
+   "created": "2026-11-27T08:58:55+00:00",
+   "score": 6,
+   "sensitive": false,
+   "quoted": {
+    "id": "2126237467774959709",
+    "handle": "kongzorim",
+    "sensitive": false
+   },
+   "reasons": [
+    "인포",
+    "굿즈·판매",
+    "품목"
+   ],
+   "foundAt": "2026-11-27T09:17:37+00:00"
+  },
+  {
+   "id": "2126238157327016052",
+   "handle": "kongzorim",
+   "booths": [
+    "A11-12"
+   ],
+   "boothNames": [
+    "콩자반 김자반"
+   ],
+   "created": "2026-11-27T08:54:14+00:00",
+   "score": 2,
+   "sensitive": false,
+   "quoted": {
+    "id": "2122346925714538790",
+    "handle": "kongzorim",
+    "sensitive": false
+   },
+   "reasons": [
+    "통판·선입금·예약"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-27T09:23:08+00:00"
+  },
+  {
+   "id": "2126238117556523072",
+   "handle": "kongzorim",
+   "booths": [
+    "A11-12"
+   ],
+   "boothNames": [
+    "콩자반 김자반"
+   ],
+   "created": "2026-11-27T08:54:05+00:00",
+   "score": 2,
+   "sensitive": false,
+   "quoted": {
+    "id": "2125170873699328329",
+    "handle": "kongzorim",
+    "sensitive": false
+   },
+   "reasons": [
+    "통판·선입금·예약"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-27T09:23:08+00:00"
+  },
+  {
+   "id": "2126237933648916709",
+   "handle": "CGu0906",
+   "booths": [
+    "B16"
+   ],
+   "boothNames": [
+    "NANKAARU"
+   ],
+   "created": "2026-11-27T08:53:21+00:00",
+   "score": 2,
+   "sensitive": true,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-27T09:18:47+00:00"
+  },
+  {
+   "id": "2126237470891344044",
+   "handle": "kongzorim",
+   "booths": [
+    "A11-12"
+   ],
+   "boothNames": [
+    "콩자반 김자반"
+   ],
+   "created": "2026-11-27T08:51:31+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "통판·선입금·예약",
+    "타래(자기 글 답글)"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-27T09:23:08+00:00"
+  },
+  {
+   "id": "2126237467774959709",
+   "handle": "kongzorim",
+   "booths": [
+    "A11-12"
+   ],
+   "boothNames": [
+    "콩자반 김자반"
+   ],
+   "created": "2026-11-27T08:51:30+00:00",
+   "score": 7,
+   "sensitive": false,
+   "reasons": [
+    "인포",
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-27T09:23:08+00:00"
+  },
+  {
+   "id": "2126235235339886849",
+   "handle": "Hijiki_DaiXt",
+   "booths": [
+    "A02"
+   ],
+   "boothNames": [
+    "SEAWEED VILLAGE"
+   ],
+   "created": "2026-11-27T08:42:38+00:00",
+   "score": 4,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-27T09:22:18+00:00"
+  },
+  {
+   "id": "2126235188124610780",
+   "handle": "_K0CH1",
+   "booths": [
+    "A13"
+   ],
+   "boothNames": [
+    "코치문고"
+   ],
+   "created": "2026-11-27T08:42:27+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "인포",
+    "타래(자기 글 답글)"
+   ],
+   "foundAt": "2026-11-27T09:17:31+00:00"
+  },
   {
    "id": "2126230994525258169",
    "handle": "Hijiki_DaiXt",
