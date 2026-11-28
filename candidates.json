@@ -1,6 +1,24 @@
 {
- "updatedAt": "2026-11-28T10:28:29+00:00",
+ "updatedAt": "2026-11-28T11:28:21+00:00",
  "posts": [
+  {
+   "id": "2126633435758530948",
+   "handle": "cheetah_paws",
+   "booths": [
+    "B01"
+   ],
+   "boothNames": [
+    "CheetahPaws"
+   ],
+   "created": "2026-11-28T11:04:56+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스"
+   ],
+   "foundAt": "2026-11-28T11:18:45+00:00"
+  },
   {
    "id": "2126621674267459801",
    "handle": "mdfurr",
