@@ -1,6 +1,101 @@
 {
- "updatedAt": "2026-11-28T11:28:21+00:00",
+ "updatedAt": "2026-11-28T12:24:41+00:00",
  "posts": [
+  {
+   "id": "2126651346325770726",
+   "handle": "GTDignified",
+   "booths": [
+    "B17"
+   ],
+   "boothNames": [
+    "STUDIO雄虎凛"
+   ],
+   "created": "2026-11-28T12:16:06+00:00",
+   "score": 2,
+   "sensitive": true,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-28T12:19:39+00:00"
+  },
+  {
+   "id": "2126649492489621692",
+   "handle": "pu_couck_",
+   "booths": [
+    "A19"
+   ],
+   "boothNames": [
+    "메이커 연합부스 - 아르모아"
+   ],
+   "created": "2026-11-28T12:08:44+00:00",
+   "score": 6,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "가격",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-28T12:22:15+00:00"
+  },
+  {
+   "id": "2126645813267112419",
+   "handle": "musou_luf",
+   "booths": [
+    "A01"
+   ],
+   "boothNames": [
+    "BAURWOLF"
+   ],
+   "created": "2026-11-28T11:54:07+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "타래(자기 글 답글)"
+   ],
+   "foundAt": "2026-11-28T12:21:27+00:00"
+  },
+  {
+   "id": "2126642847927730515",
+   "handle": "musou_luf",
+   "booths": [
+    "A01"
+   ],
+   "boothNames": [
+    "BAURWOLF"
+   ],
+   "created": "2026-11-28T11:42:20+00:00",
+   "score": 3,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "품목"
+   ],
+   "foundAt": "2026-11-28T12:21:27+00:00"
+  },
+  {
+   "id": "2126639776237519185",
+   "handle": "didran9802",
+   "booths": [
+    "A33"
+   ],
+   "boothNames": [
+    "도마뱀의 보물함"
+   ],
+   "created": "2026-11-28T11:30:08+00:00",
+   "score": 5,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-28T12:18:54+00:00"
+  },
   {
    "id": "2126633435758530948",
    "handle": "cheetah_paws",
@@ -21131,6 +21226,13 @@
   }
  ],
  "official": [
+  {
+   "id": "2126652630676230310",
+   "handle": "FURSTCLASS_KR",
+   "created": "2026-11-28T12:21:13+00:00",
+   "sensitive": false,
+   "foundAt": "2026-11-28T12:23:57+00:00"
+  },
   {
    "id": "2126517304196583625",
    "handle": "FURSTCLASS_KR",
