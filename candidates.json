@@ -1,6 +1,52 @@
 {
- "updatedAt": "2026-11-28T14:15:44+00:00",
+ "updatedAt": "2026-11-28T14:29:41+00:00",
  "posts": [
+  {
+   "id": "2126678872284631183",
+   "handle": "furrybuckbuck",
+   "booths": [
+    "C28"
+   ],
+   "boothNames": [
+    "S.O.C"
+   ],
+   "created": "2026-11-28T14:05:29+00:00",
+   "score": 2,
+   "sensitive": false,
+   "quoted": {
+    "id": "2124884994468516043",
+    "handle": "furrybuckbuck",
+    "sensitive": false
+   },
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-28T14:20:57+00:00"
+  },
+  {
+   "id": "2126676830388461702",
+   "handle": "havelXP",
+   "booths": [
+    "C23"
+   ],
+   "boothNames": [
+    "tag : tiger boy"
+   ],
+   "created": "2026-11-28T13:57:22+00:00",
+   "score": 2,
+   "sensitive": false,
+   "quoted": {
+    "id": "2125931312020332576",
+    "handle": "ADKT0448",
+    "sensitive": false
+   },
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-28T14:21:54+00:00"
+  },
   {
    "id": "2126666821474648116",
    "handle": "Goyangeg",
@@ -119,7 +165,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-28T13:23:11+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2126660778963206477",
@@ -650,7 +697,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-28T07:19:44+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2126536916191633808",
@@ -1091,7 +1139,8 @@
    "reasons": [
     "RT 계정"
    ],
-   "foundAt": "2026-11-28T14:15:33+00:00"
+   "foundAt": "2026-11-28T14:15:33+00:00",
+   "preorderHint": null
   },
   {
    "id": "2126291925607317738",
@@ -1131,7 +1180,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-27T12:24:17+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2126289922583941126",
@@ -1472,7 +1522,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-27T08:32:32+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2126226678720667683",
@@ -1566,7 +1617,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-27T05:22:57+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2126166560347934732",
@@ -2229,7 +2281,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-26T10:27:15+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2125893394086105502",
@@ -3050,7 +3103,8 @@
     "RT 계정"
    ],
    "foundAt": "2026-11-25T13:00:19+00:00",
-   "via": "furstclassrt"
+   "via": "furstclassrt",
+   "preorderHint": null
   },
   {
    "id": "2125563506737172726",
