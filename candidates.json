@@ -1,6 +1,335 @@
 {
- "updatedAt": "2026-11-28T12:24:41+00:00",
+ "updatedAt": "2026-11-28T13:25:32+00:00",
  "posts": [
+  {
+   "id": "2126666821474648116",
+   "handle": "Goyangeg",
+   "booths": [
+    "C11"
+   ],
+   "boothNames": [
+    "퍼리의연인"
+   ],
+   "created": "2026-11-28T13:17:36+00:00",
+   "score": 4,
+   "sensitive": false,
+   "quoted": {
+    "id": "2126655499684950079",
+    "handle": "chung0u0",
+    "sensitive": true
+   },
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-11-28T13:19:40+00:00"
+  },
+  {
+   "id": "2126662460556120508",
+   "handle": "Malcha_Soda",
+   "booths": [
+    "B06"
+   ],
+   "boothNames": [
+    "Black's Den"
+   ],
+   "created": "2026-11-28T13:00:16+00:00",
+   "score": 5,
+   "sensitive": true,
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-28T13:21:08+00:00"
+  },
+  {
+   "id": "2126662385226436739",
+   "handle": "COOKEDMOCHI",
+   "booths": [
+    "B33"
+   ],
+   "boothNames": [
+    "염소야, 그만 야해!"
+   ],
+   "created": "2026-11-28T12:59:58+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-28T13:18:46+00:00"
+  },
+  {
+   "id": "2126661521849958592",
+   "handle": "elvendays",
+   "booths": [
+    "A23"
+   ],
+   "boothNames": [
+    "엘븐스토어 1"
+   ],
+   "created": "2026-11-28T12:56:32+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-28T13:19:14+00:00"
+  },
+  {
+   "id": "2126661347870199968",
+   "handle": "26_suigi",
+   "booths": [
+    "B11"
+   ],
+   "boothNames": [
+    "CandleLight"
+   ],
+   "created": "2026-11-28T12:55:51+00:00",
+   "score": 5,
+   "sensitive": false,
+   "reasons": [
+    "굿즈·판매",
+    "가격",
+    "행사·부스"
+   ],
+   "foundAt": "2026-11-28T13:17:23+00:00"
+  },
+  {
+   "id": "2126660968264630584",
+   "handle": "ringo2ALS",
+   "booths": [
+    "A35"
+   ],
+   "boothNames": [
+    "빙다리 햍바지"
+   ],
+   "created": "2026-11-28T12:54:20+00:00",
+   "score": 5,
+   "sensitive": false,
+   "reasons": [
+    "인포",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-28T13:23:11+00:00"
+  },
+  {
+   "id": "2126660778963206477",
+   "handle": "largo_furry",
+   "booths": [
+    "A18"
+   ],
+   "boothNames": [
+    "BAD PAW Co."
+   ],
+   "created": "2026-11-28T12:53:35+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-28T13:20:57+00:00"
+  },
+  {
+   "id": "2126658676052361217",
+   "handle": "White_Night06",
+   "booths": [
+    "A22"
+   ],
+   "boothNames": [
+    "모노마사 나이스 트라이"
+   ],
+   "created": "2026-11-28T12:45:14+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-28T13:24:11+00:00"
+  },
+  {
+   "id": "2126657049933349191",
+   "handle": "IG1119",
+   "booths": [
+    "B19"
+   ],
+   "boothNames": [
+    "OSURULE"
+   ],
+   "created": "2026-11-28T12:38:46+00:00",
+   "score": 4,
+   "sensitive": false,
+   "quoted": {
+    "id": "2124087823410311383",
+    "handle": "IG1119",
+    "sensitive": false
+   },
+   "reasons": [
+    "굿즈·판매",
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-11-28T13:20:18+00:00"
+  },
+  {
+   "id": "2126656728477634961",
+   "handle": "badpawco",
+   "booths": [
+    "A18"
+   ],
+   "boothNames": [
+    "BAD PAW Co."
+   ],
+   "created": "2026-11-28T12:37:30+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-28T13:17:50+00:00"
+  },
+  {
+   "id": "2126656537234153738",
+   "handle": "nekogaki0324",
+   "booths": [
+    "C07"
+   ],
+   "boothNames": [
+    "GGG: GO GET 'EM, GOAT!"
+   ],
+   "created": "2026-11-28T12:36:44+00:00",
+   "score": 3,
+   "sensitive": false,
+   "quoted": {
+    "id": "2124019248465150451",
+    "handle": "nekogaki0324",
+    "sensitive": false
+   },
+   "reasons": [
+    "굿즈·판매",
+    "행사·부스"
+   ],
+   "foundAt": "2026-11-28T13:22:02+00:00"
+  },
+  {
+   "id": "2126656050132894164",
+   "handle": "badpawco",
+   "booths": [
+    "A18"
+   ],
+   "boothNames": [
+    "BAD PAW Co."
+   ],
+   "created": "2026-11-28T12:34:48+00:00",
+   "score": 7,
+   "sensitive": false,
+   "reasons": [
+    "인포",
+    "굿즈·판매",
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-28T13:17:50+00:00"
+  },
+  {
+   "id": "2126655499684950079",
+   "handle": "chung0u0",
+   "booths": [
+    "C11"
+   ],
+   "boothNames": [
+    "퍼리의연인"
+   ],
+   "created": "2026-11-28T12:32:37+00:00",
+   "score": 2,
+   "sensitive": true,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-28T13:18:38+00:00"
+  },
+  {
+   "id": "2126655167252811825",
+   "handle": "MELONCOOKIE_24",
+   "booths": [
+    "C21"
+   ],
+   "boothNames": [
+    "데빌카드 쇼다운!"
+   ],
+   "created": "2026-11-28T12:31:17+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-28T13:21:15+00:00"
+  },
+  {
+   "id": "2126654011621466266",
+   "handle": "Neilos0526",
+   "booths": [
+    "B14"
+   ],
+   "boothNames": [
+    "버츄얼 렌탈 남편"
+   ],
+   "created": "2026-11-28T12:26:42+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-28T13:22:00+00:00"
+  },
+  {
+   "id": "2126653568279359723",
+   "handle": "kongzorim",
+   "booths": [
+    "A11-12"
+   ],
+   "boothNames": [
+    "콩자반 김자반"
+   ],
+   "created": "2026-11-28T12:24:56+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-28T13:20:49+00:00"
+  },
+  {
+   "id": "2126652783411781737",
+   "handle": "kongzorim",
+   "booths": [
+    "A11-12"
+   ],
+   "boothNames": [
+    "콩자반 김자반"
+   ],
+   "created": "2026-11-28T12:21:49+00:00",
+   "score": 2,
+   "sensitive": false,
+   "reasons": [
+    "품목",
+    "이미지"
+   ],
+   "foundAt": "2026-11-28T13:20:49+00:00"
+  },
   {
    "id": "2126651346325770726",
    "handle": "GTDignified",
@@ -21227,6 +21556,13 @@
  ],
  "official": [
   {
+   "id": "2126662822696526262",
+   "handle": "FURSTCLASS_KR",
+   "created": "2026-11-28T13:01:43+00:00",
+   "sensitive": false,
+   "foundAt": "2026-11-28T13:24:41+00:00"
+  },
+  {
    "id": "2126652630676230310",
    "handle": "FURSTCLASS_KR",
    "created": "2026-11-28T12:21:13+00:00",
@@ -21630,8 +21966,10 @@
   "2120788470637740264": "2120797130399137896"
  },
  "embedStatus": {
-  "checkedAt": "2026-11-28T09:30:09+00:00",
+  "checkedAt": "2026-11-28T13:30:17+00:00",
   "posts": {
+   "2126651346325770726": "sensitive",
+   "2126617672909775119": "sensitive",
    "2126299660533035236": "sensitive",
    "2126161553896689898:quoted": "sensitive",
    "2125960148032389460": "sensitive",
@@ -21658,6 +21996,7 @@
    "2125563506737172726": "sensitive",
    "2125558083908939886": "sensitive",
    "2125531647001190669": "sensitive",
+   "2125498864497217642": "sensitive",
    "2125465695685410951": "sensitive",
    "2125461176033358007": "sensitive",
    "2125454443802218688": "sensitive",
