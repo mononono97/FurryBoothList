@@ -1,6 +1,77 @@
 {
- "updatedAt": "2026-11-28T08:27:39+00:00",
+ "updatedAt": "2026-11-28T09:25:08+00:00",
  "posts": [
+  {
+   "id": "2126603024055562532",
+   "handle": "mofuaki_",
+   "booths": [
+    "A41"
+   ],
+   "boothNames": [
+    "MOFUMOFUYA"
+   ],
+   "created": "2026-11-28T09:04:05+00:00",
+   "score": 2,
+   "sensitive": true,
+   "reasons": [
+    "행사·부스",
+    "이미지"
+   ],
+   "foundAt": "2026-11-28T09:21:29+00:00"
+  },
+  {
+   "id": "2126599971617329337",
+   "handle": "nanimonaitto",
+   "booths": [
+    "C30"
+   ],
+   "boothNames": [
+    "PPP2"
+   ],
+   "created": "2026-11-28T08:51:58+00:00",
+   "score": 2,
+   "sensitive": false,
+   "quoted": {
+    "id": "2125880731528478891",
+    "handle": "hachi_duchi",
+    "sensitive": false
+   },
+   "reasons": [
+    "품목",
+    "행사·부스"
+   ],
+   "foundAt": "2026-11-28T09:21:40+00:00"
+  },
+  {
+   "id": "2126596728099074220",
+   "handle": "syukapong",
+   "booths": [
+    "A10"
+   ],
+   "boothNames": [
+    "푸딩파르페"
+   ],
+   "created": "2026-11-28T08:39:04+00:00",
+   "score": 5,
+   "sensitive": false,
+   "quoted": {
+    "id": "2125979718268956971",
+    "handle": "syukapong",
+    "sensitive": false
+   },
+   "reasons": [
+    "통판·선입금·예약",
+    "굿즈·판매",
+    "행사·부스"
+   ],
+   "preorderHint": {
+    "link": "",
+    "links": [],
+    "start": "",
+    "end": ""
+   },
+   "foundAt": "2026-11-28T09:23:33+00:00"
+  },
   {
    "id": "2126582167996448949",
    "handle": "largo_furry",
@@ -21362,7 +21433,7 @@
   "2120788470637740264": "2120797130399137896"
  },
  "embedStatus": {
-  "checkedAt": "2026-11-28T05:36:35+00:00",
+  "checkedAt": "2026-11-28T09:30:09+00:00",
   "posts": {
    "2126299660533035236": "sensitive",
    "2126161553896689898:quoted": "sensitive",
